@@ -167,33 +167,44 @@ export default function GameWrapper() {
       animationFrameId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       gameTimeRef.current += delta;
-      
+
       const maxSpeed = 100;
       const acceleration = 80;
       const turnSpeed = 2;
       const friction = 0.98;
 
+      // Create a forward vector based on the car's rotation
+      const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(car.quaternion);
+
       if (inputRef.current.forward) {
-        velocityRef.current.z += acceleration * delta;
+        // Add force in the forward direction
+        velocityRef.current.add(forward.clone().multiplyScalar(acceleration * delta));
       }
       if (inputRef.current.backward) {
-        velocityRef.current.z -= acceleration * delta;
+        // Add force in the backward direction
+        velocityRef.current.add(forward.clone().multiplyScalar(-acceleration * delta));
       }
-      
-      velocityRef.current.z = Math.max(-maxSpeed/4, Math.min(maxSpeed, velocityRef.current.z));
+
+      // Clamp velocity to max speed
+      if (velocityRef.current.length() > maxSpeed) {
+        velocityRef.current.normalize().multiplyScalar(maxSpeed);
+      }
       
       const speed = velocityRef.current.length();
       if(speed > 0.1) {
-        const steer = (inputRef.current.left ? 1 : 0) - (inputRef.current.right ? 1 : 0);
-        car.rotation.y += steer * turnSpeed * delta * (velocityRef.current.z / maxSpeed);
+          const steer = (inputRef.current.right ? -1 : 0) + (inputRef.current.left ? 1 : 0);
+          // Only allow turning if moving
+          if (velocityRef.current.length() > 0.1) {
+              const turnAmount = steer * turnSpeed * delta;
+              car.rotation.y += turnAmount;
+          }
       }
       
+      // Apply friction
       velocityRef.current.multiplyScalar(friction);
 
-      const forward = new THREE.Vector3(0, 0, 1);
-      forward.applyQuaternion(car.quaternion);
-      forward.multiplyScalar(velocityRef.current.z * delta);
-      car.position.add(forward);
+      // Update car position based on velocity
+      car.position.add(velocityRef.current.clone().multiplyScalar(delta));
 
       // Camera follow
       const cameraOffset = new THREE.Vector3(0, 5, -10).applyQuaternion(car.quaternion);
@@ -228,7 +239,7 @@ export default function GameWrapper() {
       
       // Update HUD
       setGameData({
-        speed: velocityRef.current.z * 3.6,
+        speed: velocityRef.current.length() * 3.6, // Convert m/s to km/h
         time: gameTimeRef.current,
       });
 
@@ -243,7 +254,7 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
-      if (mountNode && mountNode.contains(renderer.domElement)) {
+      if (mountNode && renderer.domElement.parentElement === mountNode) {
         mountNode.removeChild(renderer.domElement);
       }
     };
