@@ -180,10 +180,9 @@ export default function GameWrapper() {
 
     const glassMaterial = new THREE.MeshStandardMaterial({
       color: 0x222222,
-      metalness: 0,
-      roughness: 0,
-      transparent: true,
-      opacity: 0.6
+      metalness: 0.8,
+      roughness: 0.2,
+      transparent: false,
     });
 
     // Windshield / Cabin
