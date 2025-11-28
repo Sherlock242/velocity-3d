@@ -197,6 +197,26 @@ export default function GameWrapper() {
     spoilerSupport2.castShadow = true;
     car.add(spoilerSupport2);
 
+    // Side Mirrors
+    const mirrorMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.5 });
+    const mirrorShape = new THREE.BoxGeometry(0.15, 0.15, 0.3);
+    const leftMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
+    leftMirror.position.set(-bodyWidth / 2 - 0.1, bodyHeight * 0.6, bodyLength / 2 - 1.2);
+    leftMirror.rotation.y = -Math.PI / 8;
+    car.add(leftMirror);
+
+    const rightMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
+    rightMirror.position.set(bodyWidth / 2 + 0.1, bodyHeight * 0.6, bodyLength / 2 - 1.2);
+    rightMirror.rotation.y = Math.PI / 8;
+    car.add(rightMirror);
+
+    // Tail Lights
+    const tailLightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.5 });
+    const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
+    const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
+    tailLights.position.set(0, bodyHeight * 0.8, -bodyLength / 2 - 0.02);
+    car.add(tailLights);
+
 
     const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
     const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
