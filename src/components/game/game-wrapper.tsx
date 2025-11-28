@@ -18,11 +18,10 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import type { TrackTheme, OpponentProfile } from '@/lib/types';
+import type { TrackTheme } from '@/lib/types';
 import Hud from './hud';
 import AiOpponentGenerator from './ai-opponent-generator';
 import { handleAssessPenalty } from '@/app/actions';
-import { Button } from '../ui/button';
 
 const TRACK_THEMES: Record<
   TrackTheme,
@@ -46,8 +45,10 @@ const TRACK_THEMES: Record<
 };
 
 const TRACK_WIDTH = 20;
-const TRACK_LENGTH = 1000;
+const SEGMENT_LENGTH = 200;
 const GROUND_WIDTH = 500;
+const NUM_SEGMENTS = 10;
+const TRACK_LENGTH = SEGMENT_LENGTH * NUM_SEGMENTS;
 
 export default function GameWrapper() {
   const mountRef = React.useRef<HTMLDivElement>(null);
@@ -74,10 +75,10 @@ export default function GameWrapper() {
   React.useEffect(() => {
     if (!mountRef.current) return;
     setIsReady(false);
-    
-    const mountNode = mountRef.current;
 
-    // Scene setup
+    const mountNode = mountRef.current;
+    
+    // --- BASIC SETUP ---
     const scene = new THREE.Scene();
     scene.background = TRACK_THEMES[theme].sky;
     const camera = new THREE.PerspectiveCamera(
@@ -89,20 +90,17 @@ export default function GameWrapper() {
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
-    
     mountNode.appendChild(renderer.domElement);
-
-    // Lighting
+    
+    // --- LIGHTING ---
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
     dirLight.position.set(50, 100, 50);
     dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
     scene.add(dirLight);
-
-    // Car
+    
+    // --- CAR ---
     const carGeometry = new THREE.BoxGeometry(2, 1, 4);
     const carMaterial = new THREE.MeshStandardMaterial({
       color: 0x7df9ff,
@@ -114,68 +112,79 @@ export default function GameWrapper() {
     car.castShadow = true;
     scene.add(car);
     carRef.current = car;
+    camera.position.set(0, 5, -10);
+    camera.lookAt(car.position);
+    
+    // --- INFINITE TRACK ---
+    const trackSegments: THREE.Group[] = [];
 
-    // Ground
-    const mainGroundGeometry = new THREE.PlaneGeometry(GROUND_WIDTH, TRACK_LENGTH);
-    const mainGroundMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].ground });
-    const mainGround = new THREE.Mesh(mainGroundGeometry, mainGroundMaterial);
-    mainGround.rotation.x = -Math.PI / 2;
-    mainGround.receiveShadow = true;
-    scene.add(mainGround);
+    function createTrackSegment(segmentIndex: number) {
+      const segmentGroup = new THREE.Group();
 
-    // --- ROAD ---
-    const roadGroup = new THREE.Group();
-    // Asphalt
-    const groundGeometry = new THREE.PlaneGeometry(TRACK_WIDTH, TRACK_LENGTH);
-    const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x4a4a4a });
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = 0.01; // Slightly above the main ground
-    ground.receiveShadow = true;
-    roadGroup.add(ground);
+      // Ground
+      const groundGeometry = new THREE.PlaneGeometry(GROUND_WIDTH, SEGMENT_LENGTH);
+      const groundMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].ground });
+      const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+      ground.rotation.x = -Math.PI / 2;
+      ground.receiveShadow = true;
+      segmentGroup.add(ground);
 
-    // Road markings
-    const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    // Edge lines
-    const edgeLineGeometry = new THREE.PlaneGeometry(0.5, TRACK_LENGTH);
-    const leftEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
-    leftEdgeLine.position.set(-TRACK_WIDTH / 2 + 0.25, 0.02, 0);
-    leftEdgeLine.rotation.x = -Math.PI / 2;
-    roadGroup.add(leftEdgeLine);
+      // Road
+      const roadGeometry = new THREE.PlaneGeometry(TRACK_WIDTH, SEGMENT_LENGTH);
+      const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x4a4a4a });
+      const road = new THREE.Mesh(roadGeometry, roadMaterial);
+      road.rotation.x = -Math.PI / 2;
+      road.position.y = 0.01;
+      road.receiveShadow = true;
+      segmentGroup.add(road);
 
-    const rightEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
-    rightEdgeLine.position.set(TRACK_WIDTH / 2 - 0.25, 0.02, 0);
-    rightEdgeLine.rotation.x = -Math.PI / 2;
-    roadGroup.add(rightEdgeLine);
+      // Markings
+      const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      const edgeLineGeometry = new THREE.PlaneGeometry(0.5, SEGMENT_LENGTH);
+      const leftEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
+      leftEdgeLine.position.set(-TRACK_WIDTH / 2 + 0.25, 0.02, 0);
+      leftEdgeLine.rotation.x = -Math.PI / 2;
+      segmentGroup.add(leftEdgeLine);
+      const rightEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
+      rightEdgeLine.position.set(TRACK_WIDTH / 2 - 0.25, 0.02, 0);
+      rightEdgeLine.rotation.x = -Math.PI / 2;
+      segmentGroup.add(rightEdgeLine);
+      
+      const dashLength = 8;
+      const dashGap = 6;
+      const dashGeometry = new THREE.PlaneGeometry(0.3, dashLength);
+      for (let z = -SEGMENT_LENGTH / 2; z < SEGMENT_LENGTH / 2; z += dashLength + dashGap) {
+          const dash = new THREE.Mesh(dashGeometry, lineMaterial);
+          dash.position.set(0, 0.02, z);
+          dash.rotation.x = -Math.PI / 2;
+          segmentGroup.add(dash);
+      }
 
-    // Center dashed line
-    const dashLength = 8;
-    const dashGap = 6;
-    const dashGeometry = new THREE.PlaneGeometry(0.3, dashLength);
-    for (let z = -TRACK_LENGTH / 2; z < TRACK_LENGTH / 2; z += dashLength + dashGap) {
-        const dash = new THREE.Mesh(dashGeometry, lineMaterial);
-        dash.position.set(0, 0.02, z);
-        dash.rotation.x = -Math.PI / 2;
-        roadGroup.add(dash);
-    }
-    scene.add(roadGroup);
-
-    // Scenery
-    const sceneryGeometry = new THREE.BoxGeometry(2, 20, 2);
-    const sceneryMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].scenery });
-    for (let i = 0; i < 100; i++) {
+      // Scenery
+      const sceneryGeometry = new THREE.BoxGeometry(2, 20, 2);
+      const sceneryMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].scenery });
+      for (let i = 0; i < 10; i++) {
         const x = Math.random() < 0.5 ? TRACK_WIDTH/2 + 5 + Math.random() * 10 : -TRACK_WIDTH/2 - 5 - Math.random() * 10;
-        const z = (Math.random() - 0.5) * TRACK_LENGTH;
+        const z = (Math.random() - 0.5) * SEGMENT_LENGTH;
         const sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
         sceneryObject.position.set(x, 10, z);
         sceneryObject.castShadow = true;
-        scene.add(sceneryObject);
+        segmentGroup.add(sceneryObject);
+      }
+      
+      // Position segment
+      segmentGroup.position.z = segmentIndex * SEGMENT_LENGTH;
+      scene.add(segmentGroup);
+      return segmentGroup;
     }
 
-    camera.position.set(0, 5, -10);
-    camera.lookAt(car.position);
+    for (let i = 0; i < NUM_SEGMENTS; i++) {
+        // We position segments ahead of the car's starting point
+        trackSegments.push(createTrackSegment(i));
+    }
 
-    // Input handlers
+
+    // --- EVENT LISTENERS ---
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowUp' || e.key === 'w') inputRef.current.forward = true;
       if (e.key === 'ArrowDown' || e.key === 's') inputRef.current.backward = true;
@@ -190,8 +199,6 @@ export default function GameWrapper() {
     };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
-    
-    // Resize handler
     const onResize = () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -223,8 +230,6 @@ export default function GameWrapper() {
       
       const forward = new THREE.Vector3();
       car.getWorldDirection(forward);
-      forward.y = 0; 
-      forward.normalize();
       
       let moveDirection = 0;
       if (inputRef.current.forward) moveDirection = 1;
@@ -248,6 +253,16 @@ export default function GameWrapper() {
       camera.position.lerp(car.position.clone().add(cameraOffset), 0.1);
       camera.lookAt(car.position);
 
+      // --- INFINITE TRACK LOGIC ---
+      const carSegmentIndex = Math.floor(car.position.z / SEGMENT_LENGTH);
+      trackSegments.forEach(segment => {
+        const segmentZ = segment.position.z;
+        // If a segment is far behind the car, move it to the front
+        if(segmentZ < car.position.z - SEGMENT_LENGTH) {
+          segment.position.z += TRACK_LENGTH;
+        }
+      });
+      
       // Penalty check
       const isOffTrack = Math.abs(car.position.x) > TRACK_WIDTH / 2;
       if (isOffTrack) {
@@ -285,7 +300,8 @@ export default function GameWrapper() {
 
     animate();
     setIsReady(true);
-
+    
+    // --- CLEANUP ---
     return () => {
       if (animationFrameIdRef.current) {
         cancelAnimationFrame(animationFrameIdRef.current);
@@ -293,9 +309,27 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
+      
+      // Check if the renderer's DOM element is still a child of mountNode
       if (mountNode && renderer.domElement.parentNode === mountNode) {
-        mountNode.removeChild(renderer.domElement);
+          mountNode.removeChild(renderer.domElement);
       }
+      
+      // Dispose of Three.js objects
+      scene.traverse(object => {
+        if (object instanceof THREE.Mesh) {
+          if (object.geometry) object.geometry.dispose();
+          if (object.material) {
+             // If material is an array
+            if (Array.isArray(object.material)) {
+              object.material.forEach(material => material.dispose());
+            } else {
+              object.material.dispose();
+            }
+          }
+        }
+      });
+      renderer.dispose();
     };
   }, [theme, toast]);
 
@@ -323,7 +357,6 @@ export default function GameWrapper() {
                   <div key={themeName} className="flex items-center space-x-2">
                     <RadioGroupItem value={themeName} id={themeName} />
                     <Label htmlFor={themeName}>{themeName}</Label>
-
                   </div>
                 ))}
               </RadioGroup>
