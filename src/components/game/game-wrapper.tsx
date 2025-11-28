@@ -147,7 +147,7 @@ export default function GameWrapper() {
       -bodyWidth / 2, 0.1, bodyLength / 2, // 2
        bodyWidth / 2, 0.1, bodyLength / 2, // 3
       
-      // Hood
+      // Windshield base
       -bodyWidth / 2, frontHoodY, frontHoodZ, // 4
        bodyWidth / 2, frontHoodY, frontHoodZ, // 5
       
@@ -163,7 +163,7 @@ export default function GameWrapper() {
       0, 1, 3,  0, 3, 2,
       // Bottom
       0, 8, 9,  0, 9, 1,
-      // Hood
+      // Hood (sloped)
       2, 3, 5,  2, 5, 4,
       // Rear Deck
       4, 5, 7,  4, 7, 6,
