@@ -49,6 +49,7 @@ const SEGMENT_LENGTH = 200;
 const GROUND_WIDTH = 500;
 const NUM_SEGMENTS = 10;
 const TRACK_LENGTH = SEGMENT_LENGTH * NUM_SEGMENTS;
+const NUM_OBSTACLES = 10;
 
 export default function GameWrapper() {
   const mountRef = React.useRef<HTMLDivElement>(null);
@@ -71,6 +72,8 @@ export default function GameWrapper() {
   const wasOffTrackRef = React.useRef(false);
   const penaltyCheckCooldownRef = React.useRef(false);
   const animationFrameIdRef = React.useRef<number>();
+  const obstacleCarsRef = React.useRef<THREE.Group[]>([]);
+
 
   // Camera control refs
   const orbitControlsRef = React.useRef({
@@ -117,7 +120,7 @@ export default function GameWrapper() {
     car.position.y = 0.5;
 
     const bodyMaterial = new THREE.MeshStandardMaterial({
-      color: 0xB72121, // Golden Red
+      color: 0xB72121,
       metalness: 0.9,
       roughness: 0.2,
     });
@@ -126,113 +129,42 @@ export default function GameWrapper() {
     const bodyLength = 4.5;
     const bodyHeight = 1.2;
     
-    const frontHoodY = bodyHeight * 0.4;
-    const frontHoodZ = bodyLength / 2 - 1.2;
-    
-    const cabinTopY = bodyHeight;
-    const cabinFrontZ = bodyLength / 2 - 1.8;
-    const cabinRearZ = -bodyLength / 2 + 1.2;
-    const cabinWidth = bodyWidth * 0.7;
-
-    const rearDeckY = bodyHeight * 0.5;
-    const rearDeckZ = -bodyLength / 2;
-
     // Main body
-    const bodyGeom = new THREE.BufferGeometry();
-    const bodyVertices = new Float32Array([
-      // Bottom vertices (0-3)
-      -bodyWidth / 2, 0, rearDeckZ,      // 0: rear left bottom
-       bodyWidth / 2, 0, rearDeckZ,      // 1: rear right bottom
-      -bodyWidth / 2, 0, bodyLength / 2, // 2: front left bottom
-       bodyWidth / 2, 0, bodyLength / 2, // 3: front right bottom
-    
-      // Rear deck vertices (4-5)
-      -bodyWidth / 2, rearDeckY, rearDeckZ,    // 4: rear left top
-       bodyWidth / 2, rearDeckY, rearDeckZ,    // 5: rear right top
-
-      // Front hood vertices (6-7)
-      -bodyWidth / 2, frontHoodY, frontHoodZ, // 6: front left hood base
-       bodyWidth / 2, frontHoodY, frontHoodZ, // 7: front right hood base
-
-      // Front tip vertices (8-9)
-      -bodyWidth / 2, 0.1, bodyLength/2, // 8: front left tip
-       bodyWidth / 2, 0.1, bodyLength/2, // 9: front right tip
-    ]);
-    
-    bodyGeom.setAttribute('position', new THREE.BufferAttribute(bodyVertices, 3));
-    
-    bodyGeom.setIndex([
-        // Bottom face
-        0, 1, 3,  0, 3, 2,
-        // Rear face
-        0, 4, 5,  0, 5, 1,
-        // Left side panel
-        0, 2, 6, 2, 6, 4,
-        // Right side panel
-        1, 5, 7, 1, 7, 3,
-        // Top deck (rear)
-        4, 6, 7, 4, 7, 5,
-        // Hood
-        2, 3, 7, 2, 7, 6,
-        // front
-        2, 9, 3, 2, 8, 9
-    ]);
-    
-    bodyGeom.computeVertexNormals();
-    const carBody = new THREE.Mesh(bodyGeom, bodyMaterial);
+    const carBody = new THREE.Mesh(new THREE.BoxGeometry(bodyWidth, bodyHeight * 0.5, bodyLength), bodyMaterial);
+    carBody.position.y = bodyHeight * 0.25;
     carBody.castShadow = true;
     car.add(carBody);
 
-    // Windshield / Cabin
+    // Cabin
     const windshieldMaterial = new THREE.MeshStandardMaterial({
-        color: 0xFFD700, // Gold
+        color: 0xFFD700, 
         metalness: 1.0,
         roughness: 0.1,
+        transparent: true,
+        opacity: 0.5
     });
-    const windshieldGeom = new THREE.BufferGeometry();
-    const windshieldVerts = new Float32Array([
-        // Base of windshield
-        -cabinWidth/2, frontHoodY, frontHoodZ, // 0
-         cabinWidth/2, frontHoodY, frontHoodZ, // 1
-        // Top of windshield
-        -cabinWidth/2, cabinTopY, cabinFrontZ, // 2
-         cabinWidth/2, cabinTopY, cabinFrontZ, // 3
-        // Rear of cabin top
-        -cabinWidth/2, cabinTopY, cabinRearZ, // 4
-         cabinWidth/2, cabinTopY, cabinRearZ, // 5
-        // Base of rear glass
-        -bodyWidth / 2, rearDeckY, rearDeckZ, // 6
-         bodyWidth / 2, rearDeckY, rearDeckZ, // 7
-    ]);
-    windshieldGeom.setAttribute('position', new THREE.BufferAttribute(windshieldVerts, 3));
-    windshieldGeom.setIndex([
-      0, 1, 3, 0, 3, 2, // Windshield
-      2, 3, 5, 2, 5, 4, // Roof
-      4, 5, 7, 4, 7, 6, // Rear Glass
-      1, 7, 5, 1, 5, 3, // Right Side
-      0, 2, 4, 0, 4, 6, // Left Side
-    ]);
-    windshieldGeom.computeVertexNormals();
-    const windshield = new THREE.Mesh(windshieldGeom, windshieldMaterial);
-    car.add(windshield);
-
+    const cabinGeom = new THREE.BoxGeometry(bodyWidth * 0.7, bodyHeight * 0.4, bodyLength * 0.4);
+    const cabin = new THREE.Mesh(cabinGeom, windshieldMaterial);
+    cabin.position.y = bodyHeight * 0.6;
+    cabin.position.z = -bodyLength * 0.1;
+    car.add(cabin);
 
     // Spoiler
     const spoilerMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
     const spoilerWingGeom = new THREE.BoxGeometry(bodyWidth * 1.1, 0.05, 0.3);
     const spoilerWing = new THREE.Mesh(spoilerWingGeom, spoilerMaterial);
-    spoilerWing.position.set(0, rearDeckY + 0.2, rearDeckZ - 0.1);
+    spoilerWing.position.set(0, bodyHeight * 0.5 + 0.2, -bodyLength/2 - 0.1);
     spoilerWing.castShadow = true;
     car.add(spoilerWing);
     
     const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
     const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
-    spoilerSupport1.position.set(-bodyWidth/3, rearDeckY + 0.1, rearDeckZ - 0.1);
+    spoilerSupport1.position.set(-bodyWidth/3, bodyHeight*0.5 + 0.1, -bodyLength/2 - 0.1);
     spoilerSupport1.castShadow = true;
     car.add(spoilerSupport1);
     
     const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
-    spoilerSupport2.position.set(bodyWidth/3, rearDeckY + 0.1, rearDeckZ - 0.1);
+    spoilerSupport2.position.set(bodyWidth/3, bodyHeight*0.5 + 0.1, -bodyLength/2 - 0.1);
     spoilerSupport2.castShadow = true;
     car.add(spoilerSupport2);
 
@@ -253,19 +185,19 @@ export default function GameWrapper() {
     const tailLightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.5 });
     const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
     const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
-    tailLights.position.set(0, rearDeckY, rearDeckZ - 0.02);
+    tailLights.position.set(0, bodyHeight*0.5, -bodyLength/2 - 0.02);
     car.add(tailLights);
 
     // Headlights
     const headLightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffeeaa, emissiveIntensity: 0.5 });
     const headLightGeom = new THREE.BoxGeometry(0.6, 0.05, 0.1);
     const leftHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
-    leftHeadLight.position.set(-bodyWidth / 3, frontHoodY - 0.1, bodyLength / 2 - 0.05);
+    leftHeadLight.position.set(-bodyWidth / 3, bodyHeight * 0.2, bodyLength / 2 - 0.05);
     leftHeadLight.rotation.y = -Math.PI / 16;
     car.add(leftHeadLight);
 
     const rightHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
-    rightHeadLight.position.set(bodyWidth / 3, frontHoodY - 0.1, bodyLength / 2 - 0.05);
+    rightHeadLight.position.set(bodyWidth / 3, bodyHeight*0.2, bodyLength / 2 - 0.05);
     rightHeadLight.rotation.y = Math.PI / 16;
     car.add(rightHeadLight);
     
@@ -279,7 +211,6 @@ export default function GameWrapper() {
     const rightIntake = new THREE.Mesh(intakeGeom, intakeMaterial);
     rightIntake.position.set(bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
     car.add(rightIntake);
-
 
     const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
     const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
@@ -306,6 +237,26 @@ export default function GameWrapper() {
 
     camera.position.set(0, 5, -10);
     camera.lookAt(car.position);
+    
+    // --- OBSTACLE CARS ---
+    function createObstacleCar() {
+        const obstacleCar = new THREE.Group();
+        const obstacleBodyMat = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
+        const obstacleBody = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 4), obstacleBodyMat);
+        obstacleBody.castShadow = true;
+        obstacleCar.add(obstacleBody);
+        obstacleCar.position.y = 0.5;
+        scene.add(obstacleCar);
+        return obstacleCar;
+    }
+
+    for (let i = 0; i < NUM_OBSTACLES; i++) {
+        const obstacle = createObstacleCar();
+        // Position them ahead and on the opposite lane
+        obstacle.position.z = 200 + Math.random() * TRACK_LENGTH;
+        obstacle.position.x = -TRACK_WIDTH / 4; // Opposite lane
+        obstacleCarsRef.current.push(obstacle);
+    }
     
     // --- INFINITE TRACK ---
     const trackSegments: THREE.Group[] = [];
@@ -523,6 +474,31 @@ export default function GameWrapper() {
           segment.position.z += TRACK_LENGTH;
         }
       });
+
+      // --- OBSTACLE LOGIC ---
+      const obstacleSpeed = 50;
+      const playerCarBox = new THREE.Box3().setFromObject(car);
+      obstacleCarsRef.current.forEach(obstacle => {
+          obstacle.position.z -= obstacleSpeed * delta;
+
+          // Reset obstacle if it's far behind the player
+          if (obstacle.position.z < car.position.z - 50) {
+              obstacle.position.z = car.position.z + TRACK_LENGTH * 0.5 + Math.random() * (TRACK_LENGTH * 0.5);
+              obstacle.position.x = (Math.random() - 0.5) * (TRACK_WIDTH / 2); // Randomly place on their side
+          }
+          
+          // Collision Detection
+          const obstacleBox = new THREE.Box3().setFromObject(obstacle);
+          if(playerCarBox.intersectsBox(obstacleBox)) {
+              velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
+              obstacle.position.z += 20; // Move obstacle away to prevent constant collision
+              toast({
+                title: "CRASH!",
+                description: "You hit an oncoming car!",
+                variant: "destructive"
+              })
+          }
+      });
       
       // Penalty check
       const isOffTrack = Math.abs(car.position.x) > TRACK_WIDTH / 2;
@@ -596,6 +572,7 @@ export default function GameWrapper() {
         }
       });
       renderer.dispose();
+      obstacleCarsRef.current = [];
     };
   }, [theme, toast]);
 
@@ -668,3 +645,5 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
+    
