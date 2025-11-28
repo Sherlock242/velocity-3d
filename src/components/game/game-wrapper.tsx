@@ -29,17 +29,17 @@ const TRACK_THEMES: Record<
   { ground: THREE.Color; sky: THREE.Color; scenery: THREE.Color }
 > = {
   Forest: {
-    ground: new THREE.Color(0x4a4a4a), // Asphalt color
+    ground: new THREE.Color(0x228b22), // Grassy ground color
     sky: new THREE.Color(0x87ceeb),
     scenery: new THREE.Color(0x006400),
   },
   Desert: {
-    ground: new THREE.Color(0x4a4a4a), // Asphalt color
+    ground: new THREE.Color(0xc2b280), // Sand color
     sky: new THREE.Color(0x00008b),
     scenery: new THREE.Color(0x8b4513),
   },
   City: {
-    ground: new THREE.Color(0x4a4a4a), // Asphalt color
+    ground: new THREE.Color(0x696969), // Pavement color
     sky: new THREE.Color(0x343434),
     scenery: new THREE.Color(0x808080),
   },
@@ -47,6 +47,7 @@ const TRACK_THEMES: Record<
 
 const TRACK_WIDTH = 20;
 const TRACK_LENGTH = 1000;
+const GROUND_WIDTH = 500;
 
 export default function GameWrapper() {
   const mountRef = React.useRef<HTMLDivElement>(null);
@@ -114,13 +115,22 @@ export default function GameWrapper() {
     scene.add(car);
     carRef.current = car;
 
+    // Ground
+    const mainGroundGeometry = new THREE.PlaneGeometry(GROUND_WIDTH, TRACK_LENGTH);
+    const mainGroundMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].ground });
+    const mainGround = new THREE.Mesh(mainGroundGeometry, mainGroundMaterial);
+    mainGround.rotation.x = -Math.PI / 2;
+    mainGround.receiveShadow = true;
+    scene.add(mainGround);
+
     // --- ROAD ---
     const roadGroup = new THREE.Group();
     // Asphalt
     const groundGeometry = new THREE.PlaneGeometry(TRACK_WIDTH, TRACK_LENGTH);
-    const groundMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].ground });
+    const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x4a4a4a });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0.01; // Slightly above the main ground
     ground.receiveShadow = true;
     roadGroup.add(ground);
 
@@ -129,12 +139,12 @@ export default function GameWrapper() {
     // Edge lines
     const edgeLineGeometry = new THREE.PlaneGeometry(0.5, TRACK_LENGTH);
     const leftEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
-    leftEdgeLine.position.set(-TRACK_WIDTH / 2 + 0.25, 0.01, 0);
+    leftEdgeLine.position.set(-TRACK_WIDTH / 2 + 0.25, 0.02, 0);
     leftEdgeLine.rotation.x = -Math.PI / 2;
     roadGroup.add(leftEdgeLine);
 
     const rightEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
-    rightEdgeLine.position.set(TRACK_WIDTH / 2 - 0.25, 0.01, 0);
+    rightEdgeLine.position.set(TRACK_WIDTH / 2 - 0.25, 0.02, 0);
     rightEdgeLine.rotation.x = -Math.PI / 2;
     roadGroup.add(rightEdgeLine);
 
@@ -144,7 +154,7 @@ export default function GameWrapper() {
     const dashGeometry = new THREE.PlaneGeometry(0.3, dashLength);
     for (let z = -TRACK_LENGTH / 2; z < TRACK_LENGTH / 2; z += dashLength + dashGap) {
         const dash = new THREE.Mesh(dashGeometry, lineMaterial);
-        dash.position.set(0, 0.01, z);
+        dash.position.set(0, 0.02, z);
         dash.rotation.x = -Math.PI / 2;
         roadGroup.add(dash);
     }
@@ -202,36 +212,35 @@ export default function GameWrapper() {
       const friction = 0.98;
 
       // --- MOVEMENT LOGIC ---
-      // 1. Steering
       let steerDirection = 0;
       if (inputRef.current.left) steerDirection = 1;
       if (inputRef.current.right) steerDirection = -1;
-      
+
       if (velocityRef.current.length() > 0.1) {
         const turnAmount = steerDirection * turnSpeed * delta;
         car.rotation.y += turnAmount;
       }
       
-      // 2. Acceleration/Deceleration
+      const forward = new THREE.Vector3();
+      car.getWorldDirection(forward);
+      forward.y = 0; 
+      forward.normalize();
+      
       let moveDirection = 0;
       if (inputRef.current.forward) moveDirection = 1;
       if (inputRef.current.backward) moveDirection = -1;
 
       if (moveDirection !== 0) {
-        const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(car.quaternion);
         const force = forward.multiplyScalar(acceleration * moveDirection * delta);
         velocityRef.current.add(force);
       }
       
-      // 3. Apply friction
       velocityRef.current.multiplyScalar(friction);
       
-      // 4. Clamp velocity
       if (velocityRef.current.length() > maxSpeed) {
           velocityRef.current.normalize().multiplyScalar(maxSpeed);
       }
       
-      // 5. Update position
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
 
       // Camera follow
@@ -284,7 +293,7 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
-      if (mountNode && mountNode.contains(renderer.domElement)) {
+      if (mountNode && renderer.domElement.parentNode === mountNode) {
         mountNode.removeChild(renderer.domElement);
       }
     };
