@@ -60,7 +60,7 @@ export default function GameWrapper() {
 
   // Game state refs
   const gameTimeRef = React.useRef(0);
-  const carRef = React.useRef<THREE.Mesh>();
+  const carRef = React.useRef<THREE.Group>();
   const velocityRef = React.useRef(new THREE.Vector3());
   const inputRef = React.useRef({
     forward: false,
@@ -73,10 +73,13 @@ export default function GameWrapper() {
   const animationFrameIdRef = React.useRef<number>();
 
   React.useEffect(() => {
-    if (!mountRef.current) return;
-    setIsReady(false);
-
-    const mountNode = mountRef.current;
+    let mountNode: HTMLDivElement | null = null;
+    if (mountRef.current) {
+      setIsReady(false);
+      mountNode = mountRef.current;
+    } else {
+      return;
+    }
     
     // --- BASIC SETUP ---
     const scene = new THREE.Scene();
@@ -101,17 +104,51 @@ export default function GameWrapper() {
     scene.add(dirLight);
     
     // --- CAR ---
-    const carGeometry = new THREE.BoxGeometry(2, 1, 4);
-    const carMaterial = new THREE.MeshStandardMaterial({
+    const car = new THREE.Group();
+    car.position.y = 0.5;
+
+    const bodyMaterial = new THREE.MeshStandardMaterial({
       color: 0x7df9ff,
       metalness: 0.8,
       roughness: 0.2,
     });
-    const car = new THREE.Mesh(carGeometry, carMaterial);
-    car.position.y = 1;
-    car.castShadow = true;
+    
+    const bodyGeometry = new THREE.BoxGeometry(2, 0.8, 4);
+    const carBody = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    carBody.castShadow = true;
+    carBody.position.y = 0.4;
+    car.add(carBody);
+    
+    const cabinGeometry = new THREE.BoxGeometry(1.8, 0.7, 2);
+    const carCabin = new THREE.Mesh(cabinGeometry, bodyMaterial);
+    carCabin.position.y = 1.15;
+    carCabin.position.z = -0.5;
+    carCabin.castShadow = true;
+    car.add(carCabin);
+
+    const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
+    const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
+    wheelGeometry.rotateZ(Math.PI / 2); // Rotate to align with car's forward direction
+
+    const wheels: THREE.Mesh[] = [];
+    const wheelPositions = [
+        new THREE.Vector3(1, 0, 1.2),
+        new THREE.Vector3(-1, 0, 1.2),
+        new THREE.Vector3(1, 0, -1.2),
+        new THREE.Vector3(-1, 0, -1.2),
+    ];
+    
+    wheelPositions.forEach(pos => {
+        const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+        wheel.position.copy(pos);
+        wheel.castShadow = true;
+        car.add(wheel);
+        wheels.push(wheel);
+    });
+
     scene.add(car);
     carRef.current = car;
+
     camera.position.set(0, 5, -10);
     camera.lookAt(car.position);
     
@@ -210,6 +247,8 @@ export default function GameWrapper() {
 
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
+      if (!carRef.current) return;
+      const car = carRef.current;
       const delta = clock.getDelta();
       gameTimeRef.current += delta;
 
@@ -247,6 +286,17 @@ export default function GameWrapper() {
       }
       
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
+
+      // Rotate wheels
+      const wheelRotationSpeed = velocityRef.current.length() * delta * 2;
+      wheels.forEach(wheel => {
+          wheel.rotation.x -= wheelRotationSpeed;
+      });
+      // Steer front wheels
+      const steerAngle = steerDirection * 0.4; // Max steer angle
+      wheels[0].rotation.y = steerAngle;
+      wheels[1].rotation.y = steerAngle;
+
 
       // Camera follow
       const cameraOffset = new THREE.Vector3(0, 5, -10).applyQuaternion(car.quaternion);
@@ -402,3 +452,5 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
+    
