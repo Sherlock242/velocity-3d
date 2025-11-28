@@ -72,6 +72,15 @@ export default function GameWrapper() {
   const penaltyCheckCooldownRef = React.useRef(false);
   const animationFrameIdRef = React.useRef<number>();
 
+  // Camera control refs
+  const orbitControlsRef = React.useRef({
+    isDragging: false,
+    previousMousePosition: { x: 0, y: 0 },
+    azimuthAngle: Math.PI, // Start from behind the car
+    polarAngle: Math.PI / 3, // Angle from the top
+  });
+  const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 5, -10));
+
   React.useEffect(() => {
     let mountNode: HTMLDivElement | null = null;
     if (mountRef.current) {
@@ -306,6 +315,37 @@ export default function GameWrapper() {
     };
     window.addEventListener('resize', onResize);
 
+    // --- ORBIT CONTROLS LISTENERS ---
+    const onPointerDown = (e: PointerEvent) => {
+        if ((e.target as HTMLElement)?.closest('.pointer-events-auto')) return;
+        orbitControlsRef.current.isDragging = true;
+        orbitControlsRef.current.previousMousePosition.x = e.clientX;
+        orbitControlsRef.current.previousMousePosition.y = e.clientY;
+    };
+    const onPointerUp = () => {
+        orbitControlsRef.current.isDragging = false;
+    };
+    const onPointerMove = (e: PointerEvent) => {
+        if (!orbitControlsRef.current.isDragging) return;
+
+        const deltaX = e.clientX - orbitControlsRef.current.previousMousePosition.x;
+        const deltaY = e.clientY - orbitControlsRef.current.previousMousePosition.y;
+
+        orbitControlsRef.current.azimuthAngle -= deltaX * 0.005;
+        orbitControlsRef.current.polarAngle -= deltaY * 0.005;
+
+        // Clamp polar angle
+        orbitControlsRef.current.polarAngle = Math.max(0.1, Math.min(Math.PI - 0.1, orbitControlsRef.current.polarAngle));
+
+        orbitControlsRef.current.previousMousePosition.x = e.clientX;
+        orbitControlsRef.current.previousMousePosition.y = e.clientY;
+    };
+
+    mountNode.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointermove', onPointerMove);
+
+
     const clock = new THREE.Clock();
 
     const animate = () => {
@@ -360,11 +400,35 @@ export default function GameWrapper() {
       wheels[0].rotation.y = steerAngle;
       wheels[1].rotation.y = steerAngle;
 
+      // --- CAMERA LOGIC ---
+      if (orbitControlsRef.current.isDragging) {
+        // Orbit control logic
+        const radius = 10;
+        cameraOffsetRef.current.x = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.sin(orbitControlsRef.current.azimuthAngle);
+        cameraOffsetRef.current.y = radius * Math.cos(orbitControlsRef.current.polarAngle);
+        cameraOffsetRef.current.z = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.cos(orbitControlsRef.current.azimuthAngle);
+        camera.position.copy(car.position).add(cameraOffsetRef.current);
+        camera.lookAt(car.position);
+      } else {
+        // Default follow camera
+        const defaultOffset = new THREE.Vector3(0, 5, -10);
+        // Slowly revert to car's rotation for follow cam
+        const targetAzimuth = car.rotation.y + Math.PI;
+        orbitControlsRef.current.azimuthAngle += (targetAzimuth - orbitControlsRef.current.azimuthAngle) * 0.05;
+        orbitControlsRef.current.polarAngle += (Math.PI / 3 - orbitControlsRef.current.polarAngle) * 0.05;
 
-      // Camera follow
-      const cameraOffset = new THREE.Vector3(0, 5, -10).applyQuaternion(car.quaternion);
-      camera.position.lerp(car.position.clone().add(cameraOffset), 0.1);
-      camera.lookAt(car.position);
+        const radius = 10;
+        cameraOffsetRef.current.x = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.sin(orbitControlsRef.current.azimuthAngle);
+        cameraOffsetRef.current.y = radius * Math.cos(orbitControlsRef.current.polarAngle);
+        cameraOffsetRefcurrent.z = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.cos(orbitControlsRef.current.azimuthAngle);
+        
+        const idealOffset = defaultOffset.applyQuaternion(car.quaternion);
+        const interpolatedOffset = cameraOffsetRef.current.clone().lerp(idealOffset, 0.1);
+
+        camera.position.copy(car.position).add(interpolatedOffset);
+        camera.lookAt(car.position);
+      }
+
 
       // --- INFINITE TRACK LOGIC ---
       const carSegmentIndex = Math.floor(car.position.z / SEGMENT_LENGTH);
@@ -422,10 +486,15 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointermove', onPointerMove);
       
-      // Check if the renderer's DOM element is still a child of mountNode
-      if (mountNode && renderer.domElement.parentNode === mountNode) {
-          mountNode.removeChild(renderer.domElement);
+      if (mountNode) {
+          mountNode.removeEventListener('pointerdown', onPointerDown);
+          // Check if the renderer's DOM element is still a child of mountNode
+          if (renderer.domElement.parentNode === mountNode) {
+              mountNode.removeChild(renderer.domElement);
+          }
       }
       
       // Dispose of Three.js objects
