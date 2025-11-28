@@ -85,8 +85,9 @@ export default function GameWrapper() {
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
-    mountRef.current.innerHTML = '';
-    mountRef.current.appendChild(renderer.domElement);
+    
+    const mountNode = mountRef.current;
+    mountNode.appendChild(renderer.domElement);
 
     // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -239,8 +240,8 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
-      if (mountRef.current) {
-        mountRef.current.innerHTML = '';
+      if (mountNode && mountNode.contains(renderer.domElement)) {
+        mountNode.removeChild(renderer.domElement);
       }
     };
   }, [theme, toast]);
