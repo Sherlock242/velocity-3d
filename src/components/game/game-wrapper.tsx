@@ -103,28 +103,91 @@ export default function GameWrapper() {
     dirLight.castShadow = true;
     scene.add(dirLight);
     
-    // --- CAR ---
+    // --- LAMBORGHINI CAR ---
     const car = new THREE.Group();
     car.position.y = 0.5;
 
     const bodyMaterial = new THREE.MeshStandardMaterial({
-      color: 0x7df9ff,
-      metalness: 0.8,
-      roughness: 0.2,
+      color: 0x0077ff, // Lamborghini blue
+      metalness: 0.9,
+      roughness: 0.1,
     });
     
-    const bodyGeometry = new THREE.BoxGeometry(2, 0.8, 4);
-    const carBody = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    const bodyWidth = 2.2;
+    const bodyLength = 4.5;
+    const bodyHeight = 1.2;
+
+    // Main body - custom shape for wedge
+    const bodyShape = new THREE.BufferGeometry();
+    const vertices = new Float32Array([
+      // Front (low)
+      -bodyWidth / 2, 0, bodyLength / 2, // 0
+       bodyWidth / 2, 0, bodyLength / 2, // 1
+      -bodyWidth / 2, bodyHeight * 0.4, bodyLength / 2, // 2
+       bodyWidth / 2, bodyHeight * 0.4, bodyLength / 2, // 3
+      // Back (high)
+      -bodyWidth / 2, 0, -bodyLength / 2, // 4
+       bodyWidth / 2, 0, -bodyLength / 2, // 5
+      -bodyWidth / 2, bodyHeight, -bodyLength / 2, // 6
+       bodyWidth / 2, bodyHeight, -bodyLength / 2, // 7
+    ]);
+
+    bodyShape.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    bodyShape.setIndex([
+      0, 1, 3, 0, 3, 2, // front face
+      4, 6, 7, 4, 7, 5, // back face
+      0, 4, 5, 0, 5, 1, // bottom face
+      2, 3, 7, 2, 7, 6, // top face (sloped)
+      1, 5, 7, 1, 7, 3, // right side
+      0, 2, 6, 0, 6, 4  // left side
+    ]);
+    bodyShape.computeVertexNormals();
+    const carBody = new THREE.Mesh(bodyShape, bodyMaterial);
     carBody.castShadow = true;
-    carBody.position.y = 0.4;
     car.add(carBody);
+
+    const glassMaterial = new THREE.MeshStandardMaterial({
+      color: 0x222222,
+      metalness: 0,
+      roughness: 0,
+      transparent: true,
+      opacity: 0.6
+    });
+
+    // Windshield
+    const windshieldGeom = new THREE.BufferGeometry();
+    const windshieldVerts = new Float32Array([
+        -bodyWidth/2 * 0.9, bodyHeight * 0.4, bodyLength/2, // 0
+         bodyWidth/2 * 0.9, bodyHeight * 0.4, bodyLength/2, // 1
+        -bodyWidth/2 * 0.8, bodyHeight, -bodyLength / 2 + 1.5, // 2
+         bodyWidth/2 * 0.8, bodyHeight, -bodyLength / 2 + 1.5, // 3
+    ]);
+    windshieldGeom.setAttribute('position', new THREE.BufferAttribute(windshieldVerts, 3));
+    windshieldGeom.setIndex([0,1,3, 0,3,2]);
+    windshieldGeom.computeVertexNormals();
+    const windshield = new THREE.Mesh(windshieldGeom, glassMaterial);
+    car.add(windshield);
+
+
+    // Spoiler
+    const spoilerMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+    const spoilerWingGeom = new THREE.BoxGeometry(bodyWidth * 1.1, 0.05, 0.3);
+    const spoilerWing = new THREE.Mesh(spoilerWingGeom, spoilerMaterial);
+    spoilerWing.position.set(0, bodyHeight + 0.2, -bodyLength / 2 - 0.1);
+    spoilerWing.castShadow = true;
+    car.add(spoilerWing);
     
-    const cabinGeometry = new THREE.BoxGeometry(1.8, 0.7, 2);
-    const carCabin = new THREE.Mesh(cabinGeometry, bodyMaterial);
-    carCabin.position.y = 1.15;
-    carCabin.position.z = -0.5;
-    carCabin.castShadow = true;
-    car.add(carCabin);
+    const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
+    const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
+    spoilerSupport1.position.set(-bodyWidth/3, bodyHeight + 0.1, -bodyLength / 2 - 0.1);
+    spoilerSupport1.castShadow = true;
+    car.add(spoilerSupport1);
+    
+    const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
+    spoilerSupport2.position.set(bodyWidth/3, bodyHeight + 0.1, -bodyLength / 2 - 0.1);
+    spoilerSupport2.castShadow = true;
+    car.add(spoilerSupport2);
+
 
     const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
     const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
@@ -132,10 +195,10 @@ export default function GameWrapper() {
 
     const wheels: THREE.Mesh[] = [];
     const wheelPositions = [
-        new THREE.Vector3(1, 0, 1.2),
-        new THREE.Vector3(-1, 0, 1.2),
-        new THREE.Vector3(1, 0, -1.2),
-        new THREE.Vector3(-1, 0, -1.2),
+        new THREE.Vector3(bodyWidth/2, 0.2, bodyLength / 2 - 1),
+        new THREE.Vector3(-bodyWidth/2, 0.2, bodyLength / 2 - 1),
+        new THREE.Vector3(bodyWidth/2, 0.2, -bodyLength / 2 + 1),
+        new THREE.Vector3(-bodyWidth/2, 0.2, -bodyLength / 2 + 1),
     ];
     
     wheelPositions.forEach(pos => {
@@ -452,5 +515,3 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
-
-    
