@@ -73,6 +73,8 @@ export default function GameWrapper() {
     if (!mountRef.current) return;
     setIsReady(false);
     
+    const mountNode = mountRef.current;
+
     // Scene setup
     const scene = new THREE.Scene();
     scene.background = TRACK_THEMES[theme].sky;
@@ -86,7 +88,6 @@ export default function GameWrapper() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     
-    const mountNode = mountRef.current;
     mountNode.appendChild(renderer.domElement);
 
     // Lighting
@@ -240,7 +241,7 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
-      if (mountNode && mountNode.contains(renderer.domElement)) {
+      if (mountNode.contains(renderer.domElement)) {
         mountNode.removeChild(renderer.domElement);
       }
     };
