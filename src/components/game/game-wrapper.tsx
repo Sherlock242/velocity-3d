@@ -239,11 +239,117 @@ export default function GameWrapper() {
     // --- OBSTACLE CARS ---
     function createObstacleCar() {
         const obstacleCar = new THREE.Group();
-        const obstacleBodyMat = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
-        const obstacleBody = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 4), obstacleBodyMat);
-        obstacleBody.castShadow = true;
-        obstacleCar.add(obstacleBody);
         obstacleCar.position.y = 0.5;
+
+        const bodyMaterial = new THREE.MeshStandardMaterial({
+          color: Math.random() * 0xffffff,
+          metalness: 0.8,
+          roughness: 0.3,
+        });
+        
+        const bodyWidth = 2.2;
+        const bodyLength = 4.5;
+        const bodyHeight = 1.2;
+        
+        // Main body
+        const carBody = new THREE.Mesh(new THREE.BoxGeometry(bodyWidth, bodyHeight * 0.5, bodyLength), bodyMaterial);
+        carBody.position.y = bodyHeight * 0.25;
+        carBody.castShadow = true;
+        obstacleCar.add(carBody);
+
+        // Cabin
+        const windshieldMaterial = new THREE.MeshStandardMaterial({
+            color: 0x000000,
+            metalness: 0.8,
+            roughness: 0.1,
+        });
+        const cabinGeom = new THREE.BoxGeometry(bodyWidth * 0.7, bodyHeight * 0.4, bodyLength * 0.4);
+        const cabin = new THREE.Mesh(cabinGeom, windshieldMaterial);
+        cabin.position.y = bodyHeight * 0.6;
+        cabin.position.z = -bodyLength * 0.1;
+        obstacleCar.add(cabin);
+
+        // Spoiler
+        const spoilerMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+        const spoilerWingGeom = new THREE.BoxGeometry(bodyWidth * 1.1, 0.05, 0.3);
+        const spoilerWing = new THREE.Mesh(spoilerWingGeom, spoilerMaterial);
+        spoilerWing.position.set(0, bodyHeight * 0.5 + 0.2, -bodyLength/2 - 0.1);
+        spoilerWing.castShadow = true;
+        obstacleCar.add(spoilerWing);
+        
+        const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
+        const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
+        spoilerSupport1.position.set(-bodyWidth/3, bodyHeight*0.5 + 0.1, -bodyLength/2 - 0.1);
+        spoilerSupport1.castShadow = true;
+        obstacleCar.add(spoilerSupport1);
+        
+        const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
+        spoilerSupport2.position.set(bodyWidth/3, bodyHeight*0.5 + 0.1, -bodyLength/2 - 0.1);
+        spoilerSupport2.castShadow = true;
+        obstacleCar.add(spoilerSupport2);
+
+        // Side Mirrors
+        const mirrorMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.5 });
+        const mirrorShape = new THREE.BoxGeometry(0.15, 0.15, 0.3);
+        const leftMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
+        leftMirror.position.set(-bodyWidth / 2 - 0.1, bodyHeight * 0.6, bodyLength / 2 - 1.5);
+        leftMirror.rotation.y = -Math.PI / 8;
+        obstacleCar.add(leftMirror);
+
+        const rightMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
+        rightMirror.position.set(bodyWidth / 2 + 0.1, bodyHeight * 0.6, bodyLength / 2 - 1.5);
+        rightMirror.rotation.y = Math.PI / 8;
+        obstacleCar.add(rightMirror);
+
+        // Tail Lights
+        const tailLightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.5 });
+        const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
+        const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
+        tailLights.position.set(0, bodyHeight*0.5, -bodyLength/2 - 0.02);
+        obstacleCar.add(tailLights);
+
+        // Headlights
+        const headLightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffeeaa, emissiveIntensity: 0.5 });
+        const headLightGeom = new THREE.BoxGeometry(0.6, 0.05, 0.1);
+        const leftHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
+        leftHeadLight.position.set(-bodyWidth / 3, bodyHeight * 0.2, bodyLength / 2 - 0.05);
+        leftHeadLight.rotation.y = -Math.PI / 16;
+        obstacleCar.add(leftHeadLight);
+
+        const rightHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
+        rightHeadLight.position.set(bodyWidth / 3, bodyHeight*0.2, bodyLength / 2 - 0.05);
+        rightHeadLight.rotation.y = Math.PI / 16;
+        obstacleCar.add(rightHeadLight);
+        
+        // Front Intakes
+        const intakeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+        const intakeGeom = new THREE.BoxGeometry(bodyWidth / 3, 0.1, 0.2);
+        const leftIntake = new THREE.Mesh(intakeGeom, intakeMaterial);
+        leftIntake.position.set(-bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
+        obstacleCar.add(leftIntake);
+
+        const rightIntake = new THREE.Mesh(intakeGeom, intakeMaterial);
+        rightIntake.position.set(bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
+        obstacleCar.add(rightIntake);
+
+        const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
+        const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
+        wheelGeometry.rotateZ(Math.PI / 2);
+
+        const wheelPositions = [
+            new THREE.Vector3(bodyWidth/2, 0.2, bodyLength / 2 - 1),
+            new THREE.Vector3(-bodyWidth/2, 0.2, bodyLength / 2 - 1),
+            new THREE.Vector3(bodyWidth/2, 0.2, -bodyLength / 2 + 1),
+            new THREE.Vector3(-bodyWidth/2, 0.2, -bodyLength / 2 + 1),
+        ];
+        
+        wheelPositions.forEach(pos => {
+            const wheel = new THREE.Mesh(wheelGeometry.clone(), wheelMaterial.clone());
+            wheel.position.copy(pos);
+            wheel.castShadow = true;
+            obstacleCar.add(wheel);
+        });
+
         scene.add(obstacleCar);
         return obstacleCar;
     }
