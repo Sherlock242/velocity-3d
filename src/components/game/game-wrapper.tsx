@@ -141,7 +141,7 @@ export default function GameWrapper() {
     // Main body
     const bodyGeom = new THREE.BufferGeometry();
     const bodyVertices = new Float32Array([
-      // Front Bumper (low) - extended to bumper
+      // Front Bumper (low)
       -bodyWidth / 2, 0.1, bodyLength / 2, // 0
        bodyWidth / 2, 0.1, bodyLength / 2, // 1
       
@@ -152,27 +152,33 @@ export default function GameWrapper() {
       // Rear Deck
       -bodyWidth / 2, rearDeckY, rearDeckZ, // 4
        bodyWidth / 2, rearDeckY, rearDeckZ, // 5
-      -bodyWidth / 2, 0, rearDeckZ, // 6
-       bodyWidth / 2, 0, rearDeckZ, // 7
+
+      // Rear Bumper
+      -bodyWidth / 2, 0.1, rearDeckZ, // 6
+       bodyWidth / 2, 0.1, rearDeckZ, // 7
 
        // Bottom front
        -bodyWidth/2, 0, bodyLength / 2, // 8
         bodyWidth/2, 0, bodyLength / 2, // 9
+        
+       // Bottom Rear
+       -bodyWidth/2, 0, rearDeckZ, // 10
+       bodyWidth/2, 0, rearDeckZ, // 11
 
     ]);
     bodyGeom.setAttribute('position', new THREE.BufferAttribute(bodyVertices, 3));
     bodyGeom.setIndex([
       // Bottom
-      8, 6, 7,  8, 7, 9,
+      8, 10, 11,  8, 11, 9,
       // Hood (sloped)
       0, 1, 3,  0, 3, 2,
       // Rear Deck
       2, 3, 5,  2, 5, 4,
       // Rear Bumper
-      6, 4, 5,  6, 5, 7,
+      10, 4, 5, 10, 5, 11,
       // Sides
-      8, 0, 2,  8, 2, 4, 8, 4, 6,
-      9, 7, 5,  9, 5, 3, 9, 3, 1,
+      8, 0, 2,  8, 2, 4, 8, 4, 10,
+      9, 11, 5, 9, 5, 3, 9, 3, 1,
     ]);
     bodyGeom.computeVertexNormals();
     const carBody = new THREE.Mesh(bodyGeom, bodyMaterial);
