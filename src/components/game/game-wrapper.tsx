@@ -141,37 +141,38 @@ export default function GameWrapper() {
     // Main body
     const bodyGeom = new THREE.BufferGeometry();
     const bodyVertices = new Float32Array([
-      // Front Bumper (low)
-      -bodyWidth / 2, 0, bodyLength / 2, // 0
-       bodyWidth / 2, 0, bodyLength / 2, // 1
-      -bodyWidth / 2, 0.1, bodyLength / 2, // 2
-       bodyWidth / 2, 0.1, bodyLength / 2, // 3
+      // Front Bumper (low) - extended to bumper
+      -bodyWidth / 2, 0.1, bodyLength / 2, // 0
+       bodyWidth / 2, 0.1, bodyLength / 2, // 1
       
       // Windshield base
-      -bodyWidth / 2, frontHoodY, frontHoodZ, // 4
-       bodyWidth / 2, frontHoodY, frontHoodZ, // 5
+      -bodyWidth / 2, frontHoodY, frontHoodZ, // 2
+       bodyWidth / 2, frontHoodY, frontHoodZ, // 3
       
       // Rear Deck
-      -bodyWidth / 2, rearDeckY, rearDeckZ, // 6
-       bodyWidth / 2, rearDeckY, rearDeckZ, // 7
-      -bodyWidth / 2, 0, rearDeckZ, // 8
-       bodyWidth / 2, 0, rearDeckZ, // 9
+      -bodyWidth / 2, rearDeckY, rearDeckZ, // 4
+       bodyWidth / 2, rearDeckY, rearDeckZ, // 5
+      -bodyWidth / 2, 0, rearDeckZ, // 6
+       bodyWidth / 2, 0, rearDeckZ, // 7
+
+       // Bottom front
+       -bodyWidth/2, 0, bodyLength / 2, // 8
+        bodyWidth/2, 0, bodyLength / 2, // 9
+
     ]);
     bodyGeom.setAttribute('position', new THREE.BufferAttribute(bodyVertices, 3));
     bodyGeom.setIndex([
-      // Front Bumper
-      0, 1, 3,  0, 3, 2,
       // Bottom
-      0, 8, 9,  0, 9, 1,
-      // Hood (sloped)
-      2, 3, 5,  2, 5, 4,
-      // Rear Deck
-      4, 5, 7,  4, 7, 6,
-      // Rear Bumper
       8, 6, 7,  8, 7, 9,
+      // Hood (sloped)
+      0, 1, 3,  0, 3, 2,
+      // Rear Deck
+      2, 3, 5,  2, 5, 4,
+      // Rear Bumper
+      6, 4, 5,  6, 5, 7,
       // Sides
-      0, 2, 4,  0, 4, 6, 0, 6, 8,
-      1, 9, 7,  1, 7, 5, 1, 5, 3,
+      8, 0, 2,  8, 2, 4, 8, 4, 6,
+      9, 7, 5,  9, 5, 3, 9, 3, 1,
     ]);
     bodyGeom.computeVertexNormals();
     const carBody = new THREE.Mesh(bodyGeom, bodyMaterial);
