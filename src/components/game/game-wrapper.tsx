@@ -140,40 +140,40 @@ export default function GameWrapper() {
     // Main body
     const bodyGeom = new THREE.BufferGeometry();
     const bodyVertices = new Float32Array([
-      // Bottom vertices
+      // Bottom vertices (0-3)
       -bodyWidth / 2, 0, rearDeckZ,      // 0: rear left bottom
        bodyWidth / 2, 0, rearDeckZ,      // 1: rear right bottom
       -bodyWidth / 2, 0, bodyLength / 2, // 2: front left bottom
        bodyWidth / 2, 0, bodyLength / 2, // 3: front right bottom
     
-      // Mid-level vertices (deck level)
+      // Rear deck vertices (4-5)
       -bodyWidth / 2, rearDeckY, rearDeckZ,    // 4: rear left top
        bodyWidth / 2, rearDeckY, rearDeckZ,    // 5: rear right top
+
+      // Front hood vertices (6-7)
       -bodyWidth / 2, frontHoodY, frontHoodZ, // 6: front left hood base
        bodyWidth / 2, frontHoodY, frontHoodZ, // 7: front right hood base
-    
-      // Front bumper vertices (slightly higher than bottom)
-      -bodyWidth / 2, 0.1, bodyLength / 2, // 8: front left bumper
-       bodyWidth / 2, 0.1, bodyLength / 2, // 9: front right bumper
+
+      // Front tip vertices (8-9)
+      -bodyWidth / 2, 0.1, bodyLength/2, // 8: front left tip
+       bodyWidth / 2, 0.1, bodyLength/2, // 9: front right tip
     ]);
     
     bodyGeom.setAttribute('position', new THREE.BufferAttribute(bodyVertices, 3));
     
     bodyGeom.setIndex([
-      // Bottom face
-      0, 2, 3,  0, 3, 1,
-      // Rear face
-      0, 1, 5,  0, 5, 4,
-      // Front hood slope
-      8, 9, 7,  8, 7, 6,
-      // Front bumper face
-      2, 8, 9,  2, 9, 3,
-      // Left side panel
-      0, 4, 6,  0, 6, 2,  2, 6, 8,
-      // Right side panel
-      1, 3, 9,  1, 9, 7,  1, 7, 5,
-      // Top deck (rear and middle)
-      4, 5, 7,  4, 7, 6,
+        // Bottom face
+        0, 1, 3,  0, 3, 2,
+        // Rear face
+        0, 4, 5,  0, 5, 1,
+        // Left side panel
+        0, 2, 8,  0, 8, 6, 0, 6, 4,
+        // Right side panel
+        1, 5, 7,  1, 7, 9, 1, 9, 3,
+        // Top deck (rear)
+        4, 6, 7,  4, 7, 5,
+        // Hood
+        6, 8, 9,  6, 9, 7
     ]);
     
     bodyGeom.computeVertexNormals();
