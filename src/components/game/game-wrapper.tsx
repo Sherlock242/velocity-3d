@@ -137,9 +137,11 @@ export default function GameWrapper() {
 
     // Cabin
     const windshieldMaterial = new THREE.MeshStandardMaterial({
-        color: 0x000000,
-        metalness: 0.8,
+        color: 0xFFD700,
+        metalness: 0.9,
         roughness: 0.1,
+        transparent: true,
+        opacity: 0.4
     });
     const cabinGeom = new THREE.BoxGeometry(bodyWidth * 0.7, bodyHeight * 0.4, bodyLength * 0.4);
     const cabin = new THREE.Mesh(cabinGeom, windshieldMaterial);
@@ -409,13 +411,32 @@ export default function GameWrapper() {
       }
 
       // Scenery
-      const sceneryGeometry = new THREE.BoxGeometry(2, 20, 2);
       const sceneryMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].scenery });
-      for (let i = 0; i < 10; i++) {
-        const x = Math.random() < 0.5 ? TRACK_WIDTH/2 + 5 + Math.random() * 10 : -TRACK_WIDTH/2 - 5 - Math.random() * 10;
+      for (let i = 0; i < 20; i++) {
+        const x = Math.random() < 0.5 ? TRACK_WIDTH/2 + 10 + Math.random() * 80 : -TRACK_WIDTH/2 - 10 - Math.random() * 80;
         const z = (Math.random() - 0.5) * SEGMENT_LENGTH;
-        const sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-        sceneryObject.position.set(x, 10, z);
+        let sceneryObject: THREE.Mesh;
+
+        if (theme === 'Forest') {
+            const treeHeight = Math.random() * 20 + 10;
+            const treeRadius = treeHeight / 8;
+            const sceneryGeometry = new THREE.ConeGeometry(treeRadius, treeHeight, 8);
+            sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+            sceneryObject.position.set(x, treeHeight / 2, z);
+        } else if (theme === 'Desert') {
+            const duneSize = Math.random() * 15 + 5;
+            const sceneryGeometry = new THREE.ConeGeometry(duneSize, duneSize/2, 4); // Pyramid shape
+            sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+            sceneryObject.position.set(x, duneSize / 4, z);
+        } else { // City
+            const buildingHeight = Math.random() * 50 + 20;
+            const buildingWidth = Math.random() * 10 + 5;
+            const buildingDepth = Math.random() * 10 + 5;
+            const sceneryGeometry = new THREE.BoxGeometry(buildingWidth, buildingHeight, buildingDepth);
+            sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+            sceneryObject.position.set(x, buildingHeight / 2, z);
+        }
+        
         sceneryObject.castShadow = true;
         segmentGroup.add(sceneryObject);
       }
