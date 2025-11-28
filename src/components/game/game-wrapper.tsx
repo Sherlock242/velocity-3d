@@ -167,13 +167,15 @@ export default function GameWrapper() {
         // Rear face
         0, 4, 5,  0, 5, 1,
         // Left side panel
-        0, 2, 8,  0, 8, 6, 0, 6, 4,
+        0, 2, 6, 2, 6, 4,
         // Right side panel
-        1, 5, 7,  1, 7, 9, 1, 9, 3,
+        1, 5, 7, 1, 7, 3,
         // Top deck (rear)
-        4, 6, 7,  4, 7, 5,
+        4, 6, 7, 4, 7, 5,
         // Hood
-        6, 8, 9,  6, 9, 7
+        2, 3, 7, 2, 7, 6,
+        // front
+        2, 9, 3, 2, 8, 9
     ]);
     
     bodyGeom.computeVertexNormals();
@@ -182,6 +184,11 @@ export default function GameWrapper() {
     car.add(carBody);
 
     // Windshield / Cabin
+    const windshieldMaterial = new THREE.MeshStandardMaterial({
+        color: 0xFFD700, // Gold
+        metalness: 1.0,
+        roughness: 0.1,
+    });
     const windshieldGeom = new THREE.BufferGeometry();
     const windshieldVerts = new Float32Array([
         // Base of windshield
@@ -206,7 +213,7 @@ export default function GameWrapper() {
       0, 2, 4, 0, 4, 6, // Left Side
     ]);
     windshieldGeom.computeVertexNormals();
-    const windshield = new THREE.Mesh(windshieldGeom, bodyMaterial);
+    const windshield = new THREE.Mesh(windshieldGeom, windshieldMaterial);
     car.add(windshield);
 
 
