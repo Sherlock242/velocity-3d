@@ -89,9 +89,6 @@ export default function GameWrapper() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     
-    if (mountNode.firstChild) {
-      mountNode.removeChild(mountNode.firstChild);
-    }
     mountNode.appendChild(renderer.domElement);
 
     // Lighting
@@ -177,25 +174,23 @@ export default function GameWrapper() {
       const friction = 0.98;
 
       // --- MOVEMENT LOGIC ---
-      const speed = velocityRef.current.length();
-      
       // 1. Steering
-      if (speed > 0.1) {
-          let steerDirection = 0;
-          if (inputRef.current.left) steerDirection = 1;
-          if (inputRef.current.right) steerDirection = -1;
-          
-          const turnAmount = steerDirection * turnSpeed * delta;
-          car.rotation.y += turnAmount;
+      if (velocityRef.current.length() > 0.1) {
+        let steerDirection = 0;
+        if (inputRef.current.left) steerDirection = 1;
+        if (inputRef.current.right) steerDirection = -1;
+        
+        const turnAmount = steerDirection * turnSpeed * delta;
+        car.rotation.y += turnAmount;
       }
       
       // 2. Acceleration/Deceleration
+      const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(car.quaternion);
       let moveDirection = 0;
       if (inputRef.current.forward) moveDirection = 1;
       if (inputRef.current.backward) moveDirection = -1;
 
       if (moveDirection !== 0) {
-        const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(car.quaternion);
         const force = forward.multiplyScalar(acceleration * moveDirection * delta);
         velocityRef.current.add(force);
       }
@@ -262,7 +257,7 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
-      if (mountNode && renderer.domElement.parentElement === mountNode) {
+      if (mountNode.contains(renderer.domElement)) {
         mountNode.removeChild(renderer.domElement);
       }
     };
