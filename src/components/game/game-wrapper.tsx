@@ -407,6 +407,7 @@ export default function GameWrapper() {
         cameraOffsetRef.current.x = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.sin(orbitControlsRef.current.azimuthAngle);
         cameraOffsetRef.current.y = radius * Math.cos(orbitControlsRef.current.polarAngle);
         cameraOffsetRef.current.z = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.cos(orbitControlsRef.current.azimuthAngle);
+        
         camera.position.copy(car.position).add(cameraOffsetRef.current);
         camera.lookAt(car.position);
       } else {
