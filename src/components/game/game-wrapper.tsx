@@ -178,13 +178,6 @@ export default function GameWrapper() {
     carBody.castShadow = true;
     car.add(carBody);
 
-    const glassMaterial = new THREE.MeshStandardMaterial({
-      color: 0x222222,
-      metalness: 0.8,
-      roughness: 0.2,
-      transparent: false,
-    });
-
     // Windshield / Cabin
     const windshieldGeom = new THREE.BufferGeometry();
     const windshieldVerts = new Float32Array([
@@ -210,7 +203,7 @@ export default function GameWrapper() {
       0, 2, 4, 0, 4, 6, // Left Side
     ]);
     windshieldGeom.computeVertexNormals();
-    const windshield = new THREE.Mesh(windshieldGeom, glassMaterial);
+    const windshield = new THREE.Mesh(windshieldGeom, bodyMaterial);
     car.add(windshield);
 
 
