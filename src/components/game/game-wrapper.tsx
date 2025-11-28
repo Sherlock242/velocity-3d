@@ -89,6 +89,9 @@ export default function GameWrapper() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     
+    if (mountNode.firstChild) {
+      mountNode.removeChild(mountNode.firstChild);
+    }
     mountNode.appendChild(renderer.domElement);
 
     // Lighting
@@ -173,41 +176,41 @@ export default function GameWrapper() {
       const turnSpeed = 2;
       const friction = 0.98;
 
+      // --- MOVEMENT LOGIC ---
+      const speed = velocityRef.current.length();
+      
+      // 1. Steering
+      if (speed > 0.1) {
+          let steerDirection = 0;
+          if (inputRef.current.left) steerDirection = 1;
+          if (inputRef.current.right) steerDirection = -1;
+          
+          const turnAmount = steerDirection * turnSpeed * delta;
+          car.rotation.y += turnAmount;
+      }
+      
+      // 2. Acceleration/Deceleration
       let moveDirection = 0;
       if (inputRef.current.forward) moveDirection = 1;
       if (inputRef.current.backward) moveDirection = -1;
 
-      let steerDirection = 0;
-      if (inputRef.current.left) steerDirection = 1;
-      if (inputRef.current.right) steerDirection = -1;
-
-      // Update car rotation based on steering
-      const speed = velocityRef.current.length();
-      if (speed > 0.1) {
-        const turnAmount = steerDirection * turnSpeed * delta * (speed / maxSpeed);
-        car.rotation.y += turnAmount;
-      }
-
-      // Calculate forward vector based on car's current rotation
-      const forward = new THREE.Vector3(0, 0, 1);
-      forward.applyQuaternion(car.quaternion);
-      
       if (moveDirection !== 0) {
-        // Add force in the forward/backward direction
-        const force = forward.clone().multiplyScalar(acceleration * moveDirection * delta);
+        const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(car.quaternion);
+        const force = forward.multiplyScalar(acceleration * moveDirection * delta);
         velocityRef.current.add(force);
       }
-
-      // Apply friction
+      
+      // 3. Apply friction
       velocityRef.current.multiplyScalar(friction);
-
-      // Clamp velocity to max speed
+      
+      // 4. Clamp velocity
       if (velocityRef.current.length() > maxSpeed) {
-        velocityRef.current.normalize().multiplyScalar(maxSpeed);
+          velocityRef.current.normalize().multiplyScalar(maxSpeed);
       }
       
-      // Update car position based on velocity
+      // 5. Update position
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
+
 
       // Camera follow
       const cameraOffset = new THREE.Vector3(0, 5, -10).applyQuaternion(car.quaternion);
@@ -289,6 +292,7 @@ export default function GameWrapper() {
                   <div key={themeName} className="flex items-center space-x-2">
                     <RadioGroupItem value={themeName} id={themeName} />
                     <Label htmlFor={themeName}>{themeName}</Label>
+
                   </div>
                 ))}
               </RadioGroup>
@@ -324,6 +328,10 @@ export default function GameWrapper() {
             time={gameData.time}
             onAcceleratorPress={() => (inputRef.current.forward = true)}
             onAcceleratorRelease={() => (inputRef.current.forward = false)}
+            onSteerLeftPress={() => (inputRef.current.left = true)}
+            onSteerLeftRelease={() => (inputRef.current.left = false)}
+            onSteerRightPress={() => (inputRef.current.right = true)}
+            onSteerRightRelease={() => (inputRef.current.right = false)}
           />
         )}
       </SidebarInset>

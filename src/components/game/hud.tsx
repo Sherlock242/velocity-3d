@@ -1,10 +1,8 @@
 'use client';
 
 import {
-  ArrowDown,
   ArrowLeft,
   ArrowRight,
-  ArrowUp,
   ChevronUp,
   Zap,
 } from 'lucide-react';
@@ -15,6 +13,10 @@ type HudProps = {
   time: number;
   onAcceleratorPress: () => void;
   onAcceleratorRelease: () => void;
+  onSteerLeftPress: () => void;
+  onSteerLeftRelease: () => void;
+  onSteerRightPress: () => void;
+  onSteerRightRelease: () => void;
 };
 
 export default function Hud({
@@ -22,6 +24,10 @@ export default function Hud({
   time,
   onAcceleratorPress,
   onAcceleratorRelease,
+  onSteerLeftPress,
+  onSteerLeftRelease,
+  onSteerRightPress,
+  onSteerRightRelease,
 }: HudProps) {
   const formattedTime = (t: number) => {
     const minutes = Math.floor(t / 60);
@@ -63,35 +69,17 @@ export default function Hud({
         </Card>
       </div>
 
-      {/* Controls */}
-      <div className="absolute bottom-4 left-4">
-        <Card className="bg-card/50 backdrop-blur-sm border-accent/20">
-          <CardContent className="p-4">
-            <p className="font-bold text-lg mb-2 text-center">CONTROLS</p>
-            <div className="flex justify-center items-center gap-2">
-              <div className="grid grid-cols-3 gap-1">
-                <div />
-                <div className="border border-accent rounded p-2 flex justify-center items-center">
-                  <ArrowUp className="w-5 h-5" />
-                </div>
-                <div />
-                <div className="border border-accent rounded p-2 flex justify-center items-center">
-                  <ArrowLeft className="w-5 h-5" />
-                </div>
-                <div className="border border-accent rounded p-2 flex justify-center items-center">
-                  <ArrowDown className="w-5 h-5" />
-                </div>
-                <div className="border border-accent rounded p-2 flex justify-center items-center">
-                  <ArrowRight className="w-5 h-5" />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Accelerator */}
-      <div className="absolute bottom-4 right-4 pointer-events-auto">
+      {/* Touch Controls */}
+      <div className="absolute bottom-4 right-4 flex items-end gap-2 pointer-events-auto">
+        <button
+          onMouseDown={onSteerLeftPress}
+          onMouseUp={onSteerLeftRelease}
+          onTouchStart={onSteerLeftPress}
+          onTouchEnd={onSteerLeftRelease}
+          className="w-24 h-24 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+        >
+          <ArrowLeft className="w-12 h-12" />
+        </button>
         <button
           onMouseDown={onAcceleratorPress}
           onMouseUp={onAcceleratorRelease}
@@ -101,6 +89,15 @@ export default function Hud({
         >
           <ChevronUp className="w-12 h-12" />
           <span className="font-bold">GAS</span>
+        </button>
+        <button
+          onMouseDown={onSteerRightPress}
+          onMouseUp={onSteerRightRelease}
+          onTouchStart={onSteerRightPress}
+          onTouchEnd={onSteerRightRelease}
+          className="w-24 h-24 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+        >
+          <ArrowRight className="w-12 h-12" />
         </button>
       </div>
     </div>
