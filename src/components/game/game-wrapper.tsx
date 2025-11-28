@@ -44,7 +44,7 @@ const TRACK_THEMES: Record<
   },
 };
 
-const TRACK_WIDTH = 20;
+const TRACK_WIDTH = 40;
 const SEGMENT_LENGTH = 200;
 const GROUND_WIDTH = 500;
 const NUM_SEGMENTS = 10;
