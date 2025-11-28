@@ -411,22 +411,21 @@ export default function GameWrapper() {
         camera.position.copy(car.position).add(cameraOffsetRef.current);
         camera.lookAt(car.position);
       } else {
-        // Default follow camera
-        const defaultOffset = new THREE.Vector3(0, 5, -10);
-        // Slowly revert to car's rotation for follow cam
+        // Default follow camera logic
         const targetAzimuth = car.rotation.y + Math.PI;
-        orbitControlsRef.current.azimuthAngle += (targetAzimuth - orbitControlsRef.current.azimuthAngle) * 0.05;
-        orbitControlsRef.current.polarAngle += (Math.PI / 3 - orbitControlsRef.current.polarAngle) * 0.05;
+        const targetPolar = Math.PI / 3;
+
+        orbitControlsRef.current.azimuthAngle += (targetAzimuth - orbitControlsRef.current.azimuthAngle) * 0.1;
+        orbitControlsRef.current.polarAngle += (targetPolar - orbitControlsRef.current.polarAngle) * 0.1;
 
         const radius = 10;
-        cameraOffsetRef.current.x = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.sin(orbitControlsRef.current.azimuthAngle);
-        cameraOffsetRef.current.y = radius * Math.cos(orbitControlsRef.current.polarAngle);
-        cameraOffsetRef.current.z = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.cos(orbitControlsRef.current.azimuthAngle);
+        const followOffset = new THREE.Vector3(
+          radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.sin(orbitControlsRef.current.azimuthAngle),
+          radius * Math.cos(orbitControlsRef.current.polarAngle),
+          radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.cos(orbitControlsRef.current.azimuthAngle)
+        );
         
-        const idealOffset = defaultOffset.applyQuaternion(car.quaternion);
-        const interpolatedOffset = cameraOffsetRef.current.clone().lerp(idealOffset, 0.1);
-
-        camera.position.copy(car.position).add(interpolatedOffset);
+        camera.position.copy(car.position).add(followOffset);
         camera.lookAt(car.position);
       }
 
