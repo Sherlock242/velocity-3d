@@ -240,6 +240,7 @@ export default function GameWrapper() {
     function createObstacleCar() {
         const obstacleCar = new THREE.Group();
         obstacleCar.position.y = 0.5;
+        obstacleCar.rotation.y = Math.PI;
 
         const bodyMaterial = new THREE.MeshStandardMaterial({
           color: Math.random() * 0xffffff,
