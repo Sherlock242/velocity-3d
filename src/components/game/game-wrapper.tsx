@@ -137,49 +137,45 @@ export default function GameWrapper() {
     const rearDeckY = bodyHeight * 0.5;
     const rearDeckZ = -bodyLength / 2;
 
-
     // Main body
     const bodyGeom = new THREE.BufferGeometry();
     const bodyVertices = new Float32Array([
-      // Front Bumper (low)
-      -bodyWidth / 2, 0.1, bodyLength / 2, // 0
-       bodyWidth / 2, 0.1, bodyLength / 2, // 1
-      
-      // Windshield base
-      -bodyWidth / 2, frontHoodY, frontHoodZ, // 2
-       bodyWidth / 2, frontHoodY, frontHoodZ, // 3
-      
-      // Rear Deck
-      -bodyWidth / 2, rearDeckY, rearDeckZ, // 4
-       bodyWidth / 2, rearDeckY, rearDeckZ, // 5
-
-      // Rear Bumper
-      -bodyWidth / 2, 0.1, rearDeckZ, // 6
-       bodyWidth / 2, 0.1, rearDeckZ, // 7
-
-       // Bottom front
-       -bodyWidth/2, 0, bodyLength / 2, // 8
-        bodyWidth/2, 0, bodyLength / 2, // 9
-        
-       // Bottom Rear
-       -bodyWidth/2, 0, rearDeckZ, // 10
-       bodyWidth/2, 0, rearDeckZ, // 11
-
+      // Bottom vertices
+      -bodyWidth / 2, 0, rearDeckZ,      // 0: rear left bottom
+       bodyWidth / 2, 0, rearDeckZ,      // 1: rear right bottom
+      -bodyWidth / 2, 0, bodyLength / 2, // 2: front left bottom
+       bodyWidth / 2, 0, bodyLength / 2, // 3: front right bottom
+    
+      // Mid-level vertices (deck level)
+      -bodyWidth / 2, rearDeckY, rearDeckZ,    // 4: rear left top
+       bodyWidth / 2, rearDeckY, rearDeckZ,    // 5: rear right top
+      -bodyWidth / 2, frontHoodY, frontHoodZ, // 6: front left hood base
+       bodyWidth / 2, frontHoodY, frontHoodZ, // 7: front right hood base
+    
+      // Front bumper vertices (slightly higher than bottom)
+      -bodyWidth / 2, 0.1, bodyLength / 2, // 8: front left bumper
+       bodyWidth / 2, 0.1, bodyLength / 2, // 9: front right bumper
     ]);
+    
     bodyGeom.setAttribute('position', new THREE.BufferAttribute(bodyVertices, 3));
+    
     bodyGeom.setIndex([
-      // Bottom
-      8, 10, 11,  8, 11, 9,
-      // Hood (sloped)
-      0, 1, 3,  0, 3, 2,
-      // Rear Deck
-      2, 3, 5,  2, 5, 4,
-      // Rear Bumper
-      10, 4, 5, 10, 5, 11,
-      // Sides
-      8, 0, 2,  8, 2, 4, 8, 4, 10,
-      9, 11, 5, 9, 5, 3, 9, 3, 1,
+      // Bottom face
+      0, 2, 3,  0, 3, 1,
+      // Rear face
+      0, 1, 5,  0, 5, 4,
+      // Front hood slope
+      8, 9, 7,  8, 7, 6,
+      // Front bumper face
+      2, 8, 9,  2, 9, 3,
+      // Left side panel
+      0, 4, 6,  0, 6, 2,  2, 6, 8,
+      // Right side panel
+      1, 3, 9,  1, 9, 7,  1, 7, 5,
+      // Top deck (rear and middle)
+      4, 5, 7,  4, 7, 6,
     ]);
+    
     bodyGeom.computeVertexNormals();
     const carBody = new THREE.Mesh(bodyGeom, bodyMaterial);
     carBody.castShadow = true;
@@ -198,8 +194,8 @@ export default function GameWrapper() {
         -cabinWidth/2, cabinTopY, cabinRearZ, // 4
          cabinWidth/2, cabinTopY, cabinRearZ, // 5
         // Base of rear glass
-        -cabinWidth/2, rearDeckY, rearDeckZ, // 6
-         cabinWidth/2, rearDeckY, rearDeckZ, // 7
+        -bodyWidth / 2, rearDeckY, rearDeckZ, // 6
+         bodyWidth / 2, rearDeckY, rearDeckZ, // 7
     ]);
     windshieldGeom.setAttribute('position', new THREE.BufferAttribute(windshieldVerts, 3));
     windshieldGeom.setIndex([
