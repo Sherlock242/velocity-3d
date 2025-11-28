@@ -125,31 +125,52 @@ export default function GameWrapper() {
     const bodyWidth = 2.2;
     const bodyLength = 4.5;
     const bodyHeight = 1.2;
+    const cabinWidth = bodyWidth * 0.8;
+    const cabinHeight = bodyHeight;
+    const frontHoodHeight = bodyHeight * 0.4;
+    const rearDeckHeight = bodyHeight * 0.5;
+
 
     // Main body - custom shape for wedge
     const bodyShape = new THREE.BufferGeometry();
     const vertices = new Float32Array([
-      // Front (low)
-      -bodyWidth / 2, 0, bodyLength / 2, // 0
-       bodyWidth / 2, 0, bodyLength / 2, // 1
-      -bodyWidth / 2, bodyHeight * 0.4, bodyLength / 2, // 2
-       bodyWidth / 2, bodyHeight * 0.4, bodyLength / 2, // 3
-      // Back (high)
-      -bodyWidth / 2, 0, -bodyLength / 2, // 4
-       bodyWidth / 2, 0, -bodyLength / 2, // 5
-      -bodyWidth / 2, bodyHeight, -bodyLength / 2, // 6
-       bodyWidth / 2, bodyHeight, -bodyLength / 2, // 7
+      // 0, 1, 2, 3: Front bumper (low)
+      -bodyWidth / 2, 0.1, bodyLength / 2,
+       bodyWidth / 2, 0.1, bodyLength / 2,
+      -bodyWidth / 2, 0, bodyLength / 2,
+       bodyWidth / 2, 0, bodyLength / 2,
+
+      // 4, 5, 6, 7: Front hood (sloped up to windshield)
+      -bodyWidth / 2, frontHoodHeight, bodyLength / 2 - 1,
+       bodyWidth / 2, frontHoodHeight, bodyLength / 2 - 1,
+      -cabinWidth / 2, cabinHeight, -bodyLength/2 + 1.8,
+       cabinWidth / 2, cabinHeight, -bodyLength/2 + 1.8,
+      
+      // 8, 9, 10, 11: Rear deck (sloped down from cabin)
+      -bodyWidth / 2, rearDeckHeight, -bodyLength / 2,
+       bodyWidth / 2, rearDeckHeight, -bodyLength / 2,
+      -bodyWidth / 2, 0, -bodyLength / 2,
+       bodyWidth / 2, 0, -bodyLength / 2,
+
     ]);
 
     bodyShape.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     bodyShape.setIndex([
-      0, 1, 3, 0, 3, 2, // front face
-      4, 6, 7, 4, 7, 5, // back face
-      0, 4, 5, 0, 5, 1, // bottom face
-      2, 3, 7, 2, 7, 6, // top face (sloped)
-      1, 5, 7, 1, 7, 3, // right side
-      0, 2, 6, 0, 6, 4  // left side
+      // Front face
+      2, 1, 0,    2, 3, 1,
+      // Hood
+      0, 1, 5,    0, 5, 4,
+      // Bottom
+      2, 10, 11,  2, 11, 3,
+      // Sides
+      2, 0, 4,    2, 4, 10,  10, 4, 8,
+      3, 11, 5,   3, 5, 1,    11, 9, 5,
+      // Rear deck
+      8, 9, 7,    8, 7, 6,
+      // Rear face
+      10, 8, 9,   10, 9, 11,
     ]);
+
     bodyShape.computeVertexNormals();
     const carBody = new THREE.Mesh(bodyShape, bodyMaterial);
     carBody.castShadow = true;
@@ -163,16 +184,27 @@ export default function GameWrapper() {
       opacity: 0.6
     });
 
-    // Windshield
+    // Windshield / Cabin
     const windshieldGeom = new THREE.BufferGeometry();
     const windshieldVerts = new Float32Array([
-        -bodyWidth/2 * 0.9, bodyHeight * 0.4, bodyLength/2, // 0
-         bodyWidth/2 * 0.9, bodyHeight * 0.4, bodyLength/2, // 1
-        -bodyWidth/2 * 0.8, bodyHeight, -bodyLength / 2 + 1.5, // 2
-         bodyWidth/2 * 0.8, bodyHeight, -bodyLength / 2 + 1.5, // 3
+        // Front face (windshield)
+        -cabinWidth/2, frontHoodHeight, bodyLength/2-1,
+         cabinWidth/2, frontHoodHeight, bodyLength/2-1,
+        -cabinWidth/2, cabinHeight, -bodyLength/2 + 1.8,
+         cabinWidth/2, cabinHeight, -bodyLength/2 + 1.8,
+        // Rear face (rear glass)
+        -cabinWidth/2, cabinHeight, -bodyLength/2 + 1.8,
+         cabinWidth/2, cabinHeight, -bodyLength/2 + 1.8,
+        -cabinWidth/2, rearDeckHeight, -bodyLength/2 + 0.5,
+         cabinWidth/2, rearDeckHeight, -bodyLength/2 + 0.5,
     ]);
     windshieldGeom.setAttribute('position', new THREE.BufferAttribute(windshieldVerts, 3));
-    windshieldGeom.setIndex([0,1,3, 0,3,2]);
+    windshieldGeom.setIndex([
+      0,1,3, 0,3,2, // Windshield
+      4,5,7, 4,7,6, // Rear glass
+      1,5,3, 3,5,7, // Right side
+      0,2,4, 2,6,4  // Left side
+    ]);
     windshieldGeom.computeVertexNormals();
     const windshield = new THREE.Mesh(windshieldGeom, glassMaterial);
     car.add(windshield);
@@ -182,18 +214,18 @@ export default function GameWrapper() {
     const spoilerMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
     const spoilerWingGeom = new THREE.BoxGeometry(bodyWidth * 1.1, 0.05, 0.3);
     const spoilerWing = new THREE.Mesh(spoilerWingGeom, spoilerMaterial);
-    spoilerWing.position.set(0, bodyHeight + 0.2, -bodyLength / 2 - 0.1);
+    spoilerWing.position.set(0, rearDeckHeight + 0.2, -bodyLength / 2 - 0.1);
     spoilerWing.castShadow = true;
     car.add(spoilerWing);
     
     const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
     const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
-    spoilerSupport1.position.set(-bodyWidth/3, bodyHeight + 0.1, -bodyLength / 2 - 0.1);
+    spoilerSupport1.position.set(-bodyWidth/3, rearDeckHeight + 0.1, -bodyLength / 2 - 0.1);
     spoilerSupport1.castShadow = true;
     car.add(spoilerSupport1);
     
     const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
-    spoilerSupport2.position.set(bodyWidth/3, bodyHeight + 0.1, -bodyLength / 2 - 0.1);
+    spoilerSupport2.position.set(bodyWidth/3, rearDeckHeight + 0.1, -bodyLength / 2 - 0.1);
     spoilerSupport2.castShadow = true;
     car.add(spoilerSupport2);
 
@@ -214,7 +246,7 @@ export default function GameWrapper() {
     const tailLightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.5 });
     const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
     const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
-    tailLights.position.set(0, bodyHeight * 0.8, -bodyLength / 2 - 0.02);
+    tailLights.position.set(0, rearDeckHeight, -bodyLength / 2 - 0.02);
     car.add(tailLights);
 
 
