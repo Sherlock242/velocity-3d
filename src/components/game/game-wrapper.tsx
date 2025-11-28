@@ -29,17 +29,17 @@ const TRACK_THEMES: Record<
   { ground: THREE.Color; sky: THREE.Color; scenery: THREE.Color }
 > = {
   Forest: {
-    ground: new THREE.Color(0x228b22),
+    ground: new THREE.Color(0x4a4a4a), // Asphalt color
     sky: new THREE.Color(0x87ceeb),
     scenery: new THREE.Color(0x006400),
   },
   Desert: {
-    ground: new THREE.Color(0xc2b280),
+    ground: new THREE.Color(0x4a4a4a), // Asphalt color
     sky: new THREE.Color(0x00008b),
     scenery: new THREE.Color(0x8b4513),
   },
   City: {
-    ground: new THREE.Color(0x696969),
+    ground: new THREE.Color(0x4a4a4a), // Asphalt color
     sky: new THREE.Color(0x343434),
     scenery: new THREE.Color(0x808080),
   },
@@ -114,14 +114,42 @@ export default function GameWrapper() {
     scene.add(car);
     carRef.current = car;
 
-    // Track
+    // --- ROAD ---
+    const roadGroup = new THREE.Group();
+    // Asphalt
     const groundGeometry = new THREE.PlaneGeometry(TRACK_WIDTH, TRACK_LENGTH);
     const groundMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].ground });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
-    scene.add(ground);
-    
+    roadGroup.add(ground);
+
+    // Road markings
+    const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    // Edge lines
+    const edgeLineGeometry = new THREE.PlaneGeometry(0.5, TRACK_LENGTH);
+    const leftEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
+    leftEdgeLine.position.set(-TRACK_WIDTH / 2 + 0.25, 0.01, 0);
+    leftEdgeLine.rotation.x = -Math.PI / 2;
+    roadGroup.add(leftEdgeLine);
+
+    const rightEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
+    rightEdgeLine.position.set(TRACK_WIDTH / 2 - 0.25, 0.01, 0);
+    rightEdgeLine.rotation.x = -Math.PI / 2;
+    roadGroup.add(rightEdgeLine);
+
+    // Center dashed line
+    const dashLength = 8;
+    const dashGap = 6;
+    const dashGeometry = new THREE.PlaneGeometry(0.3, dashLength);
+    for (let z = -TRACK_LENGTH / 2; z < TRACK_LENGTH / 2; z += dashLength + dashGap) {
+        const dash = new THREE.Mesh(dashGeometry, lineMaterial);
+        dash.position.set(0, 0.01, z);
+        dash.rotation.x = -Math.PI / 2;
+        roadGroup.add(dash);
+    }
+    scene.add(roadGroup);
+
     // Scenery
     const sceneryGeometry = new THREE.BoxGeometry(2, 20, 2);
     const sceneryMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].scenery });
@@ -175,22 +203,22 @@ export default function GameWrapper() {
 
       // --- MOVEMENT LOGIC ---
       // 1. Steering
+      let steerDirection = 0;
+      if (inputRef.current.left) steerDirection = 1;
+      if (inputRef.current.right) steerDirection = -1;
+      
       if (velocityRef.current.length() > 0.1) {
-        let steerDirection = 0;
-        if (inputRef.current.left) steerDirection = 1;
-        if (inputRef.current.right) steerDirection = -1;
-        
         const turnAmount = steerDirection * turnSpeed * delta;
         car.rotation.y += turnAmount;
       }
       
       // 2. Acceleration/Deceleration
-      const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(car.quaternion);
       let moveDirection = 0;
       if (inputRef.current.forward) moveDirection = 1;
       if (inputRef.current.backward) moveDirection = -1;
 
       if (moveDirection !== 0) {
+        const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(car.quaternion);
         const force = forward.multiplyScalar(acceleration * moveDirection * delta);
         velocityRef.current.add(force);
       }
@@ -205,7 +233,6 @@ export default function GameWrapper() {
       
       // 5. Update position
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
-
 
       // Camera follow
       const cameraOffset = new THREE.Vector3(0, 5, -10).applyQuaternion(car.quaternion);
@@ -257,7 +284,7 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
-      if (mountNode.contains(renderer.domElement)) {
+      if (mountNode && mountNode.contains(renderer.domElement)) {
         mountNode.removeChild(renderer.domElement);
       }
     };
