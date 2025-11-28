@@ -117,9 +117,9 @@ export default function GameWrapper() {
     car.position.y = 0.5;
 
     const bodyMaterial = new THREE.MeshStandardMaterial({
-      color: 0x0077ff, // Lamborghini blue
+      color: 0xB72121, // Golden Red
       metalness: 0.9,
-      roughness: 0.1,
+      roughness: 0.2,
     });
     
     const bodyWidth = 2.2;
