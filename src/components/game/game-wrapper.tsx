@@ -137,11 +137,9 @@ export default function GameWrapper() {
 
     // Cabin
     const windshieldMaterial = new THREE.MeshStandardMaterial({
-        color: 0xFFD700, 
-        metalness: 1.0,
+        color: 0x000000,
+        metalness: 0.8,
         roughness: 0.1,
-        transparent: true,
-        opacity: 0.5
     });
     const cabinGeom = new THREE.BoxGeometry(bodyWidth * 0.7, bodyHeight * 0.4, bodyLength * 0.4);
     const cabin = new THREE.Mesh(cabinGeom, windshieldMaterial);
@@ -381,6 +379,7 @@ export default function GameWrapper() {
 
 
     const clock = new THREE.Clock();
+    let currentSteerAngle = 0;
 
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -395,12 +394,16 @@ export default function GameWrapper() {
       const friction = 0.98;
 
       // --- MOVEMENT LOGIC ---
-      let steerDirection = 0;
-      if (inputRef.current.left) steerDirection = 1;
-      if (inputRef.current.right) steerDirection = -1;
+      let targetSteerDirection = 0;
+      if (inputRef.current.left) targetSteerDirection = 1;
+      if (inputRef.current.right) targetSteerDirection = -1;
+
+      // Smoothly interpolate steering
+      currentSteerAngle += (targetSteerDirection - currentSteerAngle) * 0.1;
+
 
       if (velocityRef.current.length() > 0.1) {
-        const turnAmount = steerDirection * turnSpeed * delta;
+        const turnAmount = currentSteerAngle * turnSpeed * delta;
         car.rotation.y += turnAmount;
       }
       
@@ -430,9 +433,10 @@ export default function GameWrapper() {
           wheel.rotation.x -= wheelRotationSpeed;
       });
       // Steer front wheels
-      const steerAngle = steerDirection * 0.4; // Max steer angle
-      wheels[0].rotation.y = steerAngle;
-      wheels[1].rotation.y = steerAngle;
+      const maxSteerAngle = 0.4;
+      const wheelSteerAngle = currentSteerAngle * maxSteerAngle;
+      wheels[0].rotation.y = wheelSteerAngle;
+      wheels[1].rotation.y = wheelSteerAngle;
 
       // --- CAMERA LOGIC ---
       if (orbitControlsRef.current.isDragging) {
@@ -645,5 +649,3 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
-
-    
