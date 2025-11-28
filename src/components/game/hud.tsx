@@ -43,14 +43,14 @@ export default function Hud({
       {/* Speedometer */}
       <div className="absolute top-4 right-4">
         <Card className="bg-card/50 backdrop-blur-sm border-accent/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-4">
-              <Zap className="w-8 h-8 text-accent" />
+          <CardContent className="p-2">
+            <div className="flex items-center gap-2">
+              <Zap className="w-6 h-6 text-accent" />
               <div className="text-right">
-                <p className="text-4xl font-bold font-headline">
+                <p className="text-2xl font-bold font-headline">
                   {Math.round(speed)}
                 </p>
-                <p className="text-sm text-accent/80">KM/H</p>
+                <p className="text-xs text-accent/80">KM/H</p>
               </div>
             </div>
           </CardContent>
@@ -60,11 +60,11 @@ export default function Hud({
       {/* Timer */}
       <div className="absolute top-4 left-4">
         <Card className="bg-card/50 backdrop-blur-sm border-accent/20">
-          <CardContent className="p-4">
-            <p className="text-4xl font-bold font-headline">
+          <CardContent className="p-2">
+            <p className="text-2xl font-bold font-headline">
               {formattedTime(time)}
             </p>
-            <p className="text-sm text-accent/80">RACE TIME</p>
+            <p className="text-xs text-accent/80">RACE TIME</p>
           </CardContent>
         </Card>
       </div>
@@ -76,18 +76,18 @@ export default function Hud({
           onMouseUp={onSteerLeftRelease}
           onTouchStart={onSteerLeftPress}
           onTouchEnd={onSteerLeftRelease}
-          className="w-24 h-24 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+          className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
         >
-          <ArrowLeft className="w-12 h-12" />
+          <ArrowLeft className="w-10 h-10" />
         </button>
         <button
           onMouseDown={onSteerRightPress}
           onMouseUp={onSteerRightRelease}
           onTouchStart={onSteerRightPress}
           onTouchEnd={onSteerRightRelease}
-          className="w-24 h-24 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+          className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
         >
-          <ArrowRight className="w-12 h-12" />
+          <ArrowRight className="w-10 h-10" />
         </button>
       </div>
       <div className="absolute bottom-4 right-4 flex items-end gap-2 pointer-events-auto">
@@ -96,10 +96,10 @@ export default function Hud({
           onMouseUp={onAcceleratorRelease}
           onTouchStart={onAcceleratorPress}
           onTouchEnd={onAcceleratorRelease}
-          className="w-24 h-32 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex flex-col justify-center items-center text-accent active:bg-accent/20 transition-colors"
+          className="w-20 h-28 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex flex-col justify-center items-center text-accent active:bg-accent/20 transition-colors"
         >
-          <ChevronUp className="w-12 h-12" />
-          <span className="font-bold">GAS</span>
+          <ChevronUp className="w-10 h-10" />
+          <span className="font-bold text-sm">GAS</span>
         </button>
       </div>
     </div>
