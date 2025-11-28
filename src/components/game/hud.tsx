@@ -70,7 +70,7 @@ export default function Hud({
       </div>
 
       {/* Touch Controls */}
-      <div className="absolute bottom-4 right-4 flex items-end gap-2 pointer-events-auto">
+      <div className="absolute bottom-4 left-4 flex items-end gap-2 pointer-events-auto">
         <button
           onMouseDown={onSteerLeftPress}
           onMouseUp={onSteerLeftRelease}
@@ -81,6 +81,17 @@ export default function Hud({
           <ArrowLeft className="w-12 h-12" />
         </button>
         <button
+          onMouseDown={onSteerRightPress}
+          onMouseUp={onSteerRightRelease}
+          onTouchStart={onSteerRightPress}
+          onTouchEnd={onSteerRightRelease}
+          className="w-24 h-24 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+        >
+          <ArrowRight className="w-12 h-12" />
+        </button>
+      </div>
+      <div className="absolute bottom-4 right-4 flex items-end gap-2 pointer-events-auto">
+        <button
           onMouseDown={onAcceleratorPress}
           onMouseUp={onAcceleratorRelease}
           onTouchStart={onAcceleratorPress}
@@ -89,15 +100,6 @@ export default function Hud({
         >
           <ChevronUp className="w-12 h-12" />
           <span className="font-bold">GAS</span>
-        </button>
-        <button
-          onMouseDown={onSteerRightPress}
-          onMouseUp={onSteerRightRelease}
-          onTouchStart={onSteerRightPress}
-          onTouchEnd={onSteerRightRelease}
-          className="w-24 h-24 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
-        >
-          <ArrowRight className="w-12 h-12" />
         </button>
       </div>
     </div>
