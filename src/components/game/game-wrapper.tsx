@@ -491,6 +491,7 @@ export default function GameWrapper() {
         const targetAzimuth = car.rotation.y + Math.PI;
         const targetPolar = Math.PI / 3;
 
+        // Smoothly interpolate the angles
         orbitControlsRef.current.azimuthAngle += (targetAzimuth - orbitControlsRef.current.azimuthAngle) * 0.1;
         orbitControlsRef.current.polarAngle += (targetPolar - orbitControlsRef.current.polarAngle) * 0.1;
 
