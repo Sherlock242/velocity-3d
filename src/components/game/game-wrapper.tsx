@@ -73,6 +73,7 @@ export default function GameWrapper() {
     if (!mountRef.current) return;
     setIsReady(false);
     
+    let animationFrameId: number;
     const mountNode = mountRef.current;
 
     // Scene setup
@@ -161,7 +162,6 @@ export default function GameWrapper() {
     window.addEventListener('resize', onResize);
 
     const clock = new THREE.Clock();
-    let animationFrameId: number;
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
@@ -190,7 +190,9 @@ export default function GameWrapper() {
       
       velocityRef.current.multiplyScalar(friction);
 
-      const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(car.quaternion).multiplyScalar(velocityRef.current.z * delta);
+      const forward = new THREE.Vector3(0, 0, 1);
+      forward.applyQuaternion(car.quaternion);
+      forward.multiplyScalar(velocityRef.current.z * delta);
       car.position.add(forward);
 
       // Camera follow
@@ -226,7 +228,7 @@ export default function GameWrapper() {
       
       // Update HUD
       setGameData({
-        speed: velocityRef.current.length() * 3.6,
+        speed: velocityRef.current.z * 3.6,
         time: gameTimeRef.current,
       });
 
@@ -241,7 +243,7 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
-      if (mountNode.contains(renderer.domElement)) {
+      if (mountNode && mountNode.contains(renderer.domElement)) {
         mountNode.removeChild(renderer.domElement);
       }
     };
