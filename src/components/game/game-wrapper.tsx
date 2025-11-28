@@ -68,12 +68,12 @@ export default function GameWrapper() {
   });
   const wasOffTrackRef = React.useRef(false);
   const penaltyCheckCooldownRef = React.useRef(false);
+  const animationFrameIdRef = React.useRef<number>();
 
   React.useEffect(() => {
     if (!mountRef.current) return;
     setIsReady(false);
     
-    let animationFrameId: number;
     const mountNode = mountRef.current;
 
     // Scene setup
@@ -164,7 +164,7 @@ export default function GameWrapper() {
     const clock = new THREE.Clock();
 
     const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
+      animationFrameIdRef.current = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       gameTimeRef.current += delta;
 
@@ -173,36 +173,39 @@ export default function GameWrapper() {
       const turnSpeed = 2;
       const friction = 0.98;
 
-      // Create a forward vector based on the car's rotation
-      const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(car.quaternion);
+      let moveDirection = 0;
+      if (inputRef.current.forward) moveDirection = 1;
+      if (inputRef.current.backward) moveDirection = -1;
 
-      if (inputRef.current.forward) {
-        // Add force in the forward direction
-        velocityRef.current.add(forward.clone().multiplyScalar(acceleration * delta));
+      let steerDirection = 0;
+      if (inputRef.current.left) steerDirection = 1;
+      if (inputRef.current.right) steerDirection = -1;
+
+      // Update car rotation based on steering
+      const speed = velocityRef.current.length();
+      if (speed > 0.1) {
+        const turnAmount = steerDirection * turnSpeed * delta * (speed / maxSpeed);
+        car.rotation.y += turnAmount;
       }
-      if (inputRef.current.backward) {
-        // Add force in the backward direction
-        velocityRef.current.add(forward.clone().multiplyScalar(-acceleration * delta));
+
+      // Calculate forward vector based on car's current rotation
+      const forward = new THREE.Vector3(0, 0, 1);
+      forward.applyQuaternion(car.quaternion);
+      
+      if (moveDirection !== 0) {
+        // Add force in the forward/backward direction
+        const force = forward.clone().multiplyScalar(acceleration * moveDirection * delta);
+        velocityRef.current.add(force);
       }
+
+      // Apply friction
+      velocityRef.current.multiplyScalar(friction);
 
       // Clamp velocity to max speed
       if (velocityRef.current.length() > maxSpeed) {
         velocityRef.current.normalize().multiplyScalar(maxSpeed);
       }
       
-      const speed = velocityRef.current.length();
-      if(speed > 0.1) {
-          const steer = (inputRef.current.right ? -1 : 0) + (inputRef.current.left ? 1 : 0);
-          // Only allow turning if moving
-          if (velocityRef.current.length() > 0.1) {
-              const turnAmount = steer * turnSpeed * delta;
-              car.rotation.y += turnAmount;
-          }
-      }
-      
-      // Apply friction
-      velocityRef.current.multiplyScalar(friction);
-
       // Update car position based on velocity
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
 
@@ -250,7 +253,9 @@ export default function GameWrapper() {
     setIsReady(true);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
@@ -313,7 +318,14 @@ export default function GameWrapper() {
                 </div>
             )}
         </div>
-        {isReady && <Hud speed={gameData.speed} time={gameData.time} />}
+        {isReady && (
+          <Hud
+            speed={gameData.speed}
+            time={gameData.time}
+            onAcceleratorPress={() => (inputRef.current.forward = true)}
+            onAcceleratorRelease={() => (inputRef.current.forward = false)}
+          />
+        )}
       </SidebarInset>
     </SidebarProvider>
   );

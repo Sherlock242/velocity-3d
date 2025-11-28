@@ -1,14 +1,28 @@
 'use client';
 
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Zap } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ChevronUp,
+  Zap,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 type HudProps = {
   speed: number;
   time: number;
+  onAcceleratorPress: () => void;
+  onAcceleratorRelease: () => void;
 };
 
-export default function Hud({ speed, time }: HudProps) {
+export default function Hud({
+  speed,
+  time,
+  onAcceleratorPress,
+  onAcceleratorRelease,
+}: HudProps) {
   const formattedTime = (t: number) => {
     const minutes = Math.floor(t / 60);
     const seconds = Math.floor(t % 60);
@@ -74,6 +88,20 @@ export default function Hud({ speed, time }: HudProps) {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Accelerator */}
+      <div className="absolute bottom-4 right-4 pointer-events-auto">
+        <button
+          onMouseDown={onAcceleratorPress}
+          onMouseUp={onAcceleratorRelease}
+          onTouchStart={onAcceleratorPress}
+          onTouchEnd={onAcceleratorRelease}
+          className="w-24 h-32 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex flex-col justify-center items-center text-accent active:bg-accent/20 transition-colors"
+        >
+          <ChevronUp className="w-12 h-12" />
+          <span className="font-bold">GAS</span>
+        </button>
       </div>
     </div>
   );
