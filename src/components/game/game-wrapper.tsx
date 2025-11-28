@@ -420,7 +420,7 @@ export default function GameWrapper() {
         const radius = 10;
         cameraOffsetRef.current.x = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.sin(orbitControlsRef.current.azimuthAngle);
         cameraOffsetRef.current.y = radius * Math.cos(orbitControlsRef.current.polarAngle);
-        cameraOffsetRefcurrent.z = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.cos(orbitControlsRef.current.azimuthAngle);
+        cameraOffsetRef.current.z = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.cos(orbitControlsRef.current.azimuthAngle);
         
         const idealOffset = defaultOffset.applyQuaternion(car.quaternion);
         const interpolatedOffset = cameraOffsetRef.current.clone().lerp(idealOffset, 0.1);
