@@ -246,6 +246,30 @@ export default function GameWrapper() {
     tailLights.position.set(0, rearDeckY, rearDeckZ - 0.02);
     car.add(tailLights);
 
+    // Headlights
+    const headLightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffeeaa, emissiveIntensity: 0.5 });
+    const headLightGeom = new THREE.BoxGeometry(0.6, 0.05, 0.1);
+    const leftHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
+    leftHeadLight.position.set(-bodyWidth / 3, frontHoodY - 0.1, bodyLength / 2 - 0.05);
+    leftHeadLight.rotation.y = -Math.PI / 16;
+    car.add(leftHeadLight);
+
+    const rightHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
+    rightHeadLight.position.set(bodyWidth / 3, frontHoodY - 0.1, bodyLength / 2 - 0.05);
+    rightHeadLight.rotation.y = Math.PI / 16;
+    car.add(rightHeadLight);
+    
+    // Front Intakes
+    const intakeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+    const intakeGeom = new THREE.BoxGeometry(bodyWidth / 3, 0.1, 0.2);
+    const leftIntake = new THREE.Mesh(intakeGeom, intakeMaterial);
+    leftIntake.position.set(-bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
+    car.add(leftIntake);
+
+    const rightIntake = new THREE.Mesh(intakeGeom, intakeMaterial);
+    rightIntake.position.set(bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
+    car.add(rightIntake);
+
 
     const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
     const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
