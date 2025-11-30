@@ -44,7 +44,6 @@ const TRACK_THEMES: Record<
   },
 };
 
-const TRACK_WIDTH = 40;
 const ROAD_WIDTH = 40;
 const GRID_SIZE = 5; // 5x5 grid
 const CELL_SIZE = 1000; // 1km per cell
@@ -789,7 +788,7 @@ export default function GameWrapper() {
             speed={gameData.speed}
             time={gameData.time}
             onAcceleratorPress={() => (inputRef.current.forward = true)}
-            onAcceleratorRelease={() => (inputref.current.forward = false)}
+            onAcceleratorRelease={() => (inputRef.current.forward = false)}
             onSteerLeftPress={() => (inputRef.current.left = true)}
             onSteerLeftRelease={() => (inputRef.current.left = false)}
             onSteerRightPress={() => (inputRef.current.right = true)}
@@ -800,4 +799,3 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
-
