@@ -213,6 +213,9 @@ export default function GameWrapper() {
     // --- LAMBORGHINI CAR ---
     const car = new THREE.Group();
     car.position.y = 0.5;
+    const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
+    car.position.x = 2 * CELL_SIZE - halfTotalWidth;
+
 
     const bodyMaterial = new THREE.MeshStandardMaterial({
       color: 0xb72121,
