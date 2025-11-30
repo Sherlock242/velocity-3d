@@ -8,6 +8,7 @@ import {
 } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
 import { createMansion } from '../models/mansion';
+import { createBuilding } from '../models/building';
 
 function createTextSprite(text: string) {
   const canvas = document.createElement('canvas');
@@ -138,37 +139,34 @@ export function createGridAndScenery(theme: TrackTheme) {
     const z =
       cellCenterZ + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
 
-    const randomColor =
-      sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
-    const sceneryMaterial = new THREE.MeshStandardMaterial({
-      color: randomColor,
-    });
-
-    let sceneryObject: THREE.Mesh;
+    let sceneryObject: THREE.Group | THREE.Mesh;
 
     if (theme === 'Forest') {
       const treeHeight = Math.random() * 20 + 10;
       const treeRadius = treeHeight / 8;
       const sceneryGeometry = new THREE.ConeGeometry(treeRadius, treeHeight, 8);
+      const randomColor =
+      sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
+      const sceneryMaterial = new THREE.MeshStandardMaterial({
+        color: randomColor,
+      });
       sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
       sceneryObject.position.set(x, treeHeight / 2, z);
     } else if (theme === 'Desert') {
       const duneSize = Math.random() * 15 + 5;
       const sceneryGeometry = new THREE.ConeGeometry(duneSize, duneSize / 2, 4); // Pyramid shape
+      const randomColor =
+      sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
+      const sceneryMaterial = new THREE.MeshStandardMaterial({
+        color: randomColor,
+      });
       sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
       sceneryObject.position.set(x, duneSize / 4, z);
     } else {
       // City
-      const buildingHeight = Math.random() * 100 + 40;
-      const buildingWidth = Math.random() * 40 + 20;
-      const buildingDepth = Math.random() * 40 + 20;
-      const sceneryGeometry = new THREE.BoxGeometry(
-        buildingWidth,
-        buildingHeight,
-        buildingDepth
-      );
-      sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-      sceneryObject.position.set(x, buildingHeight / 2, z);
+      const building = createBuilding(sceneryColors);
+      sceneryObject = building;
+      sceneryObject.position.set(x, 0, z);
     }
 
     sceneryObject.castShadow = true;
@@ -202,5 +200,3 @@ export function createGridAndScenery(theme: TrackTheme) {
 
   return gridGroup;
 }
-
-    
