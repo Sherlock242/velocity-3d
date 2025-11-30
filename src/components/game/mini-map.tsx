@@ -28,7 +28,7 @@ export default function MiniMap({
 
   return (
     <div
-      className="relative bg-card/50 border border-accent/20"
+      className="relative bg-card"
       style={{ width: MAP_SIZE, height: MAP_SIZE }}
     >
       {/* Grid Lines */}
@@ -94,9 +94,6 @@ export default function MiniMap({
         className="absolute w-2 h-2 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2"
         style={carStyle}
       />
-      <div className="absolute top-0 left-0 p-1 text-xs text-accent/80">
-        CITY MAP
-      </div>
     </div>
   );
 }
