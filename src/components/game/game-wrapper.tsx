@@ -41,10 +41,11 @@ const TRACK_THEMES: Record<
     ground: new THREE.Color(0x004d00), // Dark green for city parks
     sky: new THREE.Color(0x00008b), // Dark blue evening
     scenery: [
-      new THREE.Color(0x808080),
-      new THREE.Color(0xA9A9A9),
-      new THREE.Color(0x696969),
-      new THREE.Color(0x888888),
+      new THREE.Color(0x2c3e50),
+      new THREE.Color(0x34495e),
+      new THREE.Color(0x8e44ad),
+      new THREE.Color(0xc0392b),
+      new THREE.Color(0x2980b9),
     ],
   },
 };
