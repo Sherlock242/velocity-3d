@@ -538,6 +538,40 @@ export default function GameWrapper() {
       }
       obstacleCarsRef.current.push(obstacle);
     }
+    
+    // --- TEXTURE LOADER ---
+    const loader = new THREE.TextureLoader();
+    
+    // --- FONT LOADER ---
+    function createTextSprite(text: string) {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) return new THREE.Sprite();
+    
+      const fontSize = 100;
+      context.font = `bold ${fontSize}px Arial`;
+      
+      const textMetrics = context.measureText(text);
+      canvas.width = textMetrics.width;
+      canvas.height = fontSize * 1.2;
+    
+      // Re-apply font settings after canvas resize
+      context.font = `bold ${fontSize}px Arial`;
+      context.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(text, canvas.width / 2, canvas.height / 2);
+    
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(spriteMaterial);
+      
+      const aspectRatio = canvas.width / canvas.height;
+      sprite.scale.set(100 * aspectRatio, 100, 1);
+    
+      return sprite;
+    }
+    
 
     // --- GRID TRACK ---
     function createGrid() {
@@ -670,6 +704,20 @@ export default function GameWrapper() {
 
         sceneryObject.castShadow = true;
         gridGroup.add(sceneryObject);
+      }
+      
+      // Add sector numbers
+      for (let i = 0; i < GRID_SIZE; i++) {
+        for (let j = 0; j < GRID_SIZE; j++) {
+          const sectorNumber = i * GRID_SIZE + j + 1;
+          const sectorLabel = createTextSprite(sectorNumber.toString());
+
+          const x = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+          const z = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+
+          sectorLabel.position.set(x, 50, z);
+          gridGroup.add(sectorLabel);
+        }
       }
 
       scene.add(gridGroup);

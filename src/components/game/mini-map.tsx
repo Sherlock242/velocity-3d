@@ -62,6 +62,33 @@ export default function MiniMap({
         })}
       </div>
 
+      {/* Sector Numbers */}
+      <div className="absolute inset-0">
+        {Array.from({ length: gridSize * gridSize }).map((_, i) => {
+          const sectorNumber = i + 1;
+          const row = Math.floor(i / gridSize);
+          const col = i % gridSize;
+
+          const cellWidth = 100 / gridSize;
+          const cellHeight = 100 / gridSize;
+
+          const sectorStyle = {
+            left: `${col * cellWidth + cellWidth / 2}%`,
+            top: `${row * cellHeight + cellHeight / 2}%`,
+          };
+
+          return (
+            <div
+              key={sectorNumber}
+              className="absolute text-xs text-accent/50 font-bold transform -translate-x-1/2 -translate-y-1/2"
+              style={sectorStyle}
+            >
+              {sectorNumber}
+            </div>
+          );
+        })}
+      </div>
+
       {/* Car Marker */}
       <div
         className="absolute w-2 h-2 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2"
