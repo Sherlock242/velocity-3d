@@ -87,6 +87,13 @@ export default function GameWrapper() {
   // Camera control refs
   const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 2, -6));
 
+  // Audio refs
+  const audioListenerRef = React.useRef<THREE.AudioListener>();
+  const engineSoundRef = React.useRef<THREE.Audio>();
+  const skidSoundRef = React.useRef<THREE.Audio>();
+  const audioInitializedRef = React.useRef(false);
+
+
   React.useEffect(() => {
     let mountNode: HTMLDivElement | null = null;
     if (mountRef.current) {
@@ -108,6 +115,62 @@ export default function GameWrapper() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     mountNode.appendChild(renderer.domElement);
+
+    // --- AUDIO SETUP ---
+    const listener = new THREE.AudioListener();
+    camera.add(listener);
+    audioListenerRef.current = listener;
+
+    const initAudio = () => {
+      if (audioInitializedRef.current) return;
+      audioInitializedRef.current = true;
+
+      // Engine sound
+      const engineOscillator = listener.context.createOscillator();
+      engineOscillator.type = 'sawtooth';
+      engineOscillator.frequency.value = 50;
+
+      const engineGain = listener.context.createGain();
+      engineGain.gain.value = 0;
+
+      engineOscillator.connect(engineGain);
+      engineGain.connect(listener.context.destination);
+      engineOscillator.start();
+
+      engineSoundRef.current = {
+        setVolume: (volume: number) => {
+          engineGain.gain.setTargetAtTime(volume, listener.context.currentTime, 0.01);
+        },
+        setFrequency: (frequency: number) => {
+          engineOscillator.frequency.setTargetAtTime(frequency, listener.context.currentTime, 0.01);
+        }
+      } as any;
+
+      // Skid sound
+      const skidNoiseBuffer = listener.context.createBuffer(1, listener.context.sampleRate * 2, listener.context.sampleRate);
+      const output = skidNoiseBuffer.getChannelData(0);
+      for (let i = 0; i < output.length; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const skidSource = listener.context.createBufferSource();
+      skidSource.buffer = skidNoiseBuffer;
+      skidSource.loop = true;
+
+      const skidGain = listener.context.createGain();
+      skidGain.gain.value = 0;
+
+      skidSource.connect(skidGain);
+      skidGain.connect(listener.context.destination);
+      skidSource.start();
+
+       skidSoundRef.current = {
+        setVolume: (volume: number) => {
+          skidGain.gain.setTargetAtTime(volume, listener.context.currentTime, 0.05);
+        }
+      } as any;
+    };
+
 
     // --- SKYBOX ---
     const skyGeometry = new THREE.BoxGeometry(4500, 4500, 4500);
@@ -719,6 +782,7 @@ export default function GameWrapper() {
 
     // --- EVENT LISTENERS ---
     const onKeyDown = (e: KeyboardEvent) => {
+      initAudio();
       if (e.key === 'ArrowUp' || e.key === 'w') inputRef.current.forward = true;
       if (e.key === 'ArrowDown' || e.key === 's')
         inputRef.current.backward = true;
@@ -793,6 +857,18 @@ export default function GameWrapper() {
       }
 
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
+      
+      // --- AUDIO LOGIC ---
+      if (engineSoundRef.current && skidSoundRef.current) {
+        const speedRatio = velocityRef.current.length() / maxSpeed;
+        (engineSoundRef.current as any).setVolume(speedRatio * 0.1);
+        (engineSoundRef.current as any).setFrequency(50 + speedRatio * 150);
+
+        const steerRatio = Math.abs(currentSteerAngle);
+        const skidVolume = speedRatio > 0.2 && steerRatio > 0.5 ? (speedRatio * steerRatio) * 0.2 : 0;
+        (skidSoundRef.current as any).setVolume(skidVolume);
+      }
+
 
       // --- BOUNDARY CHECKS ---
       const halfGrid = TOTAL_GRID_WIDTH / 2;
@@ -957,8 +1033,20 @@ export default function GameWrapper() {
       });
       renderer.dispose();
       obstacleCarsRef.current = [];
+      audioListenerRef.current?.context.close();
+      audioInitializedRef.current = false;
     };
   }, [theme, toast]);
+
+  const initAudioOnInteraction = () => {
+    // This is a dummy function to attach to the touch controls
+    // The actual audio init is handled by the first keydown event.
+    // This is to ensure audio can start on mobile if touch is the first interaction.
+    if (!audioInitializedRef.current && audioListenerRef.current) {
+      audioListenerRef.current.context.resume();
+    }
+  };
+
 
   return (
     <SidebarProvider>
@@ -1027,11 +1115,20 @@ export default function GameWrapper() {
             carPosition={gameData.carPosition}
             gridSize={GRID_SIZE}
             totalGridWidth={TOTAL_GRID_WIDTH}
-            onAcceleratorPress={() => (inputRef.current.forward = true)}
+            onAcceleratorPress={() => {
+              initAudioOnInteraction();
+              inputRef.current.forward = true;
+            }}
             onAcceleratorRelease={() => (inputRef.current.forward = false)}
-            onSteerLeftPress={() => (inputRef.current.left = true)}
+            onSteerLeftPress={() => {
+              initAudioOnInteraction();
+              inputRef.current.left = true;
+            }}
             onSteerLeftRelease={() => (inputRef.current.left = false)}
-            onSteerRightPress={() => (inputRef.current.right = true)}
+            onSteerRightPress={() => {
+              initAudioOnInteraction();
+              inputRef.current.right = true;
+            }}
             onSteerRightRelease={() => (inputRef.current.right = false)}
           />
         )}
