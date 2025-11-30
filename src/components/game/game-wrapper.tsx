@@ -763,6 +763,28 @@ export default function GameWrapper() {
           gridGroup.add(sectorLabel);
         }
       }
+      
+      // Create a home in Sector 15
+      const home = new THREE.Group();
+      const houseBaseMat = new THREE.MeshStandardMaterial({ color: 0xac8f71 });
+      const houseBaseGeom = new THREE.BoxGeometry(30, 20, 30);
+      const houseBase = new THREE.Mesh(houseBaseGeom, houseBaseMat);
+      houseBase.position.y = 10;
+      home.add(houseBase);
+
+      const roofMat = new THREE.MeshStandardMaterial({ color: 0xc44e4e });
+      const roofGeom = new THREE.ConeGeometry(25, 15, 4);
+      const roof = new THREE.Mesh(roofGeom, roofMat);
+      roof.position.y = 20 + 7.5; // base height + roof height/2
+      roof.rotation.y = Math.PI / 4;
+      home.add(roof);
+
+      // Sector 15: i=2, j=4
+      const sector15X = 4 * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+      const sector15Z = 2 * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+      home.position.set(sector15X, 0, sector15Z);
+      gridGroup.add(home);
+
 
       scene.add(gridGroup);
     }
