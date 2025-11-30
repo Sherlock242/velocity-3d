@@ -1,16 +1,14 @@
 'use client';
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  ChevronUp,
-  Zap,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronUp, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import MiniMap from './mini-map';
 
 type HudProps = {
   speed: number;
-  time: number;
+  carPosition: { x: number; z: number };
+  gridSize: number;
+  totalGridWidth: number;
   onAcceleratorPress: () => void;
   onAcceleratorRelease: () => void;
   onSteerLeftPress: () => void;
@@ -21,7 +19,9 @@ type HudProps = {
 
 export default function Hud({
   speed,
-  time,
+  carPosition,
+  gridSize,
+  totalGridWidth,
   onAcceleratorPress,
   onAcceleratorRelease,
   onSteerLeftPress,
@@ -29,15 +29,6 @@ export default function Hud({
   onSteerRightPress,
   onSteerRightRelease,
 }: HudProps) {
-  const formattedTime = (t: number) => {
-    const minutes = Math.floor(t / 60);
-    const seconds = Math.floor(t % 60);
-    const milliseconds = Math.floor((t * 100) % 100);
-    return `${minutes.toString().padStart(2, '0')}:${seconds
-      .toString()
-      .padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
-  };
-
   return (
     <div className="absolute inset-0 pointer-events-none text-accent">
       {/* Speedometer */}
@@ -57,14 +48,15 @@ export default function Hud({
         </Card>
       </div>
 
-      {/* Timer */}
+      {/* Minimap */}
       <div className="absolute top-4 left-4">
         <Card className="bg-card/50 backdrop-blur-sm border-accent/20">
           <CardContent className="p-2">
-            <p className="text-2xl font-bold font-headline">
-              {formattedTime(time)}
-            </p>
-            <p className="text-xs text-accent/80">RACE TIME</p>
+            <MiniMap
+              carPosition={carPosition}
+              gridSize={gridSize}
+              totalGridWidth={totalGridWidth}
+            />
           </CardContent>
         </Card>
       </div>

@@ -1,0 +1,73 @@
+'use client';
+
+type MiniMapProps = {
+  carPosition: { x: number; z: number };
+  gridSize: number;
+  totalGridWidth: number;
+};
+
+const MAP_SIZE = 128; // size of the map in pixels
+
+export default function MiniMap({
+  carPosition,
+  gridSize,
+  totalGridWidth,
+}: MiniMapProps) {
+  const halfGridWidth = totalGridWidth / 2;
+
+  // Convert car's world coordinates to map coordinates (0-1 range)
+  const mapX = (carPosition.x + halfGridWidth) / totalGridWidth;
+  const mapY = (carPosition.z + halfGridWidth) / totalGridWidth;
+
+  const carStyle = {
+    left: `${mapX * 100}%`,
+    top: `${mapY * 100}%`,
+  };
+
+  return (
+    <div
+      className="relative bg-card/50 border border-accent/20"
+      style={{ width: MAP_SIZE, height: MAP_SIZE }}
+    >
+      {/* Grid Lines */}
+      <div className="absolute inset-0">
+        {Array.from({ length: gridSize + 1 }).map((_, i) => {
+          const pos = `${(i / gridSize) * 100}%`;
+          return (
+            <React.Fragment key={i}>
+              {/* Vertical Line */}
+              <div
+                className="absolute bg-accent/20"
+                style={{
+                  left: pos,
+                  top: 0,
+                  width: 1,
+                  height: '100%',
+                }}
+              />
+              {/* Horizontal Line */}
+              <div
+                className="absolute bg-accent/20"
+                style={{
+                  top: pos,
+                  left: 0,
+                  height: 1,
+                  width: '100%',
+                }}
+              />
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      {/* Car Marker */}
+      <div
+        className="absolute w-2 h-2 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2"
+        style={carStyle}
+      />
+      <div className="absolute top-0 left-0 p-1 text-xs text-accent/80">
+        CITY MAP
+      </div>
+    </div>
+  );
+}

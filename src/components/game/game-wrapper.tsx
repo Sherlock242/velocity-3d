@@ -61,7 +61,11 @@ export default function GameWrapper() {
   const { toast } = useToast();
 
   const [theme, setTheme] = React.useState<TrackTheme>('City');
-  const [gameData, setGameData] = React.useState({ speed: 0, time: 0 });
+  const [gameData, setGameData] = React.useState({
+    speed: 0,
+    time: 0,
+    carPosition: { x: 0, z: 0 },
+  });
   const [isReady, setIsReady] = React.useState(false);
 
   // Game state refs
@@ -937,6 +941,7 @@ export default function GameWrapper() {
       setGameData({
         speed: velocityRef.current.length() * 3.6, // Convert m/s to km/h
         time: gameTimeRef.current,
+        carPosition: { x: car.position.x, z: car.position.z },
       });
 
       renderer.render(scene, camera);
@@ -1046,7 +1051,9 @@ export default function GameWrapper() {
         {isReady && (
           <Hud
             speed={gameData.speed}
-            time={gameData.time}
+            carPosition={gameData.carPosition}
+            gridSize={GRID_SIZE}
+            totalGridWidth={TOTAL_GRID_WIDTH}
             onAcceleratorPress={() => (inputRef.current.forward = true)}
             onAcceleratorRelease={() => (inputRef.current.forward = false)}
             onSteerLeftPress={() => (inputRef.current.left = true)}
