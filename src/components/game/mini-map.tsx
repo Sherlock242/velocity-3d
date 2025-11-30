@@ -8,7 +8,7 @@ type MiniMapProps = {
   totalGridWidth: number;
 };
 
-const MAP_SIZE = 128; // size of the map in pixels
+const MAP_SIZE = 96; // size of the map in pixels
 
 export default function MiniMap({
   carPosition,
