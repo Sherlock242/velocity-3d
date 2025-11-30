@@ -123,6 +123,9 @@ export default function GameWrapper() {
 
     const initAudio = () => {
       if (audioInitializedRef.current) return;
+      if (listener.context.state === 'suspended') {
+        listener.context.resume();
+      }
       audioInitializedRef.current = true;
 
       // Engine sound
@@ -1043,7 +1046,9 @@ export default function GameWrapper() {
     // The actual audio init is handled by the first keydown event.
     // This is to ensure audio can start on mobile if touch is the first interaction.
     if (!audioInitializedRef.current && audioListenerRef.current) {
-      audioListenerRef.current.context.resume();
+      if (audioListenerRef.current.context.state === 'suspended') {
+        audioListenerRef.current.context.resume();
+      }
     }
   };
 
