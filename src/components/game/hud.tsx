@@ -50,8 +50,8 @@ export default function Hud({
 
       {/* Minimap */}
       <div className="absolute top-4 left-4">
-        <Card className="bg-card/50 backdrop-blur-sm border-accent/20">
-          <CardContent className="p-2">
+        <Card className="bg-card/50 backdrop-blur-sm border-accent/20 overflow-hidden">
+          <CardContent className="p-0">
             <MiniMap
               carPosition={carPosition}
               gridSize={gridSize}
