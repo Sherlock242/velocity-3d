@@ -380,8 +380,7 @@ export default function GameWrapper() {
     function createGrid() {
         const gridGroup = new THREE.Group();
         const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-        const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-
+        
         // Ground
         const groundGeometry = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH + CELL_SIZE, TOTAL_GRID_WIDTH + CELL_SIZE);
         const groundMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].ground });
@@ -392,6 +391,11 @@ export default function GameWrapper() {
 
         // Roads
         const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x4a4a4a });
+        const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const lineLength = 5;
+        const lineGap = 10;
+        const lineWidth = 0.5;
+        const lineGeom = new THREE.PlaneGeometry(lineWidth, lineLength);
         
         for (let i = 0; i <= GRID_SIZE; i++) {
             const roadOffset = i * CELL_SIZE - halfTotalWidth;
@@ -405,6 +409,14 @@ export default function GameWrapper() {
             verticalRoad.receiveShadow = true;
             gridGroup.add(verticalRoad);
 
+            // Vertical lane markings
+            for (let j = -halfTotalWidth; j < halfTotalWidth; j += (lineLength + lineGap)) {
+                const line = new THREE.Mesh(lineGeom, lineMaterial);
+                line.position.set(roadOffset, 0.02, j + lineLength/2);
+                line.rotation.x = -Math.PI / 2;
+                gridGroup.add(line);
+            }
+
             // Horizontal roads
             const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
             const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
@@ -413,6 +425,15 @@ export default function GameWrapper() {
             horizontalRoad.position.z = roadOffset;
             horizontalRoad.receiveShadow = true;
             gridGroup.add(horizontalRoad);
+
+            // Horizontal lane markings
+            for (let j = -halfTotalWidth; j < halfTotalWidth; j += (lineLength + lineGap)) {
+                const line = new THREE.Mesh(lineGeom, lineMaterial);
+                line.position.set(j + lineLength/2, 0.02, roadOffset);
+                line.rotation.x = -Math.PI / 2;
+                line.rotation.z = Math.PI / 2;
+                gridGroup.add(line);
+            }
         }
 
         // Add scenery
