@@ -985,6 +985,7 @@ export default function GameWrapper() {
                   <div key={themeName} className="flex items-center space-x-2">
                     <RadioGroupItem value={themeName} id={themeName} />
                     <Label htmlFor={themeName}>{themeName}</Label>
+
                   </div>
                 ))}
               </RadioGroup>
