@@ -769,33 +769,63 @@ export default function GameWrapper() {
         }
       }
       
-      // Create a home in Sector 15
-      const home = new THREE.Group();
-      const houseBaseMat = new THREE.MeshStandardMaterial({ color: 0xac8f71 });
-      const houseBaseGeom = new THREE.BoxGeometry(30, 20, 30);
-      const houseBase = new THREE.Mesh(houseBaseGeom, houseBaseMat);
-      houseBase.position.y = 10;
-      home.add(houseBase);
+      // Create a mansion in Sector 15
+      const mansion = new THREE.Group();
+      const mansionMaterial = new THREE.MeshStandardMaterial({ color: 0xe0d7c6 });
+      const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x5a3a2a });
 
-      const roofMat = new THREE.MeshStandardMaterial({ color: 0xc44e4e });
-      const roofGeom = new THREE.ConeGeometry(25, 15, 4);
-      const roof = new THREE.Mesh(roofGeom, roofMat);
-      roof.position.y = 20 + 7.5; // base height + roof height/2
-      roof.rotation.y = Math.PI / 4;
-      home.add(roof);
+      // Main building
+      const mainBuildingGeom = new THREE.BoxGeometry(80, 40, 50);
+      const mainBuilding = new THREE.Mesh(mainBuildingGeom, mansionMaterial);
+      mainBuilding.position.y = 20;
+      mansion.add(mainBuilding);
 
-      // Sector 15: i=2, j=4 -> this is wrong calculation.
-      // sectorNumber = i * GRID_SIZE + j + 1
-      // 15 = z_index * 5 + x_index + 1
-      // 14 = z_index * 5 + x_index
-      // if z_index = 2, 14 = 10 + x_index -> x_index = 4.
-      // So cellZ = 2, cellX = 4
+      const mainRoofGeom = new THREE.ConeGeometry(60, 20, 4);
+      const mainRoof = new THREE.Mesh(mainRoofGeom, roofMaterial);
+      mainRoof.position.y = 40 + 10;
+      mainRoof.rotation.y = Math.PI / 4;
+      mansion.add(mainRoof);
+
+      // Left Wing
+      const leftWingGeom = new THREE.BoxGeometry(50, 30, 60);
+      const leftWing = new THREE.Mesh(leftWingGeom, mansionMaterial);
+      leftWing.position.set(-65, 15, 0);
+      mansion.add(leftWing);
+
+      const leftRoofGeom = new THREE.BoxGeometry(50, 2, 60);
+      const leftRoof = new THREE.Mesh(leftRoofGeom, roofMaterial);
+      leftRoof.position.set(-65, 31, 0);
+      mansion.add(leftRoof);
+
+      // Right Wing
+      const rightWingGeom = new THREE.BoxGeometry(50, 30, 60);
+      const rightWing = new THREE.Mesh(rightWingGeom, mansionMaterial);
+      rightWing.position.set(65, 15, 0);
+      mansion.add(rightWing);
+
+      const rightRoofGeom = new THREE.BoxGeometry(50, 2, 60);
+      const rightRoof = new THREE.Mesh(rightRoofGeom, roofMaterial);
+      rightRoof.position.set(65, 31, 0);
+      mansion.add(rightRoof);
+
+      // Entrance pillars
+      const pillarGeom = new THREE.CylinderGeometry(4, 4, 30, 16);
+      const pillarMaterial = new THREE.MeshStandardMaterial({ color: 0xd4c8b0 });
+      const pillar1 = new THREE.Mesh(pillarGeom, pillarMaterial);
+      pillar1.position.set(-20, 15, 30);
+      mansion.add(pillar1);
+      const pillar2 = new THREE.Mesh(pillarGeom, pillarMaterial);
+      pillar2.position.set(20, 15, 30);
+      mansion.add(pillar2);
+
       const sector15CellX = 4;
       const sector15CellZ = 2;
       const sector15X = sector15CellX * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
       const sector15Z = sector15CellZ * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-      home.position.set(sector15X, 0, sector15Z);
-      gridGroup.add(home);
+      mansion.position.set(sector15X, 0, sector15Z);
+      mansion.castShadow = true;
+      mansion.receiveShadow = true;
+      gridGroup.add(mansion);
 
 
       scene.add(gridGroup);
