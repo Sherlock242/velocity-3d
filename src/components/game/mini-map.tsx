@@ -28,7 +28,7 @@ export default function MiniMap({
 
   return (
     <div
-      className="relative bg-card"
+      className="relative bg-card/50"
       style={{ width: MAP_SIZE, height: MAP_SIZE }}
     >
       {/* Grid Lines */}
