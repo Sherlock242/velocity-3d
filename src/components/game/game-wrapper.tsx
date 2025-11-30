@@ -92,6 +92,7 @@ export default function GameWrapper() {
   const engineSoundRef = React.useRef<THREE.Audio>();
   const skidSoundRef = React.useRef<THREE.Audio>();
   const audioInitializedRef = React.useRef(false);
+  const engineOscillatorRef = React.useRef<OscillatorNode>();
 
 
   React.useEffect(() => {
@@ -129,49 +130,28 @@ export default function GameWrapper() {
       audioInitializedRef.current = true;
 
       // Engine sound
-      const engineOscillator = listener.context.createOscillator();
-      engineOscillator.type = 'sawtooth';
-      engineOscillator.frequency.value = 50;
-
-      const engineGain = listener.context.createGain();
-      engineGain.gain.value = 0;
-
-      engineOscillator.connect(engineGain);
-      engineGain.connect(listener.context.destination);
-      engineOscillator.start();
-
-      engineSoundRef.current = {
-        setVolume: (volume: number) => {
-          engineGain.gain.setTargetAtTime(volume, listener.context.currentTime, 0.01);
-        },
-        setFrequency: (frequency: number) => {
-          engineOscillator.frequency.setTargetAtTime(frequency, listener.context.currentTime, 0.01);
-        }
-      } as any;
+      const engineSound = new THREE.Audio(listener);
+      const oscillator = listener.context.createOscillator();
+      oscillator.type = 'sawtooth';
+      oscillator.frequency.value = 50;
+      oscillator.start();
+      engineSound.setNodeSource(oscillator);
+      engineSound.setVolume(0);
+      engineSoundRef.current = engineSound;
+      engineOscillatorRef.current = oscillator;
 
       // Skid sound
+      const skidSound = new THREE.Audio(listener);
       const skidNoiseBuffer = listener.context.createBuffer(1, listener.context.sampleRate * 2, listener.context.sampleRate);
       const output = skidNoiseBuffer.getChannelData(0);
       for (let i = 0; i < output.length; i++) {
         output[i] = Math.random() * 2 - 1;
       }
-
-      const skidSource = listener.context.createBufferSource();
-      skidSource.buffer = skidNoiseBuffer;
-      skidSource.loop = true;
-
-      const skidGain = listener.context.createGain();
-      skidGain.gain.value = 0;
-
-      skidSource.connect(skidGain);
-      skidGain.connect(listener.context.destination);
-      skidSource.start();
-
-       skidSoundRef.current = {
-        setVolume: (volume: number) => {
-          skidGain.gain.setTargetAtTime(volume, listener.context.currentTime, 0.05);
-        }
-      } as any;
+      skidSound.setBuffer(skidNoiseBuffer);
+      skidSound.setLoop(true);
+      skidSound.setVolume(0);
+      skidSound.play();
+      skidSoundRef.current = skidSound;
     };
 
 
@@ -862,14 +842,14 @@ export default function GameWrapper() {
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
       
       // --- AUDIO LOGIC ---
-      if (engineSoundRef.current && skidSoundRef.current) {
+      if (audioInitializedRef.current && engineSoundRef.current && skidSoundRef.current && engineOscillatorRef.current) {
         const speedRatio = velocityRef.current.length() / maxSpeed;
-        (engineSoundRef.current as any).setVolume(speedRatio * 0.1);
-        (engineSoundRef.current as any).setFrequency(50 + speedRatio * 150);
+        engineSoundRef.current.setVolume(speedRatio * 0.1);
+        engineOscillatorRef.current.frequency.setTargetAtTime(50 + speedRatio * 150, audioListenerRef.current!.context.currentTime, 0.01);
 
         const steerRatio = Math.abs(currentSteerAngle);
         const skidVolume = speedRatio > 0.2 && steerRatio > 0.5 ? (speedRatio * steerRatio) * 0.2 : 0;
-        (skidSoundRef.current as any).setVolume(skidVolume);
+        skidSoundRef.current.setVolume(skidVolume);
       }
 
 
@@ -1042,12 +1022,40 @@ export default function GameWrapper() {
   }, [theme, toast]);
 
   const initAudioOnInteraction = () => {
-    // This is a dummy function to attach to the touch controls
-    // The actual audio init is handled by the first keydown event.
-    // This is to ensure audio can start on mobile if touch is the first interaction.
     if (!audioInitializedRef.current && audioListenerRef.current) {
       if (audioListenerRef.current.context.state === 'suspended') {
-        audioListenerRef.current.context.resume();
+        audioListenerRef.current.context.resume().then(() => {
+           // Call initAudio only after context is resumed
+           if (!audioInitializedRef.current) {
+             // This is a reconstruction of the initAudio function's logic
+              const listener = audioListenerRef.current!;
+              audioInitializedRef.current = true;
+
+              // Engine sound
+              const engineSound = new THREE.Audio(listener);
+              const oscillator = listener.context.createOscillator();
+              oscillator.type = 'sawtooth';
+              oscillator.frequency.value = 50;
+              oscillator.start();
+              engineSound.setNodeSource(oscillator);
+              engineSound.setVolume(0);
+              engineSoundRef.current = engineSound;
+              engineOscillatorRef.current = oscillator;
+
+              // Skid sound
+              const skidSound = new THREE.Audio(listener);
+              const skidNoiseBuffer = listener.context.createBuffer(1, listener.context.sampleRate * 2, listener.context.sampleRate);
+              const output = skidNoiseBuffer.getChannelData(0);
+              for (let i = 0; i < output.length; i++) {
+                output[i] = Math.random() * 2 - 1;
+              }
+              skidSound.setBuffer(skidNoiseBuffer);
+              skidSound.setLoop(true);
+              skidSound.setVolume(0);
+              skidSound.play();
+              skidSoundRef.current = skidSound;
+           }
+        });
       }
     }
   };
@@ -1141,3 +1149,5 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
+    
