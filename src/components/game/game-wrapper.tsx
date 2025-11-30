@@ -85,7 +85,7 @@ export default function GameWrapper() {
   const obstacleCarsRef = React.useRef<THREE.Group[]>([]);
 
   // Camera control refs
-  const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 5, -10));
+  const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 4, -8));
 
   React.useEffect(() => {
     let mountNode: HTMLDivElement | null = null;
@@ -806,7 +806,7 @@ export default function GameWrapper() {
       wheels[1].rotation.y = wheelSteerAngle;
 
       // --- CAMERA LOGIC ---
-      const offset = new THREE.Vector3(0, 4, -8);
+      const offset = cameraOffsetRef.current.clone();
       offset.applyQuaternion(car.quaternion);
       offset.add(car.position);
 
