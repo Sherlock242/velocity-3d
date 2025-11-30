@@ -29,17 +29,17 @@ const TRACK_THEMES: Record<
 > = {
   Forest: {
     ground: new THREE.Color(0x228b22), // Grassy ground color
-    sky: new THREE.Color(0x87ceeb),
+    sky: new THREE.Color(0xffa500), // Orange sunset
     scenery: [new THREE.Color(0x006400), new THREE.Color(0x004000)],
   },
   Desert: {
     ground: new THREE.Color(0xc2b280), // Sand color
-    sky: new THREE.Color(0x00008b),
+    sky: new THREE.Color(0x8a2be2), // Purple/orange sunset
     scenery: [new THREE.Color(0x8b4513)],
   },
   City: {
     ground: new THREE.Color(0x004d00), // Dark green for city parks
-    sky: new THREE.Color(0x343434),
+    sky: new THREE.Color(0x00008b), // Dark blue evening
     scenery: [
       new THREE.Color(0x808080), 
       new THREE.Color(0xA9A9A9), 
