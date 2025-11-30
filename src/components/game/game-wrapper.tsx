@@ -705,6 +705,11 @@ export default function GameWrapper() {
         const cellX = Math.floor(Math.random() * GRID_SIZE);
         const cellZ = Math.floor(Math.random() * GRID_SIZE);
 
+        const sectorNumber = cellZ * GRID_SIZE + cellX + 1;
+        if (sectorNumber === 15) {
+          continue; // Skip placing random buildings in Sector 15
+        }
+
         const cellCenterX = cellX * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
         const cellCenterZ = cellZ * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
 
@@ -779,9 +784,16 @@ export default function GameWrapper() {
       roof.rotation.y = Math.PI / 4;
       home.add(roof);
 
-      // Sector 15: i=2, j=4
-      const sector15X = 4 * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-      const sector15Z = 2 * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+      // Sector 15: i=2, j=4 -> this is wrong calculation.
+      // sectorNumber = i * GRID_SIZE + j + 1
+      // 15 = z_index * 5 + x_index + 1
+      // 14 = z_index * 5 + x_index
+      // if z_index = 2, 14 = 10 + x_index -> x_index = 4.
+      // So cellZ = 2, cellX = 4
+      const sector15CellX = 4;
+      const sector15CellZ = 2;
+      const sector15X = sector15CellX * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+      const sector15Z = sector15CellZ * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
       home.position.set(sector15X, 0, sector15Z);
       gridGroup.add(home);
 
