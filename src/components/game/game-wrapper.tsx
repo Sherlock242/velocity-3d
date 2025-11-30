@@ -22,6 +22,7 @@ import type { TrackTheme } from '@/lib/types';
 import Hud from './hud';
 import AiOpponentGenerator from './ai-opponent-generator';
 import { handleAssessPenalty } from '@/app/actions';
+import MiniMap from './mini-map';
 
 const TRACK_THEMES: Record<
   TrackTheme,
@@ -84,12 +85,6 @@ export default function GameWrapper() {
   const obstacleCarsRef = React.useRef<THREE.Group[]>([]);
 
   // Camera control refs
-  const orbitControlsRef = React.useRef({
-    isDragging: false,
-    previousMousePosition: { x: 0, y: 0 },
-    azimuthAngle: Math.PI, // Start from behind the car
-    polarAngle: Math.PI / 3, // Angle from the top
-  });
   const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 5, -10));
 
   React.useEffect(() => {
@@ -191,7 +186,7 @@ export default function GameWrapper() {
 
     // Cabin
     const windshieldMaterial = new THREE.MeshStandardMaterial({
-      color: 0xffd700,
+      color: 0x2cd7e2,
       metalness: 0.9,
       roughness: 0.1,
       transparent: true,
@@ -539,9 +534,6 @@ export default function GameWrapper() {
       obstacleCarsRef.current.push(obstacle);
     }
     
-    // --- TEXTURE LOADER ---
-    const loader = new THREE.TextureLoader();
-    
     // --- FONT LOADER ---
     function createTextSprite(text: string) {
       const canvas = document.createElement('canvas');
@@ -751,40 +743,6 @@ export default function GameWrapper() {
     };
     window.addEventListener('resize', onResize);
 
-    // --- ORBIT CONTROLS LISTENERS ---
-    const onPointerDown = (e: PointerEvent) => {
-      if ((e.target as HTMLElement)?.closest('.pointer-events-auto')) return;
-      orbitControlsRef.current.isDragging = true;
-      orbitControlsRef.current.previousMousePosition.x = e.clientX;
-      orbitControlsRef.current.previousMousePosition.y = e.clientY;
-    };
-    const onPointerUp = () => {
-      orbitControlsRef.current.isDragging = false;
-    };
-    const onPointerMove = (e: PointerEvent) => {
-      if (!orbitControlsRef.current.isDragging) return;
-
-      const deltaX =
-        e.clientX - orbitControlsRef.current.previousMousePosition.x;
-      const deltaY =
-        e.clientY - orbitControlsRef.current.previousMousePosition.y;
-
-      orbitControlsRef.current.azimuthAngle -= deltaX * 0.005;
-      orbitControlsRef.current.polarAngle -= deltaY * 0.005;
-
-      // Clamp polar angle
-      orbitControlsRef.current.polarAngle = Math.max(
-        0.1,
-        Math.min(Math.PI - 0.1, orbitControlsRef.current.polarAngle)
-      );
-
-      orbitControlsRef.current.previousMousePosition.x = e.clientX;
-      orbitControlsRef.current.previousMousePosition.y = e.clientY;
-    };
-
-    mountNode.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointermove', onPointerMove);
 
     const clock = new THREE.Clock();
     let currentSteerAngle = 0;
@@ -848,47 +806,12 @@ export default function GameWrapper() {
       wheels[1].rotation.y = wheelSteerAngle;
 
       // --- CAMERA LOGIC ---
-      if (orbitControlsRef.current.isDragging) {
-        // Orbit control logic
-        const radius = 10;
-        cameraOffsetRef.current.x =
-          radius *
-          Math.sin(orbitControlsRef.current.polarAngle) *
-          Math.sin(orbitControlsRef.current.azimuthAngle);
-        cameraOffsetRef.current.y =
-          radius * Math.cos(orbitControlsRef.current.polarAngle);
-        cameraOffsetRef.current.z =
-          radius *
-          Math.sin(orbitControlsRef.current.polarAngle) *
-          Math.cos(orbitControlsRef.current.azimuthAngle);
+      const offset = new THREE.Vector3(0, 4, -8);
+      offset.applyQuaternion(car.quaternion);
+      offset.add(car.position);
 
-        camera.position.copy(car.position).add(cameraOffsetRef.current);
-        camera.lookAt(car.position);
-      } else {
-        // Default follow camera logic
-        const targetAzimuth = car.rotation.y + Math.PI;
-        const targetPolar = Math.PI / 3;
-
-        // Smoothly interpolate the angles
-        orbitControlsRef.current.azimuthAngle +=
-          (targetAzimuth - orbitControlsRef.current.azimuthAngle) * 0.1;
-        orbitControlsRef.current.polarAngle +=
-          (targetPolar - orbitControlsRef.current.polarAngle) * 0.1;
-
-        const radius = 10;
-        const followOffset = new THREE.Vector3(
-          radius *
-            Math.sin(orbitControlsRef.current.polarAngle) *
-            Math.sin(orbitControlsRef.current.azimuthAngle),
-          radius * Math.cos(orbitControlsRef.current.polarAngle),
-          radius *
-            Math.sin(orbitControlsRef.current.polarAngle) *
-            Math.cos(orbitControlsRef.current.azimuthAngle)
-        );
-
-        camera.position.copy(car.position).add(followOffset);
-        camera.lookAt(car.position);
-      }
+      camera.position.copy(offset);
+      camera.lookAt(car.position);
 
       // --- OBSTACLE LOGIC ---
       const obstacleSpeed = 50;
@@ -1006,11 +929,8 @@ export default function GameWrapper() {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointermove', onPointerMove);
 
       if (mountNode) {
-        mountNode.removeEventListener('pointerdown', onPointerDown);
         // Check if the renderer's DOM element is still a child of mountNode
         if (renderer.domElement.parentNode === mountNode) {
           mountNode.removeChild(renderer.domElement);
