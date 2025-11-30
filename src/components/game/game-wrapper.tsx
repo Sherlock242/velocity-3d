@@ -109,8 +109,8 @@ export default function GameWrapper() {
     renderer.shadowMap.enabled = true;
     mountNode.appendChild(renderer.domElement);
 
-    // --- SKY DOME ---
-    const skyGeometry = new THREE.SphereGeometry(4000, 32, 15);
+    // --- SKYBOX ---
+    const skyGeometry = new THREE.BoxGeometry(4500, 4500, 4500);
     const vertexShader = `
       varying vec3 vWorldPosition;
       void main() {
@@ -127,7 +127,7 @@ export default function GameWrapper() {
       uniform float exponent;
       varying vec3 vWorldPosition;
       void main() {
-        float h = normalize( vWorldPosition + offset ).y;
+        float h = normalize(vWorldPosition).y;
         vec3 finalColor;
         if (h > 0.0) {
           finalColor = mix(middleColor, topColor, pow(h, exponent));
