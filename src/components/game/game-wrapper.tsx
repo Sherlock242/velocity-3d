@@ -85,7 +85,7 @@ export default function GameWrapper() {
   const obstacleCarsRef = React.useRef<THREE.Group[]>([]);
 
   // Camera control refs
-  const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 4, -8));
+  const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 3, -7));
 
   React.useEffect(() => {
     let mountNode: HTMLDivElement | null = null;
