@@ -25,22 +25,27 @@ import { handleAssessPenalty } from '@/app/actions';
 
 const TRACK_THEMES: Record<
   TrackTheme,
-  { ground: THREE.Color; sky: THREE.Color; scenery: THREE.Color }
+  { ground: THREE.Color; sky: THREE.Color; scenery: THREE.Color[] }
 > = {
   Forest: {
     ground: new THREE.Color(0x228b22), // Grassy ground color
     sky: new THREE.Color(0x87ceeb),
-    scenery: new THREE.Color(0x006400),
+    scenery: [new THREE.Color(0x006400), new THREE.Color(0x004000)],
   },
   Desert: {
     ground: new THREE.Color(0xc2b280), // Sand color
     sky: new THREE.Color(0x00008b),
-    scenery: new THREE.Color(0x8b4513),
+    scenery: [new THREE.Color(0x8b4513)],
   },
   City: {
-    ground: new THREE.Color(0x696969), // Pavement color
+    ground: new THREE.Color(0x004d00), // Dark green for city parks
     sky: new THREE.Color(0x343434),
-    scenery: new THREE.Color(0x808080),
+    scenery: [
+      new THREE.Color(0x808080), 
+      new THREE.Color(0xA9A9A9), 
+      new THREE.Color(0x696969),
+      new THREE.Color(0x888888)
+    ],
   },
 };
 
@@ -390,7 +395,7 @@ export default function GameWrapper() {
         gridGroup.add(ground);
 
         // Roads
-        const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x4a4a4a });
+        const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
         const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
         const lineLength = 5;
         const lineGap = 10;
@@ -437,7 +442,7 @@ export default function GameWrapper() {
         }
 
         // Add scenery
-        const sceneryMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].scenery });
+        const sceneryColors = TRACK_THEMES[theme].scenery;
         for (let i = 0; i < (GRID_SIZE + 1) * (GRID_SIZE + 1) * 4; i++) {
             const cellX = Math.floor(Math.random() * GRID_SIZE);
             const cellZ = Math.floor(Math.random() * GRID_SIZE);
@@ -447,6 +452,9 @@ export default function GameWrapper() {
 
             const x = cellCenterX + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
             const z = cellCenterZ + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
+            
+            const randomColor = sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
+            const sceneryMaterial = new THREE.MeshStandardMaterial({ color: randomColor });
             
             let sceneryObject: THREE.Mesh;
 
