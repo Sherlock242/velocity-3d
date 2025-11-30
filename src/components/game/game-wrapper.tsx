@@ -41,10 +41,10 @@ const TRACK_THEMES: Record<
     ground: new THREE.Color(0x004d00), // Dark green for city parks
     sky: new THREE.Color(0x00008b), // Dark blue evening
     scenery: [
-      new THREE.Color(0x808080), 
-      new THREE.Color(0xA9A9A9), 
+      new THREE.Color(0x808080),
+      new THREE.Color(0xA9A9A9),
       new THREE.Color(0x696969),
-      new THREE.Color(0x888888)
+      new THREE.Color(0x888888),
     ],
   },
 };
@@ -78,7 +78,6 @@ export default function GameWrapper() {
   const animationFrameIdRef = React.useRef<number>();
   const obstacleCarsRef = React.useRef<THREE.Group[]>([]);
 
-
   // Camera control refs
   const orbitControlsRef = React.useRef({
     isDragging: false,
@@ -96,10 +95,9 @@ export default function GameWrapper() {
     } else {
       return;
     }
-    
+
     // --- BASIC SETUP ---
     const scene = new THREE.Scene();
-    scene.background = TRACK_THEMES[theme].sky;
     const camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
@@ -110,7 +108,51 @@ export default function GameWrapper() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     mountNode.appendChild(renderer.domElement);
-    
+
+    // --- SKY DOME ---
+    const skyGeometry = new THREE.SphereGeometry(4000, 32, 15);
+    const vertexShader = `
+      varying vec3 vWorldPosition;
+      void main() {
+        vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+        vWorldPosition = worldPosition.xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+      }
+    `;
+    const fragmentShader = `
+      uniform vec3 topColor;
+      uniform vec3 middleColor;
+      uniform vec3 bottomColor;
+      uniform float offset;
+      uniform float exponent;
+      varying vec3 vWorldPosition;
+      void main() {
+        float h = normalize( vWorldPosition + offset ).y;
+        vec3 finalColor;
+        if (h > 0.0) {
+          finalColor = mix(middleColor, topColor, pow(h, exponent));
+        } else {
+          finalColor = mix(middleColor, bottomColor, pow(-h, exponent));
+        }
+        gl_FragColor = vec4(finalColor, 1.0);
+      }
+    `;
+    const uniforms = {
+      topColor: { value: new THREE.Color(0x0077ff) },
+      middleColor: { value: new THREE.Color(0xffe488) },
+      bottomColor: { value: new THREE.Color(0xff8c00) },
+      offset: { value: 0 },
+      exponent: { value: 0.6 }
+    };
+    const skyMaterial = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms,
+      side: THREE.BackSide
+    });
+    const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+    scene.add(sky);
+
     // --- LIGHTING ---
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
@@ -118,93 +160,143 @@ export default function GameWrapper() {
     dirLight.position.set(50, 100, 50);
     dirLight.castShadow = true;
     scene.add(dirLight);
-    
+
     // --- LAMBORGHINI CAR ---
     const car = new THREE.Group();
     car.position.y = 0.5;
 
     const bodyMaterial = new THREE.MeshStandardMaterial({
-      color: 0xB72121,
+      color: 0xb72121,
       metalness: 0.9,
       roughness: 0.2,
     });
-    
+
     const bodyWidth = 2.2;
     const bodyLength = 4.5;
     const bodyHeight = 1.2;
-    
+
     // Main body
-    const carBody = new THREE.Mesh(new THREE.BoxGeometry(bodyWidth, bodyHeight * 0.5, bodyLength), bodyMaterial);
+    const carBody = new THREE.Mesh(
+      new THREE.BoxGeometry(bodyWidth, bodyHeight * 0.5, bodyLength),
+      bodyMaterial
+    );
     carBody.position.y = bodyHeight * 0.25;
     carBody.castShadow = true;
     car.add(carBody);
 
     // Cabin
     const windshieldMaterial = new THREE.MeshStandardMaterial({
-        color: 0xFFD700,
-        metalness: 0.9,
-        roughness: 0.1,
-        transparent: true,
-        opacity: 0.4
+      color: 0xffd700,
+      metalness: 0.9,
+      roughness: 0.1,
+      transparent: true,
+      opacity: 0.4,
     });
-    const cabinGeom = new THREE.BoxGeometry(bodyWidth * 0.7, bodyHeight * 0.4, bodyLength * 0.4);
+    const cabinGeom = new THREE.BoxGeometry(
+      bodyWidth * 0.7,
+      bodyHeight * 0.4,
+      bodyLength * 0.4
+    );
     const cabin = new THREE.Mesh(cabinGeom, windshieldMaterial);
     cabin.position.y = bodyHeight * 0.6;
     cabin.position.z = -bodyLength * 0.1;
     car.add(cabin);
 
     // Spoiler
-    const spoilerMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+    const spoilerMaterial = new THREE.MeshStandardMaterial({
+      color: 0x111111,
+    });
     const spoilerWingGeom = new THREE.BoxGeometry(bodyWidth * 1.1, 0.05, 0.3);
     const spoilerWing = new THREE.Mesh(spoilerWingGeom, spoilerMaterial);
-    spoilerWing.position.set(0, bodyHeight * 0.5 + 0.2, -bodyLength/2 - 0.1);
+    spoilerWing.position.set(0, bodyHeight * 0.5 + 0.2, -bodyLength / 2 - 0.1);
     spoilerWing.castShadow = true;
     car.add(spoilerWing);
-    
+
     const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
-    const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
-    spoilerSupport1.position.set(-bodyWidth/3, bodyHeight*0.5 + 0.1, -bodyLength/2 - 0.1);
+    const spoilerSupport1 = new THREE.Mesh(
+      spoilerSupportGeom,
+      spoilerMaterial
+    );
+    spoilerSupport1.position.set(
+      -bodyWidth / 3,
+      bodyHeight * 0.5 + 0.1,
+      -bodyLength / 2 - 0.1
+    );
     spoilerSupport1.castShadow = true;
     car.add(spoilerSupport1);
-    
-    const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
-    spoilerSupport2.position.set(bodyWidth/3, bodyHeight*0.5 + 0.1, -bodyLength/2 - 0.1);
+
+    const spoilerSupport2 = new THREE.Mesh(
+      spoilerSupportGeom,
+      spoilerMaterial
+    );
+    spoilerSupport2.position.set(
+      bodyWidth / 3,
+      bodyHeight * 0.5 + 0.1,
+      -bodyLength / 2 - 0.1
+    );
     spoilerSupport2.castShadow = true;
     car.add(spoilerSupport2);
 
     // Side Mirrors
-    const mirrorMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.5 });
+    const mirrorMaterial = new THREE.MeshStandardMaterial({
+      color: 0x111111,
+      metalness: 0.5,
+    });
     const mirrorShape = new THREE.BoxGeometry(0.15, 0.15, 0.3);
     const leftMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
-    leftMirror.position.set(-bodyWidth / 2 - 0.1, bodyHeight * 0.6, bodyLength / 2 - 1.5);
+    leftMirror.position.set(
+      -bodyWidth / 2 - 0.1,
+      bodyHeight * 0.6,
+      bodyLength / 2 - 1.5
+    );
     leftMirror.rotation.y = -Math.PI / 8;
     car.add(leftMirror);
 
     const rightMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
-    rightMirror.position.set(bodyWidth / 2 + 0.1, bodyHeight * 0.6, bodyLength / 2 - 1.5);
+    rightMirror.position.set(
+      bodyWidth / 2 + 0.1,
+      bodyHeight * 0.6,
+      bodyLength / 2 - 1.5
+    );
     rightMirror.rotation.y = Math.PI / 8;
     car.add(rightMirror);
 
     // Tail Lights
-    const tailLightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.5 });
+    const tailLightMaterial = new THREE.MeshStandardMaterial({
+      color: 0xff0000,
+      emissive: 0xff0000,
+      emissiveIntensity: 0.5,
+    });
     const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
     const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
-    tailLights.position.set(0, bodyHeight*0.5, -bodyLength/2 - 0.02);
+    tailLights.position.set(0, bodyHeight * 0.5, -bodyLength / 2 - 0.02);
     car.add(tailLights);
 
     // Headlights
-    const headLightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffeeaa, emissiveIntensity: 0.5 });
+    const headLightMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      emissive: 0xffeeaa,
+      emissiveIntensity: 0.5,
+    });
     const headLightGeom = new THREE.BoxGeometry(0.6, 0.05, 0.1);
     const leftHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
-    leftHeadLight.position.set(-bodyWidth / 3, bodyHeight * 0.2, bodyLength / 2 - 0.05);
+    leftHeadLight.position.set(
+      -bodyWidth / 3,
+      bodyHeight * 0.2,
+      bodyLength / 2 - 0.05
+    );
     leftHeadLight.rotation.y = -Math.PI / 16;
     car.add(leftHeadLight);
 
     const rightHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
-    rightHeadLight.position.set(bodyWidth / 3, bodyHeight*0.2, bodyLength / 2 - 0.05);
+    rightHeadLight.position.set(
+      bodyWidth / 3,
+      bodyHeight * 0.2,
+      bodyLength / 2 - 0.05
+    );
     rightHeadLight.rotation.y = Math.PI / 16;
     car.add(rightHeadLight);
-    
+
     // Front Intakes
     const intakeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
     const intakeGeom = new THREE.BoxGeometry(bodyWidth / 3, 0.1, 0.2);
@@ -216,24 +308,27 @@ export default function GameWrapper() {
     rightIntake.position.set(bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
     car.add(rightIntake);
 
-    const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
+    const wheelMaterial = new THREE.MeshStandardMaterial({
+      color: 0x111111,
+      roughness: 0.8,
+    });
     const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
     wheelGeometry.rotateZ(Math.PI / 2); // Rotate to align with car's forward direction
 
     const wheels: THREE.Mesh[] = [];
     const wheelPositions = [
-        new THREE.Vector3(bodyWidth/2, 0.2, bodyLength / 2 - 1),
-        new THREE.Vector3(-bodyWidth/2, 0.2, bodyLength / 2 - 1),
-        new THREE.Vector3(bodyWidth/2, 0.2, -bodyLength / 2 + 1),
-        new THREE.Vector3(-bodyWidth/2, 0.2, -bodyLength / 2 + 1),
+      new THREE.Vector3(bodyWidth / 2, 0.2, bodyLength / 2 - 1),
+      new THREE.Vector3(-bodyWidth / 2, 0.2, bodyLength / 2 - 1),
+      new THREE.Vector3(bodyWidth / 2, 0.2, -bodyLength / 2 + 1),
+      new THREE.Vector3(-bodyWidth / 2, 0.2, -bodyLength / 2 + 1),
     ];
-    
-    wheelPositions.forEach(pos => {
-        const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
-        wheel.position.copy(pos);
-        wheel.castShadow = true;
-        car.add(wheel);
-        wheels.push(wheel);
+
+    wheelPositions.forEach((pos) => {
+      const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+      wheel.position.copy(pos);
+      wheel.castShadow = true;
+      car.add(wheel);
+      wheels.push(wheel);
     });
 
     scene.add(car);
@@ -241,305 +336,402 @@ export default function GameWrapper() {
 
     camera.position.set(0, 5, -10);
     camera.lookAt(car.position);
-    
+
     // --- OBSTACLE CARS ---
     function createObstacleCar() {
-        const obstacleCar = new THREE.Group();
-        obstacleCar.position.y = 0.5;
-        obstacleCar.rotation.y = Math.PI;
+      const obstacleCar = new THREE.Group();
+      obstacleCar.position.y = 0.5;
+      obstacleCar.rotation.y = Math.PI;
 
-        const bodyMaterial = new THREE.MeshStandardMaterial({
-          color: Math.random() * 0xffffff,
-          metalness: 0.8,
-          roughness: 0.3,
-        });
-        
-        const bodyWidth = 2.2;
-        const bodyLength = 4.5;
-        const bodyHeight = 1.2;
-        
-        // Main body
-        const carBody = new THREE.Mesh(new THREE.BoxGeometry(bodyWidth, bodyHeight * 0.5, bodyLength), bodyMaterial);
-        carBody.position.y = bodyHeight * 0.25;
-        carBody.castShadow = true;
-        obstacleCar.add(carBody);
+      const bodyMaterial = new THREE.MeshStandardMaterial({
+        color: Math.random() * 0xffffff,
+        metalness: 0.8,
+        roughness: 0.3,
+      });
 
-        // Cabin
-        const windshieldMaterial = new THREE.MeshStandardMaterial({
-            color: 0x000000,
-            metalness: 0.8,
-            roughness: 0.1,
-        });
-        const cabinGeom = new THREE.BoxGeometry(bodyWidth * 0.7, bodyHeight * 0.4, bodyLength * 0.4);
-        const cabin = new THREE.Mesh(cabinGeom, windshieldMaterial);
-        cabin.position.y = bodyHeight * 0.6;
-        cabin.position.z = -bodyLength * 0.1;
-        obstacleCar.add(cabin);
+      const bodyWidth = 2.2;
+      const bodyLength = 4.5;
+      const bodyHeight = 1.2;
 
-        // Spoiler
-        const spoilerMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
-        const spoilerWingGeom = new THREE.BoxGeometry(bodyWidth * 1.1, 0.05, 0.3);
-        const spoilerWing = new THREE.Mesh(spoilerWingGeom, spoilerMaterial);
-        spoilerWing.position.set(0, bodyHeight * 0.5 + 0.2, -bodyLength/2 - 0.1);
-        spoilerWing.castShadow = true;
-        obstacleCar.add(spoilerWing);
-        
-        const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
-        const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
-        spoilerSupport1.position.set(-bodyWidth/3, bodyHeight*0.5 + 0.1, -bodyLength/2 - 0.1);
-        spoilerSupport1.castShadow = true;
-        obstacleCar.add(spoilerSupport1);
-        
-        const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, spoilerMaterial);
-        spoilerSupport2.position.set(bodyWidth/3, bodyHeight*0.5 + 0.1, -bodyLength/2 - 0.1);
-        spoilerSupport2.castShadow = true;
-        obstacleCar.add(spoilerSupport2);
+      // Main body
+      const carBody = new THREE.Mesh(
+        new THREE.BoxGeometry(bodyWidth, bodyHeight * 0.5, bodyLength),
+        bodyMaterial
+      );
+      carBody.position.y = bodyHeight * 0.25;
+      carBody.castShadow = true;
+      obstacleCar.add(carBody);
 
-        // Side Mirrors
-        const mirrorMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.5 });
-        const mirrorShape = new THREE.BoxGeometry(0.15, 0.15, 0.3);
-        const leftMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
-        leftMirror.position.set(-bodyWidth / 2 - 0.1, bodyHeight * 0.6, bodyLength / 2 - 1.5);
-        leftMirror.rotation.y = -Math.PI / 8;
-        obstacleCar.add(leftMirror);
+      // Cabin
+      const windshieldMaterial = new THREE.MeshStandardMaterial({
+        color: 0x000000,
+        metalness: 0.8,
+        roughness: 0.1,
+      });
+      const cabinGeom = new THREE.BoxGeometry(
+        bodyWidth * 0.7,
+        bodyHeight * 0.4,
+        bodyLength * 0.4
+      );
+      const cabin = new THREE.Mesh(cabinGeom, windshieldMaterial);
+      cabin.position.y = bodyHeight * 0.6;
+      cabin.position.z = -bodyLength * 0.1;
+      obstacleCar.add(cabin);
 
-        const rightMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
-        rightMirror.position.set(bodyWidth / 2 + 0.1, bodyHeight * 0.6, bodyLength / 2 - 1.5);
-        rightMirror.rotation.y = Math.PI / 8;
-        obstacleCar.add(rightMirror);
+      // Spoiler
+      const spoilerMaterial = new THREE.MeshStandardMaterial({
+        color: 0x111111,
+      });
+      const spoilerWingGeom = new THREE.BoxGeometry(bodyWidth * 1.1, 0.05, 0.3);
+      const spoilerWing = new THREE.Mesh(spoilerWingGeom, spoilerMaterial);
+      spoilerWing.position.set(0, bodyHeight * 0.5 + 0.2, -bodyLength / 2 - 0.1);
+      spoilerWing.castShadow = true;
+      obstacleCar.add(spoilerWing);
 
-        // Tail Lights
-        const tailLightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.5 });
-        const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
-        const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
-        tailLights.position.set(0, bodyHeight*0.5, -bodyLength/2 - 0.02);
-        obstacleCar.add(tailLights);
+      const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
+      const spoilerSupport1 = new THREE.Mesh(
+        spoilerSupportGeom,
+        spoilerMaterial
+      );
+      spoilerSupport1.position.set(
+        -bodyWidth / 3,
+        bodyHeight * 0.5 + 0.1,
+        -bodyLength / 2 - 0.1
+      );
+      spoilerSupport1.castShadow = true;
+      obstacleCar.add(spoilerSupport1);
 
-        // Headlights
-        const headLightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffeeaa, emissiveIntensity: 0.5 });
-        const headLightGeom = new THREE.BoxGeometry(0.6, 0.05, 0.1);
-        const leftHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
-        leftHeadLight.position.set(-bodyWidth / 3, bodyHeight * 0.2, bodyLength / 2 - 0.05);
-        leftHeadLight.rotation.y = -Math.PI / 16;
-        obstacleCar.add(leftHeadLight);
+      const spoilerSupport2 = new THREE.Mesh(
+        spoilerSupportGeom,
+        spoilerMaterial
+      );
+      spoilerSupport2.position.set(
+        bodyWidth / 3,
+        bodyHeight * 0.5 + 0.1,
+        -bodyLength / 2 - 0.1
+      );
+      spoilerSupport2.castShadow = true;
+      obstacleCar.add(spoilerSupport2);
 
-        const rightHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
-        rightHeadLight.position.set(bodyWidth / 3, bodyHeight*0.2, bodyLength / 2 - 0.05);
-        rightHeadLight.rotation.y = Math.PI / 16;
-        obstacleCar.add(rightHeadLight);
-        
-        // Front Intakes
-        const intakeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
-        const intakeGeom = new THREE.BoxGeometry(bodyWidth / 3, 0.1, 0.2);
-        const leftIntake = new THREE.Mesh(intakeGeom, intakeMaterial);
-        leftIntake.position.set(-bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
-        obstacleCar.add(leftIntake);
+      // Side Mirrors
+      const mirrorMaterial = new THREE.MeshStandardMaterial({
+        color: 0x111111,
+        metalness: 0.5,
+      });
+      const mirrorShape = new THREE.BoxGeometry(0.15, 0.15, 0.3);
+      const leftMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
+      leftMirror.position.set(
+        -bodyWidth / 2 - 0.1,
+        bodyHeight * 0.6,
+        bodyLength / 2 - 1.5
+      );
+      leftMirror.rotation.y = -Math.PI / 8;
+      obstacleCar.add(leftMirror);
 
-        const rightIntake = new THREE.Mesh(intakeGeom, intakeMaterial);
-        rightIntake.position.set(bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
-        obstacleCar.add(rightIntake);
+      const rightMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
+      rightMirror.position.set(
+        bodyWidth / 2 + 0.1,
+        bodyHeight * 0.6,
+        bodyLength / 2 - 1.5
+      );
+      rightMirror.rotation.y = Math.PI / 8;
+      obstacleCar.add(rightMirror);
 
-        const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
-        const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
-        wheelGeometry.rotateZ(Math.PI / 2);
+      // Tail Lights
+      const tailLightMaterial = new THREE.MeshStandardMaterial({
+        color: 0xff0000,
+        emissive: 0xff0000,
+        emissiveIntensity: 0.5,
+      });
+      const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
+      const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
+      tailLights.position.set(0, bodyHeight * 0.5, -bodyLength / 2 - 0.02);
+      obstacleCar.add(tailLights);
 
-        const wheelPositions = [
-            new THREE.Vector3(bodyWidth/2, 0.2, bodyLength / 2 - 1),
-            new THREE.Vector3(-bodyWidth/2, 0.2, bodyLength / 2 - 1),
-            new THREE.Vector3(bodyWidth/2, 0.2, -bodyLength / 2 + 1),
-            new THREE.Vector3(-bodyWidth/2, 0.2, -bodyLength / 2 + 1),
-        ];
-        
-        wheelPositions.forEach(pos => {
-            const wheel = new THREE.Mesh(wheelGeometry.clone(), wheelMaterial.clone());
-            wheel.position.copy(pos);
-            wheel.castShadow = true;
-            obstacleCar.add(wheel);
-        });
+      // Headlights
+      const headLightMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: 0xffeeaa,
+        emissiveIntensity: 0.5,
+      });
+      const headLightGeom = new THREE.BoxGeometry(0.6, 0.05, 0.1);
+      const leftHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
+      leftHeadLight.position.set(
+        -bodyWidth / 3,
+        bodyHeight * 0.2,
+        bodyLength / 2 - 0.05
+      );
+      leftHeadLight.rotation.y = -Math.PI / 16;
+      obstacleCar.add(leftHeadLight);
 
-        scene.add(obstacleCar);
-        return obstacleCar;
+      const rightHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
+      rightHeadLight.position.set(
+        bodyWidth / 3,
+        bodyHeight * 0.2,
+        bodyLength / 2 - 0.05
+      );
+      rightHeadLight.rotation.y = Math.PI / 16;
+      obstacleCar.add(rightHeadLight);
+
+      // Front Intakes
+      const intakeMaterial = new THREE.MeshStandardMaterial({
+        color: 0x000000,
+      });
+      const intakeGeom = new THREE.BoxGeometry(bodyWidth / 3, 0.1, 0.2);
+      const leftIntake = new THREE.Mesh(intakeGeom, intakeMaterial);
+      leftIntake.position.set(-bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
+      obstacleCar.add(leftIntake);
+
+      const rightIntake = new THREE.Mesh(intakeGeom, intakeMaterial);
+      rightIntake.position.set(bodyWidth / 3, 0.1, bodyLength / 2 - 0.1);
+      obstacleCar.add(rightIntake);
+
+      const wheelMaterial = new THREE.MeshStandardMaterial({
+        color: 0x111111,
+        roughness: 0.8,
+      });
+      const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
+      wheelGeometry.rotateZ(Math.PI / 2);
+
+      const wheelPositions = [
+        new THREE.Vector3(bodyWidth / 2, 0.2, bodyLength / 2 - 1),
+        new THREE.Vector3(-bodyWidth / 2, 0.2, bodyLength / 2 - 1),
+        new THREE.Vector3(bodyWidth / 2, 0.2, -bodyLength / 2 + 1),
+        new THREE.Vector3(-bodyWidth / 2, 0.2, -bodyLength / 2 + 1),
+      ];
+
+      wheelPositions.forEach((pos) => {
+        const wheel = new THREE.Mesh(
+          wheelGeometry.clone(),
+          wheelMaterial.clone()
+        );
+        wheel.position.copy(pos);
+        wheel.castShadow = true;
+        obstacleCar.add(wheel);
+      });
+
+      scene.add(obstacleCar);
+      return obstacleCar;
     }
 
     for (let i = 0; i < NUM_OBSTACLES; i++) {
-        const obstacle = createObstacleCar();
-        // Position them randomly on the grid
-        const onVerticalRoad = Math.random() > 0.5;
-        const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
-        const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
-        const halfGrid = TOTAL_GRID_WIDTH / 2;
+      const obstacle = createObstacleCar();
+      // Position them randomly on the grid
+      const onVerticalRoad = Math.random() > 0.5;
+      const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
+      const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
+      const halfGrid = TOTAL_GRID_WIDTH / 2;
 
-        if(onVerticalRoad) {
-            obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
-            obstacle.position.z = positionOnRoad;
-            obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI; // Face north or south
-        } else {
-            obstacle.position.x = positionOnRoad;
-            obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
-            obstacle.rotation.y = Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2; // Face east or west
-        }
-        obstacleCarsRef.current.push(obstacle);
+      if (onVerticalRoad) {
+        obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
+        obstacle.position.z = positionOnRoad;
+        obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI; // Face north or south
+      } else {
+        obstacle.position.x = positionOnRoad;
+        obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
+        obstacle.rotation.y = Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2; // Face east or west
+      }
+      obstacleCarsRef.current.push(obstacle);
     }
-    
+
     // --- GRID TRACK ---
     function createGrid() {
-        const gridGroup = new THREE.Group();
-        const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-        
-        // Ground
-        const groundGeometry = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH + CELL_SIZE, TOTAL_GRID_WIDTH + CELL_SIZE);
-        const groundMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].ground });
-        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-        ground.rotation.x = -Math.PI / 2;
-        ground.receiveShadow = true;
-        gridGroup.add(ground);
+      const gridGroup = new THREE.Group();
+      const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
 
-        // Roads
-        const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
-        const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        const lineLength = 5;
-        const lineGap = 10;
-        const lineWidth = 0.5;
-        const lineGeom = new THREE.PlaneGeometry(lineWidth, lineLength);
-        
-        for (let i = 0; i <= GRID_SIZE; i++) {
-            const roadOffset = i * CELL_SIZE - halfTotalWidth;
+      // Ground
+      const groundGeometry = new THREE.PlaneGeometry(
+        TOTAL_GRID_WIDTH + CELL_SIZE,
+        TOTAL_GRID_WIDTH + CELL_SIZE
+      );
+      const groundMaterial = new THREE.MeshStandardMaterial({
+        color: TRACK_THEMES[theme].ground,
+      });
+      const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+      ground.rotation.x = -Math.PI / 2;
+      ground.receiveShadow = true;
+      gridGroup.add(ground);
 
-            // Vertical roads
-            const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
-            const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
-            verticalRoad.rotation.x = -Math.PI / 2;
-            verticalRoad.position.y = 0.01;
-            verticalRoad.position.x = roadOffset;
-            verticalRoad.receiveShadow = true;
-            gridGroup.add(verticalRoad);
+      // Roads
+      const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+      const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      const lineLength = 5;
+      const lineGap = 10;
+      const lineWidth = 0.5;
+      const lineGeom = new THREE.PlaneGeometry(lineWidth, lineLength);
 
-            // Vertical lane markings
-            for (let j = -halfTotalWidth; j < halfTotalWidth; j += (lineLength + lineGap)) {
-                const line = new THREE.Mesh(lineGeom, lineMaterial);
-                line.position.set(roadOffset, 0.02, j + lineLength/2);
-                line.rotation.x = -Math.PI / 2;
-                gridGroup.add(line);
-            }
+      for (let i = 0; i <= GRID_SIZE; i++) {
+        const roadOffset = i * CELL_SIZE - halfTotalWidth;
 
-            // Horizontal roads
-            const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
-            const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
-            horizontalRoad.rotation.x = -Math.PI / 2;
-            horizontalRoad.position.y = 0.01;
-            horizontalRoad.position.z = roadOffset;
-            horizontalRoad.receiveShadow = true;
-            gridGroup.add(horizontalRoad);
+        // Vertical roads
+        const verticalRoadGeom = new THREE.PlaneGeometry(
+          ROAD_WIDTH,
+          TOTAL_GRID_WIDTH
+        );
+        const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
+        verticalRoad.rotation.x = -Math.PI / 2;
+        verticalRoad.position.y = 0.01;
+        verticalRoad.position.x = roadOffset;
+        verticalRoad.receiveShadow = true;
+        gridGroup.add(verticalRoad);
 
-            // Horizontal lane markings
-            for (let j = -halfTotalWidth; j < halfTotalWidth; j += (lineLength + lineGap)) {
-                const line = new THREE.Mesh(lineGeom, lineMaterial);
-                line.position.set(j + lineLength/2, 0.02, roadOffset);
-                line.rotation.x = -Math.PI / 2;
-                line.rotation.z = Math.PI / 2;
-                gridGroup.add(line);
-            }
+        // Vertical lane markings
+        for (
+          let j = -halfTotalWidth;
+          j < halfTotalWidth;
+          j += lineLength + lineGap
+        ) {
+          const line = new THREE.Mesh(lineGeom, lineMaterial);
+          line.position.set(roadOffset, 0.02, j + lineLength / 2);
+          line.rotation.x = -Math.PI / 2;
+          gridGroup.add(line);
         }
 
-        // Add scenery
-        const sceneryColors = TRACK_THEMES[theme].scenery;
-        for (let i = 0; i < (GRID_SIZE + 1) * (GRID_SIZE + 1) * 4; i++) {
-            const cellX = Math.floor(Math.random() * GRID_SIZE);
-            const cellZ = Math.floor(Math.random() * GRID_SIZE);
+        // Horizontal roads
+        const horizontalRoadGeom = new THREE.PlaneGeometry(
+          TOTAL_GRID_WIDTH,
+          ROAD_WIDTH
+        );
+        const horizontalRoad = new THREE.Mesh(
+          horizontalRoadGeom,
+          roadMaterial
+        );
+        horizontalRoad.rotation.x = -Math.PI / 2;
+        horizontalRoad.position.y = 0.01;
+        horizontalRoad.position.z = roadOffset;
+        horizontalRoad.receiveShadow = true;
+        gridGroup.add(horizontalRoad);
 
-            const cellCenterX = cellX * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-            const cellCenterZ = cellZ * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+        // Horizontal lane markings
+        for (
+          let j = -halfTotalWidth;
+          j < halfTotalWidth;
+          j += lineLength + lineGap
+        ) {
+          const line = new THREE.Mesh(lineGeom, lineMaterial);
+          line.position.set(j + lineLength / 2, 0.02, roadOffset);
+          line.rotation.x = -Math.PI / 2;
+          line.rotation.z = Math.PI / 2;
+          gridGroup.add(line);
+        }
+      }
 
-            const x = cellCenterX + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
-            const z = cellCenterZ + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
-            
-            const randomColor = sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
-            const sceneryMaterial = new THREE.MeshStandardMaterial({ color: randomColor });
-            
-            let sceneryObject: THREE.Mesh;
+      // Add scenery
+      const sceneryColors = TRACK_THEMES[theme].scenery;
+      for (let i = 0; i < (GRID_SIZE + 1) * (GRID_SIZE + 1) * 4; i++) {
+        const cellX = Math.floor(Math.random() * GRID_SIZE);
+        const cellZ = Math.floor(Math.random() * GRID_SIZE);
 
-            if (theme === 'Forest') {
-                const treeHeight = Math.random() * 20 + 10;
-                const treeRadius = treeHeight / 8;
-                const sceneryGeometry = new THREE.ConeGeometry(treeRadius, treeHeight, 8);
-                sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-                sceneryObject.position.set(x, treeHeight / 2, z);
-            } else if (theme === 'Desert') {
-                const duneSize = Math.random() * 15 + 5;
-                const sceneryGeometry = new THREE.ConeGeometry(duneSize, duneSize/2, 4); // Pyramid shape
-                sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-                sceneryObject.position.set(x, duneSize / 4, z);
-            } else { // City
-                const buildingHeight = Math.random() * 100 + 40;
-                const buildingWidth = Math.random() * 40 + 20;
-                const buildingDepth = Math.random() * 40 + 20;
-                const sceneryGeometry = new THREE.BoxGeometry(buildingWidth, buildingHeight, buildingDepth);
-                sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-                sceneryObject.position.set(x, buildingHeight / 2, z);
-            }
-            
-            sceneryObject.castShadow = true;
-            gridGroup.add(sceneryObject);
+        const cellCenterX = cellX * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+        const cellCenterZ = cellZ * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+
+        const x =
+          cellCenterX + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
+        const z =
+          cellCenterZ + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
+
+        const randomColor =
+          sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
+        const sceneryMaterial = new THREE.MeshStandardMaterial({
+          color: randomColor,
+        });
+
+        let sceneryObject: THREE.Mesh;
+
+        if (theme === 'Forest') {
+          const treeHeight = Math.random() * 20 + 10;
+          const treeRadius = treeHeight / 8;
+          const sceneryGeometry = new THREE.ConeGeometry(treeRadius, treeHeight, 8);
+          sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+          sceneryObject.position.set(x, treeHeight / 2, z);
+        } else if (theme === 'Desert') {
+          const duneSize = Math.random() * 15 + 5;
+          const sceneryGeometry = new THREE.ConeGeometry(duneSize, duneSize / 2, 4); // Pyramid shape
+          sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+          sceneryObject.position.set(x, duneSize / 4, z);
+        } else {
+          // City
+          const buildingHeight = Math.random() * 100 + 40;
+          const buildingWidth = Math.random() * 40 + 20;
+          const buildingDepth = Math.random() * 40 + 20;
+          const sceneryGeometry = new THREE.BoxGeometry(
+            buildingWidth,
+            buildingHeight,
+            buildingDepth
+          );
+          sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+          sceneryObject.position.set(x, buildingHeight / 2, z);
         }
 
-        scene.add(gridGroup);
+        sceneryObject.castShadow = true;
+        gridGroup.add(sceneryObject);
+      }
+
+      scene.add(gridGroup);
     }
 
     createGrid();
 
-
     // --- EVENT LISTENERS ---
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowUp' || e.key === 'w') inputRef.current.forward = true;
-      if (e.key === 'ArrowDown' || e.key === 's') inputRef.current.backward = true;
+      if (e.key === 'ArrowDown' || e.key === 's')
+        inputRef.current.backward = true;
       if (e.key === 'ArrowLeft' || e.key === 'a') inputRef.current.left = true;
-      if (e.key === 'ArrowRight' || e.key === 'd') inputRef.current.right = true;
+      if (e.key === 'ArrowRight' || e.key === 'd')
+        inputRef.current.right = true;
     };
     const onKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'ArrowUp' || e.key === 'w') inputRef.current.forward = false;
-      if (e.key === 'ArrowDown' || e.key === 's') inputRef.current.backward = false;
+      if (e.key === 'ArrowDown' || e.key === 's')
+        inputRef.current.backward = false;
       if (e.key === 'ArrowLeft' || e.key === 'a') inputRef.current.left = false;
-      if (e.key === 'ArrowRight' || e.key === 'd') inputRef.current.right = false;
+      if (e.key === 'ArrowRight' || e.key === 'd')
+        inputRef.current.right = false;
     };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     const onResize = () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener('resize', onResize);
 
     // --- ORBIT CONTROLS LISTENERS ---
     const onPointerDown = (e: PointerEvent) => {
-        if ((e.target as HTMLElement)?.closest('.pointer-events-auto')) return;
-        orbitControlsRef.current.isDragging = true;
-        orbitControlsRef.current.previousMousePosition.x = e.clientX;
-        orbitControlsRef.current.previousMousePosition.y = e.clientY;
+      if ((e.target as HTMLElement)?.closest('.pointer-events-auto')) return;
+      orbitControlsRef.current.isDragging = true;
+      orbitControlsRef.current.previousMousePosition.x = e.clientX;
+      orbitControlsRef.current.previousMousePosition.y = e.clientY;
     };
     const onPointerUp = () => {
-        orbitControlsRef.current.isDragging = false;
+      orbitControlsRef.current.isDragging = false;
     };
     const onPointerMove = (e: PointerEvent) => {
-        if (!orbitControlsRef.current.isDragging) return;
+      if (!orbitControlsRef.current.isDragging) return;
 
-        const deltaX = e.clientX - orbitControlsRef.current.previousMousePosition.x;
-        const deltaY = e.clientY - orbitControlsRef.current.previousMousePosition.y;
+      const deltaX =
+        e.clientX - orbitControlsRef.current.previousMousePosition.x;
+      const deltaY =
+        e.clientY - orbitControlsRef.current.previousMousePosition.y;
 
-        orbitControlsRef.current.azimuthAngle -= deltaX * 0.005;
-        orbitControlsRef.current.polarAngle -= deltaY * 0.005;
+      orbitControlsRef.current.azimuthAngle -= deltaX * 0.005;
+      orbitControlsRef.current.polarAngle -= deltaY * 0.005;
 
-        // Clamp polar angle
-        orbitControlsRef.current.polarAngle = Math.max(0.1, Math.min(Math.PI - 0.1, orbitControlsRef.current.polarAngle));
+      // Clamp polar angle
+      orbitControlsRef.current.polarAngle = Math.max(
+        0.1,
+        Math.min(Math.PI - 0.1, orbitControlsRef.current.polarAngle)
+      );
 
-        orbitControlsRef.current.previousMousePosition.x = e.clientX;
-        orbitControlsRef.current.previousMousePosition.y = e.clientY;
+      orbitControlsRef.current.previousMousePosition.x = e.clientX;
+      orbitControlsRef.current.previousMousePosition.y = e.clientY;
     };
 
     mountNode.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointerup', onPointerUp);
     window.addEventListener('pointermove', onPointerMove);
-
 
     const clock = new THREE.Clock();
     let currentSteerAngle = 0;
@@ -564,36 +756,37 @@ export default function GameWrapper() {
       // Smoothly interpolate steering
       currentSteerAngle += (targetSteerDirection - currentSteerAngle) * 0.1;
 
-
       if (velocityRef.current.length() > 0.1) {
         const turnAmount = currentSteerAngle * turnSpeed * delta;
         car.rotation.y += turnAmount;
       }
-      
+
       const forward = new THREE.Vector3();
       car.getWorldDirection(forward);
-      
+
       let moveDirection = 0;
       if (inputRef.current.forward) moveDirection = 1;
       if (inputRef.current.backward) moveDirection = -1;
 
       if (moveDirection !== 0) {
-        const force = forward.multiplyScalar(acceleration * moveDirection * delta);
+        const force = forward.multiplyScalar(
+          acceleration * moveDirection * delta
+        );
         velocityRef.current.add(force);
       }
-      
+
       velocityRef.current.multiplyScalar(friction);
-      
+
       if (velocityRef.current.length() > maxSpeed) {
-          velocityRef.current.normalize().multiplyScalar(maxSpeed);
+        velocityRef.current.normalize().multiplyScalar(maxSpeed);
       }
-      
+
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
 
       // Rotate wheels
       const wheelRotationSpeed = velocityRef.current.length() * delta * 2;
-      wheels.forEach(wheel => {
-          wheel.rotation.x -= wheelRotationSpeed;
+      wheels.forEach((wheel) => {
+        wheel.rotation.x -= wheelRotationSpeed;
       });
       // Steer front wheels
       const maxSteerAngle = 0.4;
@@ -605,10 +798,17 @@ export default function GameWrapper() {
       if (orbitControlsRef.current.isDragging) {
         // Orbit control logic
         const radius = 10;
-        cameraOffsetRef.current.x = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.sin(orbitControlsRef.current.azimuthAngle);
-        cameraOffsetRef.current.y = radius * Math.cos(orbitControlsRef.current.polarAngle);
-        cameraOffsetRef.current.z = radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.cos(orbitControlsRef.current.azimuthAngle);
-        
+        cameraOffsetRef.current.x =
+          radius *
+          Math.sin(orbitControlsRef.current.polarAngle) *
+          Math.sin(orbitControlsRef.current.azimuthAngle);
+        cameraOffsetRef.current.y =
+          radius * Math.cos(orbitControlsRef.current.polarAngle);
+        cameraOffsetRef.current.z =
+          radius *
+          Math.sin(orbitControlsRef.current.polarAngle) *
+          Math.cos(orbitControlsRef.current.azimuthAngle);
+
         camera.position.copy(car.position).add(cameraOffsetRef.current);
         camera.lookAt(car.position);
       } else {
@@ -617,98 +817,121 @@ export default function GameWrapper() {
         const targetPolar = Math.PI / 3;
 
         // Smoothly interpolate the angles
-        orbitControlsRef.current.azimuthAngle += (targetAzimuth - orbitControlsRef.current.azimuthAngle) * 0.1;
-        orbitControlsRef.current.polarAngle += (targetPolar - orbitControlsRef.current.polarAngle) * 0.1;
+        orbitControlsRef.current.azimuthAngle +=
+          (targetAzimuth - orbitControlsRef.current.azimuthAngle) * 0.1;
+        orbitControlsRef.current.polarAngle +=
+          (targetPolar - orbitControlsRef.current.polarAngle) * 0.1;
 
         const radius = 10;
         const followOffset = new THREE.Vector3(
-          radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.sin(orbitControlsRef.current.azimuthAngle),
+          radius *
+            Math.sin(orbitControlsRef.current.polarAngle) *
+            Math.sin(orbitControlsRef.current.azimuthAngle),
           radius * Math.cos(orbitControlsRef.current.polarAngle),
-          radius * Math.sin(orbitControlsRef.current.polarAngle) * Math.cos(orbitControlsRef.current.azimuthAngle)
+          radius *
+            Math.sin(orbitControlsRef.current.polarAngle) *
+            Math.cos(orbitControlsRef.current.azimuthAngle)
         );
-        
+
         camera.position.copy(car.position).add(followOffset);
         camera.lookAt(car.position);
       }
-
 
       // --- OBSTACLE LOGIC ---
       const obstacleSpeed = 50;
       const playerCarBox = new THREE.Box3().setFromObject(car);
       const halfGrid = TOTAL_GRID_WIDTH / 2;
 
-      obstacleCarsRef.current.forEach(obstacle => {
-          const forward = new THREE.Vector3();
-          obstacle.getWorldDirection(forward);
-          obstacle.position.add(forward.multiplyScalar(obstacleSpeed * delta));
+      obstacleCarsRef.current.forEach((obstacle) => {
+        const forward = new THREE.Vector3();
+        obstacle.getWorldDirection(forward);
+        obstacle.position.add(forward.multiplyScalar(obstacleSpeed * delta));
 
-          // Reset obstacle if it's outside the grid
-          if (Math.abs(obstacle.position.x) > halfGrid + CELL_SIZE || Math.abs(obstacle.position.z) > halfGrid + CELL_SIZE) {
-              const onVerticalRoad = Math.random() > 0.5;
-              const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
-              const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
+        // Reset obstacle if it's outside the grid
+        if (
+          Math.abs(obstacle.position.x) > halfGrid + CELL_SIZE ||
+          Math.abs(obstacle.position.z) > halfGrid + CELL_SIZE
+        ) {
+          const onVerticalRoad = Math.random() > 0.5;
+          const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
+          const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
 
-              if(onVerticalRoad) {
-                  obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
-                  obstacle.position.z = positionOnRoad;
-                  obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI;
-              } else {
-                  obstacle.position.x = positionOnRoad;
-                  obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
-                  obstacle.rotation.y = Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2;
-              }
+          if (onVerticalRoad) {
+            obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
+            obstacle.position.z = positionOnRoad;
+            obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI;
+          } else {
+            obstacle.position.x = positionOnRoad;
+            obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
+            obstacle.rotation.y =
+              Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2;
           }
-          
-          // Collision Detection
-          const obstacleBox = new THREE.Box3().setFromObject(obstacle);
-          if(playerCarBox.intersectsBox(obstacleBox)) {
-              velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
-              // Knockback
-              const knockback = obstacle.position.clone().sub(car.position).normalize().multiplyScalar(-5);
-              car.position.add(knockback);
+        }
 
-              toast({
-                title: "CRASH!",
-                description: "You hit another car!",
-                variant: "destructive"
-              })
-          }
+        // Collision Detection
+        const obstacleBox = new THREE.Box3().setFromObject(obstacle);
+        if (playerCarBox.intersectsBox(obstacleBox)) {
+          velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
+          // Knockback
+          const knockback = obstacle.position
+            .clone()
+            .sub(car.position)
+            .normalize()
+            .multiplyScalar(-5);
+          car.position.add(knockback);
+
+          toast({
+            title: 'CRASH!',
+            description: 'You hit another car!',
+            variant: 'destructive',
+          });
+        }
       });
-      
+
       // Penalty check for off-road
-      const currentRoadXIndex = Math.round((car.position.x + halfGrid) / CELL_SIZE);
-      const currentRoadZIndex = Math.round((car.position.z + halfGrid) / CELL_SIZE);
+      const currentRoadXIndex = Math.round(
+        (car.position.x + halfGrid) / CELL_SIZE
+      );
+      const currentRoadZIndex = Math.round(
+        (car.position.z + halfGrid) / CELL_SIZE
+      );
       const nearestRoadX = currentRoadXIndex * CELL_SIZE - halfGrid;
       const nearestRoadZ = currentRoadZIndex * CELL_SIZE - halfGrid;
 
-      const onHorizontalRoad = Math.abs(car.position.z - nearestRoadZ) < ROAD_WIDTH / 2;
-      const onVerticalRoad = Math.abs(car.position.x - nearestRoadX) < ROAD_WIDTH / 2;
+      const onHorizontalRoad =
+        Math.abs(car.position.z - nearestRoadZ) < ROAD_WIDTH / 2;
+      const onVerticalRoad =
+        Math.abs(car.position.x - nearestRoadX) < ROAD_WIDTH / 2;
       const isOffTrack = !(onHorizontalRoad || onVerticalRoad);
-      
+
       if (isOffTrack) {
         wasOffTrackRef.current = true;
         velocityRef.current.multiplyScalar(0.95); // Slow down off-track
       }
-      if (!isOffTrack && wasOffTrackRef.current && !penaltyCheckCooldownRef.current) {
+      if (
+        !isOffTrack &&
+        wasOffTrackRef.current &&
+        !penaltyCheckCooldownRef.current
+      ) {
         wasOffTrackRef.current = false;
         penaltyCheckCooldownRef.current = true;
-        setTimeout(() => penaltyCheckCooldownRef.current = false, 5000); // 5 sec cooldown
+        setTimeout(() => (penaltyCheckCooldownRef.current = false), 5000); // 5 sec cooldown
 
         handleAssessPenalty({
-            lapTime: gameTimeRef.current,
-            trackPosition: 'Player went off-road and returned.',
-            speed: velocityRef.current.length() * 3.6, // m/s to km/h approx
-        }).then(result => {
-            if(result.penalty) {
-                toast({
-                    title: "Penalty Assessed!",
-                    description: `${result.penalty} - ${result.reason}`,
-                    variant: "destructive",
-                });
-            }
+          lapTime: gameTimeRef.current,
+          trackPosition: 'Player went off-road and returned.',
+          speed: velocityRef.current.length() * 3.6, // m/s to km/h approx
+        }).then((result) => {
+          if (result.penalty) {
+            toast({
+              title: 'Penalty Assessed!',
+              description: `${result.penalty} - ${result.reason}`,
+              variant: 'destructive',
+            });
+          }
         });
       }
-      
+
       // Update HUD
       setGameData({
         speed: velocityRef.current.length() * 3.6, // Convert m/s to km/h
@@ -720,7 +943,7 @@ export default function GameWrapper() {
 
     animate();
     setIsReady(true);
-    
+
     // --- CLEANUP ---
     return () => {
       if (animationFrameIdRef.current) {
@@ -731,23 +954,23 @@ export default function GameWrapper() {
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointerup', onPointerUp);
       window.removeEventListener('pointermove', onPointerMove);
-      
+
       if (mountNode) {
-          mountNode.removeEventListener('pointerdown', onPointerDown);
-          // Check if the renderer's DOM element is still a child of mountNode
-          if (renderer.domElement.parentNode === mountNode) {
-              mountNode.removeChild(renderer.domElement);
-          }
+        mountNode.removeEventListener('pointerdown', onPointerDown);
+        // Check if the renderer's DOM element is still a child of mountNode
+        if (renderer.domElement.parentNode === mountNode) {
+          mountNode.removeChild(renderer.domElement);
+        }
       }
-      
+
       // Dispose of Three.js objects
-      scene.traverse(object => {
+      scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           if (object.geometry) object.geometry.dispose();
           if (object.material) {
-             // If material is an array
+            // If material is an array
             if (Array.isArray(object.material)) {
-              object.material.forEach(material => material.dispose());
+              object.material.forEach((material) => material.dispose());
             } else {
               object.material.dispose();
             }
@@ -764,7 +987,9 @@ export default function GameWrapper() {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold font-headline text-primary">Velocity 3D</h2>
+            <h2 className="text-2xl font-bold font-headline text-primary">
+              Velocity 3D
+            </h2>
             <SidebarTrigger />
           </div>
         </SidebarHeader>
@@ -778,7 +1003,10 @@ export default function GameWrapper() {
               <Label className="flex items-center gap-2 text-base">
                 <Map /> Track Environment
               </Label>
-              <RadioGroup value={theme} onValueChange={(v) => setTheme(v as TrackTheme)}>
+              <RadioGroup
+                value={theme}
+                onValueChange={(v) => setTheme(v as TrackTheme)}
+              >
                 {Object.keys(TRACK_THEMES).map((themeName) => (
                   <div key={themeName} className="flex items-center space-x-2">
                     <RadioGroupItem value={themeName} id={themeName} />
@@ -794,23 +1022,25 @@ export default function GameWrapper() {
               <Bot />
               AI Opponents
             </SidebarGroupLabel>
-             <div className="p-2">
-                <AiOpponentGenerator />
-             </div>
+            <div className="p-2">
+              <AiOpponentGenerator />
+            </div>
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          <p className="text-xs text-muted-foreground">Press B to toggle sidebar.</p>
+          <p className="text-xs text-muted-foreground">
+            Press B to toggle sidebar.
+          </p>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <div ref={mountRef} className="w-full h-full relative">
-            {!isReady && (
-                <div className="absolute inset-0 flex flex-col justify-center items-center bg-background z-10">
-                    <Loader2 className="w-16 h-16 animate-spin text-primary mb-4" />
-                    <p className="text-xl font-headline">Loading {theme} Grid...</p>
-                </div>
-            )}
+          {!isReady && (
+            <div className="absolute inset-0 flex flex-col justify-center items-center bg-background z-10">
+              <Loader2 className="w-16 h-16 animate-spin text-primary mb-4" />
+              <p className="text-xl font-headline">Loading {theme} Grid...</p>
+            </div>
+          )}
         </div>
         {isReady && (
           <Hud
