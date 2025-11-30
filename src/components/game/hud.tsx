@@ -1,14 +1,20 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, ChevronUp, Zap } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, ArrowRight, ChevronUp, Zap, ToyBrick, Car } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import MiniMap from './mini-map';
+import { Button } from '../ui/button';
+
+type ControlMode = 'car' | 'person';
 
 type HudProps = {
   speed: number;
   carPosition: { x: number; z: number };
+  carRotation: number;
   gridSize: number;
   totalGridWidth: number;
+  controlMode: ControlMode;
+  onToggleControlMode: () => void;
   onAcceleratorPress: () => void;
   onAcceleratorRelease: () => void;
   onSteerLeftPress: () => void;
@@ -20,8 +26,11 @@ type HudProps = {
 export default function Hud({
   speed,
   carPosition,
+  carRotation,
   gridSize,
   totalGridWidth,
+  controlMode,
+  onToggleControlMode,
   onAcceleratorPress,
   onAcceleratorRelease,
   onSteerLeftPress,
@@ -48,12 +57,22 @@ export default function Hud({
         </Card>
       </div>
 
+      {/* Control Mode */}
+      <div className="absolute top-20 right-4 pointer-events-auto">
+        <Button onClick={onToggleControlMode} variant="outline" size="lg" className='bg-card/50 backdrop-blur-sm border-accent/20'>
+          {controlMode === 'car' ? <Car className="mr-2" /> : <ToyBrick className="mr-2" />}
+          {controlMode === 'car' ? 'Mode: Car' : 'Mode: Person'}
+        </Button>
+      </div>
+
+
       {/* Minimap */}
       <div className="absolute top-4 left-4">
         <Card className="bg-card/50 backdrop-blur-sm border-accent/20 overflow-hidden">
           <CardContent className="p-0">
             <MiniMap
               carPosition={carPosition}
+              carRotation={carRotation}
               gridSize={gridSize}
               totalGridWidth={totalGridWidth}
             />
@@ -97,3 +116,5 @@ export default function Hud({
     </div>
   );
 }
+
+    

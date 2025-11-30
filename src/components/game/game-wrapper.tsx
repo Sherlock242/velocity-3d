@@ -22,7 +22,7 @@ import type { TrackTheme } from '@/lib/types';
 import Hud from './hud';
 import AiOpponentGenerator from './ai-opponent-generator';
 import { handleAssessPenalty } from '@/app/actions';
-import { createPlayerCar } from './models/player-car';
+import { createTransformer, updateTransformerAnimation } from './models/transformer';
 import { createObstacleCar } from './models/obstacle-car';
 import { createGridAndScenery } from './world/track';
 import {
@@ -34,6 +34,8 @@ import {
   ROAD_WIDTH,
 } from '@/lib/game-constants';
 
+type ControlMode = 'car' | 'person';
+
 export default function GameWrapper() {
   const mountRef = React.useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -43,12 +45,14 @@ export default function GameWrapper() {
     speed: 0,
     time: 0,
     carPosition: { x: 0, z: 0 },
+    carRotation: 0,
+    controlMode: 'car' as ControlMode,
   });
   const [isReady, setIsReady] = React.useState(false);
 
   // Game state refs
   const gameTimeRef = React.useRef(0);
-  const carRef = React.useRef<THREE.Group>();
+  const playerRef = React.useRef<THREE.Group>();
   const velocityRef = React.useRef(new THREE.Vector3());
   const inputRef = React.useRef({
     forward: false,
@@ -64,6 +68,12 @@ export default function GameWrapper() {
     { mesh: THREE.Mesh; createdAt: number }[]
   >([]);
 
+  // Control mode refs
+  const controlModeRef = React.useRef<ControlMode>('car');
+  const isTransformingRef = React.useRef(false);
+  const transformProgressRef = React.useRef(0);
+
+
   // Camera control refs
   const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 2, -6));
 
@@ -73,6 +83,13 @@ export default function GameWrapper() {
   const skidSoundRef = React.useRef<THREE.Audio>();
   const audioInitializedRef = React.useRef(false);
   const engineOscillatorRef = React.useRef<OscillatorNode>();
+
+  const handleToggleControlMode = () => {
+    if (isTransformingRef.current) return;
+    isTransformingRef.current = true;
+    controlModeRef.current = controlModeRef.current === 'car' ? 'person' : 'car';
+    setGameData(prev => ({ ...prev, controlMode: controlModeRef.current }));
+  };
 
 
   React.useEffect(() => {
@@ -187,15 +204,16 @@ export default function GameWrapper() {
     dirLight.castShadow = true;
     scene.add(dirLight);
 
-    // --- PLAYER CAR ---
-    const { car, wheels } = createPlayerCar();
+    // --- PLAYER TRANSFORMER ---
+    const transformer = createTransformer();
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    car.position.x = 2 * CELL_SIZE - halfTotalWidth;
-    scene.add(car);
-    carRef.current = car;
+    transformer.position.x = 2 * CELL_SIZE - halfTotalWidth;
+    scene.add(transformer);
+    playerRef.current = transformer;
 
     camera.position.set(0, 5, -10);
-    camera.lookAt(car.position);
+    camera.lookAt(transformer.position);
+
 
     // --- OBSTACLE CARS ---
     for (let i = 0; i < NUM_OBSTACLES; i++) {
@@ -232,6 +250,9 @@ export default function GameWrapper() {
       if (e.key === 'ArrowLeft' || e.key === 'a') inputRef.current.left = true;
       if (e.key === 'ArrowRight' || e.key === 'd')
         inputRef.current.right = true;
+      if (e.key === 'e' || e.key === 'E') {
+        handleToggleControlMode();
+      }
     };
     const onKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'ArrowUp' || e.key === 'w') inputRef.current.forward = false;
@@ -265,77 +286,143 @@ export default function GameWrapper() {
 
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
-      if (!carRef.current) return;
-      const car = carRef.current;
+      if (!playerRef.current) return;
+      const player = playerRef.current;
       const delta = clock.getDelta();
       const now = clock.elapsedTime;
       gameTimeRef.current += delta;
 
-      const maxSpeed = 100;
-      const acceleration = 80;
-      const turnSpeed = 2;
-      const friction = 0.98;
-
-      // --- MOVEMENT LOGIC ---
-      let targetSteerDirection = 0;
-      if (inputRef.current.left) targetSteerDirection = 1;
-      if (inputRef.current.right) targetSteerDirection = -1;
-
-      // Smoothly interpolate steering
-      currentSteerAngle += (targetSteerDirection - currentSteerAngle) * 0.1;
-
-      if (velocityRef.current.length() > 0.1) {
-        const turnAmount = currentSteerAngle * turnSpeed * delta;
-        car.rotation.y += turnAmount;
+      // Handle transformation animation
+      if (isTransformingRef.current) {
+        const transformSpeed = 2; // speed of transformation
+        if (controlModeRef.current === 'person') {
+          transformProgressRef.current += delta * transformSpeed;
+          if (transformProgressRef.current >= 1) {
+            transformProgressRef.current = 1;
+            isTransformingRef.current = false;
+          }
+        } else { // transforming to car
+          transformProgressRef.current -= delta * transformSpeed;
+          if (transformProgressRef.current <= 0) {
+            transformProgressRef.current = 0;
+            isTransformingRef.current = false;
+          }
+        }
+        updateTransformerAnimation(player as THREE.Group & { userData: { parts: any } }, transformProgressRef.current);
       }
 
-      const forward = new THREE.Vector3();
-      car.getWorldDirection(forward);
 
-      let moveDirection = 0;
-      if (inputRef.current.forward) moveDirection = 1;
-      if (inputRef.current.backward) moveDirection = -1;
+      if (controlModeRef.current === 'car' && !isTransformingRef.current) {
+        const maxSpeed = 100;
+        const acceleration = 80;
+        const turnSpeed = 2;
+        const friction = 0.98;
 
-      if (moveDirection !== 0) {
-        const force = forward.multiplyScalar(
-          acceleration * moveDirection * delta
-        );
-        velocityRef.current.add(force);
-      }
+        // --- MOVEMENT LOGIC ---
+        let targetSteerDirection = 0;
+        if (inputRef.current.left) targetSteerDirection = 1;
+        if (inputRef.current.right) targetSteerDirection = -1;
 
-      velocityRef.current.multiplyScalar(friction);
+        // Smoothly interpolate steering
+        currentSteerAngle += (targetSteerDirection - currentSteerAngle) * 0.1;
 
-      if (velocityRef.current.length() > maxSpeed) {
-        velocityRef.current.normalize().multiplyScalar(maxSpeed);
-      }
+        if (velocityRef.current.length() > 0.1) {
+          const turnAmount = currentSteerAngle * turnSpeed * delta;
+          player.rotation.y += turnAmount;
+        }
 
-      car.position.add(velocityRef.current.clone().multiplyScalar(delta));
-      
-      // --- AUDIO & TIRE MARK LOGIC ---
-      const speedRatio = velocityRef.current.length() / maxSpeed;
-      const steerRatio = Math.abs(currentSteerAngle);
-      const isDrifting = speedRatio > 0.2 && steerRatio > 0.5;
+        const forward = new THREE.Vector3();
+        player.getWorldDirection(forward);
 
-      if (audioInitializedRef.current && engineSoundRef.current && skidSoundRef.current && engineOscillatorRef.current) {
-        engineSoundRef.current.setVolume(speedRatio * 0.1);
-        engineOscillatorRef.current.frequency.setTargetAtTime(50 + speedRatio * 150, audioListenerRef.current!.context.currentTime, 0.01);
+        let moveDirection = 0;
+        if (inputRef.current.forward) moveDirection = 1;
+        if (inputRef.current.backward) moveDirection = -1;
 
-        const skidVolume = isDrifting ? speedRatio * steerRatio * 0.2 : 0;
-        skidSoundRef.current.setVolume(skidVolume);
-      }
-      
-      // Add tire marks when drifting
-      if (isDrifting) {
-        const tireMark = new THREE.Mesh(
-          tireMarkGeometry,
-          tireMarkMaterial.clone()
-        );
-        tireMark.position.copy(car.position);
-        tireMark.position.y = 0.13; // Just above the road markings
-        tireMark.quaternion.copy(car.quaternion);
-        tireMark.rotateX(-Math.PI / 2);
-        scene.add(tireMark);
-        tireMarksRef.current.push({ mesh: tireMark, createdAt: now });
+        if (moveDirection !== 0) {
+          const force = forward.multiplyScalar(
+            acceleration * moveDirection * delta
+          );
+          velocityRef.current.add(force);
+        }
+
+        velocityRef.current.multiplyScalar(friction);
+
+        if (velocityRef.current.length() > maxSpeed) {
+          velocityRef.current.normalize().multiplyScalar(maxSpeed);
+        }
+
+        player.position.add(velocityRef.current.clone().multiplyScalar(delta));
+        
+        // --- AUDIO & TIRE MARK LOGIC ---
+        const speedRatio = velocityRef.current.length() / maxSpeed;
+        const steerRatio = Math.abs(currentSteerAngle);
+        const isDrifting = speedRatio > 0.2 && steerRatio > 0.5;
+
+        if (audioInitializedRef.current && engineSoundRef.current && skidSoundRef.current && engineOscillatorRef.current) {
+          engineSoundRef.current.setVolume(speedRatio * 0.1);
+          engineOscillatorRef.current.frequency.setTargetAtTime(50 + speedRatio * 150, audioListenerRef.current!.context.currentTime, 0.01);
+
+          const skidVolume = isDrifting ? speedRatio * steerRatio * 0.2 : 0;
+          skidSoundRef.current.setVolume(skidVolume);
+        }
+        
+        // Add tire marks when drifting
+        if (isDrifting) {
+          const tireMark = new THREE.Mesh(
+            tireMarkGeometry,
+            tireMarkMaterial.clone()
+          );
+          tireMark.position.copy(player.position);
+          tireMark.position.y = 0.13; // Just above the road markings
+          tireMark.quaternion.copy(player.quaternion);
+          tireMark.rotateX(-Math.PI / 2);
+          scene.add(tireMark);
+          tireMarksRef.current.push({ mesh: tireMark, createdAt: now });
+        }
+        
+        // Rotate wheels (part of transformer model)
+        const wheels = player.userData.parts.wheels;
+        const wheelRotationSpeed = velocityRef.current.length() * delta * 2;
+        wheels.forEach((wheel: THREE.Mesh) => {
+          wheel.rotation.x -= wheelRotationSpeed;
+        });
+        // Steer front wheels
+        const maxSteerAngle = 0.4;
+        const wheelSteerAngle = currentSteerAngle * maxSteerAngle;
+        wheels[0].rotation.y = wheelSteerAngle;
+        wheels[1].rotation.y = wheelSteerAngle;
+
+
+      } else if (controlModeRef.current === 'person' && !isTransformingRef.current) {
+         // --- PERSON MOVEMENT LOGIC ---
+        const personMoveSpeed = 10;
+        const personTurnSpeed = 3;
+        velocityRef.current.multiplyScalar(0.9); // friction
+
+        if (inputRef.current.forward) {
+          const forward = new THREE.Vector3();
+          player.getWorldDirection(forward);
+          velocityRef.current.add(forward.multiplyScalar(personMoveSpeed * delta));
+        }
+        if (inputRef.current.backward) {
+          const forward = new THREE.Vector3();
+          player.getWorldDirection(forward);
+          velocityRef.current.add(forward.multiplyScalar(-personMoveSpeed * delta * 0.5));
+        }
+        if (inputRef.current.left) {
+          player.rotation.y += personTurnSpeed * delta;
+        }
+        if (inputRef.current.right) {
+          player.rotation.y -= personTurnSpeed * delta;
+        }
+
+        player.position.add(velocityRef.current.clone().multiplyScalar(delta));
+
+        // Stop sounds
+        if (audioInitializedRef.current && engineSoundRef.current && skidSoundRef.current) {
+            engineSoundRef.current.setVolume(0);
+            skidSoundRef.current.setVolume(0);
+        }
       }
       
       // Fade and remove old tire marks
@@ -356,31 +443,27 @@ export default function GameWrapper() {
 
       // --- BOUNDARY CHECKS ---
       const halfGrid = TOTAL_GRID_WIDTH / 2;
-      car.position.x = Math.max(-halfGrid, Math.min(halfGrid, car.position.x));
-      car.position.z = Math.max(-halfGrid, Math.min(halfGrid, car.position.z));
+      player.position.x = Math.max(-halfGrid, Math.min(halfGrid, player.position.x));
+      player.position.z = Math.max(-halfGrid, Math.min(halfGrid, player.position.z));
 
-      // Rotate wheels
-      const wheelRotationSpeed = velocityRef.current.length() * delta * 2;
-      wheels.forEach((wheel) => {
-        wheel.rotation.x -= wheelRotationSpeed;
-      });
-      // Steer front wheels
-      const maxSteerAngle = 0.4;
-      const wheelSteerAngle = currentSteerAngle * maxSteerAngle;
-      wheels[0].rotation.y = wheelSteerAngle;
-      wheels[1].rotation.y = wheelSteerAngle;
 
       // --- CAMERA LOGIC ---
       const offset = cameraOffsetRef.current.clone();
-      offset.applyQuaternion(car.quaternion);
-      offset.add(car.position);
+      if (controlModeRef.current === 'person') {
+        offset.set(0, 4, -8); // Camera higher and further for person
+      } else {
+        offset.set(0, 2, -6);
+      }
+
+      offset.applyQuaternion(player.quaternion);
+      offset.add(player.position);
 
       camera.position.copy(offset);
-      camera.lookAt(car.position);
+      camera.lookAt(player.position);
 
       // --- OBSTACLE LOGIC ---
       const obstacleSpeed = 50;
-      const playerCarBox = new THREE.Box3().setFromObject(car);
+      const playerCarBox = new THREE.Box3().setFromObject(player);
 
       obstacleCarsRef.current.forEach((obstacle) => {
         const forward = new THREE.Vector3();
@@ -415,27 +498,27 @@ export default function GameWrapper() {
           // Knockback
           const knockback = obstacle.position
             .clone()
-            .sub(car.position)
+            .sub(player.position)
             .normalize()
             .multiplyScalar(-5);
-          car.position.add(knockback);
+          player.position.add(knockback);
         }
       });
 
       // Penalty check for off-road
       const currentRoadXIndex = Math.round(
-        (car.position.x + halfGrid) / CELL_SIZE
+        (player.position.x + halfGrid) / CELL_SIZE
       );
       const currentRoadZIndex = Math.round(
-        (car.position.z + halfGrid) / CELL_SIZE
+        (player.position.z + halfGrid) / CELL_SIZE
       );
       const nearestRoadX = currentRoadXIndex * CELL_SIZE - halfGrid;
       const nearestRoadZ = currentRoadZIndex * CELL_SIZE - halfGrid;
 
       const onHorizontalRoad =
-        Math.abs(car.position.z - nearestRoadZ) < ROAD_WIDTH / 2;
+        Math.abs(player.position.z - nearestRoadZ) < ROAD_WIDTH / 2;
       const onVerticalRoad =
-        Math.abs(car.position.x - nearestRoadX) < ROAD_WIDTH / 2;
+        Math.abs(player.position.x - nearestRoadX) < ROAD_WIDTH / 2;
       const isOffTrack = !(onHorizontalRoad || onVerticalRoad);
 
       if (isOffTrack) {
@@ -467,11 +550,13 @@ export default function GameWrapper() {
       }
 
       // Update HUD
-      setGameData({
+      setGameData(prev => ({
+        ...prev,
         speed: velocityRef.current.length() * 3.6, // Convert m/s to km/h
         time: gameTimeRef.current,
-        carPosition: { x: car.position.x, z: car.position.z },
-      });
+        carPosition: { x: player.position.x, z: player.position.z },
+        carRotation: player.rotation.y,
+      }));
 
       renderer.render(scene, camera);
     };
@@ -610,7 +695,7 @@ export default function GameWrapper() {
         </SidebarContent>
         <SidebarFooter>
           <p className="text-xs text-muted-foreground">
-            Press B to toggle sidebar.
+            Press E to transform.
           </p>
         </SidebarFooter>
       </Sidebar>
@@ -627,8 +712,11 @@ export default function GameWrapper() {
           <Hud
             speed={gameData.speed}
             carPosition={gameData.carPosition}
+            carRotation={gameData.carRotation}
             gridSize={GRID_SIZE}
             totalGridWidth={TOTAL_GRID_WIDTH}
+            controlMode={gameData.controlMode}
+            onToggleControlMode={handleToggleControlMode}
             onAcceleratorPress={() => {
               initAudioOnInteraction();
               inputRef.current.forward = true;
@@ -650,3 +738,5 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
+    

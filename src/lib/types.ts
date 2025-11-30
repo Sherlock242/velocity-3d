@@ -3,3 +3,7 @@ import type { AiOpponentProfileOutput } from '@/ai/flows/generate-ai-opponent-pr
 export type TrackTheme = 'Forest' | 'Desert' | 'City';
 
 export type OpponentProfile = AiOpponentProfileOutput['profiles'][0];
+
+export type ControlMode = 'car' | 'person';
+
+    

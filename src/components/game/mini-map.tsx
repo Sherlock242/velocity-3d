@@ -1,9 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { ChevronUp } from 'lucide-react';
 
 type MiniMapProps = {
   carPosition: { x: number; z: number };
+  carRotation: number;
   gridSize: number;
   totalGridWidth: number;
 };
@@ -12,6 +14,7 @@ const MAP_SIZE = 96; // size of the map in pixels
 
 export default function MiniMap({
   carPosition,
+  carRotation,
   gridSize,
   totalGridWidth,
 }: MiniMapProps) {
@@ -21,9 +24,12 @@ export default function MiniMap({
   const mapX = (carPosition.x + halfGridWidth) / totalGridWidth;
   const mapY = (carPosition.z + halfGridWidth) / totalGridWidth;
 
-  const carStyle = {
+  const rotationInDegrees = carRotation * (180 / Math.PI);
+
+  const carStyle: React.CSSProperties = {
     left: `${mapX * 100}%`,
     top: `${mapY * 100}%`,
+    transform: `translate(-50%, -50%) rotate(${-rotationInDegrees}deg)`,
   };
 
   return (
@@ -91,9 +97,13 @@ export default function MiniMap({
 
       {/* Car Marker */}
       <div
-        className="absolute w-2 h-2 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2"
+        className="absolute text-primary transition-transform duration-100"
         style={carStyle}
-      />
+      >
+        <ChevronUp className="w-4 h-4" />
+      </div>
     </div>
   );
 }
+
+    
