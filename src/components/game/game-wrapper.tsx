@@ -58,7 +58,6 @@ export default function GameWrapper() {
   });
   const wasOffTrackRef = React.useRef(false);
   const penaltyCheckCooldownRef = React.useRef(false);
-  const collisionCooldownRef = React.useRef(false);
   const animationFrameIdRef = React.useRef<number>();
   const obstacleCarsRef = React.useRef<THREE.Group[]>([]);
   const tireMarksRef = React.useRef<
@@ -411,8 +410,7 @@ export default function GameWrapper() {
 
         // Collision Detection
         const obstacleBox = new THREE.Box3().setFromObject(obstacle);
-        if (playerCarBox.intersectsBox(obstacleBox) && !collisionCooldownRef.current) {
-          collisionCooldownRef.current = true;
+        if (playerCarBox.intersectsBox(obstacleBox)) {
           velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
           // Knockback
           const knockback = obstacle.position
@@ -421,16 +419,6 @@ export default function GameWrapper() {
             .normalize()
             .multiplyScalar(-5);
           car.position.add(knockback);
-
-          toast({
-            title: 'CRASH!',
-            description: 'You hit another car!',
-            variant: 'destructive',
-          });
-
-          setTimeout(() => {
-            collisionCooldownRef.current = false;
-          }, 2000); // 2 second cooldown
         }
       });
 
