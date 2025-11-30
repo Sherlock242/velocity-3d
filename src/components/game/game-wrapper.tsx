@@ -601,7 +601,7 @@ export default function GameWrapper() {
         );
         const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
         verticalRoad.rotation.x = -Math.PI / 2;
-        verticalRoad.position.y = 0.01;
+        verticalRoad.position.y = 0.1;
         verticalRoad.position.x = roadOffset;
         verticalRoad.receiveShadow = true;
         gridGroup.add(verticalRoad);
@@ -613,7 +613,7 @@ export default function GameWrapper() {
           j += lineLength + lineGap
         ) {
           const line = new THREE.Mesh(lineGeom, lineMaterial);
-          line.position.set(roadOffset, 0.02, j + lineLength / 2);
+          line.position.set(roadOffset, 0.11, j + lineLength / 2);
           line.rotation.x = -Math.PI / 2;
           gridGroup.add(line);
         }
@@ -628,7 +628,7 @@ export default function GameWrapper() {
           roadMaterial
         );
         horizontalRoad.rotation.x = -Math.PI / 2;
-        horizontalRoad.position.y = 0.01;
+        horizontalRoad.position.y = 0.1;
         horizontalRoad.position.z = roadOffset;
         horizontalRoad.receiveShadow = true;
         gridGroup.add(horizontalRoad);
@@ -640,7 +640,7 @@ export default function GameWrapper() {
           j += lineLength + lineGap
         ) {
           const line = new THREE.Mesh(lineGeom, lineMaterial);
-          line.position.set(j + lineLength / 2, 0.02, roadOffset);
+          line.position.set(j + lineLength / 2, 0.11, roadOffset);
           line.rotation.x = -Math.PI / 2;
           line.rotation.z = Math.PI / 2;
           gridGroup.add(line);
