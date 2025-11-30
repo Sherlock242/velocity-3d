@@ -817,6 +817,16 @@ export default function GameWrapper() {
       const pillar2 = new THREE.Mesh(pillarGeom, pillarMaterial);
       pillar2.position.set(20, 15, 30);
       mansion.add(pillar2);
+      
+      // Parking Area
+      const parkingGeom = new THREE.PlaneGeometry(120, 80);
+      const parkingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
+      const parkingArea = new THREE.Mesh(parkingGeom, parkingMaterial);
+      parkingArea.rotation.x = -Math.PI / 2;
+      parkingArea.position.y = 0.15;
+      parkingArea.position.z = 60; // In front of the pillars
+      mansion.add(parkingArea);
+
 
       const sector15CellX = 4;
       const sector15CellZ = 2;
