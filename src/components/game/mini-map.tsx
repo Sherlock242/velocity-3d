@@ -1,5 +1,7 @@
 'use client';
 
+import * as React from 'react';
+
 type MiniMapProps = {
   carPosition: { x: number; z: number };
   gridSize: number;
