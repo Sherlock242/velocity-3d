@@ -45,17 +45,17 @@ const TRACK_THEMES: Record<
 };
 
 const TRACK_WIDTH = 40;
-const SEGMENT_LENGTH = 200;
-const GROUND_WIDTH = 500;
-const NUM_SEGMENTS = 10;
-const TRACK_LENGTH = SEGMENT_LENGTH * NUM_SEGMENTS;
-const NUM_OBSTACLES = 10;
+const ROAD_WIDTH = 40;
+const GRID_SIZE = 5; // 5x5 grid
+const CELL_SIZE = 1000; // 1km per cell
+const TOTAL_GRID_WIDTH = GRID_SIZE * CELL_SIZE;
+const NUM_OBSTACLES = 50; // Increased for a larger area
 
 export default function GameWrapper() {
   const mountRef = React.useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const [theme, setTheme] = React.useState<TrackTheme>('Forest');
+  const [theme, setTheme] = React.useState<TrackTheme>('City');
   const [gameData, setGameData] = React.useState({ speed: 0, time: 0 });
   const [isReady, setIsReady] = React.useState(false);
 
@@ -100,7 +100,7 @@ export default function GameWrapper() {
       75,
       window.innerWidth / window.innerHeight,
       0.1,
-      2000
+      5000 // Increased view distance for grid
     );
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -359,98 +359,105 @@ export default function GameWrapper() {
 
     for (let i = 0; i < NUM_OBSTACLES; i++) {
         const obstacle = createObstacleCar();
-        // Position them ahead and on the opposite lane
-        obstacle.position.z = 200 + Math.random() * TRACK_LENGTH;
-        obstacle.position.x = -TRACK_WIDTH / 4; // Opposite lane
+        // Position them randomly on the grid
+        const onVerticalRoad = Math.random() > 0.5;
+        const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
+        const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
+        const halfGrid = TOTAL_GRID_WIDTH / 2;
+
+        if(onVerticalRoad) {
+            obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
+            obstacle.position.z = positionOnRoad;
+            obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI; // Face north or south
+        } else {
+            obstacle.position.x = positionOnRoad;
+            obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
+            obstacle.rotation.y = Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2; // Face east or west
+        }
         obstacleCarsRef.current.push(obstacle);
     }
     
-    // --- INFINITE TRACK ---
-    const trackSegments: THREE.Group[] = [];
+    // --- GRID TRACK ---
+    function createGrid() {
+        const gridGroup = new THREE.Group();
+        const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
+        const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
 
-    function createTrackSegment(segmentIndex: number) {
-      const segmentGroup = new THREE.Group();
+        // Ground
+        const groundGeometry = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH + CELL_SIZE, TOTAL_GRID_WIDTH + CELL_SIZE);
+        const groundMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].ground });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        gridGroup.add(ground);
 
-      // Ground
-      const groundGeometry = new THREE.PlaneGeometry(GROUND_WIDTH, SEGMENT_LENGTH);
-      const groundMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].ground });
-      const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-      ground.rotation.x = -Math.PI / 2;
-      ground.receiveShadow = true;
-      segmentGroup.add(ground);
-
-      // Road
-      const roadGeometry = new THREE.PlaneGeometry(TRACK_WIDTH, SEGMENT_LENGTH);
-      const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x4a4a4a });
-      const road = new THREE.Mesh(roadGeometry, roadMaterial);
-      road.rotation.x = -Math.PI / 2;
-      road.position.y = 0.01;
-      road.receiveShadow = true;
-      segmentGroup.add(road);
-
-      // Markings
-      const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-      const edgeLineGeometry = new THREE.PlaneGeometry(0.5, SEGMENT_LENGTH);
-      const leftEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
-      leftEdgeLine.position.set(-TRACK_WIDTH / 2 + 0.25, 0.02, 0);
-      leftEdgeLine.rotation.x = -Math.PI / 2;
-      segmentGroup.add(leftEdgeLine);
-      const rightEdgeLine = new THREE.Mesh(edgeLineGeometry, lineMaterial);
-      rightEdgeLine.position.set(TRACK_WIDTH / 2 - 0.25, 0.02, 0);
-      rightEdgeLine.rotation.x = -Math.PI / 2;
-      segmentGroup.add(rightEdgeLine);
-      
-      const dashLength = 8;
-      const dashGap = 6;
-      const dashGeometry = new THREE.PlaneGeometry(0.3, dashLength);
-      for (let z = -SEGMENT_LENGTH / 2; z < SEGMENT_LENGTH / 2; z += dashLength + dashGap) {
-          const dash = new THREE.Mesh(dashGeometry, lineMaterial);
-          dash.position.set(0, 0.02, z);
-          dash.rotation.x = -Math.PI / 2;
-          segmentGroup.add(dash);
-      }
-
-      // Scenery
-      const sceneryMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].scenery });
-      for (let i = 0; i < 20; i++) {
-        const x = Math.random() < 0.5 ? TRACK_WIDTH/2 + 10 + Math.random() * 80 : -TRACK_WIDTH/2 - 10 - Math.random() * 80;
-        const z = (Math.random() - 0.5) * SEGMENT_LENGTH;
-        let sceneryObject: THREE.Mesh;
-
-        if (theme === 'Forest') {
-            const treeHeight = Math.random() * 20 + 10;
-            const treeRadius = treeHeight / 8;
-            const sceneryGeometry = new THREE.ConeGeometry(treeRadius, treeHeight, 8);
-            sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-            sceneryObject.position.set(x, treeHeight / 2, z);
-        } else if (theme === 'Desert') {
-            const duneSize = Math.random() * 15 + 5;
-            const sceneryGeometry = new THREE.ConeGeometry(duneSize, duneSize/2, 4); // Pyramid shape
-            sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-            sceneryObject.position.set(x, duneSize / 4, z);
-        } else { // City
-            const buildingHeight = Math.random() * 50 + 20;
-            const buildingWidth = Math.random() * 10 + 5;
-            const buildingDepth = Math.random() * 10 + 5;
-            const sceneryGeometry = new THREE.BoxGeometry(buildingWidth, buildingHeight, buildingDepth);
-            sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-            sceneryObject.position.set(x, buildingHeight / 2, z);
-        }
+        // Roads
+        const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x4a4a4a });
         
-        sceneryObject.castShadow = true;
-        segmentGroup.add(sceneryObject);
-      }
-      
-      // Position segment
-      segmentGroup.position.z = segmentIndex * SEGMENT_LENGTH;
-      scene.add(segmentGroup);
-      return segmentGroup;
+        for (let i = 0; i <= GRID_SIZE; i++) {
+            const roadOffset = i * CELL_SIZE - halfTotalWidth;
+
+            // Vertical roads
+            const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
+            const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
+            verticalRoad.rotation.x = -Math.PI / 2;
+            verticalRoad.position.y = 0.01;
+            verticalRoad.position.x = roadOffset;
+            verticalRoad.receiveShadow = true;
+            gridGroup.add(verticalRoad);
+
+            // Horizontal roads
+            const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
+            const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
+            horizontalRoad.rotation.x = -Math.PI / 2;
+            horizontalRoad.position.y = 0.01;
+            horizontalRoad.position.z = roadOffset;
+            horizontalRoad.receiveShadow = true;
+            gridGroup.add(horizontalRoad);
+        }
+
+        // Add scenery
+        const sceneryMaterial = new THREE.MeshStandardMaterial({ color: TRACK_THEMES[theme].scenery });
+        for (let i = 0; i < (GRID_SIZE + 1) * (GRID_SIZE + 1) * 4; i++) {
+            const cellX = Math.floor(Math.random() * GRID_SIZE);
+            const cellZ = Math.floor(Math.random() * GRID_SIZE);
+
+            const cellCenterX = cellX * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+            const cellCenterZ = cellZ * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+
+            const x = cellCenterX + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
+            const z = cellCenterZ + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
+            
+            let sceneryObject: THREE.Mesh;
+
+            if (theme === 'Forest') {
+                const treeHeight = Math.random() * 20 + 10;
+                const treeRadius = treeHeight / 8;
+                const sceneryGeometry = new THREE.ConeGeometry(treeRadius, treeHeight, 8);
+                sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+                sceneryObject.position.set(x, treeHeight / 2, z);
+            } else if (theme === 'Desert') {
+                const duneSize = Math.random() * 15 + 5;
+                const sceneryGeometry = new THREE.ConeGeometry(duneSize, duneSize/2, 4); // Pyramid shape
+                sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+                sceneryObject.position.set(x, duneSize / 4, z);
+            } else { // City
+                const buildingHeight = Math.random() * 100 + 40;
+                const buildingWidth = Math.random() * 40 + 20;
+                const buildingDepth = Math.random() * 40 + 20;
+                const sceneryGeometry = new THREE.BoxGeometry(buildingWidth, buildingHeight, buildingDepth);
+                sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+                sceneryObject.position.set(x, buildingHeight / 2, z);
+            }
+            
+            sceneryObject.castShadow = true;
+            gridGroup.add(sceneryObject);
+        }
+
+        scene.add(gridGroup);
     }
 
-    for (let i = 0; i < NUM_SEGMENTS; i++) {
-        // We position segments ahead of the car's starting point
-        trackSegments.push(createTrackSegment(i));
-    }
+    createGrid();
 
 
     // --- EVENT LISTENERS ---
@@ -597,43 +604,59 @@ export default function GameWrapper() {
       }
 
 
-      // --- INFINITE TRACK LOGIC ---
-      const carSegmentIndex = Math.floor(car.position.z / SEGMENT_LENGTH);
-      trackSegments.forEach(segment => {
-        const segmentZ = segment.position.z;
-        // If a segment is far behind the car, move it to the front
-        if(segmentZ < car.position.z - SEGMENT_LENGTH) {
-          segment.position.z += TRACK_LENGTH;
-        }
-      });
-
       // --- OBSTACLE LOGIC ---
       const obstacleSpeed = 50;
       const playerCarBox = new THREE.Box3().setFromObject(car);
-      obstacleCarsRef.current.forEach(obstacle => {
-          obstacle.position.z -= obstacleSpeed * delta;
+      const halfGrid = TOTAL_GRID_WIDTH / 2;
 
-          // Reset obstacle if it's far behind the player
-          if (obstacle.position.z < car.position.z - 50) {
-              obstacle.position.z = car.position.z + TRACK_LENGTH * 0.5 + Math.random() * (TRACK_LENGTH * 0.5);
-              obstacle.position.x = (Math.random() - 0.5) * (TRACK_WIDTH / 2); // Randomly place on their side
+      obstacleCarsRef.current.forEach(obstacle => {
+          const forward = new THREE.Vector3();
+          obstacle.getWorldDirection(forward);
+          obstacle.position.add(forward.multiplyScalar(obstacleSpeed * delta));
+
+          // Reset obstacle if it's outside the grid
+          if (Math.abs(obstacle.position.x) > halfGrid + CELL_SIZE || Math.abs(obstacle.position.z) > halfGrid + CELL_SIZE) {
+              const onVerticalRoad = Math.random() > 0.5;
+              const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
+              const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
+
+              if(onVerticalRoad) {
+                  obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
+                  obstacle.position.z = positionOnRoad;
+                  obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI;
+              } else {
+                  obstacle.position.x = positionOnRoad;
+                  obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
+                  obstacle.rotation.y = Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2;
+              }
           }
           
           // Collision Detection
           const obstacleBox = new THREE.Box3().setFromObject(obstacle);
           if(playerCarBox.intersectsBox(obstacleBox)) {
               velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
-              obstacle.position.z += 20; // Move obstacle away to prevent constant collision
+              // Knockback
+              const knockback = obstacle.position.clone().sub(car.position).normalize().multiplyScalar(-5);
+              car.position.add(knockback);
+
               toast({
                 title: "CRASH!",
-                description: "You hit an oncoming car!",
+                description: "You hit another car!",
                 variant: "destructive"
               })
           }
       });
       
-      // Penalty check
-      const isOffTrack = Math.abs(car.position.x) > TRACK_WIDTH / 2;
+      // Penalty check for off-road
+      const currentRoadXIndex = Math.round((car.position.x + halfGrid) / CELL_SIZE);
+      const currentRoadZIndex = Math.round((car.position.z + halfGrid) / CELL_SIZE);
+      const nearestRoadX = currentRoadXIndex * CELL_SIZE - halfGrid;
+      const nearestRoadZ = currentRoadZIndex * CELL_SIZE - halfGrid;
+
+      const onHorizontalRoad = Math.abs(car.position.z - nearestRoadZ) < ROAD_WIDTH / 2;
+      const onVerticalRoad = Math.abs(car.position.x - nearestRoadX) < ROAD_WIDTH / 2;
+      const isOffTrack = !(onHorizontalRoad || onVerticalRoad);
+      
       if (isOffTrack) {
         wasOffTrackRef.current = true;
         velocityRef.current.multiplyScalar(0.95); // Slow down off-track
@@ -645,7 +668,7 @@ export default function GameWrapper() {
 
         handleAssessPenalty({
             lapTime: gameTimeRef.current,
-            trackPosition: 'Player went off-track and returned.',
+            trackPosition: 'Player went off-road and returned.',
             speed: velocityRef.current.length() * 3.6, // m/s to km/h approx
         }).then(result => {
             if(result.penalty) {
@@ -757,7 +780,7 @@ export default function GameWrapper() {
             {!isReady && (
                 <div className="absolute inset-0 flex flex-col justify-center items-center bg-background z-10">
                     <Loader2 className="w-16 h-16 animate-spin text-primary mb-4" />
-                    <p className="text-xl font-headline">Loading {theme} Track...</p>
+                    <p className="text-xl font-headline">Loading {theme} Grid...</p>
                 </div>
             )}
         </div>
@@ -766,7 +789,7 @@ export default function GameWrapper() {
             speed={gameData.speed}
             time={gameData.time}
             onAcceleratorPress={() => (inputRef.current.forward = true)}
-            onAcceleratorRelease={() => (inputRef.current.forward = false)}
+            onAcceleratorRelease={() => (inputref.current.forward = false)}
             onSteerLeftPress={() => (inputRef.current.left = true)}
             onSteerLeftRelease={() => (inputRef.current.left = false)}
             onSteerRightPress={() => (inputRef.current.right = true)}
@@ -777,3 +800,4 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
