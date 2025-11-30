@@ -601,7 +601,7 @@ export default function GameWrapper() {
         );
         const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
         verticalRoad.rotation.x = -Math.PI / 2;
-        verticalRoad.position.y = 0.1;
+        verticalRoad.position.y = 0.11;
         verticalRoad.position.x = roadOffset;
         verticalRoad.receiveShadow = true;
         gridGroup.add(verticalRoad);
@@ -613,7 +613,7 @@ export default function GameWrapper() {
           j += lineLength + lineGap
         ) {
           const line = new THREE.Mesh(lineGeom, lineMaterial);
-          line.position.set(roadOffset, 0.11, j + lineLength / 2);
+          line.position.set(roadOffset, 0.12, j + lineLength / 2);
           line.rotation.x = -Math.PI / 2;
           gridGroup.add(line);
         }
@@ -628,7 +628,7 @@ export default function GameWrapper() {
           roadMaterial
         );
         horizontalRoad.rotation.x = -Math.PI / 2;
-        horizontalRoad.position.y = 0.1;
+        horizontalRoad.position.y = 0.11;
         horizontalRoad.position.z = roadOffset;
         horizontalRoad.receiveShadow = true;
         gridGroup.add(horizontalRoad);
@@ -640,7 +640,7 @@ export default function GameWrapper() {
           j += lineLength + lineGap
         ) {
           const line = new THREE.Mesh(lineGeom, lineMaterial);
-          line.position.set(j + lineLength / 2, 0.11, roadOffset);
+          line.position.set(j + lineLength / 2, 0.12, roadOffset);
           line.rotation.x = -Math.PI / 2;
           line.rotation.z = Math.PI / 2;
           gridGroup.add(line);
@@ -794,6 +794,11 @@ export default function GameWrapper() {
 
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
 
+      // --- BOUNDARY CHECKS ---
+      const halfGrid = TOTAL_GRID_WIDTH / 2;
+      car.position.x = Math.max(-halfGrid, Math.min(halfGrid, car.position.x));
+      car.position.z = Math.max(-halfGrid, Math.min(halfGrid, car.position.z));
+
       // Rotate wheels
       const wheelRotationSpeed = velocityRef.current.length() * delta * 2;
       wheels.forEach((wheel) => {
@@ -816,7 +821,6 @@ export default function GameWrapper() {
       // --- OBSTACLE LOGIC ---
       const obstacleSpeed = 50;
       const playerCarBox = new THREE.Box3().setFromObject(car);
-      const halfGrid = TOTAL_GRID_WIDTH / 2;
 
       obstacleCarsRef.current.forEach((obstacle) => {
         const forward = new THREE.Vector3();
