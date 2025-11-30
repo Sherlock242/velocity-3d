@@ -83,6 +83,9 @@ export default function GameWrapper() {
   const penaltyCheckCooldownRef = React.useRef(false);
   const animationFrameIdRef = React.useRef<number>();
   const obstacleCarsRef = React.useRef<THREE.Group[]>([]);
+  const tireMarksRef = React.useRef<
+    { mesh: THREE.Mesh; createdAt: number }[]
+  >([]);
 
   // Camera control refs
   const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 2, -6));
@@ -794,11 +797,21 @@ export default function GameWrapper() {
     const clock = new THREE.Clock();
     let currentSteerAngle = 0;
 
+    const tireMarkGeometry = new THREE.PlaneGeometry(1, 4); // Small plane for a skid mark segment
+    const tireMarkMaterial = new THREE.MeshStandardMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.6,
+    });
+    tireMarkMaterial.polygonOffset = true;
+    tireMarkMaterial.polygonOffsetFactor = -1;
+
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
       if (!carRef.current) return;
       const car = carRef.current;
       const delta = clock.getDelta();
+      const now = clock.elapsedTime;
       gameTimeRef.current += delta;
 
       const maxSpeed = 100;
@@ -841,16 +854,47 @@ export default function GameWrapper() {
 
       car.position.add(velocityRef.current.clone().multiplyScalar(delta));
       
-      // --- AUDIO LOGIC ---
+      // --- AUDIO & TIRE MARK LOGIC ---
+      const speedRatio = velocityRef.current.length() / maxSpeed;
+      const steerRatio = Math.abs(currentSteerAngle);
+      const isDrifting = speedRatio > 0.2 && steerRatio > 0.5;
+
       if (audioInitializedRef.current && engineSoundRef.current && skidSoundRef.current && engineOscillatorRef.current) {
-        const speedRatio = velocityRef.current.length() / maxSpeed;
         engineSoundRef.current.setVolume(speedRatio * 0.1);
         engineOscillatorRef.current.frequency.setTargetAtTime(50 + speedRatio * 150, audioListenerRef.current!.context.currentTime, 0.01);
 
-        const steerRatio = Math.abs(currentSteerAngle);
-        const skidVolume = speedRatio > 0.2 && steerRatio > 0.5 ? (speedRatio * steerRatio) * 0.2 : 0;
+        const skidVolume = isDrifting ? speedRatio * steerRatio * 0.2 : 0;
         skidSoundRef.current.setVolume(skidVolume);
       }
+      
+      // Add tire marks when drifting
+      if (isDrifting) {
+        const tireMark = new THREE.Mesh(
+          tireMarkGeometry,
+          tireMarkMaterial.clone()
+        );
+        tireMark.position.copy(car.position);
+        tireMark.position.y = 0.13; // Just above the road markings
+        tireMark.quaternion.copy(car.quaternion);
+        tireMark.rotateX(-Math.PI / 2);
+        scene.add(tireMark);
+        tireMarksRef.current.push({ mesh: tireMark, createdAt: now });
+      }
+      
+      // Fade and remove old tire marks
+      tireMarksRef.current = tireMarksRef.current.filter(mark => {
+        const age = now - mark.createdAt;
+        const FADE_DURATION = 2; // seconds
+        if (age > FADE_DURATION) {
+          scene.remove(mark.mesh);
+          (mark.mesh.material as THREE.Material).dispose();
+          mark.mesh.geometry.dispose();
+          return false;
+        } else {
+          (mark.mesh.material as THREE.MeshStandardMaterial).opacity = 0.6 * (1 - age / FADE_DURATION);
+          return true;
+        }
+      });
 
 
       // --- BOUNDARY CHECKS ---
@@ -1016,6 +1060,12 @@ export default function GameWrapper() {
       });
       renderer.dispose();
       obstacleCarsRef.current = [];
+      tireMarksRef.current.forEach(mark => {
+        scene.remove(mark.mesh);
+        (mark.mesh.material as THREE.Material).dispose();
+        mark.mesh.geometry.dispose();
+      });
+      tireMarksRef.current = [];
       audioListenerRef.current?.context.close();
       audioInitializedRef.current = false;
     };
@@ -1149,5 +1199,3 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
-
-    
