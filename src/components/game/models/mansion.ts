@@ -55,6 +55,13 @@ export function createMansion() {
     rightFrame.position.x = width / 2 + frameThickness / 2;
     windowGroup.add(rightFrame);
 
+    // Cross-frame
+    const horizontalBar = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 0.4), frameMaterial);
+    windowGroup.add(horizontalBar);
+    
+    const verticalBar = new THREE.Mesh(new THREE.BoxGeometry(frameThickness, height, 0.4), frameMaterial);
+    windowGroup.add(verticalBar);
+
     return windowGroup;
   }
 
@@ -82,6 +89,7 @@ export function createMansion() {
   for(let i = 0; i < 5; i++) {
     const window = createWindow(6, 10);
     window.position.set(-40.1, 18, 24 + i * -12);
+    window.rotation.y = Math.PI / 2; // Rotate to face outwards
     mansion.add(window);
   }
 
@@ -101,6 +109,7 @@ export function createMansion() {
   for(let i = 0; i < 5; i++) {
     const window = createWindow(6, 10);
     window.position.set(40.1, 18, 24 + i * -12);
+    window.rotation.y = -Math.PI / 2; // Rotate to face outwards
     mansion.add(window);
   }
 
