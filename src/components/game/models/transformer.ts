@@ -12,19 +12,20 @@ function createLegoPerson() {
   head.position.y = 3.2; // Adjusted position
   head.visible = false; // Hide the head
 
-  const torsoGeo = new THREE.BoxGeometry(1.2, 1.2, 0.6); // Decreased height from 1.5 to 1.2
+  const torsoGeo = new THREE.BoxGeometry(1.2, 1.5, 0.6); // Slightly shorter torso
   const torsoMat = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black Hoodie
   const torso = new THREE.Mesh(torsoGeo, torsoMat);
-  torso.position.y = 2.45; // Adjusted position: 1.7 + 1.2/2 = 1.7 + 0.6 = 2.3
+  torso.position.y = 2.8; // Adjusted position
 
   // Hood up over the head
+  const hairMat = new THREE.MeshStandardMaterial({ color: 0x080808 }); // Different black for hair
   const hoodGeo = new THREE.BoxGeometry(1, 1, 1);
-  const hood = new THREE.Mesh(hoodGeo, torsoMat);
-  hood.position.set(0, 3.05, 0); // Position where the head was, adjusted for new height
+  const hood = new THREE.Mesh(hoodGeo, hairMat);
+  hood.position.set(0, 3.3, 0); // Position where the head was, adjusted for new height
   legoPerson.add(hood);
 
 
-  const armGeo = new THREE.BoxGeometry(0.3, 0.9, 0.3); // Increased height to match taller torso
+  const armGeo = new THREE.BoxGeometry(0.3, 1.1, 0.3); // Adjusted arm length
   const armMat = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black sleeves
   
   const handGeo = new THREE.BoxGeometry(0.3, 0.2, 0.3);
@@ -33,24 +34,24 @@ function createLegoPerson() {
   const leftArmGroup = new THREE.Group();
   const leftArm = new THREE.Mesh(armGeo, armMat);
   const leftHand = new THREE.Mesh(handGeo, handMat);
-  leftHand.position.y = -0.55; // Position at the end of the sleeve
+  leftHand.position.y = -0.65; // Position at the end of the sleeve
   leftArmGroup.add(leftArm);
   leftArmGroup.add(leftHand);
-  leftArmGroup.position.set(0.75, 2.75, 0); // Adjusted y-position for new total length
+  leftArmGroup.position.set(0.75, 3.1, 0); // Adjusted y-position
   legoPerson.add(leftArmGroup);
 
   const rightArmGroup = new THREE.Group();
   const rightArm = new THREE.Mesh(armGeo, armMat);
   const rightHand = new THREE.Mesh(handGeo, handMat);
-  rightHand.position.y = -0.55;
+  rightHand.position.y = -0.65;
   rightArmGroup.add(rightArm);
   rightArmGroup.add(rightHand);
-  rightArmGroup.position.set(-0.75, 2.75, 0);
+  rightArmGroup.position.set(-0.75, 3.1, 0);
   legoPerson.add(rightArmGroup);
 
 
   // --- LEGS & SHOES ---
-  const legHeight = 1.5; // Increased height from 1.2 to 1.5
+  const legHeight = 1.8; // Taller legs
   const shoeHeight = 0.2;
   
   const legGeo = new THREE.BoxGeometry(0.5, legHeight, 0.5);
@@ -314,30 +315,30 @@ export function updateTransformerAnimation(
       const personParts = personModel.userData.parts;
       
       const torsoCarPos = carChassis.position.clone().set(0, 1, 0);
-      const torsoPersonPos = new THREE.Vector3(0, 2.45, 0); // Use new position
+      const torsoPersonPos = new THREE.Vector3(0, 2.8, 0); // Use new position
       personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos, p);
 
       const headCarPos = torsoCarPos.clone().setY(2);
-      const headPersonPos = new THREE.Vector3(0, 3.05, 0); // Use new position
+      const headPersonPos = new THREE.Vector3(0, 3.3, 0); // Use new position
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
       
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
-      const lArmPersonPos = new THREE.Vector3(0.75, 2.75, 0); // Use new position
+      const lArmPersonPos = new THREE.Vector3(0.75, 3.1, 0); // Use new position
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-0.75, 2.75, 0); // Use new position
+      const rArmPersonPos = new THREE.Vector3(-0.75, 3.1, 0); // Use new position
       personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
       
       // Legs from back wheels
       const carWheels = carModel.userData.parts.wheels;
       const lLegCarPos = carWheels[2].position.clone();
-      const lLegPersonPos = new THREE.Vector3(0.3, 0.95, 0); // Use new position
+      const lLegPersonPos = new THREE.Vector3(0.3, 1.1, 0); // Use new position
       personParts.leftLeg.position.lerpVectors(lLegCarPos, lLegPersonPos, p);
       
       const rLegCarPos = carWheels[3].position.clone();
-      const rLegPersonPos = new THREE.Vector3(-0.3, 0.95, 0); // Use new position
+      const rLegPersonPos = new THREE.Vector3(-0.3, 1.1, 0); // Use new position
       personParts.rightLeg.position.lerpVectors(rLegCarPos, rLegPersonPos, p);
 
       // Simple walk animation for person, only when fully transformed and moving
