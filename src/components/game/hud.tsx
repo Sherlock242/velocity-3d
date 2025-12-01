@@ -58,7 +58,7 @@ export default function Hud({
       </div>
 
       {/* Control Mode */}
-      <div className="absolute top-20 right-4 pointer-events-auto">
+      <div className="absolute bottom-28 left-4 pointer-events-auto">
         <Button onClick={onToggleControlMode} variant="outline" size="lg" className='bg-card/50 backdrop-blur-sm border-accent/20'>
           {controlMode === 'car' ? <Car className="mr-2" /> : <ToyBrick className="mr-2" />}
           {controlMode === 'car' ? 'Mode: Car' : 'Mode: Person'}
@@ -116,5 +116,3 @@ export default function Hud({
     </div>
   );
 }
-
-    
