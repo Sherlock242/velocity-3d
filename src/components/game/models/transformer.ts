@@ -12,12 +12,19 @@ function createLegoPerson() {
   head.position.y = 2.2;
 
   const torsoGeo = new THREE.BoxGeometry(1.2, 1, 0.6);
-  const torsoMat = new THREE.MeshStandardMaterial({ color: 0xcc0000 }); // Red
+  const torsoMat = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black Hoodie
   const torso = new THREE.Mesh(torsoGeo, torsoMat);
   torso.position.y = 1.4;
 
+  // Add hood piece
+  const hoodGeo = new THREE.BoxGeometry(1.2, 0.5, 0.4);
+  const hood = new THREE.Mesh(hoodGeo, torsoMat);
+  hood.position.set(0, 1.8, -0.4);
+  legoPerson.add(hood);
+
+
   const armGeo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
-  const armMat = new THREE.MeshStandardMaterial({ color: 0xffd700 }); // Yellow
+  const armMat = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black sleeves
   
   const leftArm = new THREE.Mesh(armGeo, armMat);
   leftArm.position.set(0.75, 1.6, 0);
@@ -26,7 +33,7 @@ function createLegoPerson() {
   rightArm.position.set(-0.75, 1.6, 0);
 
   const legGeo = new THREE.BoxGeometry(0.5, 0.8, 0.5);
-  const legMat = new THREE.MeshStandardMaterial({ color: 0x333333 }); // Dark Grey
+  const legMat = new THREE.MeshStandardMaterial({ color: 0x0055aa }); // Blue Jeans
 
   const leftLeg = new THREE.Mesh(legGeo, legMat);
   leftLeg.position.set(0.3, 0.4, 0);
