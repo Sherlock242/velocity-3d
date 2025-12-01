@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { ChevronUp } from 'lucide-react';
 
 type MiniMapProps = {
   carPosition: { x: number; z: number };
@@ -97,13 +96,11 @@ export default function MiniMap({
 
       {/* Car Marker */}
       <div
-        className="absolute text-primary transition-transform duration-100"
+        className="absolute transition-transform duration-100"
         style={carStyle}
       >
-        <ChevronUp className="w-4 h-4" />
+        <div className="w-2 h-2 rounded-full bg-primary" />
       </div>
     </div>
   );
 }
-
-    
