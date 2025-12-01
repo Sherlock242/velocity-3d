@@ -57,6 +57,13 @@ function createLamborghini() {
   });
 
   // Main chassis
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(2.2, 1.2, 4.5),
+    bodyMaterial
+  );
+  body.position.y = 0.6;
+  car.add(body);
+
   const chassisShape = new THREE.Shape();
   chassisShape.moveTo(-2.2, 0);
   chassisShape.lineTo(2.2, 0);
@@ -69,8 +76,6 @@ function createLamborghini() {
   const extrudeSettings = { depth: 4.5, bevelEnabled: false };
   const chassisGeom = new THREE.ExtrudeGeometry(chassisShape, extrudeSettings);
   const chassis = new THREE.Mesh(chassisGeom, bodyMaterial);
-  chassis.rotation.y = Math.PI / 2;
-  chassis.position.set(2.25, 0, 0); // Adjust position
   car.add(chassis);
   chassis.castShadow = true;
 
