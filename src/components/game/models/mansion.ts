@@ -66,14 +66,31 @@ export function createMansion() {
     return windowGroup;
   }
 
-  // Add windows to the main building
-  const window1 = createWindow(8, 12);
-  window1.position.set(-25, 25, 25.1);
-  mansion.add(window1);
+  // Add windows to the main building front
+  const windowPositionsFront = [
+    { x: -25, y: 15 }, { x: 25, y: 15 },
+    { x: -25, y: 30 }, { x: 25, y: 30 },
+  ];
+  windowPositionsFront.forEach(pos => {
+    const window = createWindow(8, 10);
+    window.position.set(pos.x, pos.y, 25.1);
+    mansion.add(window);
+  });
 
-  const window2 = createWindow(8, 12);
-  window2.position.set(25, 25, 25.1);
-  mansion.add(window2);
+  // Add windows to main building sides
+  for(let i = 0; i < 2; i++) {
+    for (let j = 0; j < 2; j++) {
+      const windowLeft = createWindow(8, 10);
+      windowLeft.position.set(-40.1, 15 + j * 15, 10 + i * -20);
+      windowLeft.rotation.y = Math.PI / 2;
+      mansion.add(windowLeft);
+
+      const windowRight = createWindow(8, 10);
+      windowRight.position.set(40.1, 15 + j * 15, 10 + i * -20);
+      windowRight.rotation.y = -Math.PI / 2;
+      mansion.add(windowRight);
+    }
+  }
   
   // Left Wing
   const leftWingGeom = new THREE.BoxGeometry(50, 30, 60);
@@ -95,13 +112,17 @@ export function createMansion() {
   }
   
   // Windows on Left Wing - Side
-    for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-            const window = createWindow(6, 10);
-            window.position.set(-65, 10 + j * 12, 20 + i * -40);
-            mansion.add(window);
-        }
-    }
+  for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 2; j++) {
+          const window = createWindow(6, 10);
+          window.position.set(-65 + i * 20, 10 + j * 12, 30.1);
+          mansion.add(window);
+          
+          const windowBack = createWindow(6, 10);
+          windowBack.position.set(-65 + i * 20, 10 + j * 12, -30.1);
+          mansion.add(windowBack);
+      }
+  }
 
 
   // Right Wing
@@ -124,13 +145,17 @@ export function createMansion() {
   }
   
   // Windows on Right Wing - Side
-    for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-            const window = createWindow(6, 10);
-            window.position.set(65, 10 + j * 12, 20 + i * -40);
-            mansion.add(window);
-        }
-    }
+  for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 2; j++) {
+          const window = createWindow(6, 10);
+          window.position.set(65 - i * 20, 10 + j * 12, 30.1);
+          mansion.add(window);
+          
+          const windowBack = createWindow(6, 10);
+          windowBack.position.set(65 - i * 20, 10 + j * 12, -30.1);
+          mansion.add(windowBack);
+      }
+  }
 
   // Entrance pillars
   const pillarGeom = new THREE.CylinderGeometry(4, 4, 30, 16);
