@@ -9,7 +9,7 @@ function createLegoPerson() {
   const headGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16);
   const headMat = new THREE.MeshStandardMaterial({ color: 0xffd700 }); // Yellow
   const head = new THREE.Mesh(headGeo, headMat);
-  head.position.y = 3.2; // Adjusted position
+  head.position.y = 3.2; // Adjusted for taller body
   head.visible = false; // Hide the head
 
   const torsoGeo = new THREE.BoxGeometry(1.2, 1.5, 0.6); // Slightly shorter torso
