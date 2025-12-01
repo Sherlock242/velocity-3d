@@ -102,16 +102,20 @@ export function createMansion() {
   leftRoof.position.set(-65, 31, 0);
   mansion.add(leftRoof);
 
+  // Windows on Left Wing - Front
+  for (let i = 0; i < 2; i++) {
+    const window = createWindow(6, 10);
+    window.position.set(-55 - i * 20, 15, 30.1);
+    mansion.add(window);
+  }
+  
   // Windows on Left Wing - Side
   for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 2; j++) {
           const window = createWindow(6, 10);
-          window.position.set(-65 + i * 20, 10 + j * 12, 30.1);
+          window.position.set(-85, 10 + j * 12, -20 + i * 20);
+          window.rotation.y = Math.PI / 2;
           mansion.add(window);
-          
-          const windowBack = createWindow(6, 10);
-          windowBack.position.set(-65 + i * 20, 10 + j * 12, -30.1);
-          mansion.add(windowBack);
       }
   }
 
@@ -127,17 +131,20 @@ export function createMansion() {
   rightRoof.position.set(65, 31, 0);
   mansion.add(rightRoof);
 
+  // Windows on Right Wing - Front
+  for (let i = 0; i < 2; i++) {
+    const window = createWindow(6, 10);
+    window.position.set(55 + i * 20, 15, 30.1);
+    mansion.add(window);
+  }
   
   // Windows on Right Wing - Side
   for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 2; j++) {
           const window = createWindow(6, 10);
-          window.position.set(65 - i * 20, 10 + j * 12, 30.1);
+          window.position.set(85, 10 + j * 12, -20 + i * 20);
+          window.rotation.y = -Math.PI / 2;
           mansion.add(window);
-          
-          const windowBack = createWindow(6, 10);
-          windowBack.position.set(65 - i * 20, 10 + j * 12, -30.1);
-          mansion.add(windowBack);
       }
   }
 
