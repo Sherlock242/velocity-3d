@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 export function createMansion() {
@@ -85,13 +86,22 @@ export function createMansion() {
   leftRoof.position.set(-65, 31, 0);
   mansion.add(leftRoof);
 
-  // Windows on Left Wing
+  // Windows on Left Wing - Front
   for(let i = 0; i < 5; i++) {
     const window = createWindow(6, 10);
     window.position.set(-40.1, 18, 24 + i * -12);
     window.rotation.y = Math.PI / 2; // Rotate to face outwards
     mansion.add(window);
   }
+  
+  // Windows on Left Wing - Side
+    for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+            const window = createWindow(6, 10);
+            window.position.set(-65, 10 + j * 12, 20 + i * -40);
+            mansion.add(window);
+        }
+    }
 
 
   // Right Wing
@@ -105,13 +115,22 @@ export function createMansion() {
   rightRoof.position.set(65, 31, 0);
   mansion.add(rightRoof);
 
-  // Windows on Right Wing
+  // Windows on Right Wing - Front
   for(let i = 0; i < 5; i++) {
     const window = createWindow(6, 10);
     window.position.set(40.1, 18, 24 + i * -12);
     window.rotation.y = -Math.PI / 2; // Rotate to face outwards
     mansion.add(window);
   }
+  
+  // Windows on Right Wing - Side
+    for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+            const window = createWindow(6, 10);
+            window.position.set(65, 10 + j * 12, 20 + i * -40);
+            mansion.add(window);
+        }
+    }
 
   // Entrance pillars
   const pillarGeom = new THREE.CylinderGeometry(4, 4, 30, 16);
