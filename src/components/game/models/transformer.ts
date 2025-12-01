@@ -52,108 +52,164 @@ function createLamborghini() {
   const car = new THREE.Group();
 
   const bodyMaterial = new THREE.MeshStandardMaterial({
-    color: 0x990000,
-    metalness: 0.6,
-    roughness: 0.4,
+    color: 0x990000, // Player's distinctive red color
+    metalness: 0.8,
+    roughness: 0.3,
   });
-  
-  const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
 
-  const bodyWidth = 2.4;
-  const bodyHeight = 0.6;
-  const bodyLength = 4.8;
+  const bodyWidth = 2.2;
+  const bodyLength = 4.5;
+  const bodyHeight = 1.2;
 
   // Main body
   const carBody = new THREE.Mesh(
-    new THREE.BoxGeometry(bodyWidth, bodyHeight, bodyLength),
+    new THREE.BoxGeometry(bodyWidth, bodyHeight * 0.5, bodyLength),
     bodyMaterial
   );
-  carBody.position.y = bodyHeight / 2;
+  carBody.position.y = bodyHeight * 0.25;
   carBody.castShadow = true;
   car.add(carBody);
 
   // Cabin
-  const cabinWidth = 1.6;
-  const cabinHeight = 0.5;
-  const cabinLength = 2.0;
-  const cabin = new THREE.Mesh(
-    new THREE.BoxGeometry(cabinWidth, cabinHeight, cabinLength),
-    blackMaterial
+  const windshieldMaterial = new THREE.MeshStandardMaterial({
+    color: 0x000000,
+    metalness: 0.8,
+    roughness: 0.1,
+  });
+  const cabinGeom = new THREE.BoxGeometry(
+    bodyWidth * 0.7,
+    bodyHeight * 0.4,
+    bodyLength * 0.4
   );
-  cabin.position.y = bodyHeight + cabinHeight / 2 - 0.1;
-  cabin.position.z = -0.4;
+  const cabin = new THREE.Mesh(cabinGeom, windshieldMaterial);
+  cabin.position.y = bodyHeight * 0.6;
+  cabin.position.z = -bodyLength * 0.1;
   car.add(cabin);
-
-  // Spoiler
-  const spoilerWingWidth = bodyWidth * 1.2;
-  const spoilerWing = new THREE.Mesh(
-    new THREE.BoxGeometry(spoilerWingWidth, 0.1, 0.5),
-    blackMaterial
-  );
-  const spoilerHeight = bodyHeight + 0.35;
-  spoilerWing.position.set(0, spoilerHeight, -bodyLength / 2 + 0.1);
+  
+    // Spoiler
+  const spoilerMaterial = new THREE.MeshStandardMaterial({
+    color: 0x111111,
+  });
+  const spoilerWingGeom = new THREE.BoxGeometry(bodyWidth * 1.1, 0.05, 0.3);
+  const spoilerWing = new THREE.Mesh(spoilerWingGeom, spoilerMaterial);
+  spoilerWing.position.set(0, bodyHeight * 0.5 + 0.2, -bodyLength / 2 - 0.1);
   spoilerWing.castShadow = true;
   car.add(spoilerWing);
+
   const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
-  const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport1.position.set(-0.8, spoilerHeight - 0.15, -bodyLength / 2 + 0.1);
+  const spoilerSupport1 = new THREE.Mesh(
+    spoilerSupportGeom,
+    spoilerMaterial
+  );
+  spoilerSupport1.position.set(
+    -bodyWidth / 3,
+    bodyHeight * 0.5 + 0.1,
+    -bodyLength / 2 - 0.1
+  );
+  spoilerSupport1.castShadow = true;
   car.add(spoilerSupport1);
-  const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport2.position.set(0.8, spoilerHeight - 0.15, -bodyLength / 2 + 0.1);
+
+  const spoilerSupport2 = new THREE.Mesh(
+    spoilerSupportGeom,
+    spoilerMaterial
+  );
+  spoilerSupport2.position.set(
+    bodyWidth / 3,
+    bodyHeight * 0.5 + 0.1,
+    -bodyLength / 2 - 0.1
+  );
+  spoilerSupport2.castShadow = true;
   car.add(spoilerSupport2);
 
-  // Tail Light
+    // Side Mirrors
+  const mirrorMaterial = new THREE.MeshStandardMaterial({
+    color: 0x111111,
+    metalness: 0.5,
+  });
+  const mirrorShape = new THREE.BoxGeometry(0.15, 0.15, 0.3);
+  const leftMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
+  leftMirror.position.set(
+    -bodyWidth / 2 - 0.1,
+    bodyHeight * 0.6,
+    bodyLength / 2 - 1.5
+  );
+  leftMirror.rotation.y = -Math.PI / 8;
+  car.add(leftMirror);
+
+  const rightMirror = new THREE.Mesh(mirrorShape, mirrorMaterial);
+  rightMirror.position.set(
+    bodyWidth / 2 + 0.1,
+    bodyHeight * 0.6,
+    bodyLength / 2 - 1.5
+  );
+  rightMirror.rotation.y = Math.PI / 8;
+  car.add(rightMirror);
+
+    // Tail Lights
   const tailLightMaterial = new THREE.MeshStandardMaterial({
     color: 0xff0000,
     emissive: 0xff0000,
-    emissiveIntensity: 2,
+    emissiveIntensity: 0.5,
   });
-  const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.9, 0.15, 0.05);
+  const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
   const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
-  tailLights.position.set(0, bodyHeight * 0.7, -bodyLength / 2 - 0.02);
+  tailLights.position.set(0, bodyHeight * 0.5, -bodyLength / 2 - 0.02);
   car.add(tailLights);
-  
-  // Side Mirrors
-  const mirrorGeom = new THREE.BoxGeometry(0.15, 0.15, 0.2);
-  const leftMirror = new THREE.Mesh(mirrorGeom, blackMaterial);
-  leftMirror.position.set(bodyWidth / 2 + 0.07, bodyHeight, 0.5);
-  car.add(leftMirror);
-  const rightMirror = new THREE.Mesh(mirrorGeom, blackMaterial);
-  rightMirror.position.set(-(bodyWidth / 2 + 0.07), bodyHeight, 0.5);
-  car.add(rightMirror);
-  
+
+    // Headlights
+  const headLightMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    emissive: 0xffeeaa,
+    emissiveIntensity: 0.5,
+  });
+  const headLightGeom = new THREE.BoxGeometry(0.6, 0.05, 0.1);
+  const leftHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
+  leftHeadLight.position.set(
+    -bodyWidth / 3,
+    bodyHeight * 0.2,
+    bodyLength / 2 - 0.05
+  );
+  leftHeadLight.rotation.y = -Math.PI / 16;
+  car.add(leftHeadLight);
+
+  const rightHeadLight = new THREE.Mesh(headLightGeom, headLightMaterial);
+  rightHeadLight.position.set(
+    bodyWidth / 3,
+    bodyHeight * 0.2,
+    bodyLength / 2 - 0.05
+  );
+  rightHeadLight.rotation.y = Math.PI / 16;
+  car.add(rightHeadLight);
+
   // Wheels
-  const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 32);
-  wheelGeo.rotateZ(Math.PI / 2);
-  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
-  
-  const frontWheelOffset = bodyLength / 2 - 0.8;
-  const backWheelOffset = -bodyLength / 2 + 0.8;
-  const wheelXOffset = bodyWidth / 2 + 0.05;
+  const wheelMaterial = new THREE.MeshStandardMaterial({
+    color: 0x111111,
+    roughness: 0.8,
+  });
+  const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
+  wheelGeometry.rotateZ(Math.PI / 2);
 
-  const frontLeftWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  frontLeftWheel.position.set(wheelXOffset, 0.4, frontWheelOffset);
-  car.add(frontLeftWheel);
-
-  const frontRightWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  frontRightWheel.position.set(-wheelXOffset, 0.4, frontWheelOffset);
-  car.add(frontRightWheel);
+  const wheelPositions = [
+    // Front wheels
+    new THREE.Vector3(bodyWidth / 2 + 0.15, 0.2, bodyLength / 2 - 1),
+    new THREE.Vector3(-(bodyWidth / 2 + 0.15), 0.2, bodyLength / 2 - 1),
+    // Back wheels
+    new THREE.Vector3(bodyWidth / 2 + 0.15, 0.2, -bodyLength / 2 + 1),
+    new THREE.Vector3(-(bodyWidth / 2 + 0.15), 0.2, -bodyLength / 2 + 1),
+  ];
   
-  const backLeftWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  backLeftWheel.position.set(wheelXOffset, 0.4, backWheelOffset);
-  car.add(backLeftWheel);
-
-  const backRightWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  backRightWheel.position.set(-wheelXOffset, 0.4, backWheelOffset);
-  car.add(backRightWheel);
-  
-  const wheels = [frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel];
-  wheels.forEach(w => w.castShadow = true);
+  const wheels = wheelPositions.map((pos) => {
+    const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+    wheel.position.copy(pos);
+    wheel.castShadow = true;
+    car.add(wheel);
+    return wheel;
+  });
 
   car.userData.parts = {
       chassis: carBody,
       cabin: cabin,
-      wheels,
+      wheels: wheels,
   };
 
   return car;
@@ -236,5 +292,3 @@ export function updateTransformerAnimation(transformer: THREE.Group, progress: n
       personParts.rightArm.rotation.x = Math.sin(transformer.position.z * walkSpeed) * 0.4 * p;
   }
 }
-
-    
