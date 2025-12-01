@@ -69,7 +69,6 @@ export function createMansion() {
   // Add windows to the main building front
   const windowPositionsFront = [
     { x: -25, y: 15 }, { x: 25, y: 15 },
-    { x: -25, y: 30 }, { x: 25, y: 30 },
   ];
   windowPositionsFront.forEach(pos => {
     const window = createWindow(8, 10);
@@ -103,14 +102,6 @@ export function createMansion() {
   leftRoof.position.set(-65, 31, 0);
   mansion.add(leftRoof);
 
-  // Windows on Left Wing - Front
-  for(let i = 0; i < 5; i++) {
-    const window = createWindow(6, 10);
-    window.position.set(-40.1, 18, 24 + i * -12);
-    window.rotation.y = Math.PI / 2; // Rotate to face outwards
-    mansion.add(window);
-  }
-  
   // Windows on Left Wing - Side
   for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 2; j++) {
@@ -137,7 +128,7 @@ export function createMansion() {
   mansion.add(rightRoof);
 
   // Windows on Right Wing - Front
-  for(let i = 0; i < 5; i++) {
+  for(let i = 0; i < 4; i++) {
     const window = createWindow(6, 10);
     window.position.set(40.1, 18, 24 + i * -12);
     window.rotation.y = -Math.PI / 2; // Rotate to face outwards
