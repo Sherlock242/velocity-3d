@@ -57,10 +57,9 @@ function createLamborghini() {
   });
   
   const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
-  const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
 
   const bodyWidth = 2.2;
-  const bodyHeight = 0.6;
+  const bodyHeight = 0.5; // Lowered from 0.6
   const bodyLength = 4.8;
 
   // Main body
@@ -74,11 +73,11 @@ function createLamborghini() {
 
   // Cabin
   const cabinWidth = 1.5;
-  const cabinHeight = 0.5;
+  const cabinHeight = 0.4; // Lowered from 0.5
   const cabinLength = 1.8;
   const cabin = new THREE.Mesh(
     new THREE.BoxGeometry(cabinWidth, cabinHeight, cabinLength),
-    glassMaterial
+    blackMaterial
   );
   cabin.position.y = bodyHeight + cabinHeight / 2;
   cabin.position.z = -0.5;
@@ -90,15 +89,15 @@ function createLamborghini() {
     new THREE.BoxGeometry(spoilerWingWidth, 0.08, 0.4),
     blackMaterial
   );
-  spoilerWing.position.set(0, bodyHeight + 0.5, -bodyLength / 2 + 0.2);
+  spoilerWing.position.set(0, bodyHeight + 0.3, -bodyLength / 2 + 0.2); // Lowered spoiler
   spoilerWing.castShadow = true;
   car.add(spoilerWing);
-  const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.4, 0.1);
+  const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
   const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport1.position.set(-0.7, bodyHeight + 0.2, -bodyLength / 2 + 0.2);
+  spoilerSupport1.position.set(-0.7, bodyHeight + 0.15, -bodyLength / 2 + 0.2);
   car.add(spoilerSupport1);
   const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport2.position.set(0.7, bodyHeight + 0.2, -bodyLength / 2 + 0.2);
+  spoilerSupport2.position.set(0.7, bodyHeight + 0.15, -bodyLength / 2 + 0.2);
   car.add(spoilerSupport2);
 
   // Tail Light
@@ -115,10 +114,10 @@ function createLamborghini() {
   // Side Mirrors
   const mirrorGeom = new THREE.BoxGeometry(0.1, 0.15, 0.3);
   const leftMirror = new THREE.Mesh(mirrorGeom, blackMaterial);
-  leftMirror.position.set(bodyWidth / 2, bodyHeight + 0.1, 0.5);
+  leftMirror.position.set(bodyWidth / 2 + 0.05, bodyHeight, 0.5);
   car.add(leftMirror);
   const rightMirror = new THREE.Mesh(mirrorGeom, blackMaterial);
-  rightMirror.position.set(-bodyWidth / 2, bodyHeight + 0.1, 0.5);
+  rightMirror.position.set(-(bodyWidth / 2 + 0.05), bodyHeight, 0.5);
   car.add(rightMirror);
   
   // Wheels
