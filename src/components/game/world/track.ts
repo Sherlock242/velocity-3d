@@ -131,6 +131,7 @@ export function createGridAndScenery(theme: TrackTheme) {
       if (sectorNumber === 15) { // Sector 15 for Mansion
         const mansion = createMansion();
         mansion.position.set(cellCenterX, 0, cellCenterZ);
+        mansion.rotation.y = -Math.PI / 2;
         mansion.castShadow = true;
         mansion.receiveShadow = true;
         gridGroup.add(mansion);
