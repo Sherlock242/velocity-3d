@@ -164,16 +164,6 @@ export function createMansion() {
   parkingArea.position.y = 0.15;
   parkingArea.position.z = 80;
   mansion.add(parkingArea);
-  
-  const plotSize = 480;
-
-  // Inner grass plane
-  const innerGrassGeom = new THREE.PlaneGeometry(plotSize, plotSize);
-  const innerGrassMat = new THREE.MeshStandardMaterial({ color: 0x228b22 }); // Forest Green
-  const innerGrass = new THREE.Mesh(innerGrassGeom, innerGrassMat);
-  innerGrass.rotation.x = -Math.PI / 2;
-  innerGrass.position.y = 0.1;
-  mansion.add(innerGrass);
 
 
   // --- FORTIFICATION WALL ---
@@ -203,6 +193,8 @@ export function createMansion() {
     }
     return segment;
   }
+  
+  const plotSize = 480;
 
   // Front Wall (with gate)
   const gateWidth = 40;
