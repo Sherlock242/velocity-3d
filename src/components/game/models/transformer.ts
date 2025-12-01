@@ -90,15 +90,15 @@ function createLamborghini() {
     new THREE.BoxGeometry(spoilerWingWidth, 0.08, 0.4),
     blackMaterial
   );
-  spoilerWing.position.set(0, bodyHeight + 0.3, -bodyLength / 2 + 0.2);
+  spoilerWing.position.set(0, bodyHeight + 0.5, -bodyLength / 2 + 0.2);
   spoilerWing.castShadow = true;
   car.add(spoilerWing);
-  const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
+  const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.4, 0.1);
   const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport1.position.set(-0.7, bodyHeight + 0.1, -bodyLength / 2 + 0.2);
+  spoilerSupport1.position.set(-0.7, bodyHeight + 0.2, -bodyLength / 2 + 0.2);
   car.add(spoilerSupport1);
   const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport2.position.set(0.7, bodyHeight + 0.1, -bodyLength / 2 + 0.2);
+  spoilerSupport2.position.set(0.7, bodyHeight + 0.2, -bodyLength / 2 + 0.2);
   car.add(spoilerSupport2);
 
   // Tail Light
