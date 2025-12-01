@@ -144,16 +144,16 @@ export function createGridAndScenery(theme: TrackTheme) {
          const rowSpacing = 150;
          const roadEdgeOffset = 100;
          
-         const startX = cellCenterX - (numHousesPerRow / 2) * houseSpacing + (houseSpacing/2);
-         const startZ = cellCenterZ - (CELL_SIZE / 2) + roadEdgeOffset;
+         const startX = cellCenterX - (CELL_SIZE / 2) + roadEdgeOffset;
+         const startZ = cellCenterZ - (numHousesPerRow / 2) * houseSpacing + (houseSpacing/2);
 
          for (let row = 0; row < numRows; row++) {
           for (let col = 0; col < numHousesPerRow; col++) {
               const house = createChandigarhHouse();
-              const x = startX + col * houseSpacing;
-              const z = startZ + row * rowSpacing;
+              const x = startX + row * rowSpacing;
+              const z = startZ + col * houseSpacing;
               house.position.set(x, 0, z);
-              house.rotation.y = Math.PI; // Face towards positive Z (away from Sector 19)
+              house.rotation.y = Math.PI / 2; // Face towards negative X (towards Sector 19)
               gridGroup.add(house);
           }
         }
