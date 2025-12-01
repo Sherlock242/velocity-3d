@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 export function createChandigarhHouse() {
@@ -103,13 +104,13 @@ export function createChandigarhHouse() {
       jaliShape.holes.push(holePath);
       
       // Add white backing to the hole
-      const holeBackGeom = new THREE.BoxGeometry(holeWidth, holeHeight, 0.5);
+      const holeBackGeom = new THREE.BoxGeometry(holeWidth * 1.1, holeHeight * 1.1, 0.5);
       const holeBackMesh = new THREE.Mesh(holeBackGeom, holeBackingMaterial);
       holeBackMesh.position.set(x, y, -jaliDepth / 2);
       // Position the backing inside the main jali mesh
       holeBackMesh.position.x += 0;
       holeBackMesh.position.y += 44;
-      holeBackMesh.position.z += 15 - jaliDepth / 2;
+      holeBackMesh.position.z += 15 - jaliDepth;
       house.add(holeBackMesh);
     }
   }
