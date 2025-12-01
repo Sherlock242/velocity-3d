@@ -75,38 +75,6 @@ export function createChandigarhHouse() {
   const jaliWidth = 38;
   const jaliHeight = 12;
   const jaliDepth = 2;
-  const jaliRows = 4;
-  const jaliCols = 10;
-
-  const jaliShape = new THREE.Shape();
-  jaliShape.moveTo(-jaliWidth / 2, -jaliHeight / 2);
-  jaliShape.lineTo(jaliWidth / 2, -jaliHeight / 2);
-  jaliShape.lineTo(jaliWidth / 2, jaliHeight / 2);
-  jaliShape.lineTo(-jaliWidth / 2, jaliHeight / 2);
-  jaliShape.lineTo(-jaliWidth / 2, -jaliHeight / 2);
-
-  const holeWidth = jaliWidth / jaliCols * 0.6;
-  const holeHeight = jaliHeight / jaliRows * 0.6;
-  const colSpacing = jaliWidth / jaliCols;
-  const rowSpacing = jaliHeight / jaliRows;
-  
-  for (let i = 0; i < jaliRows; i++) {
-    for (let j = 0; j < jaliCols; j++) {
-      const holePath = new THREE.Path();
-      const x = -jaliWidth / 2 + j * colSpacing + colSpacing / 2;
-      const y = -jaliHeight / 2 + i * rowSpacing + rowSpacing / 2;
-      holePath.moveTo(x - holeWidth / 2, y - holeHeight / 2);
-      holePath.lineTo(x + holeWidth / 2, y - holeHeight / 2);
-      holePath.lineTo(x + holeWidth / 2, y + holeHeight / 2);
-      holePath.lineTo(x - holeWidth / 2, y + holeHeight / 2);
-      jaliShape.holes.push(holePath);
-    }
-  }
-
-  const jaliGeom = new THREE.ExtrudeGeometry(jaliShape, { depth: jaliDepth, bevelEnabled: false });
-  const jaliMesh = new THREE.Mesh(jaliGeom, brickMaterial);
-  jaliMesh.position.set(0, 44, 15 - jaliDepth / 2);
-  house.add(jaliMesh);
   
   // Single white panel behind the jali
   const jaliBackingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
