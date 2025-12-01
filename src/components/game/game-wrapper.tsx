@@ -397,6 +397,7 @@ export default function GameWrapper() {
          // --- PERSON MOVEMENT LOGIC ---
         const personMoveSpeed = 10;
         const personTurnSpeed = 3;
+        const maxPersonSpeed = 50 / 3.6; // 50 km/h in m/s
         velocityRef.current.multiplyScalar(0.9); // friction
 
         if (inputRef.current.forward) {
@@ -414,6 +415,10 @@ export default function GameWrapper() {
         }
         if (inputRef.current.right) {
           player.rotation.y -= personTurnSpeed * delta;
+        }
+        
+        if (velocityRef.current.length() > maxPersonSpeed) {
+          velocityRef.current.normalize().multiplyScalar(maxPersonSpeed);
         }
 
         player.position.add(velocityRef.current.clone().multiplyScalar(delta));
@@ -738,5 +743,3 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
-
-    
