@@ -113,7 +113,7 @@ export function createMansion() {
   for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 2; j++) {
           const window = createWindow(6, 10);
-          window.position.set(-85, 10 + j * 12, -20 + i * 20);
+          window.position.set(-90.1, 10 + j * 12, -20 + i * 20);
           window.rotation.y = Math.PI / 2;
           mansion.add(window);
       }
@@ -142,7 +142,7 @@ export function createMansion() {
   for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 2; j++) {
           const window = createWindow(6, 10);
-          window.position.set(85, 10 + j * 12, -20 + i * 20);
+          window.position.set(90.1, 10 + j * 12, -20 + i * 20);
           window.rotation.y = -Math.PI / 2;
           mansion.add(window);
       }
@@ -159,13 +159,69 @@ export function createMansion() {
   mansion.add(pillar2);
   
   // Parking Area
-  const parkingGeom = new THREE.PlaneGeometry(120, 80);
+  const parkingGeom = new THREE.PlaneGeometry(180, 100);
   const parkingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
   const parkingArea = new THREE.Mesh(parkingGeom, parkingMaterial);
   parkingArea.rotation.x = -Math.PI / 2;
   parkingArea.position.y = 0.15;
-  parkingArea.position.z = 60; // In front of the pillars
+  parkingArea.position.z = 80;
   mansion.add(parkingArea);
+
+  // Outer Wall
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // SaddleBrown color
+  const wallHeight = 10;
+  const wallThickness = 2;
+  const wallLength = 80;
+
+  // Left wall
+  const leftWallGeom = new THREE.BoxGeometry(wallLength, wallHeight, wallThickness);
+  const leftWall = new THREE.Mesh(leftWallGeom, wallMaterial);
+  leftWall.position.set(-50, wallHeight / 2, 130);
+  mansion.add(leftWall);
+
+  // Right wall
+  const rightWall = new THREE.Mesh(leftWallGeom, wallMaterial);
+  rightWall.position.set(50, wallHeight / 2, 130);
+  mansion.add(rightWall);
+
+  // Entrance Pillars for outer wall
+  const entrancePillarGeom = new THREE.BoxGeometry(5, wallHeight + 2, 5);
+  const entrancePillar1 = new THREE.Mesh(entrancePillarGeom, pillarMaterial);
+  entrancePillar1.position.set(-10, (wallHeight + 2) / 2, 130);
+  mansion.add(entrancePillar1);
+  const entrancePillar2 = new THREE.Mesh(entrancePillarGeom, pillarMaterial);
+  entrancePillar2.position.set(10, (wallHeight + 2) / 2, 130);
+  mansion.add(entrancePillar2);
+
+
+  // Fountain
+  const fountain = new THREE.Group();
+  const fountainMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.5 });
+  const waterMaterial = new THREE.MeshStandardMaterial({ color: 0x4682B4, transparent: true, opacity: 0.7 });
+
+  const baseGeom = new THREE.CylinderGeometry(15, 15, 2, 32);
+  const base = new THREE.Mesh(baseGeom, fountainMaterial);
+  base.position.y = 1;
+  fountain.add(base);
+
+  const baseWaterGeom = new THREE.CylinderGeometry(14.5, 14.5, 1.5, 32);
+  const baseWater = new THREE.Mesh(baseWaterGeom, waterMaterial);
+  baseWater.position.y = 1.25;
+  fountain.add(baseWater);
+
+  const tier1Geom = new THREE.CylinderGeometry(8, 8, 4, 32);
+  const tier1 = new THREE.Mesh(tier1Geom, fountainMaterial);
+  tier1.position.y = 3;
+  fountain.add(tier1);
+
+  const tier2Geom = new THREE.CylinderGeometry(4, 4, 3, 32);
+  const tier2 = new THREE.Mesh(tier2Geom, fountainMaterial);
+  tier2.position.y = 6;
+  fountain.add(tier2);
+
+  fountain.position.z = 80;
+  mansion.add(fountain);
+
 
   return mansion;
 }
