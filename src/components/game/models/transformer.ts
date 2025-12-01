@@ -52,45 +52,57 @@ function createLamborghini() {
 
   const bodyMaterial = new THREE.MeshStandardMaterial({
     color: 0xffd700, // Yellow
-    metalness: 0.8,
+    metalness: 0.9,
     roughness: 0.2,
   });
 
-  // Main chassis
-  const body = new THREE.Mesh(
-    new THREE.BoxGeometry(2.2, 1.2, 4.5),
-    bodyMaterial
-  );
-  body.position.y = 0.6;
-  car.add(body);
+  const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
 
-  const chassisShape = new THREE.Shape();
-  chassisShape.moveTo(-2.2, 0);
-  chassisShape.lineTo(2.2, 0);
-  chassisShape.lineTo(2.2, 0.8);
-  chassisShape.lineTo(1.8, 1.2);
-  chassisShape.lineTo(-1.8, 1.2);
-  chassisShape.lineTo(-2.2, 0.8);
-  chassisShape.lineTo(-2.2, 0);
+  // Main Body
+  const bodyGeom = new THREE.BoxGeometry(2, 0.7, 4.5);
+  const mainBody = new THREE.Mesh(bodyGeom, bodyMaterial);
+  mainBody.position.y = 0.6;
+  mainBody.castShadow = true;
+  car.add(mainBody);
 
-  const extrudeSettings = { depth: 4.5, bevelEnabled: false };
-  const chassisGeom = new THREE.ExtrudeGeometry(chassisShape, extrudeSettings);
-  const chassis = new THREE.Mesh(chassisGeom, bodyMaterial);
-  car.add(chassis);
-  chassis.castShadow = true;
+  // Hood
+  const hoodGeom = new THREE.PlaneGeometry(1.8, 1.5);
+  const hood = new THREE.Mesh(hoodGeom, bodyMaterial);
+  hood.position.set(0, 1, 1.5);
+  hood.rotation.x = -Math.PI / 3;
+  car.add(hood);
 
   // Windshield
-  const windshieldMaterial = new THREE.MeshStandardMaterial({
-      color: 0x000000,
-      transparent: true,
-      opacity: 0.7
-  });
-  const windshieldGeom = new THREE.PlaneGeometry(1.6, 0.8);
+  const windshieldGeom = new THREE.PlaneGeometry(1.8, 1);
+  const windshieldMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, transparent: true, opacity: 0.7 });
   const windshield = new THREE.Mesh(windshieldGeom, windshieldMaterial);
-  windshield.position.set(0, 1.2, 0.6);
-  windshield.rotation.x = -Math.PI / 8;
+  windshield.position.set(0, 1.3, 0.25);
+  windshield.rotation.x = -Math.PI / 6;
   car.add(windshield);
+  
+  // Roof
+  const roofGeom = new THREE.PlaneGeometry(1.8, 1.5);
+  const roof = new THREE.Mesh(roofGeom, bodyMaterial);
+  roof.position.set(0, 1.5, -0.75);
+  car.add(roof);
 
+  // Rear
+  const rearGeom = new THREE.PlaneGeometry(1.8, 0.7);
+  const rear = new THREE.Mesh(rearGeom, bodyMaterial);
+  rear.position.set(0, 1.2, -1.5);
+  rear.rotation.x = Math.PI / 4;
+  car.add(rear);
+
+  // Spoiler
+  const spoilerWing = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.1, 0.4), blackMaterial);
+  spoilerWing.position.set(0, 1.2, -2.4);
+  car.add(spoilerWing);
+  const spoilerSupport1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 0.1), blackMaterial);
+  spoilerSupport1.position.set(-0.7, 1.05, -2.4);
+  car.add(spoilerSupport1);
+  const spoilerSupport2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 0.1), blackMaterial);
+  spoilerSupport2.position.set(0.7, 1.05, -2.4);
+  car.add(spoilerSupport2);
 
   // Wheels
   const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 32);
@@ -98,26 +110,26 @@ function createLamborghini() {
   const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
   
   const frontLeftWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  frontLeftWheel.position.set(1.2, 0.4, 1.8);
+  frontLeftWheel.position.set(1.1, 0.4, 1.8);
   car.add(frontLeftWheel);
 
   const frontRightWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  frontRightWheel.position.set(-1.2, 0.4, 1.8);
+  frontRightWheel.position.set(-1.1, 0.4, 1.8);
   car.add(frontRightWheel);
   
   const backLeftWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  backLeftWheel.position.set(1.2, 0.4, -1.8);
+  backLeftWheel.position.set(1.1, 0.4, -1.8);
   car.add(backLeftWheel);
 
   const backRightWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  backRightWheel.position.set(-1.2, 0.4, -1.8);
+  backRightWheel.position.set(-1.1, 0.4, -1.8);
   car.add(backRightWheel);
   
   const wheels = [frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel];
   wheels.forEach(w => w.castShadow = true);
 
   car.userData.parts = {
-      chassis,
+      chassis: mainBody,
       windshield,
       wheels,
   };
