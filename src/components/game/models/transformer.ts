@@ -12,15 +12,15 @@ function createLegoPerson() {
   head.position.y = 3.2; // Adjusted position
   head.visible = false; // Hide the head
 
-  const torsoGeo = new THREE.BoxGeometry(1.2, 1.5, 0.6); // Increased height from 1 to 1.5
+  const torsoGeo = new THREE.BoxGeometry(1.2, 1.2, 0.6); // Decreased height from 1.5 to 1.2
   const torsoMat = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black Hoodie
   const torso = new THREE.Mesh(torsoGeo, torsoMat);
-  torso.position.y = 2.2; // Adjusted position
+  torso.position.y = 2.45; // Adjusted position: 1.7 + 1.2/2 = 1.7 + 0.6 = 2.3
 
   // Hood up over the head
   const hoodGeo = new THREE.BoxGeometry(1, 1, 1);
   const hood = new THREE.Mesh(hoodGeo, torsoMat);
-  hood.position.set(0, 3.0, 0); // Position where the head was, adjusted for new height
+  hood.position.set(0, 3.05, 0); // Position where the head was, adjusted for new height
   legoPerson.add(hood);
 
 
@@ -36,7 +36,7 @@ function createLegoPerson() {
   leftHand.position.y = -0.55; // Position at the end of the sleeve
   leftArmGroup.add(leftArm);
   leftArmGroup.add(leftHand);
-  leftArmGroup.position.set(0.75, 2.5, 0); // Adjusted y-position for new total length
+  leftArmGroup.position.set(0.75, 2.75, 0); // Adjusted y-position for new total length
   legoPerson.add(leftArmGroup);
 
   const rightArmGroup = new THREE.Group();
@@ -45,13 +45,13 @@ function createLegoPerson() {
   rightHand.position.y = -0.55;
   rightArmGroup.add(rightArm);
   rightArmGroup.add(rightHand);
-  rightArmGroup.position.set(-0.75, 2.5, 0);
+  rightArmGroup.position.set(-0.75, 2.75, 0);
   legoPerson.add(rightArmGroup);
 
 
   // --- LEGS & SHOES ---
-  const legHeight = 1.2; // Increased height from 0.8 to 1.2
-  const shoeHeight = 0.25; // Increased shoe height
+  const legHeight = 1.5; // Increased height from 1.2 to 1.5
+  const shoeHeight = 0.2;
   
   const legGeo = new THREE.BoxGeometry(0.5, legHeight, 0.5);
   const legMat = new THREE.MeshStandardMaterial({ color: 0x0055aa }); // Blue Jeans
@@ -314,30 +314,30 @@ export function updateTransformerAnimation(
       const personParts = personModel.userData.parts;
       
       const torsoCarPos = carChassis.position.clone().set(0, 1, 0);
-      const torsoPersonPos = new THREE.Vector3(0, 2.2, 0); // Use new position
+      const torsoPersonPos = new THREE.Vector3(0, 2.45, 0); // Use new position
       personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos, p);
 
       const headCarPos = torsoCarPos.clone().setY(2);
-      const headPersonPos = new THREE.Vector3(0, 3.0, 0); // Use new position
+      const headPersonPos = new THREE.Vector3(0, 3.05, 0); // Use new position
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
       
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
-      const lArmPersonPos = new THREE.Vector3(0.75, 2.5, 0); // Use new position
+      const lArmPersonPos = new THREE.Vector3(0.75, 2.75, 0); // Use new position
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-0.75, 2.5, 0); // Use new position
+      const rArmPersonPos = new THREE.Vector3(-0.75, 2.75, 0); // Use new position
       personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
       
       // Legs from back wheels
       const carWheels = carModel.userData.parts.wheels;
       const lLegCarPos = carWheels[2].position.clone();
-      const lLegPersonPos = new THREE.Vector3(0.3, 0.85, 0); // Use new position
+      const lLegPersonPos = new THREE.Vector3(0.3, 0.95, 0); // Use new position
       personParts.leftLeg.position.lerpVectors(lLegCarPos, lLegPersonPos, p);
       
       const rLegCarPos = carWheels[3].position.clone();
-      const rLegPersonPos = new THREE.Vector3(-0.3, 0.85, 0); // Use new position
+      const rLegPersonPos = new THREE.Vector3(-0.3, 0.95, 0); // Use new position
       personParts.rightLeg.position.lerpVectors(rLegCarPos, rLegPersonPos, p);
 
       // Simple walk animation for person, only when fully transformed and moving
