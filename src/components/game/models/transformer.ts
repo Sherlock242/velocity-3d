@@ -76,7 +76,7 @@ function createLamborghini() {
     metalness: 0.8,
     roughness: 0.1,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.6,
   });
   const cabinGeom = new THREE.BoxGeometry(
     bodyWidth * 0.7,
