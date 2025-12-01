@@ -138,12 +138,18 @@ export function createGridAndScenery(theme: TrackTheme) {
       }
       
       if (sectorNumber === 20) { // Sector 20 for Chandigarh Houses
-         for (let k = 0; k < 5; k++) {
+         const numHouses = 5;
+         const spacing = 80;
+         const roadEdgeOffset = 60; // How far from the road to place the houses
+         const rowStartX = cellCenterX + (CELL_SIZE / 2) - roadEdgeOffset;
+         const rowStartZ = cellCenterZ - (numHouses / 2) * spacing + (spacing / 2);
+
+         for (let k = 0; k < numHouses; k++) {
             const house = createChandigarhHouse();
-            const x = cellCenterX - (CELL_SIZE / 2) + 50 + (k * 80);
-            const z = cellCenterZ;
+            const x = rowStartX;
+            const z = rowStartZ + k * spacing;
             house.position.set(x, 0, z);
-            house.rotation.y = Math.PI / 2;
+            house.rotation.y = -Math.PI / 2; // Face towards negative X (towards Sector 19)
             gridGroup.add(house);
          }
          continue;
