@@ -79,9 +79,9 @@ export function createMansion() {
   mansion.add(leftRoof);
 
   // Windows on Left Wing
-  for(let i = 0; i < 3; i++) {
-    const window = createWindow(8, 10);
-    window.position.set(-40, 18, 15 + i * -15);
+  for(let i = 0; i < 5; i++) {
+    const window = createWindow(6, 10);
+    window.position.set(-40.1, 18, 24 + i * -12);
     mansion.add(window);
   }
 
@@ -98,9 +98,9 @@ export function createMansion() {
   mansion.add(rightRoof);
 
   // Windows on Right Wing
-  for(let i = 0; i < 3; i++) {
-    const window = createWindow(8, 10);
-    window.position.set(40, 18, 15 + i * -15);
+  for(let i = 0; i < 5; i++) {
+    const window = createWindow(6, 10);
+    window.position.set(40.1, 18, 24 + i * -12);
     mansion.add(window);
   }
 
