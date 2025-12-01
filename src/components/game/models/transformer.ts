@@ -24,14 +24,30 @@ function createLegoPerson() {
   legoPerson.add(hood);
 
 
-  const armGeo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
+  const armGeo = new THREE.BoxGeometry(0.3, 0.6, 0.3); // Shortened sleeve
   const armMat = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black sleeves
   
-  const leftArm = new THREE.Mesh(armGeo, armMat);
-  leftArm.position.set(0.75, 1.6, 0);
+  const handGeo = new THREE.BoxGeometry(0.3, 0.2, 0.3);
+  const handMat = new THREE.MeshStandardMaterial({ color: 0xffdbac }); // Skin tone
 
+  const leftArmGroup = new THREE.Group();
+  const leftArm = new THREE.Mesh(armGeo, armMat);
+  const leftHand = new THREE.Mesh(handGeo, handMat);
+  leftHand.position.y = -0.4; // Position at the end of the sleeve
+  leftArmGroup.add(leftArm);
+  leftArmGroup.add(leftHand);
+  leftArmGroup.position.set(0.75, 1.7, 0); // Adjusted y-position for new total length
+  legoPerson.add(leftArmGroup);
+
+  const rightArmGroup = new THREE.Group();
   const rightArm = new THREE.Mesh(armGeo, armMat);
-  rightArm.position.set(-0.75, 1.6, 0);
+  const rightHand = new THREE.Mesh(handGeo, handMat);
+  rightHand.position.y = -0.4;
+  rightArmGroup.add(rightArm);
+  rightArmGroup.add(rightHand);
+  rightArmGroup.position.set(-0.75, 1.7, 0);
+  legoPerson.add(rightArmGroup);
+
 
   // --- LEGS & SHOES ---
   const legHeight = 0.8;
@@ -67,13 +83,13 @@ function createLegoPerson() {
   rightLeg.add(rightShoe);
 
 
-  legoPerson.add(head, torso, leftArm, rightArm, leftLeg, rightLeg);
+  legoPerson.add(head, torso, leftLeg, rightLeg);
   
   legoPerson.userData.parts = {
       head: hood, // The hood is now the "head" for animation purposes
       torso,
-      leftArm,
-      rightArm,
+      leftArm: leftArmGroup,
+      rightArm: rightArmGroup,
       leftLeg,
       rightLeg,
   };
@@ -307,11 +323,11 @@ export function updateTransformerAnimation(
       
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
-      const lArmPersonPos = new THREE.Vector3(0.75, 1.6, 0);
+      const lArmPersonPos = new THREE.Vector3(0.75, 1.7, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-0.75, 1.6, 0);
+      const rArmPersonPos = new THREE.Vector3(-0.75, 1.7, 0);
       personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
       
       // Legs from back wheels
