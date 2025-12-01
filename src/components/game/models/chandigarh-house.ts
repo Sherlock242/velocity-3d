@@ -90,8 +90,6 @@ export function createChandigarhHouse() {
   const colSpacing = jaliWidth / jaliCols;
   const rowSpacing = jaliHeight / jaliRows;
   
-  const holeBackingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-
   for (let i = 0; i < jaliRows; i++) {
     for (let j = 0; j < jaliCols; j++) {
       const holePath = new THREE.Path();
@@ -102,16 +100,6 @@ export function createChandigarhHouse() {
       holePath.lineTo(x + holeWidth / 2, y + holeHeight / 2);
       holePath.lineTo(x - holeWidth / 2, y + holeHeight / 2);
       jaliShape.holes.push(holePath);
-      
-      // Add white backing to the hole
-      const holeBackGeom = new THREE.BoxGeometry(holeWidth * 1.1, holeHeight * 1.1, 0.5);
-      const holeBackMesh = new THREE.Mesh(holeBackGeom, holeBackingMaterial);
-      holeBackMesh.position.set(x, y, -jaliDepth / 2);
-      // Position the backing inside the main jali mesh
-      holeBackMesh.position.x += 0;
-      holeBackMesh.position.y += 44;
-      holeBackMesh.position.z += 15 - jaliDepth;
-      house.add(holeBackMesh);
     }
   }
 
@@ -119,6 +107,14 @@ export function createChandigarhHouse() {
   const jaliMesh = new THREE.Mesh(jaliGeom, brickMaterial);
   jaliMesh.position.set(0, 44, 15 - jaliDepth / 2);
   house.add(jaliMesh);
+  
+  // Single white panel behind the jali
+  const jaliBackingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  const jaliBackingGeom = new THREE.BoxGeometry(jaliWidth, jaliHeight, 0.5);
+  const jaliBackingMesh = new THREE.Mesh(jaliBackingGeom, jaliBackingMaterial);
+  jaliBackingMesh.position.set(0, 44, 15 - jaliDepth);
+  house.add(jaliBackingMesh);
+
 
   // AC Unit
   const acGeom = new THREE.BoxGeometry(4, 3, 2);
