@@ -3,7 +3,20 @@ import * as THREE from 'three';
 
 // This file creates a "Transformer" model that can switch between a car and a person.
 
-export function createLegoPerson() {
+const CLOTHING_COLORS = [
+  0x1f77b4, // Muted Blue
+  0xff7f0e, // Safety Orange
+  0x2ca02c, // Cooked Asparagus Green
+  0xd62728, // Brick Red
+  0x9467bd, // Muted Purple
+  0x8c564b, // Chestnut Brown
+  0xe377c2, // Raspberry Pink
+  0x7f7f7f, // Middle Gray
+  0xbcbd22, // Curry Yellow-Green
+  0x17becf, // Blue-Teal
+];
+
+export function createLegoPerson(isPlayer = false) {
   const legoPerson = new THREE.Group();
 
   const headGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16);
@@ -15,8 +28,15 @@ export function createLegoPerson() {
   const shoeHeight = 0.2;
   const totalLegHeight = legHeight + shoeHeight;
 
-  const torsoGeo = new THREE.BoxGeometry(1.2, torsoHeight, 0.6); 
-  const torsoMat = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black Hoodie
+  const torsoColor = isPlayer
+    ? 0x111111
+    : CLOTHING_COLORS[Math.floor(Math.random() * CLOTHING_COLORS.length)];
+  const legColor = isPlayer
+    ? 0x0055aa
+    : CLOTHING_COLORS[Math.floor(Math.random() * CLOTHING_COLORS.length)];
+
+  const torsoGeo = new THREE.BoxGeometry(1.2, torsoHeight, 0.6);
+  const torsoMat = new THREE.MeshStandardMaterial({ color: torsoColor }); // Black Hoodie
   const torso = new THREE.Mesh(torsoGeo, torsoMat);
 
   // Position torso above legs
@@ -29,10 +49,10 @@ export function createLegoPerson() {
   const hoodGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.6, 16);
   const hood = new THREE.Mesh(hoodGeo, hairMat);
   hood.position.y = totalLegHeight + torsoHeight + 0.6 / 2; // hood height is 0.6
-  
+
   const armGeo = new THREE.BoxGeometry(0.3, 1.1, 0.3);
-  const armMat = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black sleeves
-  
+  const armMat = new THREE.MeshStandardMaterial({ color: torsoColor }); // Sleeves match torso
+
   const handGeo = new THREE.BoxGeometry(0.3, 0.2, 0.3);
   const handMat = new THREE.MeshStandardMaterial({ color: 0xffdbac }); // Skin tone
 
@@ -43,7 +63,7 @@ export function createLegoPerson() {
   leftArmGroup.add(leftArm);
   leftArmGroup.add(leftHand);
   // Position arms relative to torso
-  leftArmGroup.position.set(0.75, totalLegHeight + torsoHeight - 0.4, 0); 
+  leftArmGroup.position.set(0.75, totalLegHeight + torsoHeight - 0.4, 0);
   legoPerson.add(leftArmGroup);
 
   const rightArmGroup = new THREE.Group();
@@ -58,7 +78,7 @@ export function createLegoPerson() {
 
   // --- LEGS & SHOES ---
   const legGeo = new THREE.BoxGeometry(0.5, legHeight, 0.5);
-  const legMat = new THREE.MeshStandardMaterial({ color: 0x0055aa }); // Blue Jeans
+  const legMat = new THREE.MeshStandardMaterial({ color: legColor }); // Blue Jeans
 
   // Left Leg
   const leftLeg = new THREE.Group();
@@ -87,7 +107,7 @@ export function createLegoPerson() {
   rightLeg.add(rightShoe);
 
   legoPerson.add(hood, torso, leftLeg, rightLeg);
-  
+
   legoPerson.userData.parts = {
       head: hood, // The hood is now the "head" for animation purposes
       torso,
@@ -139,7 +159,7 @@ function createLamborghini() {
   cabin.position.y = bodyHeight * 0.6;
   cabin.position.z = -bodyLength * 0.1;
   car.add(cabin);
-  
+
     // Spoiler
   const spoilerMaterial = new THREE.MeshStandardMaterial({
     color: 0x111111,
@@ -251,7 +271,7 @@ function createLamborghini() {
     new THREE.Vector3(bodyWidth / 2 + 0.15, 0.2, -bodyLength / 2 + 1),
     new THREE.Vector3(-(bodyWidth / 2 + 0.15), 0.2, -bodyLength / 2 + 1),
   ];
-  
+
   const wheels = wheelPositions.map((pos) => {
     const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
     wheel.position.copy(pos);
@@ -275,7 +295,7 @@ export function createTransformer() {
   transformer.position.y = 0.5;
 
   const carModel = createLamborghini();
-  const personModel = createLegoPerson();
+  const personModel = createLegoPerson(true); // isPlayer = true
   personModel.visible = false; // Start as car
 
   transformer.add(carModel);
@@ -310,12 +330,12 @@ export function updateTransformerAnimation(
   if (carModel.visible === isPersonVisible) {
       carModel.visible = !isPersonVisible;
   }
-  
+
   // Animate Lego Person parts based on car's state if we are transforming into person
   if (p > 0) {
       const carChassis = carModel.userData.parts.chassis;
       const personParts = personModel.userData.parts;
-      
+
       const legHeight = 1;
       const shoeHeight = 0.2;
       const torsoHeight = 1.2;
@@ -329,7 +349,7 @@ export function updateTransformerAnimation(
       const headCarPos = torsoCarPos.clone().setY(2);
       const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + 0.6 / 2, 0); // hood height is 0.6
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
-      
+
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
       const lArmPersonPos = new THREE.Vector3(0.75, totalLegHeight + torsoHeight - 0.4, 0);
@@ -338,13 +358,13 @@ export function updateTransformerAnimation(
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
       const rArmPersonPos = new THREE.Vector3(-0.75, totalLegHeight + torsoHeight - 0.4, 0);
       personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
-      
+
       // Legs from back wheels
       const carWheels = carModel.userData.parts.wheels;
       const lLegCarPos = carWheels[2].position.clone();
       const lLegPersonPos = new THREE.Vector3(0.3, (legHeight / 2) + shoeHeight, 0);
       personParts.leftLeg.position.lerpVectors(lLegCarPos, lLegPersonPos, p);
-      
+
       const rLegCarPos = carWheels[3].position.clone();
       const rLegPersonPos = new THREE.Vector3(-0.3, (legHeight / 2) + shoeHeight, 0);
       personParts.rightLeg.position.lerpVectors(rLegCarPos, rLegPersonPos, p);
