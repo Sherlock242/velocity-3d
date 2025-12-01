@@ -9,6 +9,7 @@ import {
 import type { TrackTheme } from '@/lib/types';
 import { createMansion } from '../models/mansion';
 import { createBuilding } from '../models/building';
+import { createChandigarhHouse } from '../models/chandigarh-house';
 
 function createTextSprite(text: string) {
   const canvas = document.createElement('canvas');
@@ -121,56 +122,73 @@ export function createGridAndScenery(theme: TrackTheme) {
   }
 
   // Add scenery
-  const sceneryColors = TRACK_THEMES[theme].scenery;
-  for (let i = 0; i < (GRID_SIZE + 1) * (GRID_SIZE + 1) * 4; i++) {
-    const cellX = Math.floor(Math.random() * GRID_SIZE);
-    const cellZ = Math.floor(Math.random() * GRID_SIZE);
+  for (let i = 0; i < GRID_SIZE; i++) {
+    for (let j = 0; j < GRID_SIZE; j++) {
+      const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+      const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+      const sectorNumber = j * GRID_SIZE + i + 1;
 
-    const sectorNumber = cellZ * GRID_SIZE + cellX + 1;
-    if (sectorNumber === 15) {
-      continue; // Skip placing random buildings in Sector 15
+      if (sectorNumber === 15) { // Sector 15 for Mansion
+        const mansion = createMansion();
+        mansion.position.set(cellCenterX, 0, cellCenterZ);
+        mansion.castShadow = true;
+        mansion.receiveShadow = true;
+        gridGroup.add(mansion);
+        continue;
+      }
+      
+      if (sectorNumber === 20) { // Sector 20 for Chandigarh Houses
+         for (let k = 0; k < 5; k++) {
+            const house = createChandigarhHouse();
+            const x = cellCenterX - (CELL_SIZE / 2) + 50 + (k * 80);
+            const z = cellCenterZ;
+            house.position.set(x, 0, z);
+            house.rotation.y = Math.PI / 2;
+            gridGroup.add(house);
+         }
+         continue;
+      }
+
+      // Add random scenery for other sectors
+      for (let k = 0; k < 4; k++) {
+        const x = cellCenterX + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
+        const z = cellCenterZ + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
+        
+        let sceneryObject: THREE.Group | THREE.Mesh;
+        const sceneryColors = TRACK_THEMES[theme].scenery;
+        
+        if (theme === 'Forest') {
+          const treeHeight = Math.random() * 20 + 10;
+          const treeRadius = treeHeight / 8;
+          const sceneryGeometry = new THREE.ConeGeometry(treeRadius, treeHeight, 8);
+          const randomColor =
+          sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
+          const sceneryMaterial = new THREE.MeshStandardMaterial({
+            color: randomColor,
+          });
+          sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+          sceneryObject.position.set(x, treeHeight / 2, z);
+        } else if (theme === 'Desert') {
+          const duneSize = Math.random() * 15 + 5;
+          const sceneryGeometry = new THREE.ConeGeometry(duneSize, duneSize / 2, 4); // Pyramid shape
+          const randomColor =
+          sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
+          const sceneryMaterial = new THREE.MeshStandardMaterial({
+            color: randomColor,
+          });
+          sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
+          sceneryObject.position.set(x, duneSize / 4, z);
+        } else {
+          // City
+          const building = createBuilding(sceneryColors);
+          sceneryObject = building;
+          sceneryObject.position.set(x, 0, z);
+        }
+    
+        sceneryObject.castShadow = true;
+        gridGroup.add(sceneryObject);
+      }
     }
-
-    const cellCenterX = cellX * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-    const cellCenterZ = cellZ * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-
-    const x =
-      cellCenterX + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
-    const z =
-      cellCenterZ + (Math.random() - 0.5) * (CELL_SIZE - ROAD_WIDTH);
-
-    let sceneryObject: THREE.Group | THREE.Mesh;
-
-    if (theme === 'Forest') {
-      const treeHeight = Math.random() * 20 + 10;
-      const treeRadius = treeHeight / 8;
-      const sceneryGeometry = new THREE.ConeGeometry(treeRadius, treeHeight, 8);
-      const randomColor =
-      sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
-      const sceneryMaterial = new THREE.MeshStandardMaterial({
-        color: randomColor,
-      });
-      sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-      sceneryObject.position.set(x, treeHeight / 2, z);
-    } else if (theme === 'Desert') {
-      const duneSize = Math.random() * 15 + 5;
-      const sceneryGeometry = new THREE.ConeGeometry(duneSize, duneSize / 2, 4); // Pyramid shape
-      const randomColor =
-      sceneryColors[Math.floor(Math.random() * sceneryColors.length)];
-      const sceneryMaterial = new THREE.MeshStandardMaterial({
-        color: randomColor,
-      });
-      sceneryObject = new THREE.Mesh(sceneryGeometry, sceneryMaterial);
-      sceneryObject.position.set(x, duneSize / 4, z);
-    } else {
-      // City
-      const building = createBuilding(sceneryColors);
-      sceneryObject = building;
-      sceneryObject.position.set(x, 0, z);
-    }
-
-    sceneryObject.castShadow = true;
-    gridGroup.add(sceneryObject);
   }
 
   // Add sector numbers
@@ -186,17 +204,6 @@ export function createGridAndScenery(theme: TrackTheme) {
       gridGroup.add(sectorLabel);
     }
   }
-
-  // Create a mansion in Sector 15
-  const mansion = createMansion();
-  const sector15CellX = 4;
-  const sector15CellZ = 2;
-  const sector15X = sector15CellX * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-  const sector15Z = sector15CellZ * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-  mansion.position.set(sector15X, 0, sector15Z);
-  mansion.castShadow = true;
-  mansion.receiveShadow = true;
-  gridGroup.add(mansion);
 
   return gridGroup;
 }
