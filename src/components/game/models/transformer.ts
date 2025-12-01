@@ -60,7 +60,7 @@ function createLamborghini() {
   const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, transparent: false, opacity: 1, roughness: 0.1 });
 
   const bodyWidth = 2.2;
-  const bodyHeight = 0.6;
+  const bodyHeight = 0.8;
   const bodyLength = 4.8;
 
   // Main body
@@ -72,84 +72,45 @@ function createLamborghini() {
   carBody.castShadow = true;
   car.add(carBody);
 
-  // Slanted Hood
-  const hoodGeom = new THREE.BoxGeometry(bodyWidth * 0.9, bodyHeight, bodyLength * 0.45);
-  const hood = new THREE.Mesh(hoodGeom, bodyMaterial);
-  hood.position.set(0, 0.6, 1.5);
-  hood.rotation.x = -0.15; // Angle the hood
-  car.add(hood);
-
-
   // Cabin
-  const cabinWidth = 1.6;
+  const cabinWidth = 1.5;
   const cabinHeight = 0.7;
-  const cabinLength = 2.2;
+  const cabinLength = 2.0;
   const cabin = new THREE.Mesh(
     new THREE.BoxGeometry(cabinWidth, cabinHeight, cabinLength),
     glassMaterial
   );
   cabin.position.y = bodyHeight + cabinHeight / 2 - 0.2;
   cabin.position.z = -0.4;
-  cabin.rotation.x = 0.05;
   car.add(cabin);
 
   // Rear spoiler
   const spoilerWing = new THREE.Mesh(
-    new THREE.BoxGeometry(bodyWidth * 0.9, 0.08, 0.4),
+    new THREE.BoxGeometry(bodyWidth * 1.2, 0.1, 0.5),
     blackMaterial
   );
-  spoilerWing.position.set(0, 1.1, -bodyLength / 2 + 0.1);
+  spoilerWing.position.set(0, 1.2, -bodyLength / 2 - 0.2);
   spoilerWing.castShadow = true;
   car.add(spoilerWing);
-  const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.15, 0.1);
+  const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
   const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport1.position.set(-0.7, 1.0, -bodyLength / 2 + 0.1);
+  spoilerSupport1.position.set(-0.7, 1.1, -bodyLength / 2 - 0.2);
   car.add(spoilerSupport1);
   const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport2.position.set(0.7, 1.0, -bodyLength / 2 + 0.1);
+  spoilerSupport2.position.set(0.7, 1.1, -bodyLength / 2 - 0.2);
   car.add(spoilerSupport2);
 
   // Tail Light
   const tailLightMaterial = new THREE.MeshStandardMaterial({
     color: 0xff0000,
     emissive: 0xff0000,
-    emissiveIntensity: 1,
+    emissiveIntensity: 2,
   });
-  const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
+  const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.15, 0.05);
   const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
   tailLights.position.set(0, bodyHeight * 0.8, -bodyLength / 2 - 0.02);
   car.add(tailLights);
   
-  // Headlights
-  const headLightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffeeaa, emissiveIntensity: 0.8 });
-  const headLightGeom = new THREE.BoxGeometry(0.4, 0.08, 0.1);
-  const leftHeadlight = new THREE.Mesh(headLightGeom, headLightMaterial);
-  leftHeadlight.position.set(-0.6, 0.6, bodyLength / 2 - 0.1);
-  leftHeadlight.rotation.y = -Math.PI / 16;
-  car.add(leftHeadlight);
-  const rightHeadlight = new THREE.Mesh(headLightGeom, headLightMaterial);
-  rightHeadlight.position.set(0.6, 0.6, bodyLength / 2 - 0.1);
-  rightHeadlight.rotation.y = Math.PI / 16;
-  car.add(rightHeadlight);
-  
-  // Front Intakes
-  const intakeGeom = new THREE.BoxGeometry(0.5, 0.15, 0.2);
-  const leftIntake = new THREE.Mesh(intakeGeom, blackMaterial);
-  leftIntake.position.set(-0.7, 0.25, bodyLength / 2 - 0.2);
-  car.add(leftIntake);
-  const rightIntake = new THREE.Mesh(intakeGeom, blackMaterial);
-  rightIntake.position.set(0.7, 0.25, bodyLength / 2 - 0.2);
-  car.add(rightIntake);
-
-  // Side Mirrors
-  const mirrorShape = new THREE.BoxGeometry(0.1, 0.15, 0.08);
-  const leftMirror = new THREE.Mesh(mirrorShape, blackMaterial);
-  leftMirror.position.set(-bodyWidth / 2 - 0.05, 0.9, 0.6);
-  car.add(leftMirror);
-  const rightMirror = new THREE.Mesh(mirrorShape, blackMaterial);
-  rightMirror.position.set(bodyWidth / 2 + 0.05, 0.9, 0.6);
-  car.add(rightMirror);
-
   // Wheels
   const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 32);
   wheelGeo.rotateZ(Math.PI / 2);
