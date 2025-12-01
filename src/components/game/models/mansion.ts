@@ -127,13 +127,6 @@ export function createMansion() {
   rightRoof.position.set(65, 31, 0);
   mansion.add(rightRoof);
 
-  // Windows on Right Wing - Front
-  for(let i = 0; i < 4; i++) {
-    const window = createWindow(6, 10);
-    window.position.set(40.1, 18, 24 + i * -12);
-    window.rotation.y = -Math.PI / 2; // Rotate to face outwards
-    mansion.add(window);
-  }
   
   // Windows on Right Wing - Side
   for (let i = 0; i < 3; i++) {
