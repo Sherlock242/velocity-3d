@@ -155,7 +155,7 @@ function createLamborghini() {
   });
   const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.1, 0.05);
   const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
-  tailLights.position.set(0, bodyHeight * 0.5, -bodyLength / 2 - 0.02);
+  tailLights.position.set(0, bodyHeight * 0.4, -bodyLength / 2 - 0.02);
   car.add(tailLights);
 
     // Headlights
