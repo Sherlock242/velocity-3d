@@ -395,10 +395,10 @@ export default function GameWrapper() {
 
       } else if (controlModeRef.current === 'person' && !isTransformingRef.current) {
          // --- PERSON MOVEMENT LOGIC ---
-        const personMoveSpeed = 10;
+        const personMoveSpeed = 50;
         const personTurnSpeed = 3;
         const maxPersonSpeed = 50 / 3.6; // 50 km/h in m/s
-        velocityRef.current.multiplyScalar(0.9); // friction
+        velocityRef.current.multiplyScalar(0.95); // friction
 
         if (inputRef.current.forward) {
           const forward = new THREE.Vector3();
@@ -743,3 +743,5 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
+    
