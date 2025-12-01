@@ -164,13 +164,23 @@ export function createMansion() {
   parkingArea.position.y = 0.15;
   parkingArea.position.z = 80;
   mansion.add(parkingArea);
+  
+  const plotSize = 480;
+
+  // Inner grass plane
+  const innerGrassGeom = new THREE.PlaneGeometry(plotSize, plotSize);
+  const innerGrassMat = new THREE.MeshStandardMaterial({ color: 0x7cfc00 }); // Lawn green
+  const innerGrass = new THREE.Mesh(innerGrassGeom, innerGrassMat);
+  innerGrass.rotation.x = -Math.PI / 2;
+  innerGrass.position.y = 0.1;
+  mansion.add(innerGrass);
+
 
   // --- FORTIFICATION WALL ---
   const wallGroup = new THREE.Group();
   const wallHeight = 10;
   const wallThickness = 8;
-  const wallPlotSize = 480; // Size of the square plot to enclose
-  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 }); // Stone color
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
 
   function createWallSegment(width: number, depth: number) {
     const segment = new THREE.Group();
@@ -196,30 +206,30 @@ export function createMansion() {
 
   // Front Wall (with gate)
   const gateWidth = 40;
-  const frontWallSegmentWidth = (wallPlotSize - gateWidth) / 2;
+  const frontWallSegmentWidth = (plotSize - gateWidth) / 2;
   
   const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
-  frontWallLeft.position.set(-(gateWidth / 2 + frontWallSegmentWidth / 2), 0, wallPlotSize / 2);
+  frontWallLeft.position.set(-(gateWidth / 2 + frontWallSegmentWidth / 2), 0, plotSize / 2);
   wallGroup.add(frontWallLeft);
   
   const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
-  frontWallRight.position.set(gateWidth / 2 + frontWallSegmentWidth / 2, 0, wallPlotSize / 2);
+  frontWallRight.position.set(gateWidth / 2 + frontWallSegmentWidth / 2, 0, plotSize / 2);
   wallGroup.add(frontWallRight);
 
   // Back Wall
-  const backWall = createWallSegment(wallPlotSize, wallThickness);
-  backWall.position.set(0, 0, -wallPlotSize / 2);
+  const backWall = createWallSegment(plotSize, wallThickness);
+  backWall.position.set(0, 0, -plotSize / 2);
   wallGroup.add(backWall);
 
   // Side Walls
-  const sideWallLeft = createWallSegment(wallPlotSize, wallThickness);
+  const sideWallLeft = createWallSegment(plotSize, wallThickness);
   sideWallLeft.rotation.y = Math.PI / 2;
-  sideWallLeft.position.set(-wallPlotSize / 2, 0, 0);
+  sideWallLeft.position.set(-plotSize / 2, 0, 0);
   wallGroup.add(sideWallLeft);
   
-  const sideWallRight = createWallSegment(wallPlotSize, wallThickness);
+  const sideWallRight = createWallSegment(plotSize, wallThickness);
   sideWallRight.rotation.y = Math.PI / 2;
-  sideWallRight.position.set(wallPlotSize / 2, 0, 0);
+  sideWallRight.position.set(plotSize / 2, 0, 0);
   wallGroup.add(sideWallRight);
 
   mansion.add(wallGroup);
@@ -227,7 +237,8 @@ export function createMansion() {
 
   // Fountain
   const fountain = new THREE.Group();
-  const fountainMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.5 });
+  const fountainMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 }); // White
+  const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.7, roughness: 0.3 }); // Gold
   const waterMaterial = new THREE.MeshStandardMaterial({ color: 0x4682B4, transparent: true, opacity: 0.7 });
 
   const baseGeom = new THREE.CylinderGeometry(15, 15, 2, 32);
@@ -244,11 +255,25 @@ export function createMansion() {
   const tier1 = new THREE.Mesh(tier1Geom, fountainMaterial);
   tier1.position.y = 3;
   fountain.add(tier1);
+  
+  const tier1RimGeom = new THREE.TorusGeometry(8, 0.5, 16, 32);
+  const tier1Rim = new THREE.Mesh(tier1RimGeom, goldMaterial);
+  tier1Rim.rotation.x = Math.PI / 2;
+  tier1Rim.position.y = 5;
+  fountain.add(tier1Rim);
+
 
   const tier2Geom = new THREE.CylinderGeometry(4, 4, 3, 32);
   const tier2 = new THREE.Mesh(tier2Geom, fountainMaterial);
   tier2.position.y = 6;
   fountain.add(tier2);
+
+  const tier2RimGeom = new THREE.TorusGeometry(4, 0.3, 16, 32);
+  const tier2Rim = new THREE.Mesh(tier2RimGeom, goldMaterial);
+  tier2Rim.rotation.x = Math.PI / 2;
+  tier2Rim.position.y = 7.5;
+  fountain.add(tier2Rim);
+
   
   // Water jet for animation
   const waterJetGeom = new THREE.CylinderGeometry(0.5, 0.5, 10, 8);
@@ -263,3 +288,5 @@ export function createMansion() {
 
   return mansion;
 }
+
+    
