@@ -77,19 +77,17 @@ export function createMansion() {
   });
 
   // Add windows to main building sides
-  for(let i = 0; i < 2; i++) {
     for (let j = 0; j < 2; j++) {
       const windowLeft = createWindow(8, 10);
-      windowLeft.position.set(-40.1, 15 + j * 15, 10 + i * -20);
+      windowLeft.position.set(-40.1, 15 + j * 15, 0);
       windowLeft.rotation.y = Math.PI / 2;
       mansion.add(windowLeft);
 
       const windowRight = createWindow(8, 10);
-      windowRight.position.set(40.1, 15 + j * 15, 10 + i * -20);
+      windowRight.position.set(40.1, 15 + j * 15, 0);
       windowRight.rotation.y = -Math.PI / 2;
       mansion.add(windowRight);
     }
-  }
   
   // Left Wing
   const leftWingGeom = new THREE.BoxGeometry(50, 30, 60);
@@ -105,12 +103,12 @@ export function createMansion() {
   // Windows on Left Wing - Front
   for (let i = 0; i < 2; i++) {
     const window = createWindow(6, 10);
-    window.position.set(-55 - i * 20, 15, 30.1);
+    window.position.set(-55 - i*20, 15, 30.1);
     mansion.add(window);
   }
   
   // Windows on Left Wing - Side
-  for (let i = 0; i < 3; i++) {
+   for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 2; j++) {
           const window = createWindow(6, 10);
           window.position.set(-90.1, 10 + j * 12, -20 + i * 20);
@@ -139,7 +137,7 @@ export function createMansion() {
   }
   
   // Windows on Right Wing - Side
-  for (let i = 0; i < 3; i++) {
+   for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 2; j++) {
           const window = createWindow(6, 10);
           window.position.set(90.1, 10 + j * 12, -20 + i * 20);
@@ -167,31 +165,64 @@ export function createMansion() {
   parkingArea.position.z = 80;
   mansion.add(parkingArea);
 
-  // Outer Wall
-  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // SaddleBrown color
-  const wallHeight = 10;
-  const wallThickness = 2;
-  const wallLength = 80;
+  // --- FORTIFICATION WALL ---
+  const wallGroup = new THREE.Group();
+  const wallHeight = 20;
+  const wallThickness = 8;
+  const wallPlotSize = 480; // Size of the square plot to enclose
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 }); // Stone color
 
-  // Left wall
-  const leftWallGeom = new THREE.BoxGeometry(wallLength, wallHeight, wallThickness);
-  const leftWall = new THREE.Mesh(leftWallGeom, wallMaterial);
-  leftWall.position.set(-50, wallHeight / 2, 130);
-  mansion.add(leftWall);
+  function createWallSegment(width: number, depth: number) {
+    const segment = new THREE.Group();
+    const mainWallGeom = new THREE.BoxGeometry(width, wallHeight, depth);
+    const mainWall = new THREE.Mesh(mainWallGeom, wallMaterial);
+    mainWall.position.y = wallHeight / 2;
+    segment.add(mainWall);
 
-  // Right wall
-  const rightWall = new THREE.Mesh(leftWallGeom, wallMaterial);
-  rightWall.position.set(50, wallHeight / 2, 130);
-  mansion.add(rightWall);
+    // Crenellations (battlements)
+    const crenelWidth = 10;
+    const crenelHeight = 5;
+    const numCrenels = Math.floor(width / (crenelWidth * 2));
+    const crenelGeom = new THREE.BoxGeometry(crenelWidth, crenelHeight, depth + 2);
 
-  // Entrance Pillars for outer wall
-  const entrancePillarGeom = new THREE.BoxGeometry(5, wallHeight + 2, 5);
-  const entrancePillar1 = new THREE.Mesh(entrancePillarGeom, pillarMaterial);
-  entrancePillar1.position.set(-10, (wallHeight + 2) / 2, 130);
-  mansion.add(entrancePillar1);
-  const entrancePillar2 = new THREE.Mesh(entrancePillarGeom, pillarMaterial);
-  entrancePillar2.position.set(10, (wallHeight + 2) / 2, 130);
-  mansion.add(entrancePillar2);
+    for (let i = 0; i < numCrenels; i++) {
+        const crenel = new THREE.Mesh(crenelGeom, wallMaterial);
+        const xPos = -width / 2 + (i * 2 + 0.5) * crenelWidth;
+        crenel.position.set(xPos, wallHeight + crenelHeight / 2, 0);
+        segment.add(crenel);
+    }
+    return segment;
+  }
+
+  // Front Wall (with gate)
+  const gateWidth = 40;
+  const frontWallSegmentWidth = (wallPlotSize - gateWidth) / 2;
+  
+  const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
+  frontWallLeft.position.set(-(gateWidth / 2 + frontWallSegmentWidth / 2), 0, wallPlotSize / 2);
+  wallGroup.add(frontWallLeft);
+  
+  const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
+  frontWallRight.position.set(gateWidth / 2 + frontWallSegmentWidth / 2, 0, wallPlotSize / 2);
+  wallGroup.add(frontWallRight);
+
+  // Back Wall
+  const backWall = createWallSegment(wallPlotSize, wallThickness);
+  backWall.position.set(0, 0, -wallPlotSize / 2);
+  wallGroup.add(backWall);
+
+  // Side Walls
+  const sideWallLeft = createWallSegment(wallPlotSize, wallThickness);
+  sideWallLeft.rotation.y = Math.PI / 2;
+  sideWallLeft.position.set(-wallPlotSize / 2, 0, 0);
+  wallGroup.add(sideWallLeft);
+  
+  const sideWallRight = createWallSegment(wallPlotSize, wallThickness);
+  sideWallRight.rotation.y = Math.PI / 2;
+  sideWallRight.position.set(wallPlotSize / 2, 0, 0);
+  wallGroup.add(sideWallRight);
+
+  mansion.add(wallGroup);
 
 
   // Fountain
