@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 // This file creates a "Transformer" model that can switch between a car and a person.
@@ -51,15 +52,15 @@ function createLamborghini() {
   const car = new THREE.Group();
 
   const bodyMaterial = new THREE.MeshStandardMaterial({
-    color: 0xcc0000, // Red
-    metalness: 0.8,
-    roughness: 0.3,
+    color: 0x990000,
+    metalness: 0.6,
+    roughness: 0.4,
   });
   
   const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
 
-  const bodyWidth = 2.2;
-  const bodyHeight = 0.5; // Lowered from 0.6
+  const bodyWidth = 2.4;
+  const bodyHeight = 0.6;
   const bodyLength = 4.8;
 
   // Main body
@@ -72,32 +73,33 @@ function createLamborghini() {
   car.add(carBody);
 
   // Cabin
-  const cabinWidth = 1.5;
-  const cabinHeight = 0.4; // Lowered from 0.5
-  const cabinLength = 1.8;
+  const cabinWidth = 1.6;
+  const cabinHeight = 0.5;
+  const cabinLength = 2.0;
   const cabin = new THREE.Mesh(
     new THREE.BoxGeometry(cabinWidth, cabinHeight, cabinLength),
     blackMaterial
   );
-  cabin.position.y = bodyHeight + cabinHeight / 2;
-  cabin.position.z = -0.5;
+  cabin.position.y = bodyHeight + cabinHeight / 2 - 0.1;
+  cabin.position.z = -0.4;
   car.add(cabin);
 
   // Spoiler
-  const spoilerWingWidth = bodyWidth * 1.25;
+  const spoilerWingWidth = bodyWidth * 1.2;
   const spoilerWing = new THREE.Mesh(
-    new THREE.BoxGeometry(spoilerWingWidth, 0.08, 0.4),
+    new THREE.BoxGeometry(spoilerWingWidth, 0.1, 0.5),
     blackMaterial
   );
-  spoilerWing.position.set(0, bodyHeight + 0.3, -bodyLength / 2 + 0.2); // Lowered spoiler
+  const spoilerHeight = bodyHeight + 0.35;
+  spoilerWing.position.set(0, spoilerHeight, -bodyLength / 2 + 0.1);
   spoilerWing.castShadow = true;
   car.add(spoilerWing);
   const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
   const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport1.position.set(-0.7, bodyHeight + 0.15, -bodyLength / 2 + 0.2);
+  spoilerSupport1.position.set(-0.8, spoilerHeight - 0.15, -bodyLength / 2 + 0.1);
   car.add(spoilerSupport1);
   const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport2.position.set(0.7, bodyHeight + 0.15, -bodyLength / 2 + 0.2);
+  spoilerSupport2.position.set(0.8, spoilerHeight - 0.15, -bodyLength / 2 + 0.1);
   car.add(spoilerSupport2);
 
   // Tail Light
@@ -108,16 +110,16 @@ function createLamborghini() {
   });
   const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.9, 0.15, 0.05);
   const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
-  tailLights.position.set(0, bodyHeight * 0.6, -bodyLength / 2 - 0.02);
+  tailLights.position.set(0, bodyHeight * 0.7, -bodyLength / 2 - 0.02);
   car.add(tailLights);
   
   // Side Mirrors
-  const mirrorGeom = new THREE.BoxGeometry(0.1, 0.15, 0.3);
+  const mirrorGeom = new THREE.BoxGeometry(0.15, 0.15, 0.2);
   const leftMirror = new THREE.Mesh(mirrorGeom, blackMaterial);
-  leftMirror.position.set(bodyWidth / 2 + 0.05, bodyHeight, 0.5);
+  leftMirror.position.set(bodyWidth / 2 + 0.07, bodyHeight, 0.5);
   car.add(leftMirror);
   const rightMirror = new THREE.Mesh(mirrorGeom, blackMaterial);
-  rightMirror.position.set(-(bodyWidth / 2 + 0.05), bodyHeight, 0.5);
+  rightMirror.position.set(-(bodyWidth / 2 + 0.07), bodyHeight, 0.5);
   car.add(rightMirror);
   
   // Wheels
@@ -234,3 +236,5 @@ export function updateTransformerAnimation(transformer: THREE.Group, progress: n
       personParts.rightArm.rotation.x = Math.sin(transformer.position.z * walkSpeed) * 0.4 * p;
   }
 }
+
+    
