@@ -153,7 +153,7 @@ export function createGridAndScenery(theme: TrackTheme) {
               const x = startX + row * rowSpacing;
               const z = startZ + col * houseSpacing;
               house.position.set(x, 0, z);
-              house.rotation.y = Math.PI / 2; // Face towards negative X (towards Sector 19)
+              house.rotation.y = -Math.PI / 2; // Face towards negative X (towards Sector 19)
               gridGroup.add(house);
           }
         }
