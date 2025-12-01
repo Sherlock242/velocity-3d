@@ -72,11 +72,11 @@ export function createChandigarhHouse() {
 
 
   // --- Brick Latticework (Jali) with Cut Holes ---
-
-  // 1. Create the perforated brick wall
   const jaliWidth = 20;
   const jaliHeight = 12;
   const jaliDepth = 2;
+
+  // 1. Create the shape with holes
   const jaliShape = new THREE.Shape();
   jaliShape.moveTo(-jaliWidth / 2, -jaliHeight / 2);
   jaliShape.lineTo(jaliWidth / 2, -jaliHeight / 2);
@@ -105,17 +105,21 @@ export function createChandigarhHouse() {
 
   const extrudeSettings = { depth: jaliDepth, bevelEnabled: false };
   const jaliGeometry = new THREE.ExtrudeGeometry(jaliShape, extrudeSettings);
-  const jaliMesh = new THREE.Mesh(jaliGeometry, brickMaterial);
+  
+  // Assign materials: 0 for front/back, 1 for sides (insides of holes)
+  jaliGeometry.groups.forEach(group => {
+    if (group.materialIndex === 1) { // Sides
+      group.materialIndex = 1;
+    } else { // Top/bottom
+      group.materialIndex = 0;
+    }
+  });
+  
+  const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  const jaliMesh = new THREE.Mesh(jaliGeometry, [brickMaterial, whiteMaterial]);
   jaliMesh.position.set(-9, 44, 15 - jaliDepth / 2);
+  jaliMesh.castShadow = true;
   house.add(jaliMesh);
-
-  // 2. Create the white panel behind the latticework
-  const jaliBackingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-  const jaliBackingGeom = new THREE.BoxGeometry(jaliWidth, jaliHeight, 0.5);
-  const jaliBackingMesh = new THREE.Mesh(jaliBackingGeom, jaliBackingMaterial);
-  // Position it directly behind the jali mesh
-  jaliBackingMesh.position.set(-9, 44, 15 - jaliDepth);
-  house.add(jaliBackingMesh);
   
   // Right side plain brick part
   const plainPartGeom = new THREE.BoxGeometry(20, 12, 2);
