@@ -52,12 +52,12 @@ function createLamborghini() {
 
   const bodyMaterial = new THREE.MeshStandardMaterial({
     color: 0xcc0000, // Red
-    metalness: 0.9,
-    roughness: 0.2,
+    metalness: 0.8,
+    roughness: 0.3,
   });
   
-  const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.2, roughness: 0.8 });
-  const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, transparent: false, opacity: 1, roughness: 0.1 });
+  const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+  const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
 
   const bodyWidth = 2.2;
   const bodyHeight = 0.6;
@@ -68,36 +68,37 @@ function createLamborghini() {
     new THREE.BoxGeometry(bodyWidth, bodyHeight, bodyLength),
     bodyMaterial
   );
-  carBody.position.y = 0.5;
+  carBody.position.y = bodyHeight / 2;
   carBody.castShadow = true;
   car.add(carBody);
 
   // Cabin
-  const cabinWidth = 1.6;
-  const cabinHeight = 0.6;
-  const cabinLength = 2.0;
+  const cabinWidth = 1.5;
+  const cabinHeight = 0.5;
+  const cabinLength = 1.8;
   const cabin = new THREE.Mesh(
     new THREE.BoxGeometry(cabinWidth, cabinHeight, cabinLength),
     glassMaterial
   );
-  cabin.position.y = bodyHeight + cabinHeight / 2 - 0.2;
-  cabin.position.z = -0.4;
+  cabin.position.y = bodyHeight + cabinHeight / 2;
+  cabin.position.z = -0.5;
   car.add(cabin);
 
-  // Rear spoiler
+  // Spoiler
+  const spoilerWingWidth = bodyWidth * 1.25;
   const spoilerWing = new THREE.Mesh(
-    new THREE.BoxGeometry(bodyWidth * 1.1, 0.1, 0.5),
+    new THREE.BoxGeometry(spoilerWingWidth, 0.08, 0.4),
     blackMaterial
   );
-  spoilerWing.position.set(0, bodyHeight + 0.3, -bodyLength / 2 - 0.2);
+  spoilerWing.position.set(0, bodyHeight + 0.3, -bodyLength / 2 + 0.2);
   spoilerWing.castShadow = true;
   car.add(spoilerWing);
   const spoilerSupportGeom = new THREE.BoxGeometry(0.1, 0.2, 0.1);
   const spoilerSupport1 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport1.position.set(-0.7, bodyHeight + 0.2, -bodyLength / 2 - 0.2);
+  spoilerSupport1.position.set(-0.7, bodyHeight + 0.1, -bodyLength / 2 + 0.2);
   car.add(spoilerSupport1);
   const spoilerSupport2 = new THREE.Mesh(spoilerSupportGeom, blackMaterial);
-  spoilerSupport2.position.set(0.7, bodyHeight + 0.2, -bodyLength / 2 - 0.2);
+  spoilerSupport2.position.set(0.7, bodyHeight + 0.1, -bodyLength / 2 + 0.2);
   car.add(spoilerSupport2);
 
   // Tail Light
@@ -106,10 +107,19 @@ function createLamborghini() {
     emissive: 0xff0000,
     emissiveIntensity: 2,
   });
-  const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.8, 0.15, 0.05);
+  const tailLightGeom = new THREE.BoxGeometry(bodyWidth * 0.9, 0.15, 0.05);
   const tailLights = new THREE.Mesh(tailLightGeom, tailLightMaterial);
-  tailLights.position.set(0, bodyHeight * 0.8, -bodyLength / 2 - 0.02);
+  tailLights.position.set(0, bodyHeight * 0.6, -bodyLength / 2 - 0.02);
   car.add(tailLights);
+  
+  // Side Mirrors
+  const mirrorGeom = new THREE.BoxGeometry(0.1, 0.15, 0.3);
+  const leftMirror = new THREE.Mesh(mirrorGeom, blackMaterial);
+  leftMirror.position.set(bodyWidth / 2, bodyHeight + 0.1, 0.5);
+  car.add(leftMirror);
+  const rightMirror = new THREE.Mesh(mirrorGeom, blackMaterial);
+  rightMirror.position.set(-bodyWidth / 2, bodyHeight + 0.1, 0.5);
+  car.add(rightMirror);
   
   // Wheels
   const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 32);
@@ -118,7 +128,7 @@ function createLamborghini() {
   
   const frontWheelOffset = bodyLength / 2 - 0.8;
   const backWheelOffset = -bodyLength / 2 + 0.8;
-  const wheelXOffset = bodyWidth / 2;
+  const wheelXOffset = bodyWidth / 2 + 0.05;
 
   const frontLeftWheel = new THREE.Mesh(wheelGeo, wheelMat);
   frontLeftWheel.position.set(wheelXOffset, 0.4, frontWheelOffset);
