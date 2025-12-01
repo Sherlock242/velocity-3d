@@ -88,6 +88,8 @@ export function createChandigarhHouse() {
   const holeHeight = jaliHeight / jaliRows * 0.6;
   const colSpacing = jaliWidth / jaliCols;
   const rowSpacing = jaliHeight / jaliRows;
+  
+  const holeBackingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
 
   for (let i = 0; i < jaliRows; i++) {
     for (let j = 0; j < jaliCols; j++) {
@@ -99,6 +101,16 @@ export function createChandigarhHouse() {
       holePath.lineTo(x + holeWidth / 2, y + holeHeight / 2);
       holePath.lineTo(x - holeWidth / 2, y + holeHeight / 2);
       jaliShape.holes.push(holePath);
+      
+      // Add white backing to the hole
+      const holeBackGeom = new THREE.BoxGeometry(holeWidth, holeHeight, 0.5);
+      const holeBackMesh = new THREE.Mesh(holeBackGeom, holeBackingMaterial);
+      holeBackMesh.position.set(x, y, -jaliDepth / 2);
+      // Position the backing inside the main jali mesh
+      holeBackMesh.position.x += 0;
+      holeBackMesh.position.y += 44;
+      holeBackMesh.position.z += 15 - jaliDepth / 2;
+      house.add(holeBackMesh);
     }
   }
 
