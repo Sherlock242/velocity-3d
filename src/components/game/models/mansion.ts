@@ -169,7 +169,7 @@ export function createMansion() {
 
   // Inner grass plane
   const innerGrassGeom = new THREE.PlaneGeometry(plotSize, plotSize);
-  const innerGrassMat = new THREE.MeshStandardMaterial({ color: 0x7cfc00 }); // Lawn green
+  const innerGrassMat = new THREE.MeshStandardMaterial({ color: 0xadff2f }); // Yellow-green
   const innerGrass = new THREE.Mesh(innerGrassGeom, innerGrassMat);
   innerGrass.rotation.x = -Math.PI / 2;
   innerGrass.position.y = 0.1;
