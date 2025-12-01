@@ -10,16 +10,17 @@ function createLegoPerson() {
   const headMat = new THREE.MeshStandardMaterial({ color: 0xffd700 }); // Yellow
   const head = new THREE.Mesh(headGeo, headMat);
   head.position.y = 2.2;
+  head.visible = false; // Hide the head
 
   const torsoGeo = new THREE.BoxGeometry(1.2, 1, 0.6);
   const torsoMat = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black Hoodie
   const torso = new THREE.Mesh(torsoGeo, torsoMat);
   torso.position.y = 1.4;
 
-  // Add hood piece
-  const hoodGeo = new THREE.BoxGeometry(1.2, 0.5, 0.4);
+  // Hood up over the head
+  const hoodGeo = new THREE.BoxGeometry(1, 1, 1);
   const hood = new THREE.Mesh(hoodGeo, torsoMat);
-  hood.position.set(0, 1.8, -0.4);
+  hood.position.set(0, 2.0, 0); // Position where the head was
   legoPerson.add(hood);
 
 
@@ -44,7 +45,7 @@ function createLegoPerson() {
   legoPerson.add(head, torso, leftArm, rightArm, leftLeg, rightLeg);
   
   legoPerson.userData.parts = {
-      head,
+      head: hood, // The hood is now the "head" for animation purposes
       torso,
       leftArm,
       rightArm,
@@ -276,7 +277,7 @@ export function updateTransformerAnimation(
       personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos, p);
 
       const headCarPos = torsoCarPos.clone().setY(2);
-      const headPersonPos = new THREE.Vector3(0, 2.2, 0);
+      const headPersonPos = new THREE.Vector3(0, 2.0, 0); // Adjusted for hood
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
       
       // Arms
