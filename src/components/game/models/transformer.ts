@@ -57,7 +57,7 @@ function createLamborghini() {
   });
   
   const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.2, roughness: 0.8 });
-  const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, transparent: true, opacity: 0.4, roughness: 0.1 });
+  const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, transparent: false, opacity: 1, roughness: 0.1 });
 
   const bodyWidth = 2.2;
   const bodyHeight = 0.6;
