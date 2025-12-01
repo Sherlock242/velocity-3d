@@ -274,7 +274,7 @@ export function createMansion() {
   waterJet.position.y = 8;
   fountain.add(waterJet);
 
-  fountain.position.z = 100;
+  fountain.position.z = 180;
   mansion.add(fountain);
 
 
