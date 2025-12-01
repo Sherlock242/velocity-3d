@@ -141,7 +141,8 @@ export function createGridAndScenery(theme: TrackTheme) {
          const numHouses = 5;
          const spacing = 80;
          const roadEdgeOffset = 60; // How far from the road to place the houses
-         const rowStartX = cellCenterX + (CELL_SIZE / 2) - roadEdgeOffset;
+         
+         const rowStartX = cellCenterX - (CELL_SIZE / 2) + roadEdgeOffset;
          const rowStartZ = cellCenterZ - (numHouses / 2) * spacing + (spacing / 2);
 
          for (let k = 0; k < numHouses; k++) {
