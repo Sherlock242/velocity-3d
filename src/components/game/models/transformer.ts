@@ -8,21 +8,21 @@ function createLegoPerson() {
   const headGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16);
   const headMat = new THREE.MeshStandardMaterial({ color: 0xffd700 }); // Yellow
   const head = new THREE.Mesh(headGeo, headMat);
-  head.position.y = 1.9;
+  head.position.y = 2.2;
 
   const torsoGeo = new THREE.BoxGeometry(1.2, 1, 0.6);
   const torsoMat = new THREE.MeshStandardMaterial({ color: 0x0055ff }); // Blue
   const torso = new THREE.Mesh(torsoGeo, torsoMat);
-  torso.position.y = 1.2;
+  torso.position.y = 1.4;
 
   const armGeo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
   const armMat = new THREE.MeshStandardMaterial({ color: 0xffd700 }); // Yellow
   
   const leftArm = new THREE.Mesh(armGeo, armMat);
-  leftArm.position.set(0.75, 1.4, 0);
+  leftArm.position.set(0.75, 1.6, 0);
 
   const rightArm = new THREE.Mesh(armGeo, armMat);
-  rightArm.position.set(-0.75, 1.4, 0);
+  rightArm.position.set(-0.75, 1.6, 0);
 
   const legGeo = new THREE.BoxGeometry(0.5, 0.8, 0.5);
   const legMat = new THREE.MeshStandardMaterial({ color: 0x333333 }); // Dark Grey
@@ -52,110 +52,96 @@ function createLamborghini() {
 
   const bodyMaterial = new THREE.MeshStandardMaterial({
     color: 0x0055ff, // Blue
-    metalness: 0.8,
+    metalness: 0.9,
     roughness: 0.2,
   });
+  
+  const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
 
-  const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, metalness: 0.5, roughness: 0.5 });
-  const windshieldMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, transparent: true, opacity: 0.7 });
+  // Main body
+  const bodyWidth = 2.4;
+  const bodyHeight = 0.6;
+  const bodyLength = 5;
+  const carBody = new THREE.Mesh(
+    new THREE.BoxGeometry(bodyWidth, bodyHeight, bodyLength),
+    bodyMaterial
+  );
+  carBody.position.y = 0.5;
+  carBody.castShadow = true;
+  car.add(carBody);
 
-
-  // Main Body
-  const bodyShape = new THREE.Shape();
-  bodyShape.moveTo(-1.1, 0.2);
-  bodyShape.lineTo(-1.2, 0.8);
-  bodyShape.lineTo(-1.1, 1.4);
-  bodyShape.lineTo(1.1, 1.4);
-  bodyShape.lineTo(1.2, 0.8);
-  bodyShape.lineTo(1.1, 0.2);
-  bodyShape.lineTo(-1.1, 0.2);
-
-  const extrudeSettings = {
-    steps: 1,
-    depth: 4.5,
-    bevelEnabled: true,
-    bevelThickness: 0.1,
-    bevelSize: 0.1,
-    bevelSegments: 2
-  };
-  const bodyGeom = new THREE.ExtrudeGeometry(bodyShape, extrudeSettings);
-  const mainBody = new THREE.Mesh(bodyGeom, bodyMaterial);
-  mainBody.rotation.x = -Math.PI / 2;
-  mainBody.position.set(0, 0, 2.25);
-  mainBody.castShadow = true;
-  car.add(mainBody);
-
-  // Front Bumper
-  const frontBumperGeom = new THREE.BoxGeometry(2.4, 0.3, 0.5);
-  const frontBumper = new THREE.Mesh(frontBumperGeom, blackMaterial);
-  frontBumper.position.set(0, 0.4, 2.1);
-  car.add(frontBumper);
-
-  // Hood
-  const hoodGeom = new THREE.PlaneGeometry(2, 1.5);
-  const hood = new THREE.Mesh(hoodGeom, bodyMaterial);
-  hood.position.set(0, 0.75, 1.2);
-  hood.rotation.x = -Math.PI / 2.5;
-  car.add(hood);
-
+  // Cabin
+  const cabinWidth = 1.6;
+  const cabinHeight = 0.7;
+  const cabinLength = 2.2;
+  const cabin = new THREE.Mesh(
+    new THREE.BoxGeometry(cabinWidth, cabinHeight, cabinLength),
+    bodyMaterial
+  );
+  cabin.position.y = bodyHeight + cabinHeight / 2 - 0.2;
+  cabin.position.z = -0.3;
+  cabin.rotation.x = -0.1; // Slight downward tilt
+  car.add(cabin);
+  
   // Windshield
-  const windshieldGeom = new THREE.PlaneGeometry(1.9, 1.2);
-  const windshield = new THREE.Mesh(windshieldGeom, windshieldMaterial);
-  windshield.position.set(0, 1.25, 0.1);
+  const windshieldMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, transparent: true, opacity: 0.6 });
+  const windshield = new THREE.Mesh(
+      new THREE.PlaneGeometry(cabinWidth, cabinHeight + 0.1),
+      windshieldMaterial
+  );
+  windshield.position.y = cabin.position.y;
+  windshield.position.z = cabin.position.z + cabinLength / 2 - 0.1;
   windshield.rotation.x = -Math.PI / 4;
   car.add(windshield);
-  
-  // Roof
-  const roofGeom = new THREE.PlaneGeometry(1.9, 1.5);
-  const roof = new THREE.Mesh(roofGeom, bodyMaterial);
-  roof.position.set(0, 1.6, -0.8);
-  car.add(roof);
 
-  // Rear
-  const rearGeom = new THREE.PlaneGeometry(2.2, 1);
-  const rear = new THREE.Mesh(rearGeom, bodyMaterial);
-  rear.position.set(0, 1.2, -2.2);
-  rear.rotation.x = Math.PI / 2.2;
-  car.add(rear);
 
-  // Spoiler
-  const spoilerWing = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, 0.4), blackMaterial);
-  spoilerWing.position.set(0, 1.5, -2.2);
+  // Rear spoiler
+  const spoilerWing = new THREE.Mesh(
+    new THREE.BoxGeometry(bodyWidth * 0.9, 0.1, 0.5),
+    blackMaterial
+  );
+  spoilerWing.position.set(0, 1.2, -bodyLength / 2 + 0.2);
+  spoilerWing.castShadow = true;
   car.add(spoilerWing);
-  const spoilerSupport1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 0.1), blackMaterial);
-  spoilerSupport1.position.set(-0.8, 1.35, -2.2);
-  car.add(spoilerSupport1);
-  const spoilerSupport2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 0.1), blackMaterial);
-  spoilerSupport2.position.set(0.8, 1.35, -2.2);
-  car.add(spoilerSupport2);
+  const spoilerSupport = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, 0.3, 0.2),
+    blackMaterial
+  );
+  spoilerSupport.position.set(0, 0.95, -bodyLength / 2 + 0.2);
+  car.add(spoilerSupport);
+
 
   // Wheels
   const wheelGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.35, 32);
   wheelGeo.rotateZ(Math.PI / 2);
   const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
   
+  const frontWheelOffset = bodyLength / 2 - 0.8;
+  const backWheelOffset = -bodyLength / 2 + 0.8;
+  const wheelXOffset = bodyWidth / 2;
+
   const frontLeftWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  frontLeftWheel.position.set(1.2, 0.45, 1.8);
+  frontLeftWheel.position.set(wheelXOffset, 0.45, frontWheelOffset);
   car.add(frontLeftWheel);
 
   const frontRightWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  frontRightWheel.position.set(-1.2, 0.45, 1.8);
+  frontRightWheel.position.set(-wheelXOffset, 0.45, frontWheelOffset);
   car.add(frontRightWheel);
   
   const backLeftWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  backLeftWheel.position.set(1.2, 0.45, -1.8);
+  backLeftWheel.position.set(wheelXOffset, 0.45, backWheelOffset);
   car.add(backLeftWheel);
 
   const backRightWheel = new THREE.Mesh(wheelGeo, wheelMat);
-  backRightWheel.position.set(-1.2, 0.45, -1.8);
+  backRightWheel.position.set(-wheelXOffset, 0.45, backWheelOffset);
   car.add(backRightWheel);
   
   const wheels = [frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel];
   wheels.forEach(w => w.castShadow = true);
 
   car.userData.parts = {
-      chassis: mainBody,
-      windshield,
+      chassis: carBody,
+      cabin: cabin,
       wheels,
   };
 
@@ -205,7 +191,7 @@ export function updateTransformerAnimation(transformer: THREE.Group, progress: n
       const personParts = personModel.userData.parts;
       
       const torsoCarPos = carChassis.position.clone().set(0, 1, 0);
-      const torsoPersonPos = new THREE.Vector3(0, 1.2, 0);
+      const torsoPersonPos = new THREE.Vector3(0, 1.4, 0);
       personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos, p);
 
       const headCarPos = torsoCarPos.clone().setY(2);
@@ -214,11 +200,11 @@ export function updateTransformerAnimation(transformer: THREE.Group, progress: n
       
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
-      const lArmPersonPos = new THREE.Vector3(0.75, 1.4, 0);
+      const lArmPersonPos = new THREE.Vector3(0.75, 1.6, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-0.75, 1.4, 0);
+      const rArmPersonPos = new THREE.Vector3(-0.75, 1.6, 0);
       personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
       
       // Legs from back wheels
