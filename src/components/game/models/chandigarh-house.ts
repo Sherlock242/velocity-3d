@@ -71,18 +71,57 @@ export function createChandigarhHouse() {
   house.add(singleWindowFrameTop);
 
 
-  // Brick Latticework (Jali)
-  const jaliWidth = 38;
+  // --- Brick Latticework (Jali) with Cut Holes ---
+
+  // 1. Create the perforated brick wall
+  const jaliWidth = 20;
   const jaliHeight = 12;
   const jaliDepth = 2;
-  
-  // Single white panel behind the jali
+  const jaliShape = new THREE.Shape();
+  jaliShape.moveTo(-jaliWidth / 2, -jaliHeight / 2);
+  jaliShape.lineTo(jaliWidth / 2, -jaliHeight / 2);
+  jaliShape.lineTo(jaliWidth / 2, jaliHeight / 2);
+  jaliShape.lineTo(-jaliWidth / 2, jaliHeight / 2);
+  jaliShape.lineTo(-jaliWidth / 2, -jaliHeight / 2);
+
+  const holeSize = 1.5;
+  const holeSpacing = 2.5;
+  const numHolesX = 7;
+  const numHolesY = 4;
+
+  for (let i = 0; i < numHolesY; i++) {
+    for (let j = 0; j < numHolesX; j++) {
+      const holePath = new THREE.Path();
+      const x = -jaliWidth / 2 + (j + 1) * holeSpacing - holeSize/2;
+      const y = -jaliHeight / 2 + (i + 1) * holeSpacing - holeSize/2;
+      holePath.moveTo(x, y);
+      holePath.lineTo(x + holeSize, y);
+      holePath.lineTo(x + holeSize, y + holeSize);
+      holePath.lineTo(x, y + holeSize);
+      holePath.lineTo(x, y);
+      jaliShape.holes.push(holePath);
+    }
+  }
+
+  const extrudeSettings = { depth: jaliDepth, bevelEnabled: false };
+  const jaliGeometry = new THREE.ExtrudeGeometry(jaliShape, extrudeSettings);
+  const jaliMesh = new THREE.Mesh(jaliGeometry, brickMaterial);
+  jaliMesh.position.set(-9, 44, 15 - jaliDepth / 2);
+  house.add(jaliMesh);
+
+  // 2. Create the white panel behind the latticework
   const jaliBackingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
   const jaliBackingGeom = new THREE.BoxGeometry(jaliWidth, jaliHeight, 0.5);
   const jaliBackingMesh = new THREE.Mesh(jaliBackingGeom, jaliBackingMaterial);
-  jaliBackingMesh.position.set(0, 44, 15 - jaliDepth);
+  // Position it directly behind the jali mesh
+  jaliBackingMesh.position.set(-9, 44, 15 - jaliDepth);
   house.add(jaliBackingMesh);
-
+  
+  // Right side plain brick part
+  const plainPartGeom = new THREE.BoxGeometry(20, 12, 2);
+  const plainPartMesh = new THREE.Mesh(plainPartGeom, brickMaterial);
+  plainPartMesh.position.set(10, 44, 14);
+  house.add(plainPartMesh);
 
   // AC Unit
   const acGeom = new THREE.BoxGeometry(4, 3, 2);
