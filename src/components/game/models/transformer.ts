@@ -3,15 +3,15 @@ import * as THREE from 'three';
 
 // This file creates a "Transformer" model that can switch between a car and a person.
 
-function createLegoPerson() {
+export function createLegoPerson() {
   const legoPerson = new THREE.Group();
 
   const headGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16);
   const headMat = new THREE.MeshStandardMaterial({ color: 0xffd700 }); // Yellow
   const head = new THREE.Mesh(headGeo, headMat);
 
-  const torsoHeight = 1.2; // Slightly shorter torso
-  const legHeight = 1.8;
+  const torsoHeight = 1.2;
+  const legHeight = 1;
   const shoeHeight = 0.2;
   const totalLegHeight = legHeight + shoeHeight;
 
@@ -316,7 +316,7 @@ export function updateTransformerAnimation(
       const carChassis = carModel.userData.parts.chassis;
       const personParts = personModel.userData.parts;
       
-      const legHeight = 1.8;
+      const legHeight = 1;
       const shoeHeight = 0.2;
       const torsoHeight = 1.2;
       const totalLegHeight = legHeight + shoeHeight;

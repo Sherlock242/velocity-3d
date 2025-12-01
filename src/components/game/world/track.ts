@@ -10,6 +10,8 @@ import type { TrackTheme } from '@/lib/types';
 import { createMansion } from '../models/mansion';
 import { createBuilding } from '../models/building';
 import { createChandigarhHouse } from '../models/chandigarh-house';
+import { createLegoPerson } from '../models/transformer';
+import type { MutableRefObject } from 'react';
 
 function createTextSprite(text: string) {
   const canvas = document.createElement('canvas');
@@ -40,7 +42,10 @@ function createTextSprite(text: string) {
   return sprite;
 }
 
-export function createGridAndScenery(theme: TrackTheme) {
+export function createGridAndScenery(
+  theme: TrackTheme,
+  walkingNpcsRef: MutableRefObject<THREE.Group[]>
+) {
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
 
@@ -199,6 +204,32 @@ export function createGridAndScenery(theme: TrackTheme) {
         sceneryObject.castShadow = true;
         gridGroup.add(sceneryObject);
       }
+
+      // Add NPCs in city theme
+      if (theme === 'City') {
+        const numNpcs = 5;
+        for (let k = 0; k < numNpcs; k++) {
+          const npc = createLegoPerson();
+          npc.scale.set(1.5, 1.5, 1.5);
+          const safeArea = (CELL_SIZE - ROAD_WIDTH) / 2 - 20; // Stay away from roads
+          const x = cellCenterX + (Math.random() - 0.5) * safeArea;
+          const z = cellCenterZ + (Math.random() - 0.5) * safeArea;
+          npc.position.set(x, 0, z);
+          npc.rotation.y = Math.random() * Math.PI * 2;
+          
+          const halfCell = CELL_SIZE / 2;
+          const sidewalkPadding = ROAD_WIDTH / 2 + 5;
+          const bounds = new THREE.Box2(
+              new THREE.Vector2(cellCenterX - halfCell + sidewalkPadding, cellCenterZ - halfCell + sidewalkPadding),
+              new THREE.Vector2(cellCenterX + halfCell - sidewalkPadding, cellCenterZ + halfCell - sidewalkPadding)
+          );
+          npc.userData.bounds = bounds;
+
+          gridGroup.add(npc);
+          walkingNpcsRef.current.push(npc);
+        }
+      }
+
     }
   }
 

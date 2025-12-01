@@ -22,7 +22,7 @@ import type { TrackTheme } from '@/lib/types';
 import Hud from './hud';
 import AiOpponentGenerator from './ai-opponent-generator';
 import { handleAssessPenalty } from '@/app/actions';
-import { createTransformer, updateTransformerAnimation } from './models/transformer';
+import { createTransformer, updateTransformerAnimation, createLegoPerson } from './models/transformer';
 import { createObstacleCar } from './models/obstacle-car';
 import { createGridAndScenery } from './world/track';
 import {
@@ -68,6 +68,8 @@ export default function GameWrapper() {
     { mesh: THREE.Mesh; createdAt: number }[]
   >([]);
   const fountainWaterJetRef = React.useRef<THREE.Mesh>();
+  const walkingNpcsRef = React.useRef<THREE.Group[]>([]);
+
 
   // Control mode refs
   const controlModeRef = React.useRef<ControlMode>('car');
@@ -239,7 +241,7 @@ export default function GameWrapper() {
     }
     
     // --- GRID TRACK & SCENERY ---
-    const gridGroup = createGridAndScenery(theme);
+    const gridGroup = createGridAndScenery(theme, walkingNpcsRef);
     scene.add(gridGroup);
     
     // Find the water jet to animate it
@@ -334,6 +336,35 @@ export default function GameWrapper() {
         velocityRef.current.length(),
         now
       );
+
+      // --- NPC WALKING ---
+      walkingNpcsRef.current.forEach(npc => {
+        const npcSpeed = 1;
+        const walkSpeed = 5;
+        const npcParts = npc.userData.parts;
+        const walkAmount = Math.sin(now * walkSpeed + npc.uuid.charCodeAt(0));
+        npcParts.leftLeg.rotation.x = walkAmount * 0.5;
+        npcParts.rightLeg.rotation.x = -walkAmount * 0.5;
+        npcParts.leftArm.rotation.x = -walkAmount * 0.4;
+        npcParts.rightArm.rotation.x = walkAmount * 0.4;
+
+        // Move forward
+        const forward = new THREE.Vector3();
+        npc.getWorldDirection(forward);
+        npc.position.add(forward.multiplyScalar(npcSpeed * delta));
+        
+        // Simple random turning
+        if (Math.random() < 0.01) {
+          npc.rotation.y += (Math.random() - 0.5) * Math.PI / 2;
+        }
+
+        // Boundary check within their cell
+        const bounds = npc.userData.bounds as THREE.Box2;
+        if (!bounds.containsPoint(new THREE.Vector2(npc.position.x, npc.position.z))) {
+            // If outside, turn around
+            npc.rotation.y += Math.PI;
+        }
+      });
 
 
       if (controlModeRef.current === 'car' && !isTransformingRef.current) {
@@ -625,6 +656,7 @@ export default function GameWrapper() {
       });
       renderer.dispose();
       obstacleCarsRef.current = [];
+      walkingNpcsRef.current = [];
       tireMarksRef.current.forEach(mark => {
         scene.remove(mark.mesh);
         (mark.mesh.material as THREE.Material).dispose();
