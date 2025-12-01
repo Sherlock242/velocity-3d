@@ -33,14 +33,39 @@ function createLegoPerson() {
   const rightArm = new THREE.Mesh(armGeo, armMat);
   rightArm.position.set(-0.75, 1.6, 0);
 
-  const legGeo = new THREE.BoxGeometry(0.5, 0.8, 0.5);
+  // --- LEGS & SHOES ---
+  const legHeight = 0.8;
+  const shoeHeight = 0.2;
+  
+  const legGeo = new THREE.BoxGeometry(0.5, legHeight, 0.5);
   const legMat = new THREE.MeshStandardMaterial({ color: 0x0055aa }); // Blue Jeans
 
-  const leftLeg = new THREE.Mesh(legGeo, legMat);
-  leftLeg.position.set(0.3, 0.4, 0);
+  // Left Leg
+  const leftLeg = new THREE.Group();
+  const leftLegMesh = new THREE.Mesh(legGeo, legMat);
+  leftLeg.add(leftLegMesh);
+  leftLeg.position.set(0.3, (legHeight / 2) + shoeHeight, 0);
 
-  const rightLeg = new THREE.Mesh(legGeo, legMat);
-  rightLeg.position.set(-0.3, 0.4, 0);
+  // Right Leg
+  const rightLeg = new THREE.Group();
+  const rightLegMesh = new THREE.Mesh(legGeo, legMat);
+  rightLeg.add(rightLegMesh);
+  rightLeg.position.set(-0.3, (legHeight / 2) + shoeHeight, 0);
+
+  // Shoes
+  const shoeGeo = new THREE.BoxGeometry(0.5, shoeHeight, 0.6); // a bit longer
+  const shoeMat = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White
+
+  const leftShoe = new THREE.Mesh(shoeGeo, shoeMat);
+  leftShoe.position.y = (-legHeight / 2);
+  leftShoe.position.z = 0.05; // a bit forward
+  leftLeg.add(leftShoe);
+
+  const rightShoe = new THREE.Mesh(shoeGeo, shoeMat);
+  rightShoe.position.y = (-legHeight / 2);
+  rightShoe.position.z = 0.05; // a bit forward
+  rightLeg.add(rightShoe);
+
 
   legoPerson.add(head, torso, leftArm, rightArm, leftLeg, rightLeg);
   
