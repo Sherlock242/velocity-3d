@@ -67,6 +67,7 @@ export default function GameWrapper() {
   const tireMarksRef = React.useRef<
     { mesh: THREE.Mesh; createdAt: number }[]
   >([]);
+  const fountainWaterJetRef = React.useRef<THREE.Mesh>();
 
   // Control mode refs
   const controlModeRef = React.useRef<ControlMode>('car');
@@ -240,6 +241,13 @@ export default function GameWrapper() {
     // --- GRID TRACK & SCENERY ---
     const gridGroup = createGridAndScenery(theme);
     scene.add(gridGroup);
+    
+    // Find the water jet to animate it
+    const waterJet = gridGroup.getObjectByName('fountainWaterJet');
+    if (waterJet instanceof THREE.Mesh) {
+      fountainWaterJetRef.current = waterJet;
+    }
+
 
     // --- EVENT LISTENERS ---
     const onKeyDown = (e: KeyboardEvent) => {
@@ -291,6 +299,15 @@ export default function GameWrapper() {
       const delta = clock.getDelta();
       const now = clock.elapsedTime;
       gameTimeRef.current += delta;
+      
+      // Animate fountain
+      if (fountainWaterJetRef.current) {
+        const waterJet = fountainWaterJetRef.current;
+        const time = now * 5;
+        waterJet.scale.y = Math.sin(time) * 0.5 + 0.5; // Scale from 0 to 1
+        waterJet.position.y = (waterJet.scale.y * 10) / 2 + 8; // Adjust position based on scale
+      }
+
 
       // Handle transformation animation
       if (isTransformingRef.current) {

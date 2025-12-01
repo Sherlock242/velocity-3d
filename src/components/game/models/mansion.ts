@@ -167,7 +167,7 @@ export function createMansion() {
 
   // --- FORTIFICATION WALL ---
   const wallGroup = new THREE.Group();
-  const wallHeight = 20;
+  const wallHeight = 10;
   const wallThickness = 8;
   const wallPlotSize = 480; // Size of the square plot to enclose
   const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 }); // Stone color
@@ -249,8 +249,15 @@ export function createMansion() {
   const tier2 = new THREE.Mesh(tier2Geom, fountainMaterial);
   tier2.position.y = 6;
   fountain.add(tier2);
+  
+  // Water jet for animation
+  const waterJetGeom = new THREE.CylinderGeometry(0.5, 0.5, 10, 8);
+  const waterJet = new THREE.Mesh(waterJetGeom, waterMaterial);
+  waterJet.name = 'fountainWaterJet'; // Name it so we can find it
+  waterJet.position.y = 8;
+  fountain.add(waterJet);
 
-  fountain.position.z = 80;
+  fountain.position.z = 100;
   mansion.add(fountain);
 
 
