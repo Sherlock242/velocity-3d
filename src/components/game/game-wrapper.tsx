@@ -308,8 +308,15 @@ export default function GameWrapper() {
             isTransformingRef.current = false;
           }
         }
-        updateTransformerAnimation(player as THREE.Group & { userData: { parts: any } }, transformProgressRef.current);
       }
+      
+      // Update animation (transformation and walking)
+      updateTransformerAnimation(
+        player as THREE.Group & { userData: { parts: any } },
+        transformProgressRef.current,
+        velocityRef.current.length(),
+        now
+      );
 
 
       if (controlModeRef.current === 'car' && !isTransformingRef.current) {
@@ -743,5 +750,3 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
-
-    

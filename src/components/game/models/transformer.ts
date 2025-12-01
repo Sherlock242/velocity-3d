@@ -239,7 +239,12 @@ export function createTransformer() {
   return transformer;
 }
 
-export function updateTransformerAnimation(transformer: THREE.Group, progress: number) {
+export function updateTransformerAnimation(
+  transformer: THREE.Group,
+  progress: number,
+  speed: number,
+  time: number
+) {
   const carModel = transformer.userData.carModel as THREE.Group;
   const personModel = transformer.userData.personModel as THREE.Group;
 
@@ -286,11 +291,20 @@ export function updateTransformerAnimation(transformer: THREE.Group, progress: n
       const rLegPersonPos = new THREE.Vector3(-0.3, 0.4, 0);
       personParts.rightLeg.position.lerpVectors(rLegCarPos, rLegPersonPos, p);
 
-      // Simple walk animation for person
-      const walkSpeed = 10;
-      personParts.leftLeg.rotation.x = Math.sin(transformer.position.z * walkSpeed) * 0.5 * p;
-      personParts.rightLeg.rotation.x = -Math.sin(transformer.position.z * walkSpeed) * 0.5 * p;
-      personParts.leftArm.rotation.x = -Math.sin(transformer.position.z * walkSpeed) * 0.4 * p;
-      personParts.rightArm.rotation.x = Math.sin(transformer.position.z * walkSpeed) * 0.4 * p;
+      // Simple walk animation for person, only when fully transformed and moving
+      if (p >= 1 && speed > 0.1) {
+        const walkSpeed = 10;
+        const walkAmount = Math.sin(time * walkSpeed);
+        personParts.leftLeg.rotation.x = walkAmount * 0.5;
+        personParts.rightLeg.rotation.x = -walkAmount * 0.5;
+        personParts.leftArm.rotation.x = -walkAmount * 0.4;
+        personParts.rightArm.rotation.x = walkAmount * 0.4;
+      } else {
+        // Return to neutral position if not walking
+        personParts.leftLeg.rotation.x = 0;
+        personParts.rightLeg.rotation.x = 0;
+        personParts.leftArm.rotation.x = 0;
+        personParts.rightArm.rotation.x = 0;
+      }
   }
 }
