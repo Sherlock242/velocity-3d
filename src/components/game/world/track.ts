@@ -202,14 +202,14 @@ export function createGridAndScenery(
          const houseSpacing = 120;
          const rowSpacing = 150;
          
-         const startX = cellCenterX - (CELL_SIZE / 2) + 100;
-         const startZ = cellCenterZ + (CELL_SIZE / 2) - rowSpacing;
+         const startX = cellCenterX + (CELL_SIZE / 2) - (numRows * rowSpacing);
+         const startZ = cellCenterZ - (CELL_SIZE / 2) + rowSpacing;
 
          for (let row = 0; row < numRows; row++) {
           for (let col = 0; col < numHousesPerRow; col++) {
               const house = createChandigarhHouse();
               const x = startX + row * rowSpacing;
-              const z = startZ - col * houseSpacing;
+              const z = startZ + col * houseSpacing;
               house.position.set(x, 0, z);
               house.rotation.y = Math.PI / 2;
               gridGroup.add(house);
