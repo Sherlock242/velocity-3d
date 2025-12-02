@@ -21,8 +21,9 @@ import { useToast } from '@/hooks/use-toast';
 import type { TrackTheme } from '@/lib/types';
 import Hud from './hud';
 import AiOpponentGenerator from './ai-opponent-generator';
+import LargeMap from './large-map';
 import { handleAssessPenalty } from '@/app/actions';
-import { createTransformer, updateTransformerAnimation, createLegoPerson } from './models/transformer';
+import { createTransformer, updateTransformerAnimation } from './models/transformer';
 import { createObstacleCar } from './models/obstacle-car';
 import { createGridAndScenery } from './world/track';
 import {
@@ -49,6 +50,9 @@ export default function GameWrapper() {
     controlMode: 'car' as ControlMode,
   });
   const [isReady, setIsReady] = React.useState(false);
+  const [isLargeMapOpen, setIsLargeMapOpen] = React.useState(false);
+  const [topDownSector, setTopDownSector] = React.useState<number | null>(null);
+
 
   // Game state refs
   const gameTimeRef = React.useRef(0);
@@ -93,6 +97,11 @@ export default function GameWrapper() {
     isTransformingRef.current = true;
     controlModeRef.current = controlModeRef.current === 'car' ? 'person' : 'car';
     setGameData(prev => ({ ...prev, controlMode: controlModeRef.current }));
+  };
+
+  const handleSectorSelect = (sector: number) => {
+    setTopDownSector(sector);
+    setIsLargeMapOpen(false);
   };
 
 
@@ -297,7 +306,6 @@ export default function GameWrapper() {
 
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
-      if (!playerRef.current) return;
       const player = playerRef.current;
       const delta = clock.getDelta();
       const now = clock.elapsedTime;
@@ -331,12 +339,14 @@ export default function GameWrapper() {
       }
       
       // Update animation (transformation and walking)
-      updateTransformerAnimation(
-        player as THREE.Group & { userData: { parts: any } },
-        transformProgressRef.current,
-        velocityRef.current.length(),
-        now
-      );
+      if (player) {
+        updateTransformerAnimation(
+          player as THREE.Group & { userData: { parts: any } },
+          transformProgressRef.current,
+          velocityRef.current.length(),
+          now
+        );
+      }
 
       // --- NPC WALKING ---
       walkingNpcsRef.current.forEach(npc => {
@@ -368,7 +378,7 @@ export default function GameWrapper() {
       });
 
 
-      if (controlModeRef.current === 'car' && !isTransformingRef.current) {
+      if (player && controlModeRef.current === 'car' && !isTransformingRef.current) {
         const maxSpeed = 100;
         const acceleration = 80;
         const turnSpeed = 2;
@@ -449,7 +459,7 @@ export default function GameWrapper() {
         wheels[1].rotation.y = wheelSteerAngle;
 
 
-      } else if (controlModeRef.current === 'person' && !isTransformingRef.current) {
+      } else if (player && controlModeRef.current === 'person' && !isTransformingRef.current) {
          // --- PERSON MOVEMENT LOGIC ---
         const personMoveSpeed = 50;
         const personTurnSpeed = 3;
@@ -501,129 +511,139 @@ export default function GameWrapper() {
         }
       });
 
+      if (player) {
+        // --- BOUNDARY CHECKS ---
+        const halfGrid = TOTAL_GRID_WIDTH / 2;
+        player.position.x = Math.max(-halfGrid, Math.min(halfGrid, player.position.x));
+        player.position.z = Math.max(-halfGrid, Math.min(halfGrid, player.position.z));
 
-      // --- BOUNDARY CHECKS ---
-      const halfGrid = TOTAL_GRID_WIDTH / 2;
-      player.position.x = Math.max(-halfGrid, Math.min(halfGrid, player.position.x));
-      player.position.z = Math.max(-halfGrid, Math.min(halfGrid, player.position.z));
 
-
-      // --- CAMERA LOGIC ---
-      const offset = cameraOffsetRef.current.clone();
-      if (controlModeRef.current === 'person') {
-        offset.set(0, 4, -8); // Camera higher and further for person
-      } else {
-        offset.set(0, 2, -6);
-      }
-
-      offset.applyQuaternion(player.quaternion);
-      offset.add(player.position);
-
-      camera.position.copy(offset);
-      camera.lookAt(player.position);
-
-      // --- COLLISION DETECTION ---
-      const playerBox = new THREE.Box3().setFromObject(player);
-
-      // Dynamic Obstacles (Cars)
-      const obstacleSpeed = 50;
-      obstacleCarsRef.current.forEach((obstacle) => {
-        const forward = new THREE.Vector3();
-        obstacle.getWorldDirection(forward);
-        obstacle.position.add(forward.multiplyScalar(obstacleSpeed * delta));
-
-        // Reset obstacle if it's outside the grid
-        if (
-          Math.abs(obstacle.position.x) > halfGrid + CELL_SIZE ||
-          Math.abs(obstacle.position.z) > halfGrid + CELL_SIZE
-        ) {
-          const onVerticalRoad = Math.random() > 0.5;
-          const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
-          const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
-
-          if (onVerticalRoad) {
-            obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
-            obstacle.position.z = positionOnRoad;
-            obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI;
+        // --- CAMERA LOGIC ---
+        if (topDownSector !== null) {
+          const row = Math.floor((topDownSector - 1) / GRID_SIZE);
+          const col = (topDownSector - 1) % GRID_SIZE;
+          const sectorCenterX = col * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+          const sectorCenterZ = row * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+          camera.position.set(sectorCenterX, 800, sectorCenterZ);
+          camera.lookAt(sectorCenterX, 0, sectorCenterZ);
+        } else {
+          const offset = cameraOffsetRef.current.clone();
+          if (controlModeRef.current === 'person') {
+            offset.set(0, 4, -8); // Camera higher and further for person
           } else {
-            obstacle.position.x = positionOnRoad;
-            obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
-            obstacle.rotation.y =
-              Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2;
+            offset.set(0, 2, -6);
           }
+
+          offset.applyQuaternion(player.quaternion);
+          offset.add(player.position);
+
+          camera.position.copy(offset);
+          camera.lookAt(player.position);
         }
 
-        const obstacleBox = new THREE.Box3().setFromObject(obstacle);
-        if (playerBox.intersectsBox(obstacleBox)) {
-          velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
-          const knockback = player.position.clone().sub(obstacle.position).normalize().multiplyScalar(5);
-          player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
-        }
-      });
-      
-      // Static Colliders (Buildings)
-      staticCollidersRef.current.forEach((collider) => {
-        const colliderBox = new THREE.Box3().setFromObject(collider);
-        if (playerBox.intersectsBox(colliderBox)) {
+        // --- COLLISION DETECTION ---
+        const playerBox = new THREE.Box3().setFromObject(player);
+
+        // Dynamic Obstacles (Cars)
+        const obstacleSpeed = 50;
+        obstacleCarsRef.current.forEach((obstacle) => {
+          const forward = new THREE.Vector3();
+          obstacle.getWorldDirection(forward);
+          obstacle.position.add(forward.multiplyScalar(obstacleSpeed * delta));
+
+          // Reset obstacle if it's outside the grid
+          if (
+            Math.abs(obstacle.position.x) > halfGrid + CELL_SIZE ||
+            Math.abs(obstacle.position.z) > halfGrid + CELL_SIZE
+          ) {
+            const onVerticalRoad = Math.random() > 0.5;
+            const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
+            const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
+
+            if (onVerticalRoad) {
+              obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
+              obstacle.position.z = positionOnRoad;
+              obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI;
+            } else {
+              obstacle.position.x = positionOnRoad;
+              obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
+              obstacle.rotation.y =
+                Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2;
+            }
+          }
+
+          const obstacleBox = new THREE.Box3().setFromObject(obstacle);
+          if (playerBox.intersectsBox(obstacleBox)) {
             velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
-            const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
+            const knockback = player.position.clone().sub(obstacle.position).normalize().multiplyScalar(5);
             player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
-        }
-      });
-
-
-      // Penalty check for off-road
-      const currentRoadXIndex = Math.round(
-        (player.position.x + halfGrid) / CELL_SIZE
-      );
-      const currentRoadZIndex = Math.round(
-        (player.position.z + halfGrid) / CELL_SIZE
-      );
-      const nearestRoadX = currentRoadXIndex * CELL_SIZE - halfGrid;
-      const nearestRoadZ = currentRoadZIndex * CELL_SIZE - halfGrid;
-
-      const onHorizontalRoad =
-        Math.abs(player.position.z - nearestRoadZ) < ROAD_WIDTH / 2;
-      const onVerticalRoad =
-        Math.abs(player.position.x - nearestRoadX) < ROAD_WIDTH / 2;
-      const isOffTrack = !(onHorizontalRoad || onVerticalRoad);
-
-      if (isOffTrack) {
-        wasOffTrackRef.current = true;
-        velocityRef.current.multiplyScalar(0.95); // Slow down off-track
-      }
-      if (
-        !isOffTrack &&
-        wasOffTrackRef.current &&
-        !penaltyCheckCooldownRef.current
-      ) {
-        wasOffTrackRef.current = false;
-        penaltyCheckCooldownRef.current = true;
-        setTimeout(() => (penaltyCheckCooldownRef.current = false), 5000); // 5 sec cooldown
-
-        handleAssessPenalty({
-          lapTime: gameTimeRef.current,
-          trackPosition: 'Player went off-road and returned.',
-          speed: velocityRef.current.length() * 3.6, // m/s to km/h approx
-        }).then((result) => {
-          if (result.penalty) {
-            toast({
-              title: 'Penalty Assessed!',
-              description: `${result.penalty} - ${result.reason}`,
-              variant: 'destructive',
-            });
           }
         });
-      }
+        
+        // Static Colliders (Buildings)
+        staticCollidersRef.current.forEach((collider) => {
+          const colliderBox = new THREE.Box3().setFromObject(collider);
+          if (playerBox.intersectsBox(colliderBox)) {
+              velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
+              const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
+              player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
+          }
+        });
 
-      // Update HUD
-      setGameData(prev => ({
-        ...prev,
-        speed: velocityRef.current.length() * 3.6, // Convert m/s to km/h
-        time: gameTimeRef.current,
-        carPosition: { x: player.position.x, z: player.position.z },
-        carRotation: player.rotation.y,
-      }));
+
+        // Penalty check for off-road
+        const currentRoadXIndex = Math.round(
+          (player.position.x + halfGrid) / CELL_SIZE
+        );
+        const currentRoadZIndex = Math.round(
+          (player.position.z + halfGrid) / CELL_SIZE
+        );
+        const nearestRoadX = currentRoadXIndex * CELL_SIZE - halfGrid;
+        const nearestRoadZ = currentRoadZIndex * CELL_SIZE - halfGrid;
+
+        const onHorizontalRoad =
+          Math.abs(player.position.z - nearestRoadZ) < ROAD_WIDTH / 2;
+        const onVerticalRoad =
+          Math.abs(player.position.x - nearestRoadX) < ROAD_WIDTH / 2;
+        const isOffTrack = !(onHorizontalRoad || onVerticalRoad);
+
+        if (isOffTrack) {
+          wasOffTrackRef.current = true;
+          velocityRef.current.multiplyScalar(0.95); // Slow down off-track
+        }
+        if (
+          !isOffTrack &&
+          wasOffTrackRef.current &&
+          !penaltyCheckCooldownRef.current
+        ) {
+          wasOffTrackRef.current = false;
+          penaltyCheckCooldownRef.current = true;
+          setTimeout(() => (penaltyCheckCooldownRef.current = false), 5000); // 5 sec cooldown
+
+          handleAssessPenalty({
+            lapTime: gameTimeRef.current,
+            trackPosition: 'Player went off-road and returned.',
+            speed: velocityRef.current.length() * 3.6, // m/s to km/h approx
+          }).then((result) => {
+            if (result.penalty) {
+              toast({
+                title: 'Penalty Assessed!',
+                description: `${result.penalty} - ${result.reason}`,
+                variant: 'destructive',
+              });
+            }
+          });
+        }
+
+        // Update HUD
+        setGameData(prev => ({
+          ...prev,
+          speed: velocityRef.current.length() * 3.6, // Convert m/s to km/h
+          time: gameTimeRef.current,
+          carPosition: { x: player.position.x, z: player.position.z },
+          carRotation: player.rotation.y,
+        }));
+      }
 
       renderer.render(scene, camera);
     };
@@ -674,7 +694,7 @@ export default function GameWrapper() {
       audioListenerRef.current?.context.close();
       audioInitializedRef.current = false;
     };
-  }, [theme, toast]);
+  }, [theme, toast, topDownSector]);
 
   const initAudioOnInteraction = () => {
     if (!audioInitializedRef.current && audioListenerRef.current) {
@@ -777,6 +797,13 @@ export default function GameWrapper() {
             </div>
           )}
         </div>
+        {isLargeMapOpen && (
+          <LargeMap
+            gridSize={GRID_SIZE}
+            onSectorSelect={handleSectorSelect}
+            onClose={() => setIsLargeMapOpen(false)}
+          />
+        )}
         {isReady && (
           <Hud
             speed={gameData.speed}
@@ -786,6 +813,7 @@ export default function GameWrapper() {
             totalGridWidth={TOTAL_GRID_WIDTH}
             controlMode={gameData.controlMode}
             onToggleControlMode={handleToggleControlMode}
+            onToggleLargeMap={() => setIsLargeMapOpen(prev => !prev)}
             onAcceleratorPress={() => {
               initAudioOnInteraction();
               inputRef.current.forward = true;
@@ -801,6 +829,8 @@ export default function GameWrapper() {
               inputRef.current.right = true;
             }}
             onSteerRightRelease={() => (inputRef.current.right = false)}
+            isTopDownView={topDownSector !== null}
+            onExitTopDownView={() => setTopDownSector(null)}
           />
         )}
       </SidebarInset>

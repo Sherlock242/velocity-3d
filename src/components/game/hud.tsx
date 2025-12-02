@@ -1,7 +1,7 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, ChevronUp, Zap, ToyBrick, Car } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, ArrowRight, ChevronUp, Zap, ToyBrick, Car, X } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import MiniMap from './mini-map';
 import { Button } from '../ui/button';
 
@@ -15,12 +15,15 @@ type HudProps = {
   totalGridWidth: number;
   controlMode: ControlMode;
   onToggleControlMode: () => void;
+  onToggleLargeMap: () => void;
   onAcceleratorPress: () => void;
   onAcceleratorRelease: () => void;
   onSteerLeftPress: () => void;
   onSteerLeftRelease: () => void;
   onSteerRightPress: () => void;
   onSteerRightRelease: () => void;
+  isTopDownView: boolean;
+  onExitTopDownView: () => void;
 };
 
 export default function Hud({
@@ -31,12 +34,15 @@ export default function Hud({
   totalGridWidth,
   controlMode,
   onToggleControlMode,
+  onToggleLargeMap,
   onAcceleratorPress,
   onAcceleratorRelease,
   onSteerLeftPress,
   onSteerLeftRelease,
   onSteerRightPress,
   onSteerRightRelease,
+  isTopDownView,
+  onExitTopDownView,
 }: HudProps) {
   return (
     <div className="absolute inset-0 pointer-events-none text-accent">
@@ -64,19 +70,29 @@ export default function Hud({
         </Button>
       </div>
 
+      {isTopDownView && (
+        <div className="absolute top-4 right-1/2 translate-x-1/2 pointer-events-auto">
+          <Button onClick={onExitTopDownView} variant="destructive">
+            <X className="mr-2" /> Exit Top-Down View
+          </Button>
+        </div>
+      )}
+
 
       {/* Minimap */}
-      <div className="absolute top-4 left-4">
-        <Card className="bg-card/50 backdrop-blur-sm border-accent/20 overflow-hidden">
-          <CardContent className="p-0">
-            <MiniMap
-              carPosition={carPosition}
-              carRotation={carRotation}
-              gridSize={gridSize}
-              totalGridWidth={totalGridWidth}
-            />
-          </CardContent>
-        </Card>
+      <div className="absolute top-4 left-4 pointer-events-auto">
+        <button onClick={onToggleLargeMap}>
+          <Card className="bg-card/50 backdrop-blur-sm border-accent/20 overflow-hidden hover:border-accent transition-colors">
+            <CardContent className="p-0">
+              <MiniMap
+                carPosition={carPosition}
+                carRotation={carRotation}
+                gridSize={gridSize}
+                totalGridWidth={totalGridWidth}
+              />
+            </CardContent>
+          </Card>
+        </button>
       </div>
 
       {/* Touch Controls */}
