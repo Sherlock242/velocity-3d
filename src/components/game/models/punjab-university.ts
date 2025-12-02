@@ -70,7 +70,7 @@ export function createPunjabUniversity() {
 
   // Add top cylinder
   const topCylinderHeight = 15;
-  const topCylinderRadius = 40;
+  const topCylinderRadius = mainRadius;
   const topCylinderGeom = new THREE.CylinderGeometry(
     topCylinderRadius,
     topCylinderRadius,
