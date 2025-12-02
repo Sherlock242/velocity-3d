@@ -41,6 +41,14 @@ export function createDepartmentBuilding() {
   const windowStories = [buildingHeight * 0.25, buildingHeight * 0.75]; // Y positions for windows on both floors
 
   for (const yPos of windowStories) {
+    // Add a window above the door only on the first floor
+    if (yPos === windowStories[1]) {
+        const windowGeom = new THREE.BoxGeometry(windowWidth, windowHeight, 1);
+        const centerWindow = new THREE.Mesh(windowGeom, windowMaterial);
+        centerWindow.position.set(0, yPos, buildingDepth / 2 + 0.1);
+        building.add(centerWindow);
+    }
+    
     // Left side windows
     for (let i = 0; i < numWindowsPerSide; i++) {
       const windowGeom = new THREE.BoxGeometry(windowWidth, windowHeight, 1);
