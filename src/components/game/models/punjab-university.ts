@@ -92,24 +92,31 @@ export function createPunjabUniversity() {
         // Concrete Mullion (Divider)
         const mullionGeom = new THREE.BoxGeometry(3, floorHeight, 4);
         const mullion = new THREE.Mesh(mullionGeom, mullionMaterial);
-        const mullionX = Math.sin(angle) * (radius);
-        const mullionZ = Math.cos(angle) * (radius);
+        const mullionX = Math.sin(angle) * radius;
+        const mullionZ = Math.cos(angle) * radius;
         mullion.position.set(mullionX, yPos + floorHeight / 2, mullionZ);
         mullion.lookAt(0, yPos + floorHeight / 2, 0);
         floorGroup.add(mullion);
 
         // Larger Glass Panes
         const windowAngle = ((j + 0.5) / numMullions) * Math.PI * 2;
-        const windowWidth = (Math.PI * 2 * (radius)) / numMullions - 3;
-        const windowGeom = new THREE.PlaneGeometry(
-          windowWidth,
-          floorHeight * 0.95
-        );
+        const windowWidth = (Math.PI * 2 * radius) / numMullions - 3; // Subtract mullion width
+        const windowHeight = floorHeight * 0.95;
+        const windowRadius = radius + 0.1; // Place it slightly outside the mullions
+
+        const windowGeom = new THREE.PlaneGeometry(windowWidth, windowHeight);
         const window = new THREE.Mesh(windowGeom, bottomFloorGlassMaterial);
-        const windowX = Math.sin(windowAngle) * (radius);
-        const windowZ = Math.cos(windowAngle) * (radius);
+
+        const windowX = Math.sin(windowAngle) * windowRadius;
+        const windowZ = Math.cos(windowAngle) * windowRadius;
+        
         window.position.set(windowX, yPos + floorHeight / 2, windowZ);
-        window.lookAt(0, yPos + floorHeight / 2, 0);
+        // Make the window face outwards from the center
+        window.lookAt(
+          mullion.position.x * 2,
+          yPos + floorHeight / 2,
+          mullion.position.z * 2
+        );
         floorGroup.add(window);
       }
     }
