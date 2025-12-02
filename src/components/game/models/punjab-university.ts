@@ -48,8 +48,8 @@ export function createPunjabUniversity() {
   floor2.position.y = floor2Y + floorHeight / 2;
   library.add(floor2);
   
-  // Fins and windows for the two main floors
-  [floor1Y, floor2Y].forEach(yPos => {
+  // Fins and windows for the main floors
+  [groundFloorY, floor1Y, floor2Y].forEach(yPos => {
      for (let j = 0; j < numFins; j++) {
         const angle = (j / numFins) * Math.PI * 2;
         
@@ -81,7 +81,7 @@ export function createPunjabUniversity() {
   floor3.position.y = floor3Y + floorHeight/2;
   library.add(floor3);
   
-  // Fins for top floor
+  // Fins and windows for top floor
   for (let j = 0; j < numFins; j++) {
     const angle = (j / numFins) * Math.PI * 2;
     
@@ -105,11 +105,11 @@ export function createPunjabUniversity() {
   }
 
 
-  // Layer 4: Top-most solid cylinder
+  // Layer 4: Top-most solid cylinder (Roof structure)
   const topCylinderY = floor3Y + floorHeight;
-  const topCylinderGeom = new THREE.CylinderGeometry(topRadius, topRadius, floorHeight * 0.75, 64);
+  const topCylinderGeom = new THREE.CylinderGeometry(topRadius, topRadius, floorHeight * 0.5, 64);
   const topCylinder = new THREE.Mesh(topCylinderGeom, concreteMaterial);
-  topCylinder.position.y = topCylinderY + (floorHeight*0.75)/2;
+  topCylinder.position.y = topCylinderY + (floorHeight*0.5)/2;
   library.add(topCylinder);
 
 
@@ -117,10 +117,10 @@ export function createPunjabUniversity() {
   const rampRadius = mainRadius + 15;
   const rampWidth = 30;
   const rampWallHeight = 8;
-  const rampTotalHeight = floorHeight * 3.5;
+  const rampTotalHeight = floorHeight * 2; // Ramp goes up to floor 2
   const rampSegments = 256;
   const rampStartAngle = Math.PI * 0.5;
-  const rampAngleSweep = Math.PI * 2.2;
+  const rampAngleSweep = Math.PI * 1.5; // Sweep for two floors
 
   class CustomSpiralCurve extends THREE.Curve<THREE.Vector3> {
     scale: number;
