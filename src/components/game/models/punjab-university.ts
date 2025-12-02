@@ -4,26 +4,26 @@ export function createPunjabUniversity() {
   const library = new THREE.Group();
 
   const concreteMaterial = new THREE.MeshStandardMaterial({
-    color: 0xbbbbbb,
+    color: 0xaaaaaa, // Darker grey
     roughness: 0.8,
   });
   const glassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x87ceeb,
+    color: 0x4682B4, // Steel Blue - more visible
     roughness: 0.2,
-    metalness: 0.5,
+    metalness: 0.6,
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.8, // More opaque
   });
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: 0xb0b0b0,
     roughness: 0.8,
   });
   const finMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4d6a8b,
+    color: 0x4d6a8b, // Blue color for fins
     roughness: 0.7,
   });
   const dividerMaterial = new THREE.MeshStandardMaterial({
-    color: 0xaaaaaa,
+    color: 0xbbbbbb,
     roughness: 0.8,
   });
   const mullionMaterial = new THREE.MeshStandardMaterial({
@@ -135,7 +135,7 @@ export function createPunjabUniversity() {
   const floor2 = createFloor(currentY, mainRadius, false, false);
   library.add(floor2);
   currentY += floorHeight + dividerHeight;
-  
+
   const floor3 = createFloor(currentY, mainRadius, false, true);
   library.add(floor3);
   currentY += floorHeight + dividerHeight;
@@ -143,7 +143,6 @@ export function createPunjabUniversity() {
   const topFloor = createFloor(currentY, topRadius, true, true);
   library.add(topFloor);
   currentY += floorHeight + dividerHeight;
-
 
   // Top-most solid cylinder (Roof structure)
   const topCylinderGeom = new THREE.CylinderGeometry(
