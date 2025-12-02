@@ -70,10 +70,9 @@ export function createDepartmentBuilding() {
       metalness: 0.8
   });
   const door = new THREE.Mesh(doorGeom, doorMaterial);
-  door.position.set(0, 0, 1.1);
+  door.position.set(0, 0, 1.01); // Position it relative to the entrance, slightly forward
   entrance.add(door);
 
 
   return building;
 }
-
