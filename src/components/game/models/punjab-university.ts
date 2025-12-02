@@ -4,6 +4,7 @@ import * as THREE from 'three';
 export function createPunjabUniversity() {
   const universityWithBase = new THREE.Group();
   const library = new THREE.Group();
+  library.name = 'LibraryBuilding';
 
   const concreteMaterial = new THREE.MeshStandardMaterial({
     color: 0xaaaaaa, // Darker grey
@@ -170,11 +171,15 @@ export function createPunjabUniversity() {
   const baseGeometry = new THREE.CylinderGeometry(baseRadius, baseRadius, baseHeight, 64);
   const baseMesh = new THREE.Mesh(baseGeometry, brownBaseMaterial);
   baseMesh.position.y = baseHeight / 2;
-  universityWithBase.add(baseMesh);
+  library.add(baseMesh); // Add base to the library building collider
 
   // Position original library on top of the base
-  library.position.y = baseHeight;
-  universityWithBase.add(library);
+  library.position.y = 0; // The base is now part of the library itself
+
+  // --- Ramp and Walkable Surfaces Group ---
+  const walkableGroup = new THREE.Group();
+  walkableGroup.name = 'WalkableRamp';
+
 
   // --- Spiral Ramp ---
   const rampRadius = mainRadius + 10;
@@ -286,7 +291,7 @@ export function createPunjabUniversity() {
   const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
   rampMesh.material.side = THREE.DoubleSide; // Make ramp visible from all angles
   
-  universityWithBase.add(rampMesh);
+  walkableGroup.add(rampMesh);
 
   // --- Landing Platform ---
   const landingRadius = rampWidth / 2;
@@ -304,8 +309,11 @@ export function createPunjabUniversity() {
   landingPlatform.rotation.x = -Math.PI / 2; // Lay it flat
   landingPlatform.rotation.z = -landingAngle + Math.PI / 2;
 
-  universityWithBase.add(landingPlatform);
+  walkableGroup.add(landingPlatform);
 
+
+  universityWithBase.add(library);
+  universityWithBase.add(walkableGroup);
 
   universityWithBase.scale.set(1.5, 1.5, 1.5);
   return universityWithBase;

@@ -131,7 +131,12 @@ export function createGridAndScenery(
         university.position.set(cellCenterX, 0, cellCenterZ);
         university.rotation.y = -Math.PI / 2;
         gridGroup.add(university);
-        staticCollidersRef.current.push(university);
+        
+        // Add only the building part to colliders
+        const libraryBuilding = university.getObjectByName('LibraryBuilding');
+        if (libraryBuilding) {
+            staticCollidersRef.current.push(libraryBuilding);
+        }
 
         // Department Buildings, Roads, and Parking
         const departments = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'History', 'Art', 'Music'];
@@ -230,10 +235,10 @@ export function createGridAndScenery(
 
         const satsangBuilding = createSatsangBuilding();
         satsangBuilding.position.set(specialBuildingX, 0, currentZ);
-        satsangBuilding.rotation.y = -Math.PI / 2;
+        satsangBuilding.rotation.y = Math.PI / 2;
         gridGroup.add(satsangBuilding);
         staticCollidersRef.current.push(satsangBuilding);
-        currentZ += 105;
+        currentZ += 150;
 
         const kaliMandir = createKaliMandir();
         kaliMandir.position.set(specialBuildingX, 0, currentZ);
