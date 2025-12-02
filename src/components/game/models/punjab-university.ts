@@ -110,13 +110,13 @@ export function createPunjabUniversity() {
 
 
   // --- Spiral Ramp ---
-  const rampGroup = new THREE.Group();
-  const rampRadius = mainRadius + 10;
-  const rampWidth = 20;
-  const rampHeight = floorHeight * 4; // Total height of the ramp
+  const rampRadius = mainRadius + 15;
+  const rampWidth = 30;
+  const rampWallHeight = 8;
+  const rampTotalHeight = floorHeight * 3.5;
   const rampSegments = 256;
   const rampStartAngle = Math.PI * 0.5;
-  const rampAngleSweep = Math.PI * 2.5; // Controls how many times it wraps
+  const rampAngleSweep = Math.PI * 2.2;
 
   class CustomSpiralCurve extends THREE.Curve<THREE.Vector3> {
     scale: number;
@@ -128,7 +128,7 @@ export function createPunjabUniversity() {
     getPoint(t: number): THREE.Vector3 {
       const angle = rampStartAngle + t * rampAngleSweep;
       const x = Math.cos(angle) * rampRadius;
-      const y = t * rampHeight;
+      const y = t * rampTotalHeight;
       const z = Math.sin(angle) * rampRadius;
       return new THREE.Vector3(x, y, z).multiplyScalar(this.scale);
     }
@@ -136,11 +136,23 @@ export function createPunjabUniversity() {
 
   const rampPath = new CustomSpiralCurve(1);
 
-  const rampGeometry = new THREE.TubeGeometry(rampPath, rampSegments, rampWidth / 2, 8, false);
-  const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
-  rampGroup.add(rampMesh);
+  // Define the shape of the ramp cross-section (a flat surface with walls)
+  const rampShape = new THREE.Shape();
+  const halfWidth = rampWidth / 2;
+  rampShape.moveTo(-halfWidth, 0);
+  rampShape.lineTo(-halfWidth, rampWallHeight); // Outer wall
+  rampShape.lineTo(halfWidth, rampWallHeight); // Top of inner wall
+  rampShape.lineTo(halfWidth, 0); // Inner wall
+  rampShape.lineTo(-halfWidth, 0); // Close shape (floor of the ramp)
 
-  library.add(rampGroup);
+  const extrudeSettings = {
+    steps: rampSegments,
+    extrudePath: rampPath
+  };
+
+  const rampGeometry = new THREE.ExtrudeGeometry(rampShape, extrudeSettings);
+  const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
+  library.add(rampMesh);
 
 
   // Balcony section that cuts into the ramp
