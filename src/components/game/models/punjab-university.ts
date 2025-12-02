@@ -8,14 +8,14 @@ export function createPunjabUniversity() {
     roughness: 0.8,
   });
   const glassMaterial = new THREE.MeshStandardMaterial({
-    color: 0xadd8e6, // Light Blue
+    color: 0x4d6a8b, // Light Blue
     roughness: 0.1,
     metalness: 0.2,
     transparent: true,
-    opacity: 0.6,
+    opacity: 0.5,
   });
   const bottomFloorGlassMaterial = new THREE.MeshBasicMaterial({
-    color: 0x0000ff, // Simple, pure blue. Not affected by lighting.
+    color: 0x4d6a8b, // Simple, pure blue. Not affected by lighting.
   });
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: 0xb0b0b0,
@@ -103,7 +103,7 @@ export function createPunjabUniversity() {
         const windowWidth = (Math.PI * 2 * (radius - 4)) / numMullions - 2;
         const windowGeom = new THREE.PlaneGeometry(
           windowWidth,
-          floorHeight * 0.9
+          floorHeight * 0.95
         );
         const window = new THREE.Mesh(windowGeom, bottomFloorGlassMaterial);
         const windowX = Math.sin(windowAngle) * (radius - 4);
