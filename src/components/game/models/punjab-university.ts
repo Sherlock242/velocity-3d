@@ -41,7 +41,7 @@ export function createPunjabUniversity() {
     library.add(floor);
 
     // Create fins and windows for each floor
-    if (i < numFloors - 1) { // No fins/windows on the top-most band
+    if (i > 0 && i < numFloors - 1) { // No fins/windows on the ground or top-most band
       for (let j = 0; j < numFins; j++) {
         const angle = (j / numFins) * Math.PI * 2;
         const x = Math.sin(angle) * (mainRadius - 5);
@@ -67,7 +67,7 @@ export function createPunjabUniversity() {
     }
   }
   
-    // Base columns
+    // Ground floor columns
     const numColumns = 12;
     for(let i = 0; i < numColumns; i++) {
         const angle = (i / numColumns) * Math.PI * 2;
@@ -109,7 +109,7 @@ export function createPunjabUniversity() {
   rampMesh.position.y += 3;
   library.add(rampMesh);
   
-    // Balcony section
+    // Balcony section that cuts into the ramp
     const balcony = new THREE.Group();
     const balconyFloorGeom = new THREE.BoxGeometry(40, 2, 20);
     const balconyFloor = new THREE.Mesh(balconyFloorGeom, darkConcreteMaterial);
