@@ -39,7 +39,7 @@ export function createLegoPerson(isPlayer = false) {
   const hair = new THREE.Mesh(hairGeo, hairMat);
   head.add(hair);
 
-  // Add the hair on top
+  // Hair Top
   const hairTopGeo = new THREE.CylinderGeometry(headRadius, headRadius, 0.1, 16);
   const hairTopMat = new THREE.MeshStandardMaterial({ color: hairColor });
   const hairTop = new THREE.Mesh(hairTopGeo, hairTopMat);
