@@ -627,7 +627,7 @@ export default function GameWrapper() {
             const colliderBox = new THREE.Box3().setFromObject(collider);
             if (playerBox.intersectsBox(colliderBox)) {
                 if (collider.name === 'LibraryBuilding') {
-                    velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
+                    velocityRef.current.multiplyScalar(0.5); // Drastic slowdown
                 } else {
                     velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
                     const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
