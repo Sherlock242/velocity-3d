@@ -196,29 +196,30 @@ export function createGridAndScenery(
         continue;
       }
       
-      if (sectorNumber === 20) { // Sector 20 for Chandigarh Houses
-         const numHousesPerRow = 5;
-         const numRows = 5;
-         const houseSpacing = 120;
-         const rowSpacing = 150;
-         
-         const startX = cellCenterX + (CELL_SIZE / 2) - (numRows * rowSpacing);
-         const startZ = cellCenterZ - (CELL_SIZE / 2) + rowSpacing;
+      if (sectorNumber === 20) {
+        // --- HOUSES IN TOP-RIGHT ---
+        const numHousesPerRow = 5;
+        const numRows = 5;
+        const houseSpacing = 120;
+        const rowSpacing = 150;
+        const startX = cellCenterX + (CELL_SIZE / 2) - (numRows * rowSpacing);
+        const startZ = cellCenterZ - (CELL_SIZE / 2) + rowSpacing;
 
-         for (let row = 0; row < numRows; row++) {
+        for (let row = 0; row < numRows; row++) {
           for (let col = 0; col < numHousesPerRow; col++) {
-              const house = createChandigarhHouse();
-              const x = startX + row * rowSpacing;
-              const z = startZ + col * houseSpacing;
-              house.position.set(x, 0, z);
-              house.rotation.y = Math.PI / 2;
-              gridGroup.add(house);
-              staticCollidersRef.current.push(house);
+            const house = createChandigarhHouse();
+            const x = startX + row * rowSpacing;
+            const z = startZ + col * houseSpacing;
+            house.position.set(x, 0, z);
+            house.rotation.y = Math.PI / 2;
+            gridGroup.add(house);
+            staticCollidersRef.current.push(house);
           }
         }
-        
-        const specialBuildingZ = startZ + (numHousesPerRow * houseSpacing) + 100;
-        let currentX = startX;
+
+        // --- SPECIAL BUILDINGS IN TOP-LEFT ---
+        const specialBuildingZ = cellCenterZ - (CELL_SIZE / 2) + 150;
+        let currentX = cellCenterX - (CELL_SIZE / 2) + 100;
 
         const gurudwara = createGurudwara();
         gurudwara.position.set(currentX, 0, specialBuildingZ);
@@ -243,7 +244,7 @@ export function createGridAndScenery(
         gridGroup.add(satsangBuilding);
         staticCollidersRef.current.push(satsangBuilding);
         currentX += 150;
-        
+
         const lightMandir = createLightMandir();
         lightMandir.position.set(currentX, 0, specialBuildingZ);
         gridGroup.add(lightMandir);
