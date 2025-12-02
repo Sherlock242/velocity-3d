@@ -7,6 +7,7 @@ export function createDepartmentBuilding() {
   const buildingHeight = 25;
   const buildingWidth = 150;
   const buildingDepth = 40;
+  const entranceHeight = 12;
 
   const buildingMaterial = new THREE.MeshStandardMaterial({
     color: 0xcccccc, // Light grey concrete
