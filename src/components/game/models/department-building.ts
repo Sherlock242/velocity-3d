@@ -57,10 +57,6 @@ export function createDepartmentBuilding() {
       const frontWindow = new THREE.Mesh(windowGeom, windowMaterial);
       frontWindow.position.set(xPos, yPos, buildingDepth / 2 + 0.1);
       building.add(frontWindow);
-
-      const backWindow = new THREE.Mesh(windowGeom, windowMaterial);
-      backWindow.position.set(xPos, yPos, -buildingDepth / 2 - 0.1);
-      building.add(backWindow);
     }
 
     // Right side windows
@@ -71,10 +67,6 @@ export function createDepartmentBuilding() {
       const frontWindow = new THREE.Mesh(windowGeom, windowMaterial);
       frontWindow.position.set(xPos, yPos, buildingDepth / 2 + 0.1);
       building.add(frontWindow);
-
-      const backWindow = new THREE.Mesh(windowGeom, windowMaterial);
-      backWindow.position.set(xPos, yPos, -buildingDepth / 2 - 0.1);
-      building.add(backWindow);
     }
   }
 
