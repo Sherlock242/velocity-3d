@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 export function createPunjabUniversity() {
+  const universityWithBase = new THREE.Group();
   const library = new THREE.Group();
 
   const concreteMaterial = new THREE.MeshStandardMaterial({
@@ -18,12 +19,8 @@ export function createPunjabUniversity() {
     color: 0x4d6a8b, // Blue color for fins
     roughness: 0.7,
   });
-  const bottomFloorGlassMaterial = new THREE.MeshStandardMaterial({
-    color: finMaterial.color,
-    roughness: 0.4,
-    metalness: 0.1,
-    transparent: true,
-    opacity: 0.7,
+  const bottomFloorGlassMaterial = new THREE.MeshBasicMaterial({
+    color: 0x224488,
   });
   const dividerMaterial = new THREE.MeshStandardMaterial({
     color: 0xbbbbbb,
@@ -32,6 +29,10 @@ export function createPunjabUniversity() {
   const mullionMaterial = new THREE.MeshStandardMaterial({
     color: 0xbbbbbb,
     roughness: 0.8,
+  });
+  const brownBaseMaterial = new THREE.MeshStandardMaterial({
+    color: 0x8b4513, // SaddleBrown
+    roughness: 0.9,
   });
 
   const mainRadius = 80;
@@ -100,9 +101,9 @@ export function createPunjabUniversity() {
 
         // Larger Glass Panes
         const windowAngle = ((j + 0.5) / numMullions) * Math.PI * 2;
-        const windowWidth = (Math.PI * 2 * radius) / numMullions - 3; // Subtract mullion width
+        const windowWidth = (Math.PI * 2 * (radius + 2)) / numMullions - 3; // Subtract mullion width
         const windowHeight = floorHeight * 0.95;
-        const windowRadius = radius + 2; // Place it slightly outside the mullions to prevent z-fighting
+        const windowRadius = radius + 2.1; // Place it slightly outside the mullions to prevent z-fighting
 
         const windowGeom = new THREE.PlaneGeometry(windowWidth, windowHeight);
         const window = new THREE.Mesh(windowGeom, bottomFloorGlassMaterial);
@@ -224,6 +225,18 @@ export function createPunjabUniversity() {
 
   library.add(balcony);
 
-  library.scale.set(1.5, 1.5, 1.5);
-  return library;
+  // --- Base ---
+  const baseHeight = 10;
+  const baseRadius = topRadius + 5; // Slightly wider than the top floor
+  const baseGeometry = new THREE.CylinderGeometry(baseRadius, baseRadius, baseHeight, 64);
+  const baseMesh = new THREE.Mesh(baseGeometry, brownBaseMaterial);
+  baseMesh.position.y = baseHeight / 2;
+  universityWithBase.add(baseMesh);
+
+  // Position original library on top of the base
+  library.position.y = baseHeight;
+  universityWithBase.add(library);
+
+  universityWithBase.scale.set(1.5, 1.5, 1.5);
+  return universityWithBase;
 }
