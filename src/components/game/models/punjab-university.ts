@@ -4,15 +4,15 @@ export function createPunjabUniversity() {
   const library = new THREE.Group();
 
   const concreteMaterial = new THREE.MeshStandardMaterial({
-    color: 0xcccccc, // Light gray
+    color: 0xbbbbbb, // Realistic concrete grey
     roughness: 0.8,
   });
   const glassMaterial = new THREE.MeshStandardMaterial({
-    color: 0xadd8e6, // Light Blue
-    roughness: 0.3,
-    metalness: 0.2,
+    color: 0x4d6a8b, // Dark, reflective blue-tinted glass
+    roughness: 0.2,
+    metalness: 0.5,
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.8,
   });
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: 0xb0b0b0, // A slightly darker gray for the ramp
