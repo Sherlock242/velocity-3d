@@ -193,7 +193,7 @@ export function createGridAndScenery(
       
       if (sectorNumber === 20) { // Sector 20 for Chandigarh Houses
          const numHousesPerRow = 5;
-         const numRows = 5; // 1 front row + 4 behind
+         const numRows = 5;
          const houseSpacing = 120;
          const rowSpacing = 150;
          
