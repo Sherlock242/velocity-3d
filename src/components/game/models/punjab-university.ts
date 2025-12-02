@@ -1,120 +1,129 @@
 import * as THREE from 'three';
 
 export function createPunjabUniversity() {
-  const university = new THREE.Group();
+  const library = new THREE.Group();
 
-  const brickMaterial = new THREE.MeshStandardMaterial({
-    color: 0x9a3e3e,
-    roughness: 0.9,
-  });
   const concreteMaterial = new THREE.MeshStandardMaterial({
-    color: 0xaaaaaa,
+    color: 0xcccccc,
     roughness: 0.8,
   });
-  const waterMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4682b4,
-    transparent: true,
-    opacity: 0.7,
+  const darkConcreteMaterial = new THREE.MeshStandardMaterial({
+    color: 0x666666,
+    roughness: 0.9,
+  });
+  const glassMaterial = new THREE.MeshStandardMaterial({
+    color: 0x88aacc,
+    roughness: 0.3,
+    metalness: 0.2,
   });
 
-  // --- Gandhi Bhawan (Lotus Building) ---
-  const gandhiBhawan = new THREE.Group();
-  gandhiBhawan.position.set(-80, 0, 0);
+  const mainRadius = 80;
+  const topRadius = 85;
+  const numFloors = 4;
+  const floorHeight = 15;
+  const finHeight = floorHeight * 0.8;
+  const numFins = 48;
 
-  // Pool
-  const poolGeom = new THREE.CylinderGeometry(50, 50, 2, 32);
-  const pool = new THREE.Mesh(poolGeom, concreteMaterial);
-  pool.position.y = 1;
-  gandhiBhawan.add(pool);
+  // Create floors
+  for (let i = 0; i < numFloors; i++) {
+    const yPos = i * floorHeight;
+    const floorRadius = i === numFloors - 1 ? topRadius : mainRadius;
 
-  const waterGeom = new THREE.CylinderGeometry(48, 48, 1.5, 32);
-  const water = new THREE.Mesh(waterGeom, waterMaterial);
-  water.position.y = 1.25;
-  gandhiBhawan.add(water);
+    // Main floor band
+    const floorGeom = new THREE.CylinderGeometry(
+      floorRadius,
+      floorRadius,
+      floorHeight,
+      64
+    );
+    const floor = new THREE.Mesh(floorGeom, concreteMaterial);
+    floor.position.y = yPos + floorHeight / 2;
+    library.add(floor);
 
-  // Lotus Petals
-  const petalShape = new THREE.Shape();
-  petalShape.moveTo(0, 0);
-  petalShape.bezierCurveTo(10, 30, 20, 50, 0, 80);
-  petalShape.bezierCurveTo(-20, 50, -10, 30, 0, 0);
+    // Create fins and windows for each floor
+    if (i < numFloors - 1) { // No fins/windows on the top-most band
+      for (let j = 0; j < numFins; j++) {
+        const angle = (j / numFins) * Math.PI * 2;
+        const x = Math.sin(angle) * (mainRadius - 5);
+        const z = Math.cos(angle) * (mainRadius - 5);
 
-  const extrudeSettings = { depth: 4, bevelEnabled: false };
-  const petalGeom = new THREE.ExtrudeGeometry(petalShape, extrudeSettings);
+        // Fins
+        const finGeom = new THREE.BoxGeometry(2, finHeight, 6);
+        const fin = new THREE.Mesh(finGeom, concreteMaterial);
+        fin.position.set(x, yPos + floorHeight / 2, z);
+        fin.lookAt(0, yPos + floorHeight / 2, 0);
+        library.add(fin);
 
-  const petalMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    side: THREE.DoubleSide,
-  });
-
-  for (let i = 0; i < 3; i++) {
-    const petal = new THREE.Mesh(petalGeom, petalMaterial);
-    petal.rotation.y = (i * Math.PI * 2) / 3;
-    petal.rotation.x = -Math.PI / 6;
-    petal.position.y = 2;
-    gandhiBhawan.add(petal);
-  }
-  university.add(gandhiBhawan);
-
-  // --- Main Admin/Library Building ---
-  const mainBuilding = new THREE.Group();
-  mainBuilding.position.set(150, 0, 0);
-
-  // Main block
-  const mainBlockGeom = new THREE.BoxGeometry(100, 30, 40);
-  const mainBlock = new THREE.Mesh(mainBlockGeom, brickMaterial);
-  mainBlock.position.y = 15;
-  mainBuilding.add(mainBlock);
-
-  // Tower
-  const towerHeight = 100;
-  const towerGeom = new THREE.BoxGeometry(30, towerHeight, 30);
-  const tower = new THREE.Mesh(towerGeom, brickMaterial);
-  tower.position.set(-30, towerHeight / 2, 0);
-  mainBuilding.add(tower);
-
-  // Tower top
-  const towerTopGeom = new THREE.BoxGeometry(35, 5, 35);
-  const towerTop = new THREE.Mesh(towerTopGeom, concreteMaterial);
-  towerTop.position.set(-30, towerHeight + 2.5, 0);
-  mainBuilding.add(towerTop);
-
-  // Windows on tower
-  const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
-  for (let i = 0; i < 8; i++) {
-    const windowGeom = new THREE.BoxGeometry(20, 1.5, 1);
-    const window = new THREE.Mesh(windowGeom, windowMaterial);
-    window.position.set(-30, 15 + i * 10, 15.1);
-    mainBuilding.add(window);
-  }
-
-  // Jali (Latticework) on main building
-  const jaliWidth = 90;
-  const jaliHeight = 20;
-  const jaliShape = new THREE.Shape();
-  jaliShape.moveTo(-jaliWidth / 2, -jaliHeight / 2);
-  jaliShape.lineTo(jaliWidth / 2, -jaliHeight / 2);
-  jaliShape.lineTo(jaliWidth / 2, jaliHeight / 2);
-  jaliShape.lineTo(-jaliWidth / 2, jaliHeight / 2);
-  jaliShape.lineTo(-jaliWidth / 2, -jaliHeight / 2);
-
-  const holeSize = 4;
-  for (let y = -jaliHeight / 2 + 5; y < jaliHeight / 2; y += 10) {
-    for (let x = -jaliWidth / 2 + 5; x < jaliWidth / 2; x += 10) {
-      const holePath = new THREE.Path();
-      holePath.absarc(x, y, holeSize / 2, 0, Math.PI * 2, false);
-      jaliShape.holes.push(holePath);
+        // Windows (behind fins)
+        const windowGeom = new THREE.BoxGeometry(4, finHeight * 0.9, 1);
+        const window = new THREE.Mesh(windowGeom, glassMaterial);
+        // Position them slightly inside the fins
+        const windowX = Math.sin(angle) * (mainRadius - 8);
+        const windowZ = Math.cos(angle) * (mainRadius - 8);
+        window.position.set(windowX, yPos + floorHeight / 2, windowZ);
+        window.lookAt(0, yPos + floorHeight / 2, 0);
+        library.add(window);
+      }
     }
   }
+  
+    // Base columns
+    const numColumns = 12;
+    for(let i = 0; i < numColumns; i++) {
+        const angle = (i / numColumns) * Math.PI * 2;
+        const x = Math.sin(angle) * (mainRadius * 0.9);
+        const z = Math.cos(angle) * (mainRadius * 0.9);
+        const columnGeom = new THREE.CylinderGeometry(4, 4, floorHeight, 16);
+        const column = new THREE.Mesh(columnGeom, darkConcreteMaterial);
+        column.position.set(x, floorHeight / 2, z);
+        library.add(column);
+    }
 
-  const jaliExtrudeSettings = { depth: 2, bevelEnabled: false };
-  const jaliGeometry = new THREE.ExtrudeGeometry(
-    jaliShape,
-    jaliExtrudeSettings
-  );
-  const jaliMesh = new THREE.Mesh(jaliGeometry, concreteMaterial);
-  jaliMesh.position.set(0, 20, 20.1);
-  mainBuilding.add(jaliMesh);
 
-  university.add(mainBuilding);
-  return university;
+  // Spiral Ramp
+  const rampRadius = mainRadius + 20;
+  const rampWidth = 20;
+  const rampHeight = floorHeight * 2;
+  const rampSegments = 64;
+  const rampAngle = Math.PI * 1.5; // 3/4 circle
+
+  const rampPoints = [];
+  for (let i = 0; i <= rampSegments; i++) {
+    const ratio = i / rampSegments;
+    const angle = ratio * rampAngle;
+    const x = Math.cos(angle) * (rampRadius - (ratio * rampWidth) / 2);
+    const y = ratio * rampHeight + floorHeight; // Start from the second floor
+    const z = Math.sin(angle) * (rampRadius - (ratio * rampWidth) / 2);
+    rampPoints.push(new THREE.Vector3(x, y, z));
+  }
+  const rampCurve = new THREE.CatmullRomCurve3(rampPoints);
+  const rampGeom = new THREE.TubeGeometry(rampCurve, rampSegments, rampWidth, 8, false);
+  const rampMaterial = new THREE.MeshStandardMaterial({
+    color: 0xcccccc,
+    roughness: 0.8,
+    side: THREE.DoubleSide
+  });
+  const rampMesh = new THREE.Mesh(rampGeom, rampMaterial);
+  // Flatten the tube to make it look like a ramp
+  rampMesh.scale.y = 0.1;
+  rampMesh.position.y += 3;
+  library.add(rampMesh);
+  
+    // Balcony section
+    const balcony = new THREE.Group();
+    const balconyFloorGeom = new THREE.BoxGeometry(40, 2, 20);
+    const balconyFloor = new THREE.Mesh(balconyFloorGeom, darkConcreteMaterial);
+    balconyFloor.position.set(mainRadius - 10, floorHeight * 2, 0);
+    balcony.add(balconyFloor);
+    
+    const balconyWallGeom = new THREE.BoxGeometry(2, 10, 20);
+    const balconyWall = new THREE.Mesh(balconyWallGeom, concreteMaterial);
+    balconyWall.position.set(mainRadius - 20, floorHeight * 2 + 5, 0);
+    balcony.add(balconyWall);
+
+    library.add(balcony);
+
+
+  library.scale.set(1.5, 1.5, 1.5);
+  return library;
 }
