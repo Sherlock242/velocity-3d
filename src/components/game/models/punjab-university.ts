@@ -23,7 +23,7 @@ export function createPunjabUniversity() {
 
   // --- Layered construction for accuracy ---
 
-  // Layer 0: Ground Floor (Solid Cylinder) - Now uses the main concrete material
+  // Layer 0: Ground Floor (Solid Cylinder)
   const groundFloorY = 0;
   const groundFloorGeom = new THREE.CylinderGeometry(mainRadius, mainRadius, floorHeight, 64);
   const groundFloor = new THREE.Mesh(groundFloorGeom, concreteMaterial);
@@ -109,47 +109,36 @@ export function createPunjabUniversity() {
   library.add(topCylinder);
 
 
-  // Spiral Ramp
+  // --- Spiral Ramp ---
   const rampGroup = new THREE.Group();
-  const rampRadius = mainRadius + 1; // move it out slightly
+  const rampRadius = mainRadius + 10;
   const rampWidth = 20;
-  const rampHeight = floorHeight; 
-  const rampSegments = 128;
-  const rampStartAngle = Math.PI * 0.6;
-  const rampAngleSweep = Math.PI * -1.8;
+  const rampHeight = floorHeight * 4; // Total height of the ramp
+  const rampSegments = 256;
+  const rampStartAngle = Math.PI * 0.5;
+  const rampAngleSweep = Math.PI * 2.5; // Controls how many times it wraps
 
-  const rampShape = new THREE.Shape();
-  rampShape.moveTo(rampRadius - rampWidth/2, 0);
-  rampShape.lineTo(rampRadius + rampWidth/2, 0);
+  class CustomSpiralCurve extends THREE.Curve<THREE.Vector3> {
+    scale: number;
+    constructor(scale = 1) {
+      super();
+      this.scale = scale;
+    }
+  
+    getPoint(t: number): THREE.Vector3 {
+      const angle = rampStartAngle + t * rampAngleSweep;
+      const x = Math.cos(angle) * rampRadius;
+      const y = t * rampHeight;
+      const z = Math.sin(angle) * rampRadius;
+      return new THREE.Vector3(x, y, z).multiplyScalar(this.scale);
+    }
+  }
 
-  const extrudeSettings = {
-      steps: rampSegments,
-      bevelEnabled: false,
-      extrudePath: (function () {
-          const points = [];
-          for (let i = 0; i <= rampSegments; i++) {
-              const ratio = i / rampSegments;
-              const angle = rampStartAngle + ratio * rampAngleSweep;
-              const x = Math.cos(angle) * rampRadius;
-              const y = floorHeight + ratio * rampHeight;
-              const z = Math.sin(angle) * rampRadius;
-              points.push(new THREE.Vector3(x, y, z));
-          }
-          return new THREE.CatmullRomCurve3(points);
-      })(),
-  };
+  const rampPath = new CustomSpiralCurve(1);
 
-  const rampGeometry = new THREE.ExtrudeGeometry(rampShape, extrudeSettings);
+  const rampGeometry = new THREE.TubeGeometry(rampPath, rampSegments, rampWidth / 2, 8, false);
   const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
   rampGroup.add(rampMesh);
-
-  // Add walls to the ramp
-  const innerWallShape = new THREE.Shape();
-  innerWallShape.moveTo(0,0);
-  innerWallShape.lineTo(0, 5); // wall height
-  const innerWallGeometry = new THREE.ExtrudeGeometry(innerWallShape, extrudeSettings);
-  const innerWallMesh = new THREE.Mesh(innerWallGeometry, concreteMaterial);
-  rampGroup.add(innerWallMesh);
 
   library.add(rampGroup);
 
