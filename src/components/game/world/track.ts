@@ -227,10 +227,10 @@ export function createGridAndScenery(
         staticCollidersRef.current.push(kaliMandir);
         currentZ += 120;
 
-        const gurudwara = createGurudwara();
-        gurudwara.position.set(specialBuildingX, 0, currentZ);
-        gridGroup.add(gurudwara);
-        staticCollidersRef.current.push(gurudwara);
+        const lightMandir = createLightMandir();
+        lightMandir.position.set(specialBuildingX, 0, currentZ);
+        gridGroup.add(lightMandir);
+        staticCollidersRef.current.push(lightMandir);
         currentZ += 80;
 
         const coachingClass = createCoachingClass();
@@ -246,10 +246,10 @@ export function createGridAndScenery(
         staticCollidersRef.current.push(satsangBuilding);
         currentZ += 150;
 
-        const lightMandir = createLightMandir();
-        lightMandir.position.set(specialBuildingX, 0, currentZ);
-        gridGroup.add(lightMandir);
-        staticCollidersRef.current.push(lightMandir);
+        const gurudwara = createGurudwara();
+        gurudwara.position.set(specialBuildingX, 0, currentZ);
+        gridGroup.add(gurudwara);
+        staticCollidersRef.current.push(gurudwara);
 
         continue;
       }
