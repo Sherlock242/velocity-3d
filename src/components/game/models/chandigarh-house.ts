@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 export function createChandigarhHouse() {
@@ -192,6 +193,23 @@ export function createChandigarhHouse() {
   const acUnit = new THREE.Mesh(acGeom, acMaterial);
   acUnit.position.set(10, 20, mainBuildingDepth / 2 + 0.1);
   house.add(acUnit);
+
+  // --- Right side door and holes ---
+  const holeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+  const hole1Geom = new THREE.BoxGeometry(10, 6, 1);
+  const hole1 = new THREE.Mesh(hole1Geom, holeMaterial);
+  hole1.position.set(20, 35, mainBuildingDepth / 2 + 0.5);
+  house.add(hole1);
+
+  const hole2Geom = new THREE.BoxGeometry(10, 6, 1);
+  const hole2 = new THREE.Mesh(hole2Geom, holeMaterial);
+  hole2.position.set(20, 25, mainBuildingDepth / 2 + 0.5);
+  house.add(hole2);
+
+  const rightDoorGeom = new THREE.BoxGeometry(8, 12, 1);
+  const rightDoor = new THREE.Mesh(rightDoorGeom, doorMaterial);
+  rightDoor.position.set(20, 6, mainBuildingDepth / 2 + 0.5);
+  house.add(rightDoor);
 
   house.castShadow = true;
   house.receiveShadow = true;
