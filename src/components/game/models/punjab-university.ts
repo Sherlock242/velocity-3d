@@ -4,9 +4,9 @@ import * as THREE from 'three';
 function createKhandaSymbol() {
   const khandaGroup = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
-    color: 0xffd700, // Gold color
-    metalness: 0.7,
-    roughness: 0.3,
+    color: 0x808080, // Gray color
+    metalness: 0.2,
+    roughness: 0.8,
   });
 
   // 1. Chakkar (the circle)
@@ -61,7 +61,7 @@ function createKhandaSymbol() {
   
   khandaGroup.add(leftKirpan, rightKirpan);
   
-  khandaGroup.scale.set(1.5, 1.5, 1.5);
+  khandaGroup.scale.set(0.5, 0.5, 0.5);
   return khandaGroup;
 }
 
