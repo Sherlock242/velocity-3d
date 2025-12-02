@@ -4,7 +4,7 @@ export function createPunjabUniversity() {
   const library = new THREE.Group();
 
   const concreteMaterial = new THREE.MeshStandardMaterial({
-    color: 0xcccccc,
+    color: 0xcccccc, // Light gray
     roughness: 0.8,
   });
   const glassMaterial = new THREE.MeshStandardMaterial({
@@ -13,6 +13,10 @@ export function createPunjabUniversity() {
     metalness: 0.2,
     transparent: true,
     opacity: 0.7,
+  });
+  const rampMaterial = new THREE.MeshStandardMaterial({
+    color: 0xb0b0b0, // A slightly darker gray for the ramp
+    roughness: 0.8,
   });
 
   const mainRadius = 80;
@@ -151,7 +155,7 @@ export function createPunjabUniversity() {
   };
 
   const rampGeometry = new THREE.ExtrudeGeometry(rampShape, extrudeSettings);
-  const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
+  const rampMesh = new THREE.Mesh(rampGeometry, rampMaterial);
   library.add(rampMesh);
 
 
