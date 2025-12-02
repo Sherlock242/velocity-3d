@@ -524,7 +524,7 @@ export default function GameWrapper() {
           const col = (topDownSector - 1) % GRID_SIZE;
           const sectorCenterX = col * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
           const sectorCenterZ = row * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-          camera.position.set(sectorCenterX, 800, sectorCenterZ);
+          camera.position.set(sectorCenterX, 1200, sectorCenterZ);
           camera.lookAt(sectorCenterX, 0, sectorCenterZ);
         } else {
           const offset = cameraOffsetRef.current.clone();
