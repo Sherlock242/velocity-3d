@@ -47,9 +47,10 @@ export function createLegoPerson(isPlayer = false) {
 
 
   const torsoHeight = 1.2;
-  const legHeight = 1;
+  const legHeight = 1.4;
   const shoeHeight = 0.2;
   const totalLegHeight = legHeight + shoeHeight;
+  const neckHeight = 0.2;
 
   const torsoColor = isPlayer
     ? 0x111111
@@ -62,16 +63,22 @@ export function createLegoPerson(isPlayer = false) {
   const torsoMat = new THREE.MeshStandardMaterial({ color: torsoColor }); // Black Hoodie
   const torso = new THREE.Mesh(torsoGeo, torsoMat);
 
+  // Neck
+  const neckGeo = new THREE.CylinderGeometry(0.2, 0.2, neckHeight, 8);
+  const neckMat = new THREE.MeshStandardMaterial({ color: skinTone });
+  const neck = new THREE.Mesh(neckGeo, neckMat);
+
+
   // Position torso above legs
   torso.position.y = totalLegHeight + torsoHeight / 2;
 
-  // Position head on top of torso
-  headGroup.position.y = totalLegHeight + torsoHeight + 0.5 / 2; // head height is 0.5
+  // Position neck on top of torso
+  neck.position.y = totalLegHeight + torsoHeight + neckHeight / 2;
+
+  // Position head on top of neck
+  headGroup.position.y = totalLegHeight + torsoHeight + neckHeight + headHeight / 2;
 
   const hairMatOld = new THREE.MeshStandardMaterial({ color: 0x080808 }); // Different black for hair
-  const hoodGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.6, 16);
-  const hood = new THREE.Mesh(hoodGeo, hairMatOld);
-  hood.position.y = totalLegHeight + torsoHeight + 0.6 / 2; // hood height is 0.6
 
   const armGeo = new THREE.BoxGeometry(0.3, 1.1, 0.3);
   const armMat = new THREE.MeshStandardMaterial({ color: torsoColor }); // Sleeves match torso
@@ -129,7 +136,7 @@ export function createLegoPerson(isPlayer = false) {
   rightShoe.position.z = 0.05; // a bit forward
   rightLeg.add(rightShoe);
 
-  legoPerson.add(headGroup, torso, leftLeg, rightLeg);
+  legoPerson.add(headGroup, torso, neck, leftLeg, rightLeg);
 
   legoPerson.userData.parts = {
       head: headGroup,
@@ -359,10 +366,12 @@ export function updateTransformerAnimation(
       const carChassis = carModel.userData.parts.chassis;
       const personParts = personModel.userData.parts;
 
-      const legHeight = 1;
+      const legHeight = 1.4;
       const shoeHeight = 0.2;
       const torsoHeight = 1.2;
       const totalLegHeight = legHeight + shoeHeight;
+      const neckHeight = 0.2;
+      const headHeight = 0.5;
 
 
       const torsoCarPos = carChassis.position.clone().set(0, 1, 0);
@@ -370,7 +379,7 @@ export function updateTransformerAnimation(
       personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos, p);
 
       const headCarPos = torsoCarPos.clone().setY(2);
-      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + 0.5 / 2, 0); // head height is 0.5
+      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + neckHeight + headHeight / 2, 0);
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
 
       // Arms
