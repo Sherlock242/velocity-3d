@@ -38,11 +38,12 @@ export function createLegoPerson(isPlayer = false) {
   const hair = new THREE.Mesh(hairGeo, hairMat);
   headGroup.add(hair);
 
-  // Small cylinder on top of head
-  const headTopGeo = new THREE.CylinderGeometry(headRadius * 0.4, headRadius * 0.4, 0.1, 16);
-  const headTopMat = new THREE.MeshStandardMaterial({ color: hairColor });
+  // Top of head (Hair)
+  const headTopGeo = new THREE.CircleGeometry(headRadius, 16);
+  const headTopMat = new THREE.MeshStandardMaterial({ color: hairColor, side: THREE.DoubleSide });
   const headTop = new THREE.Mesh(headTopGeo, headTopMat);
   headTop.position.y = headHeight / 2;
+  headTop.rotation.x = Math.PI / 2;
   headGroup.add(headTop);
 
 
