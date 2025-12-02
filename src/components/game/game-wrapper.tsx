@@ -166,7 +166,7 @@ export default function GameWrapper() {
 
 
     // --- SKYBOX ---
-    const skyGeometry = new THREE.BoxGeometry(8000, 8000, 8000);
+    const skyGeometry = new THREE.BoxGeometry(4900, 4900, 4900);
     const vertexShader = `
       varying vec3 vWorldPosition;
       void main() {
