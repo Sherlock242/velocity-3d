@@ -243,7 +243,7 @@ export function createGridAndScenery(
         satsangBuilding.rotation.y = -Math.PI / 2;
         gridGroup.add(satsangBuilding);
         staticCollidersRef.current.push(satsangBuilding);
-        currentZ += 200;
+        currentZ += 120;
 
         const kaliMandir = createKaliMandir();
         kaliMandir.position.set(specialBuildingX, 0, currentZ);
@@ -257,7 +257,7 @@ export function createGridAndScenery(
         gurudwara.rotation.y = -Math.PI / 2;
         gridGroup.add(gurudwara);
         staticCollidersRef.current.push(gurudwara);
-        currentZ += 180;
+        currentZ += 120;
 
         const coachingClass = createCoachingClass();
         coachingClass.position.set(specialBuildingX, 0, currentZ);
