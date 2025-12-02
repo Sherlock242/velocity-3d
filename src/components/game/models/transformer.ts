@@ -19,32 +19,17 @@ const CLOTHING_COLORS = [
 export function createLegoPerson(isPlayer = false) {
   const legoPerson = new THREE.Group();
 
-  const headGroup = new THREE.Group();
-
   const headRadius = 0.4;
   const headHeight = 0.5;
   const skinTone = 0xffdbac;
   const hairColor = 0x080808;
 
-  // Front (Face)
-  const faceGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, -Math.PI / 2, Math.PI);
-  const faceMat = new THREE.MeshStandardMaterial({ color: skinTone });
-  const face = new THREE.Mesh(faceGeo, faceMat);
-  headGroup.add(face);
-
-  // Back (Hair)
-  const hairGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, Math.PI / 2, Math.PI);
+  const headGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16);
+  const skinMat = new THREE.MeshStandardMaterial({ color: skinTone });
   const hairMat = new THREE.MeshStandardMaterial({ color: hairColor });
-  const hair = new THREE.Mesh(hairGeo, hairMat);
-  headGroup.add(hair);
-
-  // Top of head (Hair)
-  const headTopGeo = new THREE.CircleGeometry(headRadius, 16);
-  const headTopMat = new THREE.MeshStandardMaterial({ color: hairColor, side: THREE.DoubleSide });
-  const headTop = new THREE.Mesh(headTopGeo, headTopMat);
-  headTop.position.y = headHeight / 2 - 0.001; // Slightly lower to prevent z-fighting
-  headTop.rotation.x = Math.PI / 2;
-  headGroup.add(headTop);
+  
+  // Assign skin material to the sides (materialIndex 1) and hair material to the top/bottom (materialIndex 0 and 2)
+  const head = new THREE.Mesh(headGeo, [hairMat, skinMat, hairMat]);
 
 
   const torsoHeight = 1.2;
@@ -77,7 +62,7 @@ export function createLegoPerson(isPlayer = false) {
   neck.position.y = totalLegHeight + torsoHeight + neckHeight / 2;
 
   // Position head on top of neck
-  headGroup.position.y = totalLegHeight + torsoHeight + neckHeight + headHeight / 2;
+  head.position.y = totalLegHeight + torsoHeight + neckHeight + headHeight / 2;
 
   const armGeo = new THREE.BoxGeometry(0.3, 1.1, 0.3);
   const armMat = new THREE.MeshStandardMaterial({ color: torsoColor }); // Sleeves match torso
@@ -135,10 +120,10 @@ export function createLegoPerson(isPlayer = false) {
   rightShoe.position.z = 0.05; // a bit forward
   rightLeg.add(rightShoe);
 
-  legoPerson.add(headGroup, torso, neck, leftLeg, rightLeg);
+  legoPerson.add(head, torso, neck, leftLeg, rightLeg);
 
   legoPerson.userData.parts = {
-      head: headGroup,
+      head: head,
       torso,
       leftArm: leftArmGroup,
       rightArm: rightArmGroup,
