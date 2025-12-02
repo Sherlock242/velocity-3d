@@ -222,8 +222,8 @@ export function createPunjabUniversity() {
   }
 
   const rampPath = new CustomSpiralCurve(1, true);
-  const rampVertices = [];
-  const rampFaces = [];
+  const rampVertices: THREE.Vector3[] = [];
+  const rampFaces: number[] = [];
   const segments = 128;
   const wallHeight = 4;
   const rampHalfWidth = rampWidth / 2;
@@ -275,6 +275,28 @@ export function createPunjabUniversity() {
     }
   }
   
+
+  // --- Landing Platform ---
+  const landingRadius = rampWidth * 1.5; // Make platform wider than ramp
+  const landingSegments = 32;
+  const endPoint = rampPath.getPoint(1);
+  const startIndex = rampVertices.length;
+
+  // Create platform vertices
+  rampVertices.push(endPoint); // Center point
+  for (let i = 0; i <= landingSegments; i++) {
+      const angle = (i / landingSegments) * Math.PI * 2;
+      const x = endPoint.x + Math.cos(angle) * landingRadius;
+      const z = endPoint.z + Math.sin(angle) * landingRadius;
+      rampVertices.push(new THREE.Vector3(x, endPoint.y, z));
+  }
+
+  // Create platform faces (triangles)
+  for (let i = 1; i <= landingSegments; i++) {
+      rampFaces.push(startIndex, startIndex + i, startIndex + i + 1);
+  }
+
+  // --- Build the final merged geometry ---
   const rampGeometry = new THREE.BufferGeometry();
   const positions = new Float32Array(rampVertices.length * 3);
   for (let i = 0; i < rampVertices.length; i++) {
@@ -287,29 +309,12 @@ export function createPunjabUniversity() {
   rampGeometry.setIndex(rampFaces);
   rampGeometry.computeVertexNormals();
 
+
   const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
   rampMesh.material.side = THREE.DoubleSide; // Make ramp visible from all angles
   rampMesh.name = 'universityRamp';
   
   walkableGroup.add(rampMesh);
-
-  // --- Landing Platform ---
-  const landingRadius = rampWidth / 2;
-  const landingGeom = new THREE.CircleGeometry(landingRadius, 32);
-  const landingPlatform = new THREE.Mesh(landingGeom, concreteMaterial);
-  
-  const endPoint = rampPath.getPoint(1);
-  landingPlatform.position.copy(endPoint);
-
-  // Rotate to align with ramp end
-  const tangent = rampPath.getTangent(1).normalize();
-  
-  const landingAngle = Math.atan2(tangent.x, tangent.z);
-  
-  landingPlatform.rotation.x = -Math.PI / 2; // Lay it flat
-  landingPlatform.rotation.z = -landingAngle + Math.PI / 2;
-
-  walkableGroup.add(landingPlatform);
 
 
   const universityWithBase = new THREE.Group();
