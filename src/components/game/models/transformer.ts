@@ -19,9 +19,32 @@ const CLOTHING_COLORS = [
 export function createLegoPerson(isPlayer = false) {
   const legoPerson = new THREE.Group();
 
-  const headGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16);
-  const headMat = new THREE.MeshStandardMaterial({ color: 0xffd700 }); // Yellow
-  const head = new THREE.Mesh(headGeo, headMat);
+  const headGroup = new THREE.Group();
+
+  const headRadius = 0.4;
+  const headHeight = 0.5;
+  const skinTone = 0xffdbac;
+  const hairColor = 0x080808;
+
+  // Front (Face)
+  const faceGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, -Math.PI / 2, Math.PI);
+  const faceMat = new THREE.MeshStandardMaterial({ color: skinTone });
+  const face = new THREE.Mesh(faceGeo, faceMat);
+  headGroup.add(face);
+
+  // Back (Hair)
+  const hairGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, Math.PI / 2, Math.PI);
+  const hairMat = new THREE.MeshStandardMaterial({ color: hairColor });
+  const hair = new THREE.Mesh(hairGeo, hairMat);
+  headGroup.add(hair);
+
+  // Small cylinder on top of head
+  const headTopGeo = new THREE.CylinderGeometry(headRadius * 0.4, headRadius * 0.4, 0.1, 16);
+  const headTopMat = new THREE.MeshStandardMaterial({ color: hairColor });
+  const headTop = new THREE.Mesh(headTopGeo, headTopMat);
+  headTop.position.y = headHeight / 2;
+  headGroup.add(headTop);
+
 
   const torsoHeight = 1.2;
   const legHeight = 1;
@@ -43,11 +66,11 @@ export function createLegoPerson(isPlayer = false) {
   torso.position.y = totalLegHeight + torsoHeight / 2;
 
   // Position head on top of torso
-  head.position.y = totalLegHeight + torsoHeight + 0.5 / 2; // head height is 0.5
+  headGroup.position.y = totalLegHeight + torsoHeight + 0.5 / 2; // head height is 0.5
 
-  const hairMat = new THREE.MeshStandardMaterial({ color: 0x080808 }); // Different black for hair
+  const hairMatOld = new THREE.MeshStandardMaterial({ color: 0x080808 }); // Different black for hair
   const hoodGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.6, 16);
-  const hood = new THREE.Mesh(hoodGeo, hairMat);
+  const hood = new THREE.Mesh(hoodGeo, hairMatOld);
   hood.position.y = totalLegHeight + torsoHeight + 0.6 / 2; // hood height is 0.6
 
   const armGeo = new THREE.BoxGeometry(0.3, 1.1, 0.3);
@@ -106,10 +129,10 @@ export function createLegoPerson(isPlayer = false) {
   rightShoe.position.z = 0.05; // a bit forward
   rightLeg.add(rightShoe);
 
-  legoPerson.add(hood, torso, leftLeg, rightLeg);
+  legoPerson.add(headGroup, torso, leftLeg, rightLeg);
 
   legoPerson.userData.parts = {
-      head: hood, // The hood is now the "head" for animation purposes
+      head: headGroup,
       torso,
       leftArm: leftArmGroup,
       rightArm: rightArmGroup,
@@ -347,7 +370,7 @@ export function updateTransformerAnimation(
       personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos, p);
 
       const headCarPos = torsoCarPos.clone().setY(2);
-      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + 0.6 / 2, 0); // hood height is 0.6
+      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + 0.5 / 2, 0); // head height is 0.5
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
 
       // Arms
