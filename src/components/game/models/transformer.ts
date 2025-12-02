@@ -24,13 +24,23 @@ export function createLegoPerson(isPlayer = false) {
   const skinTone = 0xffdbac;
   const hairColor = 0x080808;
 
-  const headGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16);
-  const skinMat = new THREE.MeshStandardMaterial({ color: skinTone });
+  const head = new THREE.Group();
+
+  const faceGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, -Math.PI/2, Math.PI);
+  const faceMat = new THREE.MeshStandardMaterial({ color: skinTone });
+  const face = new THREE.Mesh(faceGeo, faceMat);
+  head.add(face);
+
+  const hairGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, Math.PI/2, Math.PI);
   const hairMat = new THREE.MeshStandardMaterial({ color: hairColor });
-  
-  // The material order for a Cylinder is: [side, top, bottom].
-  // We want a skin-colored side and a black (hair) top.
-  const head = new THREE.Mesh(headGeo, [skinMat, hairMat, hairMat]);
+  const hair = new THREE.Mesh(hairGeo, hairMat);
+  head.add(hair);
+
+  const hairTopGeo = new THREE.CircleGeometry(headRadius, 16);
+  const hairTop = new THREE.Mesh(hairTopGeo, hairMat);
+  hairTop.rotation.x = -Math.PI / 2;
+  hairTop.position.y = headHeight / 2;
+  head.add(hairTop);
 
 
   const torsoHeight = 1.2;
