@@ -151,21 +151,9 @@ export function createGridAndScenery(
           gridGroup.add(deptBuilding);
           staticCollidersRef.current.push(deptBuilding);
           
-          // Parking Area for each department
-          const parkingWidth = 80;
-          const parkingDepth = 60;
-          const parkingAreaGeom = new THREE.PlaneGeometry(parkingWidth, parkingDepth);
-          const parkingArea = new THREE.Mesh(parkingAreaGeom, campusParkingMaterial);
-          const parkingOffset = 60; // Distance from building
-          const parkingX = buildingX + Math.cos(angle + Math.PI) * parkingOffset;
-          const parkingZ = buildingZ + Math.sin(angle + Math.PI) * parkingOffset;
-          parkingArea.position.set(parkingX, 0.14, parkingZ);
-          parkingArea.rotation.x = -Math.PI / 2;
-          parkingArea.rotation.y = angle + Math.PI / 2;
-          gridGroup.add(parkingArea);
           
           // Connecting road from ring to parking
-          const connectorRoadLength = parkingOffset - 15; // from ring edge to parking
+          const connectorRoadLength = 60 - 15; // from ring edge to parking
           const connectorRoadGeom = new THREE.PlaneGeometry(20, connectorRoadLength);
           const connectorRoad = new THREE.Mesh(connectorRoadGeom, campusRoadMaterial);
           const connectorX = buildingX + Math.cos(angle + Math.PI) * (connectorRoadLength / 2 + 15);
