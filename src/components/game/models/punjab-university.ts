@@ -164,21 +164,6 @@ export function createPunjabUniversity() {
   topCylinder.position.y = currentY + (floorHeight * 0.5) / 2;
   library.add(topCylinder);
 
-  // Balcony section
-  const balcony = new THREE.Group();
-  const balconyFloorY = (floorHeight + dividerHeight) * 1 + floorHeight / 2;
-  const balconyFloorGeom = new THREE.BoxGeometry(30, 2, 40);
-  const balconyFloor = new THREE.Mesh(balconyFloorGeom, concreteMaterial);
-  balconyFloor.position.set(mainRadius - 15, balconyFloorY + 5, 20);
-  balcony.add(balconyFloor);
-
-  const balconyWallGeom = new THREE.BoxGeometry(30, 8, 2);
-  const balconyWall = new THREE.Mesh(balconyWallGeom, concreteMaterial);
-  balconyWall.position.set(mainRadius - 15, balconyFloorY + 9, 40);
-  balcony.add(balconyWall);
-
-  library.add(balcony);
-
   // --- Base ---
   const baseHeight = 5; // Made slimmer
   const baseRadius = topRadius + 5; // Slightly wider than the top floor
@@ -196,9 +181,9 @@ export function createPunjabUniversity() {
   const rampWidth = 20;
   const rampWallHeight = 8;
   const rampTotalHeight = (floorHeight + dividerHeight) * 2; // End at 3rd floor
-  const rampSegments = 256;
+  const rampSegments = 384;
   const rampStartAngle = Math.PI * 0.5;
-  const rampAngleSweep = Math.PI * 1.5; // Reduced sweep for shorter ramp
+  const rampAngleSweep = Math.PI * 2; 
 
   class CustomSpiralCurve extends THREE.Curve<THREE.Vector3> {
     scale: number;
@@ -233,6 +218,7 @@ export function createPunjabUniversity() {
 
   const rampGeometry = new THREE.ExtrudeGeometry(rampShape, extrudeSettings);
   const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
+  rampMesh.material.side = THREE.DoubleSide; // Make ramp visible from all angles
   // Add the ramp to the base group, so it starts from the ground
   universityWithBase.add(rampMesh);
 
