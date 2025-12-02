@@ -8,7 +8,7 @@ export function createPunjabUniversity() {
     roughness: 0.8,
   });
   const glassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x6fa8dc, // A more distinct blue for the glass
+    color: 0xadd8e6, // Light Blue
     roughness: 0.3,
     metalness: 0.2,
     transparent: true,
