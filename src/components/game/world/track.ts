@@ -22,7 +22,7 @@ function createTextSprite(text: string) {
   const context = canvas.getContext('2d');
   if (!context) return new THREE.Sprite();
 
-  const fontSize = 100;
+  const fontSize = 80;
   context.font = `bold ${fontSize}px Arial`;
 
   const textMetrics = context.measureText(text);
@@ -41,7 +41,7 @@ function createTextSprite(text: string) {
   const sprite = new THREE.Sprite(spriteMaterial);
 
   const aspectRatio = canvas.width / canvas.height;
-  sprite.scale.set(100 * aspectRatio, 100, 1);
+  sprite.scale.set(80 * aspectRatio, 80, 1);
 
   return sprite;
 }

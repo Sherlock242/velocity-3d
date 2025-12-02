@@ -29,14 +29,29 @@ export function createDepartmentBuilding() {
     metalness: 0.9,
     roughness: 0.1,
   });
-  const windowGeom = new THREE.BoxGeometry(buildingWidth - 20, 8, 1);
-  const frontWindows = new THREE.Mesh(windowGeom, windowMaterial);
-  frontWindows.position.set(0, buildingHeight * 0.6, buildingDepth / 2 + 0.1);
-  building.add(frontWindows);
 
-  const backWindows = new THREE.Mesh(windowGeom, windowMaterial);
-  backWindows.position.set(0, buildingHeight * 0.6, -buildingDepth / 2 - 0.1);
-  building.add(backWindows);
+  const numWindows = 10;
+  const windowWidth = (buildingWidth - 40) / numWindows;
+  const windowHeight = 8;
+  const windowSpacing = windowWidth * 1.1;
+
+  for (let i = 0; i < numWindows; i++) {
+    const windowGeom = new THREE.BoxGeometry(windowWidth * 0.9, windowHeight, 1);
+    
+    // Skip the middle for the entrance
+    const positionIndex = i < numWindows / 2 ? i : i + 1;
+    const xPos = - (buildingWidth / 2) + 20 + positionIndex * windowSpacing;
+    
+    // Front windows
+    const frontWindow = new THREE.Mesh(windowGeom, windowMaterial);
+    frontWindow.position.set(xPos, buildingHeight * 0.6, buildingDepth / 2 + 0.1);
+    building.add(frontWindow);
+    
+    // Back windows
+    const backWindow = new THREE.Mesh(windowGeom, windowMaterial);
+    backWindow.position.set(xPos, buildingHeight * 0.6, -buildingDepth / 2 - 0.1);
+    building.add(backWindow);
+  }
   
   // Add Entrance
   const entranceWidth = 10;
