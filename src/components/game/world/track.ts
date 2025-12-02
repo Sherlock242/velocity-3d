@@ -237,7 +237,7 @@ export function createGridAndScenery(
         coachingClass.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(coachingClass);
         staticCollidersRef.current.push(coachingClass);
-        currentZ += 80;
+        currentZ += 150;
 
         const satsangBuilding = createSatsangBuilding();
         satsangBuilding.position.set(specialBuildingX, 0, currentZ);
