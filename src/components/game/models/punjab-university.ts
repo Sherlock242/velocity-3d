@@ -7,16 +7,12 @@ export function createPunjabUniversity() {
     color: 0xcccccc,
     roughness: 0.8,
   });
-  const darkConcreteMaterial = new THREE.MeshStandardMaterial({
-    color: 0x666666,
-    roughness: 0.9,
-  });
   const glassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x88aacc,
+    color: 0x6fa8dc, // A more distinct blue for the glass
     roughness: 0.3,
     metalness: 0.2,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.7,
   });
 
   const mainRadius = 80;
@@ -27,10 +23,10 @@ export function createPunjabUniversity() {
 
   // --- Layered construction for accuracy ---
 
-  // Layer 0: Ground Floor (Solid Cylinder)
+  // Layer 0: Ground Floor (Solid Cylinder) - Now uses the main concrete material
   const groundFloorY = 0;
   const groundFloorGeom = new THREE.CylinderGeometry(mainRadius, mainRadius, floorHeight, 64);
-  const groundFloor = new THREE.Mesh(groundFloorGeom, darkConcreteMaterial);
+  const groundFloor = new THREE.Mesh(groundFloorGeom, concreteMaterial);
   groundFloor.position.y = groundFloorY + floorHeight / 2;
   library.add(groundFloor);
   
@@ -161,7 +157,7 @@ export function createPunjabUniversity() {
   // Balcony section that cuts into the ramp
   const balcony = new THREE.Group();
   const balconyFloorGeom = new THREE.BoxGeometry(30, 2, 40);
-  const balconyFloor = new THREE.Mesh(balconyFloorGeom, darkConcreteMaterial);
+  const balconyFloor = new THREE.Mesh(balconyFloorGeom, concreteMaterial);
   balconyFloor.position.set(mainRadius-15, floorHeight * 2, 20);
   balcony.add(balconyFloor);
 
