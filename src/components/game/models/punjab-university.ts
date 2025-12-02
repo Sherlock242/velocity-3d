@@ -1,6 +1,71 @@
 
 import * as THREE from 'three';
 
+function createKhandaSymbol() {
+  const khandaGroup = new THREE.Group();
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xffd700, // Gold color
+    metalness: 0.7,
+    roughness: 0.3,
+  });
+
+  // 1. Chakkar (the circle)
+  const chakkarGeom = new THREE.TorusGeometry(10, 1.5, 16, 100);
+  const chakkar = new THREE.Mesh(chakkarGeom, material);
+  chakkar.rotation.x = Math.PI / 2;
+  khandaGroup.add(chakkar);
+
+  // 2. Central Khanda (double-edged sword)
+  const khandaShape = new THREE.Shape();
+  khandaShape.moveTo(0, -18);
+  khandaShape.lineTo(2, -16);
+  khandaShape.lineTo(1, 0);
+  khandaShape.lineTo(4, 15);
+  khandaShape.lineTo(2, 16);
+  khandaShape.lineTo(0, 18); // Tip
+  khandaShape.lineTo(-2, 16);
+  khandaShape.lineTo(-4, 15);
+  khandaShape.lineTo(-1, 0);
+  khandaShape.lineTo(-2, -16);
+  khandaShape.lineTo(0, -18);
+
+  const extrudeSettings = { depth: 1, bevelEnabled: false };
+  const khandaGeom = new THREE.ExtrudeGeometry(khandaShape, extrudeSettings);
+  const centralKhanda = new THREE.Mesh(khandaGeom, material);
+  centralKhanda.position.z = -0.5;
+  khandaGroup.add(centralKhanda);
+
+
+  // 3. Kirpans (the curved swords)
+  function createKirpan() {
+    const kirpanShape = new THREE.Shape();
+    kirpanShape.moveTo(-1, -15);
+    kirpanShape.bezierCurveTo(-2, 0, 5, 10, 1, 15);
+    kirpanShape.lineTo(0, 16);
+    kirpanShape.bezierCurveTo(6, 11, -1, 1, -2, -15);
+    kirpanShape.lineTo(-1, -15);
+    
+    const kirpanGeom = new THREE.ExtrudeGeometry(kirpanShape, extrudeSettings);
+    return new THREE.Mesh(kirpanGeom, material);
+  }
+
+  const leftKirpan = createKirpan();
+  leftKirpan.rotation.z = -Math.PI / 6; // ~30 degrees
+  leftKirpan.position.x = -6;
+  leftKirpan.position.y = -2;
+  
+  const rightKirpan = createKirpan();
+  rightKirpan.rotation.z = Math.PI / 6; // ~30 degrees
+  rightKirpan.position.x = 6;
+  rightKirpan.position.y = -2;
+  
+  khandaGroup.add(leftKirpan, rightKirpan);
+  
+  khandaGroup.scale.set(1.5, 1.5, 1.5);
+  return khandaGroup;
+}
+
+
 export function createPunjabUniversity() {
   const universityWithBase = new THREE.Group();
   const library = new THREE.Group();
@@ -200,11 +265,15 @@ export function createPunjabUniversity() {
       const x = Math.cos(angle) * rampRadius;
       
       let y = t * rampTotalHeight;
+      const taperEnd = 0.1; // Taper over the first 10% of the ramp
+      const taperStart = 0.9; // Taper down over the last 10%
       if (this.taper) {
-          const taperEnd = 0.1; // Taper over the first 10% of the ramp
           if (t < taperEnd) {
               const taperFactor = t / taperEnd;
               y = taperFactor * (taperEnd * rampTotalHeight);
+          } else if (t > taperStart) {
+              const taperFactor = (1 - t) / taperEnd; // Same as taperEnd since (1-taperStart) = taperEnd
+              y = rampTotalHeight - (taperFactor * (taperEnd * rampTotalHeight));
           }
       }
       
@@ -214,21 +283,71 @@ export function createPunjabUniversity() {
   }
 
   const rampPath = new CustomSpiralCurve(1, true);
+  const rampVertices = [];
+  const rampFaces = [];
+  const segments = 128;
+  const wallHeight = 4;
+  const rampHalfWidth = rampWidth / 2;
 
-  const rampShape = new THREE.Shape();
-  const halfWidth = rampWidth / 2;
-  rampShape.moveTo(-halfWidth, 0);
-  rampShape.lineTo(halfWidth, 0);
-  rampShape.lineTo(halfWidth, rampWallHeight);
-  rampShape.lineTo(-halfWidth, rampWallHeight);
-  rampShape.lineTo(-halfWidth, 0);
+  for (let i = 0; i <= segments; i++) {
+    const t = i / segments;
+    const point = rampPath.getPoint(t);
+    const tangent = rampPath.getTangent(t).normalize();
+    const normal = new THREE.Vector3(0, 1, 0); // Simplified normal
+    const binormal = new THREE.Vector3().crossVectors(tangent, normal).normalize();
+  
+    // Tapering logic for wall height
+    let currentWallHeight = wallHeight;
+    const taperLength = 0.1; // Taper over 10% of the ramp at start and end
+    if (t < taperLength) {
+      currentWallHeight = THREE.MathUtils.lerp(0, wallHeight, t / taperLength);
+    } else if (t > 1 - taperLength) {
+      currentWallHeight = THREE.MathUtils.lerp(0, wallHeight, (1 - t) / taperLength);
+    }
+  
+    // Inner wall top/bottom
+    const innerBottom = point.clone().add(binormal.clone().multiplyScalar(-rampHalfWidth));
+    const innerTop = innerBottom.clone().add(normal.clone().multiplyScalar(currentWallHeight));
+  
+    // Outer wall top/bottom
+    const outerBottom = point.clone().add(binormal.clone().multiplyScalar(rampHalfWidth));
+    const outerTop = outerBottom.clone().add(normal.clone().multiplyScalar(currentWallHeight));
+  
+    // Road surface points
+    const roadInner = innerBottom.clone();
+    const roadOuter = outerBottom.clone();
+  
+    rampVertices.push(
+      innerBottom, innerTop, outerBottom, outerTop, roadInner, roadOuter
+    );
+  
+    if (i > 0) {
+      const base = (i - 1) * 6;
+      // Indices for one segment of the ramp walls and road
+      // Outer wall
+      rampFaces.push(base + 3, base + 2, base + 8); // tri 1
+      rampFaces.push(base + 3, base + 8, base + 9); // tri 2
+      // Inner wall
+      rampFaces.push(base + 0, base + 1, base + 7);
+      rampFaces.push(base + 0, base + 7, base + 6);
+      // Road surface
+      rampFaces.push(base + 4, base + 5, base + 11);
+      rampFaces.push(base + 4, base + 11, base + 10);
+    }
+  }
+  
+  const rampGeometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(rampVertices.length * 3);
+  for (let i = 0; i < rampVertices.length; i++) {
+    positions[i * 3] = rampVertices[i].x;
+    positions[i * 3 + 1] = rampVertices[i].y;
+    positions[i * 3 + 2] = rampVertices[i].z;
+  }
+  
+  rampGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  rampGeometry.setIndex(rampFaces);
+  rampGeometry.computeVertexNormals();
 
-  const extrudeSettings = {
-    steps: rampSegments,
-    extrudePath: rampPath,
-  };
-
-  const rampGeometry = new THREE.ExtrudeGeometry(rampShape, extrudeSettings);
   const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
   rampMesh.material.side = THREE.DoubleSide; // Make ramp visible from all angles
   
@@ -236,26 +355,31 @@ export function createPunjabUniversity() {
 
   // --- Landing Platform ---
   const landingRadius = rampWidth / 2;
-  const landingGeom = new THREE.CircleGeometry(landingRadius, 32, 0, Math.PI);
+  const landingGeom = new THREE.CircleGeometry(landingRadius, 32);
   const landingPlatform = new THREE.Mesh(landingGeom, concreteMaterial);
   
   const endPoint = rampPath.getPoint(1);
   landingPlatform.position.copy(endPoint);
 
-  // Position it at the end of the ramp road surface, not the wall top
-  landingPlatform.position.y += rampWallHeight / 2;
-  
   // Rotate to align with ramp end
   const tangent = rampPath.getTangent(1).normalize();
-  const up = new THREE.Vector3(0, 1, 0);
-  const right = new THREE.Vector3().crossVectors(up, tangent).normalize();
-
+  
   const landingAngle = Math.atan2(tangent.x, tangent.z);
   
   landingPlatform.rotation.x = -Math.PI / 2; // Lay it flat
   landingPlatform.rotation.z = -landingAngle + Math.PI / 2;
 
   universityWithBase.add(landingPlatform);
+
+  // --- Add Khanda Symbol ---
+  const khandaSymbol = createKhandaSymbol();
+  // Position it on the landing platform
+  khandaSymbol.position.copy(landingPlatform.position);
+  khandaSymbol.position.y += 20; // Raise it above the platform
+  // Rotate it to face outwards from the ramp
+  khandaSymbol.rotation.y = landingAngle + Math.PI;
+
+  universityWithBase.add(khandaSymbol);
 
 
   universityWithBase.scale.set(1.5, 1.5, 1.5);
