@@ -26,20 +26,17 @@ export function createLegoPerson(isPlayer = false) {
 
   const head = new THREE.Group();
   
-  // Use a single cylinder for the head for simplicity
+  // Use a single cylinder for the head
   const headGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16);
   const headMat = new THREE.MeshStandardMaterial({ color: skinTone });
   const headMesh = new THREE.Mesh(headGeo, headMat);
   head.add(headMesh);
 
-  // Add the top black cylinder for hair
-  const hairPieceRadius = headRadius * 1.05;
-  const hairPieceHeight = 0.2;
-  const hairPieceGeo = new THREE.CylinderGeometry(hairPieceRadius, hairPieceRadius, hairPieceHeight, 16);
+  // Add the hair as a separate box
+  const hairPieceGeo = new THREE.BoxGeometry(headRadius * 2, headHeight, headRadius);
   const hairPieceMat = new THREE.MeshStandardMaterial({ color: hairColor });
   const hairPiece = new THREE.Mesh(hairPieceGeo, hairPieceMat);
-  // Position it on top of the head
-  hairPiece.position.y = headHeight / 2;
+  hairPiece.position.z = -headRadius / 2;
   head.add(hairPiece);
 
 
