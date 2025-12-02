@@ -39,7 +39,7 @@ export function createLegoPerson(isPlayer = false) {
   const hairPieceMat = new THREE.MeshStandardMaterial({ color: hairColor });
   const hairPiece = new THREE.Mesh(hairPieceGeo, hairPieceMat);
   // Position it on top of the head
-  hairPiece.position.y = headHeight / 2 + hairPieceHeight / 2;
+  hairPiece.position.y = headHeight / 2;
   head.add(hairPiece);
 
 
