@@ -202,7 +202,7 @@ export function createGridAndScenery(
          const rowSpacing = 150;
          
          const startX = cellCenterX - (CELL_SIZE / 2) + (ROAD_WIDTH / 2) + 50;
-         const startZ = cellCenterZ - (CELL_SIZE / 2) + (ROAD_WIDTH / 2) + 50;
+         const startZ = cellCenterZ + (CELL_SIZE / 2) - (numHousesPerRow * houseSpacing) - 50;
 
          for (let row = 0; row < numRows; row++) {
           for (let col = 0; col < numHousesPerRow; col++) {
@@ -216,7 +216,7 @@ export function createGridAndScenery(
         }
         
         // Add the new special buildings in front of the houses
-        const specialBuildingZ = startZ + numHousesPerRow * houseSpacing;
+        const specialBuildingZ = startZ - 120;
         let currentX = startX;
 
         const gurudwara = createGurudwara();
