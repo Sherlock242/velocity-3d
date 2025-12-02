@@ -45,7 +45,8 @@ function createTextSprite(text: string) {
 
 export function createGridAndScenery(
   theme: TrackTheme,
-  walkingNpcsRef: MutableRefObject<THREE.Group[]>
+  walkingNpcsRef: MutableRefObject<THREE.Group[]>,
+  staticCollidersRef: MutableRefObject<THREE.Group[]>
 ) {
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
@@ -139,6 +140,7 @@ export function createGridAndScenery(
         university.position.set(cellCenterX, 0, cellCenterZ);
         university.rotation.y = -Math.PI / 2;
         gridGroup.add(university);
+        staticCollidersRef.current.push(university);
         continue;
       }
 

@@ -69,6 +69,7 @@ export default function GameWrapper() {
   >([]);
   const fountainWaterJetRef = React.useRef<THREE.Mesh>();
   const walkingNpcsRef = React.useRef<THREE.Group[]>([]);
+  const staticCollidersRef = React.useRef<THREE.Group[]>([]);
 
 
   // Control mode refs
@@ -241,7 +242,7 @@ export default function GameWrapper() {
     }
     
     // --- GRID TRACK & SCENERY ---
-    const gridGroup = createGridAndScenery(theme, walkingNpcsRef);
+    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef);
     scene.add(gridGroup);
     
     // Find the water jet to animate it
@@ -521,10 +522,11 @@ export default function GameWrapper() {
       camera.position.copy(offset);
       camera.lookAt(player.position);
 
-      // --- OBSTACLE LOGIC ---
-      const obstacleSpeed = 50;
-      const playerCarBox = new THREE.Box3().setFromObject(player);
+      // --- COLLISION DETECTION ---
+      const playerBox = new THREE.Box3().setFromObject(player);
 
+      // Dynamic Obstacles (Cars)
+      const obstacleSpeed = 50;
       obstacleCarsRef.current.forEach((obstacle) => {
         const forward = new THREE.Vector3();
         obstacle.getWorldDirection(forward);
@@ -551,19 +553,24 @@ export default function GameWrapper() {
           }
         }
 
-        // Collision Detection
         const obstacleBox = new THREE.Box3().setFromObject(obstacle);
-        if (playerCarBox.intersectsBox(obstacleBox)) {
+        if (playerBox.intersectsBox(obstacleBox)) {
           velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
-          // Knockback
-          const knockback = obstacle.position
-            .clone()
-            .sub(player.position)
-            .normalize()
-            .multiplyScalar(-5);
-          player.position.add(knockback);
+          const knockback = player.position.clone().sub(obstacle.position).normalize().multiplyScalar(5);
+          player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
         }
       });
+      
+      // Static Colliders (Buildings)
+      staticCollidersRef.current.forEach((collider) => {
+        const colliderBox = new THREE.Box3().setFromObject(collider);
+        if (playerBox.intersectsBox(colliderBox)) {
+            velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
+            const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
+            player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
+        }
+      });
+
 
       // Penalty check for off-road
       const currentRoadXIndex = Math.round(
@@ -657,6 +664,7 @@ export default function GameWrapper() {
       renderer.dispose();
       obstacleCarsRef.current = [];
       walkingNpcsRef.current = [];
+      staticCollidersRef.current = [];
       tireMarksRef.current.forEach(mark => {
         scene.remove(mark.mesh);
         (mark.mesh.material as THREE.Material).dispose();
