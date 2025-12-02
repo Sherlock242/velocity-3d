@@ -9,10 +9,10 @@ export function createPunjabUniversity() {
   });
   const glassMaterial = new THREE.MeshStandardMaterial({
     color: 0xadd8e6, // Light Blue
-    roughness: 0.2,
-    metalness: 0.6,
+    roughness: 0.1,
+    metalness: 0.2,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.6,
   });
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: 0xb0b0b0,
