@@ -177,10 +177,10 @@ export function createPunjabUniversity() {
   universityWithBase.add(library);
 
   // --- Spiral Ramp ---
-  const rampRadius = mainRadius - 5;
+  const rampRadius = mainRadius + 10;
   const rampWidth = 20;
   const rampWallHeight = 8;
-  const rampTotalHeight = (floorHeight + dividerHeight) * 4 - dividerHeight;
+  const rampTotalHeight = (floorHeight + dividerHeight) * 3 - dividerHeight;
   const rampSegments = 256;
   const rampStartAngle = Math.PI * 0.5;
   const rampAngleSweep = Math.PI * 2.5; 
@@ -195,7 +195,7 @@ export function createPunjabUniversity() {
     getPoint(t: number): THREE.Vector3 {
       const angle = rampStartAngle + t * rampAngleSweep;
       const x = Math.cos(angle) * rampRadius;
-      const y = t * rampTotalHeight;
+      const y = baseHeight + (t * rampTotalHeight);
       const z = Math.sin(angle) * rampRadius;
       return new THREE.Vector3(x, y, z).multiplyScalar(this.scale);
     }
@@ -219,7 +219,7 @@ export function createPunjabUniversity() {
   const rampGeometry = new THREE.ExtrudeGeometry(rampShape, extrudeSettings);
   const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
   rampMesh.material.side = THREE.DoubleSide; // Make ramp visible from all angles
-  // Add the ramp to the base group, so it starts from the ground
+  
   universityWithBase.add(rampMesh);
 
   universityWithBase.scale.set(1.5, 1.5, 1.5);
