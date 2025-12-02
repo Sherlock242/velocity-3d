@@ -25,19 +25,13 @@ export function createPunjabUniversity() {
 
   // --- Layered construction for accuracy ---
 
-  // Layer 0: Ground Floor (Columns)
+  // Layer 0: Ground Floor (Solid Cylinder)
   const groundFloorY = 0;
-  const numColumns = 12;
-  for (let i = 0; i < numColumns; i++) {
-    const angle = (i / numColumns) * Math.PI * 2;
-    const x = Math.sin(angle) * (mainRadius * 0.9);
-    const z = Math.cos(angle) * (mainRadius * 0.9);
-    const columnGeom = new THREE.CylinderGeometry(4, 4, floorHeight, 16);
-    const column = new THREE.Mesh(columnGeom, darkConcreteMaterial);
-    column.position.set(x, groundFloorY + floorHeight / 2, z);
-    library.add(column);
-  }
-
+  const groundFloorGeom = new THREE.CylinderGeometry(mainRadius, mainRadius, floorHeight, 64);
+  const groundFloor = new THREE.Mesh(groundFloorGeom, darkConcreteMaterial);
+  groundFloor.position.y = groundFloorY + floorHeight / 2;
+  library.add(groundFloor);
+  
   // Layer 1: First main floor
   const floor1Y = groundFloorY + floorHeight;
   const floor1Geom = new THREE.CylinderGeometry(mainRadius, mainRadius, floorHeight, 64);
