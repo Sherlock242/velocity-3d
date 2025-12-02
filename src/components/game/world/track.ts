@@ -221,16 +221,16 @@ export function createGridAndScenery(
         let currentZ = cellCenterZ - (CELL_SIZE / 2) + 150;
         const specialBuildingX = cellCenterX - (CELL_SIZE / 2) + 100;
 
-        const gurudwara = createGurudwara();
-        gurudwara.position.set(specialBuildingX, 0, currentZ);
-        gridGroup.add(gurudwara);
-        staticCollidersRef.current.push(gurudwara);
-        currentZ += 120;
-
         const kaliMandir = createKaliMandir();
         kaliMandir.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(kaliMandir);
         staticCollidersRef.current.push(kaliMandir);
+        currentZ += 120;
+
+        const gurudwara = createGurudwara();
+        gurudwara.position.set(specialBuildingX, 0, currentZ);
+        gridGroup.add(gurudwara);
+        staticCollidersRef.current.push(gurudwara);
         currentZ += 80;
 
         const coachingClass = createCoachingClass();
