@@ -166,11 +166,11 @@ export function createMansion() {
   mansion.add(parkingArea);
 
 
-  // --- FORTIFICATION WALL ---
+  // --- NORMAL WALL ---
   const wallGroup = new THREE.Group();
   const wallHeight = 10;
   const wallThickness = 8;
-  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // Brown color
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
 
   function createWallSegment(width: number, depth: number) {
     const segment = new THREE.Group();
@@ -178,19 +178,6 @@ export function createMansion() {
     const mainWall = new THREE.Mesh(mainWallGeom, wallMaterial);
     mainWall.position.y = wallHeight / 2;
     segment.add(mainWall);
-
-    // Crenellations (battlements)
-    const crenelWidth = 10;
-    const crenelHeight = 5;
-    const numCrenels = Math.floor(width / (crenelWidth * 2));
-    const crenelGeom = new THREE.BoxGeometry(crenelWidth, crenelHeight, depth + 2);
-
-    for (let i = 0; i < numCrenels; i++) {
-        const crenel = new THREE.Mesh(crenelGeom, wallMaterial);
-        const xPos = -width / 2 + (i * 2 + 0.5) * crenelWidth;
-        crenel.position.set(xPos, wallHeight + crenelHeight / 2, 0);
-        segment.add(crenel);
-    }
     return segment;
   }
   
