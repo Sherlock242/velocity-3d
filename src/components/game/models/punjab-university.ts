@@ -117,10 +117,10 @@ export function createPunjabUniversity() {
   const rampRadius = mainRadius + 15;
   const rampWidth = 30;
   const rampWallHeight = 8;
-  const rampTotalHeight = floorHeight * 2; // Ramp goes up to floor 2
+  const rampTotalHeight = floorHeight * 4; // Ramp goes up to floor 4
   const rampSegments = 256;
   const rampStartAngle = Math.PI * 0.5;
-  const rampAngleSweep = Math.PI * 1.5; // Sweep for two floors
+  const rampAngleSweep = Math.PI * 2.25; // Sweep for four floors
 
   class CustomSpiralCurve extends THREE.Curve<THREE.Vector3> {
     scale: number;
