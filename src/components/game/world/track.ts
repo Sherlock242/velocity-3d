@@ -12,6 +12,7 @@ import { createBuilding } from '../models/building';
 import { createChandigarhHouse } from '../models/chandigarh-house';
 import { createLegoPerson } from '../models/transformer';
 import type { MutableRefObject } from 'react';
+import { createPunjabUniversity } from '../models/punjab-university';
 
 function createTextSprite(text: string) {
   const canvas = document.createElement('canvas');
@@ -133,6 +134,14 @@ export function createGridAndScenery(
       const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
       const sectorNumber = j * GRID_SIZE + i + 1;
 
+      if (sectorNumber === 14) { // Sector 14 for Punjab University
+        const university = createPunjabUniversity();
+        university.position.set(cellCenterX, 0, cellCenterZ);
+        university.rotation.y = -Math.PI / 2;
+        gridGroup.add(university);
+        continue;
+      }
+
       if (sectorNumber === 15) { // Sector 15 for Mansion
         const mansion = createMansion();
         mansion.position.set(cellCenterX, 0, cellCenterZ);
@@ -211,6 +220,7 @@ export function createGridAndScenery(
         for (let k = 0; k < numNpcs; k++) {
           const gender = Math.random() > 0.5 ? 'male' : 'female';
           const npc = createLegoPerson(false, gender);
+          npc.scale.set(1.5, 1.5, 1.5);
           const safeArea = (CELL_SIZE - ROAD_WIDTH) / 2 - 20; // Stay away from roads
           const x = cellCenterX + (Math.random() - 0.5) * safeArea;
           const z = cellCenterZ + (Math.random() - 0.5) * safeArea;
