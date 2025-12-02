@@ -109,7 +109,18 @@ export function createGridAndScenery(
       const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
       const sectorNumber = j * GRID_SIZE + i + 1;
 
-      if (sectorNumber === 14) { 
+      if (sectorNumber === 14) {
+        // --- University Campus ---
+        const campusRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
+        const campusParkingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
+
+        // Central Plaza
+        const plazaGeom = new THREE.CircleGeometry(250, 64);
+        const plaza = new THREE.Mesh(plazaGeom, campusRoadMaterial);
+        plaza.rotation.x = -Math.PI / 2;
+        plaza.position.set(cellCenterX, 0.13, cellCenterZ);
+        gridGroup.add(plaza);
+        
         // Main University Library
         const university = createPunjabUniversity();
         university.position.set(cellCenterX, 0, cellCenterZ);
@@ -117,18 +128,52 @@ export function createGridAndScenery(
         gridGroup.add(university);
         staticCollidersRef.current.push(university);
 
-        // Department Buildings
+        // Department Buildings, Roads, and Parking
         const departments = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'History', 'Art', 'Music'];
+        const deptRingRadius = 350;
+
+        // Circular road connecting departments
+        const ringRoadGeom = new THREE.RingGeometry(deptRingRadius - 15, deptRingRadius + 15, 64);
+        const ringRoad = new THREE.Mesh(ringRoadGeom, campusRoadMaterial);
+        ringRoad.rotation.x = -Math.PI / 2;
+        ringRoad.position.set(cellCenterX, 0.13, cellCenterZ);
+        gridGroup.add(ringRoad);
+
         departments.forEach((dept, index) => {
-          const deptBuilding = createDepartmentBuilding();
           const angle = (index / departments.length) * Math.PI * 2;
-          const x = cellCenterX + Math.cos(angle) * 350;
-          const z = cellCenterZ + Math.sin(angle) * 350;
-          deptBuilding.position.set(x, 0, z);
+          const buildingX = cellCenterX + Math.cos(angle) * deptRingRadius;
+          const buildingZ = cellCenterZ + Math.sin(angle) * deptRingRadius;
+          
+          const deptBuilding = createDepartmentBuilding();
+          deptBuilding.position.set(buildingX, 0, buildingZ);
           deptBuilding.lookAt(university.position);
           deptBuilding.rotation.y += Math.PI; // Rotate 180 degrees
           gridGroup.add(deptBuilding);
           staticCollidersRef.current.push(deptBuilding);
+          
+          // Parking Area for each department
+          const parkingWidth = 80;
+          const parkingDepth = 60;
+          const parkingAreaGeom = new THREE.PlaneGeometry(parkingWidth, parkingDepth);
+          const parkingArea = new THREE.Mesh(parkingAreaGeom, campusParkingMaterial);
+          const parkingOffset = 60; // Distance from building
+          const parkingX = buildingX + Math.cos(angle + Math.PI) * parkingOffset;
+          const parkingZ = buildingZ + Math.sin(angle + Math.PI) * parkingOffset;
+          parkingArea.position.set(parkingX, 0.14, parkingZ);
+          parkingArea.rotation.x = -Math.PI / 2;
+          parkingArea.rotation.y = angle + Math.PI / 2;
+          gridGroup.add(parkingArea);
+          
+          // Connecting road from ring to parking
+          const connectorRoadLength = parkingOffset - 15; // from ring edge to parking
+          const connectorRoadGeom = new THREE.PlaneGeometry(20, connectorRoadLength);
+          const connectorRoad = new THREE.Mesh(connectorRoadGeom, campusRoadMaterial);
+          const connectorX = buildingX + Math.cos(angle + Math.PI) * (connectorRoadLength / 2 + 15);
+          const connectorZ = buildingZ + Math.sin(angle + Math.PI) * (connectorRoadLength / 2 + 15);
+          connectorRoad.position.set(connectorX, 0.14, connectorZ);
+          connectorRoad.rotation.x = -Math.PI / 2;
+          connectorRoad.rotation.y = angle + Math.PI / 2;
+          gridGroup.add(connectorRoad);
         });
 
         // Corner Government Houses
