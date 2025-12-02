@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 
 export function createChandigarhHouse() {
@@ -9,12 +8,6 @@ export function createChandigarhHouse() {
     roughness: 0.8,
   });
 
-  // Main building structure
-  const mainGeom = new THREE.BoxGeometry(40, 50, 30);
-  const mainBuilding = new THREE.Mesh(mainGeom, brickMaterial);
-  mainBuilding.position.y = 25;
-  house.add(mainBuilding);
-
   const whiteFrameMaterial = new THREE.MeshStandardMaterial({
     color: 0xe0e0e0,
     roughness: 0.7,
@@ -23,6 +16,72 @@ export function createChandigarhHouse() {
     color: 0x111111,
     roughness: 0.4,
   });
+  const doorMaterial = new THREE.MeshStandardMaterial({
+    color: 0x332211,
+    roughness: 0.9,
+  });
+
+  // --- Main Structure ---
+  const mainBuildingWidth = 60;
+  const mainBuildingHeight = 50;
+  const mainBuildingDepth = 30;
+
+  const mainGeom = new THREE.BoxGeometry(
+    mainBuildingWidth,
+    mainBuildingHeight,
+    mainBuildingDepth
+  );
+  const mainBuilding = new THREE.Mesh(mainGeom, brickMaterial);
+  mainBuilding.position.y = mainBuildingHeight / 2;
+  house.add(mainBuilding);
+
+  // --- Recessed Entrance on the right ---
+  const entranceWidth = 15;
+  const entranceHeight = 12;
+  const entranceDepth = 10;
+  const entranceGeom = new THREE.BoxGeometry(
+    entranceWidth,
+    entranceHeight,
+    entranceDepth
+  );
+  // Using CSG-like approach by "subtracting" with a separate mesh
+  const entranceCutout = new THREE.Mesh(
+    entranceGeom,
+    new THREE.MeshBasicMaterial({ color: 0x000000 })
+  ); // This won't be visible, it just carves space
+  entranceCutout.position.set(
+    mainBuildingWidth / 2 - entranceWidth / 2 - 5,
+    entranceHeight / 2,
+    mainBuildingDepth / 2 + 1
+  );
+
+  const whiteEntranceFrameGeom = new THREE.BoxGeometry(
+    entranceWidth,
+    entranceHeight,
+    1
+  );
+  const whiteEntranceFrame = new THREE.Mesh(
+    whiteEntranceFrameGeom,
+    whiteFrameMaterial
+  );
+  whiteEntranceFrame.position.set(
+    mainBuildingWidth / 2 - entranceWidth / 2 - 5,
+    entranceHeight / 2,
+    mainBuildingDepth / 2 - entranceDepth + 1
+  );
+  house.add(whiteEntranceFrame);
+
+  // Door inside the recess
+  const doorGeom = new THREE.BoxGeometry(6, 9, 0.5);
+  const door = new THREE.Mesh(doorGeom, doorMaterial);
+  door.position.set(
+    mainBuildingWidth / 2 - entranceWidth / 2 - 5,
+    4.5,
+    mainBuildingDepth / 2 - entranceDepth + 1.2
+  );
+  house.add(door);
+
+  // --- Windows ---
 
   // T-shaped windows
   function createTWindow(x: number, y: number, z: number) {
@@ -50,33 +109,34 @@ export function createChandigarhHouse() {
     const rightPane = new THREE.Mesh(paneGeom, windowGlassMaterial);
     rightPane.position.set(4.5, -2, -0.5);
     windowGroup.add(rightPane);
-    
+
     return windowGroup;
   }
 
-  const window1 = createTWindow(8, 28, 15.1);
+  const window1 = createTWindow(0, 28, mainBuildingDepth / 2 + 0.1);
   house.add(window1);
 
-  const window2 = createTWindow(-8, 12, 15.1);
+  const window2 = createTWindow(-20, 12, mainBuildingDepth / 2 + 0.1);
   house.add(window2);
-  
+
   // Single vertical window
   const singleWindowGeom = new THREE.BoxGeometry(1.5, 6, 1);
   const singleWindow = new THREE.Mesh(singleWindowGeom, windowGlassMaterial);
-  singleWindow.position.set(-15, 28, 15.1);
+  singleWindow.position.set(-25, 28, mainBuildingDepth / 2 + 0.1);
   house.add(singleWindow);
-  
-  const singleWindowFrameTop = new THREE.Mesh(new THREE.BoxGeometry(4, 1.5, 2), whiteFrameMaterial);
-  singleWindowFrameTop.position.set(-15, 31.5, 15.1);
-  house.add(singleWindowFrameTop);
 
+  const singleWindowFrameTop = new THREE.Mesh(
+    new THREE.BoxGeometry(4, 1.5, 2),
+    whiteFrameMaterial
+  );
+  singleWindowFrameTop.position.set(-25, 31.5, mainBuildingDepth / 2 + 0.1);
+  house.add(singleWindowFrameTop);
 
   // --- Brick Latticework (Jali) with Cut Holes ---
   const jaliWidth = 20;
   const jaliHeight = 12;
   const jaliDepth = 2;
 
-  // 1. Create the shape with holes
   const jaliShape = new THREE.Shape();
   jaliShape.moveTo(-jaliWidth / 2, -jaliHeight / 2);
   jaliShape.lineTo(jaliWidth / 2, -jaliHeight / 2);
@@ -92,8 +152,8 @@ export function createChandigarhHouse() {
   for (let i = 0; i < numHolesY; i++) {
     for (let j = 0; j < numHolesX; j++) {
       const holePath = new THREE.Path();
-      const x = -jaliWidth / 2 + (j + 1) * holeSpacing - holeSize/2;
-      const y = -jaliHeight / 2 + (i + 1) * holeSpacing - holeSize/2;
+      const x = -jaliWidth / 2 + (j + 1) * holeSpacing - holeSize / 2;
+      const y = -jaliHeight / 2 + (i + 1) * holeSpacing - holeSize / 2;
       holePath.moveTo(x, y);
       holePath.lineTo(x + holeSize, y);
       holePath.lineTo(x + holeSize, y + holeSize);
@@ -105,33 +165,32 @@ export function createChandigarhHouse() {
 
   const extrudeSettings = { depth: jaliDepth, bevelEnabled: false };
   const jaliGeometry = new THREE.ExtrudeGeometry(jaliShape, extrudeSettings);
-  
-  // Assign materials: 0 for front/back, 1 for sides (insides of holes)
-  jaliGeometry.groups.forEach(group => {
-    if (group.materialIndex === 1) { // Sides
-      group.materialIndex = 1;
-    } else { // Top/bottom
-      group.materialIndex = 0;
-    }
-  });
-  
+
   const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
   const jaliMesh = new THREE.Mesh(jaliGeometry, [brickMaterial, whiteMaterial]);
-  jaliMesh.position.set(-9, 44, 15 - jaliDepth / 2);
+  jaliMesh.position.set(
+    -19,
+    mainBuildingHeight - jaliHeight / 2,
+    mainBuildingDepth / 2 - jaliDepth / 2 + 0.1
+  );
   jaliMesh.castShadow = true;
   house.add(jaliMesh);
-  
+
   // Right side plain brick part
   const plainPartGeom = new THREE.BoxGeometry(20, 12, 2);
   const plainPartMesh = new THREE.Mesh(plainPartGeom, brickMaterial);
-  plainPartMesh.position.set(10, 44, 14);
+  plainPartMesh.position.set(
+    0,
+    mainBuildingHeight - jaliHeight / 2,
+    mainBuildingDepth / 2 - 1
+  );
   house.add(plainPartMesh);
 
   // AC Unit
   const acGeom = new THREE.BoxGeometry(4, 3, 2);
   const acMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
   const acUnit = new THREE.Mesh(acGeom, acMaterial);
-  acUnit.position.set(2, 20, 15.1);
+  acUnit.position.set(10, 20, mainBuildingDepth / 2 + 0.1);
   house.add(acUnit);
 
   house.castShadow = true;
