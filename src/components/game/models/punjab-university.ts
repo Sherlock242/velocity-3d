@@ -15,7 +15,7 @@ export function createPunjabUniversity() {
     opacity: 0.6,
   });
   const bottomFloorGlassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4682b4, // A distinct blue color
+    color: 0x4682B4, // A distinct blue color
     roughness: 0.2,
     metalness: 0.1,
     transparent: true,
