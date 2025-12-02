@@ -8,11 +8,11 @@ export function createPunjabUniversity() {
     roughness: 0.8,
   });
   const glassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4682B4, // Steel Blue - more visible
+    color: 0xadd8e6, // Light Blue
     roughness: 0.2,
     metalness: 0.6,
     transparent: true,
-    opacity: 0.8, // More opaque
+    opacity: 0.8,
   });
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: 0xb0b0b0,
