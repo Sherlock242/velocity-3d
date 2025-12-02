@@ -17,35 +17,6 @@ import { createPunjabUniversity } from '../models/punjab-university';
 import { createGovtHouse } from '../models/govt-house';
 import { createDepartmentBuilding } from '../models/department-building';
 
-function createTextSprite(text: string) {
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  if (!context) return new THREE.Sprite();
-
-  const fontSize = 80;
-  context.font = `bold ${fontSize}px Arial`;
-
-  const textMetrics = context.measureText(text);
-  canvas.width = textMetrics.width;
-  canvas.height = fontSize * 1.2;
-
-  // Re-apply font settings after canvas resize
-  context.font = `bold ${fontSize}px Arial`;
-  context.fillStyle = 'rgba(255, 255, 255, 0.8)';
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  context.fillText(text, canvas.width / 2, canvas.height / 2);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-  const sprite = new THREE.Sprite(spriteMaterial);
-
-  const aspectRatio = canvas.width / canvas.height;
-  sprite.scale.set(80 * aspectRatio, 80, 1);
-
-  return sprite;
-}
-
 export function createGridAndScenery(
   theme: TrackTheme,
   walkingNpcsRef: MutableRefObject<THREE.Group[]>,
@@ -147,7 +118,7 @@ export function createGridAndScenery(
         staticCollidersRef.current.push(university);
 
         // Department Buildings
-        const departments = ['Mathematics', 'Physics', 'Chemistry', 'Biology'];
+        const departments = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'History', 'Art', 'Music'];
         departments.forEach((dept, index) => {
           const deptBuilding = createDepartmentBuilding();
           const angle = (index / departments.length) * Math.PI * 2;
@@ -282,13 +253,10 @@ export function createGridAndScenery(
   for (let i = 0; i < GRID_SIZE; i++) {
     for (let j = 0; j < GRID_SIZE; j++) {
       const sectorNumber = i * GRID_SIZE + j + 1;
-      const sectorLabel = createTextSprite(sectorNumber.toString());
 
       const x = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
       const z = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
 
-      sectorLabel.position.set(x, 50, z);
-      gridGroup.add(sectorLabel);
     }
   }
 
