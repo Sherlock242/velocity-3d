@@ -519,33 +519,38 @@ export default function GameWrapper() {
 
         // --- RAMP PHYSICS ---
         if (rampMeshRef.current) {
-          raycaster.set(
-            player.position.clone().add(new THREE.Vector3(0, 10, 0)),
-            new THREE.Vector3(0, -1, 0)
-          );
-          const intersects = raycaster.intersectObject(rampMeshRef.current, true);
-          
-          const closestIntersect = intersects
-            .filter(i => i.point.y < player.position.y + 1)
-            .sort((a, b) => a.distance - b.distance)[0];
-
-          if (closestIntersect) {
-            const groundY = closestIntersect.point.y;
-            if (player.position.y < groundY + playerHeight + 0.5) { // add a buffer
-              player.position.y = groundY + playerHeight;
-              onRamp = true;
+            raycaster.set(
+                player.position.clone().add(new THREE.Vector3(0, 10, 0)),
+                new THREE.Vector3(0, -1, 0)
+            );
+            const intersects = raycaster.intersectObject(rampMeshRef.current, true);
+            
+            const closestIntersect = intersects
+                .filter(i => i.point.y < player.position.y + 1)
+                .sort((a, b) => a.distance - b.distance)[0];
+    
+            if (closestIntersect) {
+                const groundY = closestIntersect.point.y;
+                if (player.position.y < groundY + playerHeight + 0.5) { // add a buffer
+                    player.position.y = groundY + playerHeight;
+                    onRamp = true;
+                }
             }
-          }
         }
-
+    
         // --- GRAVITY ---
         if (!onRamp) {
             if (player.position.y > playerHeight) {
-                player.position.y -= 9.8 * delta; // Apply gravity
+                velocityRef.current.y -= 9.8 * delta * 2; // Gravity
+                player.position.y += velocityRef.current.y * delta;
             }
             if (player.position.y < playerHeight) {
                 player.position.y = playerHeight; // Clamp to ground
+                velocityRef.current.y = 0;
             }
+        } else {
+            // If on ramp, reset vertical velocity
+            velocityRef.current.y = 0;
         }
 
 
@@ -622,12 +627,12 @@ export default function GameWrapper() {
             const colliderBox = new THREE.Box3().setFromObject(collider);
             if (playerBox.intersectsBox(colliderBox)) {
                 // Check if it's the university building
-                if (collider.name === 'LibraryBuilding') {
+                if (collider.name === 'LibraryBuilding' && controlModeRef.current === 'car') {
                     // Slide along the wall instead of knocking back
                     const collisionNormal = player.position.clone().sub(collider.position).normalize();
                     const dot = velocityRef.current.dot(collisionNormal);
                     velocityRef.current.sub(collisionNormal.multiplyScalar(dot));
-                } else {
+                } else if (collider.name !== 'LibraryBuilding') {
                     // Regular knockback for other buildings
                     velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
                     const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
