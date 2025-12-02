@@ -14,20 +14,16 @@ export function createPunjabUniversity() {
     transparent: true,
     opacity: 0.6,
   });
+  const finMaterial = new THREE.MeshStandardMaterial({
+    color: 0x4d6a8b, // Blue color for fins
+    roughness: 0.7,
+  });
   const bottomFloorGlassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4d6a8b, // Matching the fin blue color
+    color: finMaterial.color,
     roughness: 0.4,
     metalness: 0.1,
     transparent: true,
     opacity: 0.7,
-  });
-  const rampMaterial = new THREE.MeshStandardMaterial({
-    color: 0xb0b0b0,
-    roughness: 0.8,
-  });
-  const finMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4d6a8b, // Blue color for fins
-    roughness: 0.7,
   });
   const dividerMaterial = new THREE.MeshStandardMaterial({
     color: 0xbbbbbb,
@@ -106,20 +102,20 @@ export function createPunjabUniversity() {
         const windowAngle = ((j + 0.5) / numMullions) * Math.PI * 2;
         const windowWidth = (Math.PI * 2 * radius) / numMullions - 3; // Subtract mullion width
         const windowHeight = floorHeight * 0.95;
-        const windowRadius = radius + 0.1; // Place it slightly outside the mullions
+        const windowRadius = radius + 2; // Place it slightly outside the mullions to prevent z-fighting
 
         const windowGeom = new THREE.PlaneGeometry(windowWidth, windowHeight);
         const window = new THREE.Mesh(windowGeom, bottomFloorGlassMaterial);
 
         const windowX = Math.sin(windowAngle) * windowRadius;
         const windowZ = Math.cos(windowAngle) * windowRadius;
-        
+
         window.position.set(windowX, yPos + floorHeight / 2, windowZ);
         // Make the window face outwards from the center
         window.lookAt(
-          mullion.position.x * 2,
+          window.position.x * 2,
           yPos + floorHeight / 2,
-          mullion.position.z * 2
+          window.position.z * 2
         );
         floorGroup.add(window);
       }
@@ -210,7 +206,7 @@ export function createPunjabUniversity() {
   };
 
   const rampGeometry = new THREE.ExtrudeGeometry(rampShape, extrudeSettings);
-  const rampMesh = new THREE.Mesh(rampGeometry, rampMaterial);
+  const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
   library.add(rampMesh);
 
   // Balcony section
