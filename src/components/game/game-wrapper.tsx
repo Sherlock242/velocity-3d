@@ -531,14 +531,18 @@ export default function GameWrapper() {
 
           if (closestIntersect) {
             const groundY = closestIntersect.point.y;
-            player.position.y = groundY + playerHeight;
-            onRamp = true;
+            if (player.position.y < groundY + playerHeight + 0.5) { // add a buffer
+              player.position.y = groundY + playerHeight;
+              onRamp = true;
+            }
           }
         }
 
         // --- GRAVITY ---
-        if (!onRamp && player.position.y > playerHeight) {
-            player.position.y -= 9.8 * delta; // Apply gravity
+        if (!onRamp) {
+            if (player.position.y > playerHeight) {
+                player.position.y -= 9.8 * delta; // Apply gravity
+            }
             if (player.position.y < playerHeight) {
                 player.position.y = playerHeight; // Clamp to ground
             }
@@ -615,12 +619,21 @@ export default function GameWrapper() {
         
         // Static Colliders (Buildings)
         staticCollidersRef.current.forEach((collider) => {
-          const colliderBox = new THREE.Box3().setFromObject(collider);
-          if (playerBox.intersectsBox(colliderBox)) {
-              velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
-              const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
-              player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
-          }
+            const colliderBox = new THREE.Box3().setFromObject(collider);
+            if (playerBox.intersectsBox(colliderBox)) {
+                // Check if it's the university building
+                if (collider.name === 'LibraryBuilding') {
+                    // Slide along the wall instead of knocking back
+                    const collisionNormal = player.position.clone().sub(collider.position).normalize();
+                    const dot = velocityRef.current.dot(collisionNormal);
+                    velocityRef.current.sub(collisionNormal.multiplyScalar(dot));
+                } else {
+                    // Regular knockback for other buildings
+                    velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
+                    const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
+                    player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
+                }
+            }
         });
 
 
@@ -870,5 +883,3 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
-
-    
