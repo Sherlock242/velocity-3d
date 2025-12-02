@@ -2,7 +2,6 @@
 import * as THREE from 'three';
 
 export function createPunjabUniversity() {
-  const universityWithBase = new THREE.Group();
   const library = new THREE.Group();
   library.name = 'LibraryBuilding';
 
@@ -313,11 +312,9 @@ export function createPunjabUniversity() {
   walkableGroup.add(landingPlatform);
 
 
-  universityWithBase.add(library);
-  universityWithBase.add(walkableGroup);
-
+  const universityWithBase = new THREE.Group();
+  universityWithBase.add(library, walkableGroup);
   universityWithBase.scale.set(1.5, 1.5, 1.5);
-  return universityWithBase;
+  
+  return { university: universityWithBase, library, walkableGroup };
 }
-
-    

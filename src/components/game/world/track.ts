@@ -128,18 +128,17 @@ export function createGridAndScenery(
         gridGroup.add(plaza);
         
         // Main University Library
-        const university = createPunjabUniversity();
+        const { university, library, walkableGroup } = createPunjabUniversity();
         university.position.set(cellCenterX, 0, cellCenterZ);
         university.rotation.y = -Math.PI / 2;
         gridGroup.add(university);
         
         // Add only the building part to colliders
-        const libraryBuilding = university.getObjectByName('LibraryBuilding');
-        if (libraryBuilding) {
-            staticCollidersRef.current.push(libraryBuilding);
+        if (library) {
+            staticCollidersRef.current.push(library);
         }
         
-        const rampMesh = university.getObjectByName('universityRamp') as THREE.Mesh;
+        const rampMesh = walkableGroup.getObjectByName('universityRamp') as THREE.Mesh;
         if (rampMesh) {
             rampMeshRef.current = rampMesh;
         }
@@ -351,5 +350,3 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
-
-    
