@@ -18,6 +18,10 @@ export function createPunjabUniversity() {
     color: 0xb0b0b0, // A slightly darker gray for the ramp
     roughness: 0.8,
   });
+  const finMaterial = new THREE.MeshStandardMaterial({
+    color: 0x4d6a8b, // Blue color for the fins
+    roughness: 0.7,
+  });
 
   const mainRadius = 80;
   const topRadius = 85;
@@ -55,7 +59,7 @@ export function createPunjabUniversity() {
         
         // Fins
         const finGeom = new THREE.BoxGeometry(2, finHeight, 6);
-        const fin = new THREE.Mesh(finGeom, concreteMaterial);
+        const fin = new THREE.Mesh(finGeom, finMaterial);
         const finX = Math.sin(angle) * (mainRadius - 1);
         const finZ = Math.cos(angle) * (mainRadius - 1);
         fin.position.set(finX, yPos + floorHeight / 2, finZ);
@@ -87,7 +91,7 @@ export function createPunjabUniversity() {
     
     // Fins
     const finGeom = new THREE.BoxGeometry(2, finHeight, 4);
-    const fin = new THREE.Mesh(finGeom, concreteMaterial);
+    const fin = new THREE.Mesh(finGeom, finMaterial);
     const finX = Math.sin(angle) * (topRadius - 1);
     const finZ = Math.cos(angle) * (topRadius - 1);
     fin.position.set(finX, floor3Y + floorHeight/2, finZ);
