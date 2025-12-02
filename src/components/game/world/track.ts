@@ -202,7 +202,6 @@ export function createGridAndScenery(
          const houseSpacing = 120;
          const rowSpacing = 150;
          
-         // Houses in top-right
          const startX = cellCenterX + (CELL_SIZE / 2) - (numRows * rowSpacing);
          const startZ = cellCenterZ - (CELL_SIZE / 2) + rowSpacing;
 
@@ -218,9 +217,8 @@ export function createGridAndScenery(
           }
         }
         
-        // Special buildings in top-left
-        const specialBuildingZ = cellCenterZ - (CELL_SIZE/2) + 150;
-        let currentX = cellCenterX - (CELL_SIZE/2) + 100;
+        const specialBuildingZ = startZ + (numHousesPerRow * houseSpacing) + 100;
+        let currentX = startX;
 
         const gurudwara = createGurudwara();
         gurudwara.position.set(currentX, 0, specialBuildingZ);
