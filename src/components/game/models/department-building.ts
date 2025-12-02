@@ -1,34 +1,7 @@
 
 import * as THREE from 'three';
 
-function createTextSprite(text: string) {
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  if (!context) return new THREE.Sprite();
-
-  const fontSize = 80;
-  context.font = `bold ${fontSize}px Arial`;
-
-  const textMetrics = context.measureText(text);
-  canvas.width = textMetrics.width;
-  canvas.height = fontSize * 1.2;
-
-  context.font = `bold ${fontSize}px Arial`;
-  context.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  context.fillText(text, canvas.width / 2, canvas.height / 2);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-  const sprite = new THREE.Sprite(spriteMaterial);
-
-  const aspectRatio = canvas.width / canvas.height;
-  sprite.scale.set(50 * aspectRatio, 50, 1);
-  return sprite;
-}
-
-export function createDepartmentBuilding(name: string) {
+export function createDepartmentBuilding() {
   const building = new THREE.Group();
 
   const buildingHeight = 25;
@@ -52,11 +25,11 @@ export function createDepartmentBuilding(name: string) {
 
   // Add windows
   const windowMaterial = new THREE.MeshStandardMaterial({
-    color: 0x88aaff,
-    emissive: 0x3366cc,
-    emissiveIntensity: 0.2,
+    color: 0x000000,
+    metalness: 0.9,
+    roughness: 0.1,
   });
-  const windowGeom = new THREE.BoxGeometry(buildingWidth - 10, 8, 1);
+  const windowGeom = new THREE.BoxGeometry(buildingWidth - 20, 8, 1);
   const frontWindows = new THREE.Mesh(windowGeom, windowMaterial);
   frontWindows.position.set(0, buildingHeight * 0.6, buildingDepth / 2 + 0.1);
   building.add(frontWindows);
@@ -64,10 +37,27 @@ export function createDepartmentBuilding(name: string) {
   const backWindows = new THREE.Mesh(windowGeom, windowMaterial);
   backWindows.position.set(0, buildingHeight * 0.6, -buildingDepth / 2 - 0.1);
   building.add(backWindows);
+  
+  // Add Entrance
+  const entranceWidth = 10;
+  const entranceHeight = 15;
+  const entranceGeom = new THREE.BoxGeometry(entranceWidth, entranceHeight, 2);
+  const entranceMaterial = new THREE.MeshStandardMaterial({
+      color: 0x333333,
+  });
+  const entrance = new THREE.Mesh(entranceGeom, entranceMaterial);
+  entrance.position.set(0, entranceHeight / 2, buildingDepth / 2);
+  building.add(entrance);
+  
+  const doorGeom = new THREE.PlaneGeometry(6, 10);
+  const doorMaterial = new THREE.MeshStandardMaterial({
+      color: 0x111111,
+      metalness: 0.8
+  });
+  const door = new THREE.Mesh(doorGeom, doorMaterial);
+  door.position.set(0, 5, buildingDepth / 2 + 1.1);
+  entrance.add(door);
 
-  const departmentName = createTextSprite(name);
-  departmentName.position.set(0, buildingHeight + 15, 0);
-  building.add(departmentName);
 
   return building;
 }

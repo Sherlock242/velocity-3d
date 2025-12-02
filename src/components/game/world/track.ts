@@ -149,7 +149,7 @@ export function createGridAndScenery(
         // Department Buildings
         const departments = ['Mathematics', 'Physics', 'Chemistry', 'Biology'];
         departments.forEach((dept, index) => {
-          const deptBuilding = createDepartmentBuilding(dept);
+          const deptBuilding = createDepartmentBuilding();
           const angle = (index / departments.length) * Math.PI * 2;
           const x = cellCenterX + Math.cos(angle) * 350;
           const z = cellCenterZ + Math.sin(angle) * 350;
