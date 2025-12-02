@@ -78,8 +78,6 @@ export function createLegoPerson(isPlayer = false) {
   // Position head on top of neck
   headGroup.position.y = totalLegHeight + torsoHeight + neckHeight + headHeight / 2;
 
-  const hairMatOld = new THREE.MeshStandardMaterial({ color: 0x080808 }); // Different black for hair
-
   const armGeo = new THREE.BoxGeometry(0.3, 1.1, 0.3);
   const armMat = new THREE.MeshStandardMaterial({ color: torsoColor }); // Sleeves match torso
 
