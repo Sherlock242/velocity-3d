@@ -28,8 +28,9 @@ export function createLegoPerson(isPlayer = false) {
   const skinMat = new THREE.MeshStandardMaterial({ color: skinTone });
   const hairMat = new THREE.MeshStandardMaterial({ color: hairColor });
   
-  // Assign skin material to the sides (materialIndex 1) and hair material to the top/bottom (materialIndex 0 and 2)
-  const head = new THREE.Mesh(headGeo, [hairMat, skinMat, hairMat]);
+  // The material order for a Cylinder is: [side, top, bottom].
+  // We want a skin-colored side and a black (hair) top.
+  const head = new THREE.Mesh(headGeo, [skinMat, hairMat, hairMat]);
 
 
   const torsoHeight = 1.2;
