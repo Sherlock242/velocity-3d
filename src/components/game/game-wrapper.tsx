@@ -627,11 +627,13 @@ export default function GameWrapper() {
             const colliderBox = new THREE.Box3().setFromObject(collider);
             if (playerBox.intersectsBox(colliderBox)) {
                 if (collider.name === 'LibraryBuilding') {
-                    velocityRef.current.multiplyScalar(0.5); // Drastic slowdown
+                    if (controlModeRef.current === 'car') {
+                        velocityRef.current.multiplyScalar(0.5); 
+                    }
                 } else {
-                    velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
+                    velocityRef.current.multiplyScalar(0.1); 
                     const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
-                    player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
+                    player.position.add(knockback.multiplyScalar(delta * 60));
                 }
             }
         });
