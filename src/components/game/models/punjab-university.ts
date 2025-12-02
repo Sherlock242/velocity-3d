@@ -20,8 +20,12 @@ export function createPunjabUniversity() {
     color: 0x4d6a8b, // Blue color for fins
     roughness: 0.7,
   });
-  const bottomFloorGlassMaterial = new THREE.MeshBasicMaterial({
-    color: 0x4d6a8b, // Match the fin color
+  const bottomFloorGlassMaterial = new THREE.MeshStandardMaterial({
+    color: 0x4d6a8b,
+    roughness: 0.2,
+    metalness: 0.1,
+    transparent: true,
+    opacity: 0.7
   });
   const dividerMaterial = new THREE.MeshStandardMaterial({
     color: 0xbbbbbb,
@@ -100,7 +104,7 @@ export function createPunjabUniversity() {
         mullion.lookAt(0, yPos + floorHeight / 2, 0);
         floorGroup.add(mullion);
 
-        // Larger Glass Panes
+        // Larger Glass Panes - push them forward slightly
         const windowAngle = ((j + 0.5) / numMullions) * Math.PI * 2;
         const windowWidth = (Math.PI * 2 * radius) / numMullions - 3; // Subtract mullion width
         const windowHeight = floorHeight * 0.95;
