@@ -201,8 +201,8 @@ export function createGridAndScenery(
          const houseSpacing = 120;
          const rowSpacing = 150;
          
-         const startX = cellCenterX - (CELL_SIZE / 2) + (ROAD_WIDTH / 2) + 100;
-         const startZ = cellCenterZ + (CELL_SIZE / 2) - (numHousesPerRow * houseSpacing) - 50;
+         const startX = cellCenterX - (CELL_SIZE / 2) + 100;
+         const startZ = cellCenterZ - (CELL_SIZE / 2) + 150;
 
          for (let row = 0; row < numRows; row++) {
           for (let col = 0; col < numHousesPerRow; col++) {
