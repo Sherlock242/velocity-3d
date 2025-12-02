@@ -96,9 +96,12 @@ export function createPunjabUniversity() {
         floorGroup.add(mullion);
 
         // Larger Glass Panes
-        const windowAngle = (j + 0.5) / numMullions * Math.PI * 2;
+        const windowAngle = ((j + 0.5) / numMullions) * Math.PI * 2;
         const windowWidth = (Math.PI * 2 * (radius - 4)) / numMullions - 2;
-        const windowGeom = new THREE.PlaneGeometry(windowWidth, floorHeight * 0.9);
+        const windowGeom = new THREE.PlaneGeometry(
+          windowWidth,
+          floorHeight * 0.9
+        );
         const window = new THREE.Mesh(windowGeom, glassMaterial);
         const windowX = Math.sin(windowAngle) * (radius - 4);
         const windowZ = Math.cos(windowAngle) * (radius - 4);
