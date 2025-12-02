@@ -25,7 +25,8 @@ import { createLightMandir } from '../models/light-mandir';
 export function createGridAndScenery(
   theme: TrackTheme,
   walkingNpcsRef: MutableRefObject<THREE.Group[]>,
-  staticCollidersRef: MutableRefObject<THREE.Group[]>
+  staticCollidersRef: MutableRefObject<THREE.Group[]>,
+  rampMeshRef: MutableRefObject<THREE.Mesh | undefined>
 ) {
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
@@ -137,6 +138,11 @@ export function createGridAndScenery(
         if (libraryBuilding) {
             staticCollidersRef.current.push(libraryBuilding);
         }
+        
+        const rampMesh = university.getObjectByName('universityRamp') as THREE.Mesh;
+        if (rampMesh) {
+            rampMeshRef.current = rampMesh;
+        }
 
         // Department Buildings, Roads, and Parking
         const departments = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'History', 'Art', 'Music'];
@@ -216,7 +222,7 @@ export function createGridAndScenery(
             const x = startX + row * rowSpacing;
             const z = startZ + col * houseSpacing;
             house.position.set(x, 0, z);
-            house.rotation.y = -Math.PI / 2;
+            house.rotation.y = Math.PI / 2;
             gridGroup.add(house);
             staticCollidersRef.current.push(house);
           }
@@ -228,48 +234,37 @@ export function createGridAndScenery(
 
         const lightMandir = createLightMandir();
         lightMandir.position.set(specialBuildingX, 0, currentZ);
-        lightMandir.rotation.y = -Math.PI / 2;
+        lightMandir.rotation.y = Math.PI;
         gridGroup.add(lightMandir);
         staticCollidersRef.current.push(lightMandir);
-        currentZ += 150;
+        currentZ += 80;
 
         const satsangBuilding = createSatsangBuilding();
         satsangBuilding.position.set(specialBuildingX, 0, currentZ);
-        satsangBuilding.rotation.y = Math.PI / 2;
+        satsangBuilding.rotation.y = Math.PI;
         gridGroup.add(satsangBuilding);
         staticCollidersRef.current.push(satsangBuilding);
         currentZ += 150;
 
         const kaliMandir = createKaliMandir();
         kaliMandir.position.set(specialBuildingX, 0, currentZ);
-        kaliMandir.rotation.y = -Math.PI / 2;
+        kaliMandir.rotation.y = Math.PI;
         gridGroup.add(kaliMandir);
         staticCollidersRef.current.push(kaliMandir);
         currentZ += 70;
 
-        const coachingClass = createCoachingClass();
-        coachingClass.position.set(specialBuildingX, 0, currentZ);
-        coachingClass.rotation.y = -Math.PI / 2;
-        gridGroup.add(coachingClass);
-        staticCollidersRef.current.push(coachingClass);
-        currentZ += 110;
-
         const gurudwara = createGurudwara();
         gurudwara.position.set(specialBuildingX, 0, currentZ);
-        gurudwara.rotation.y = -Math.PI / 2;
-        const mainBuilding = gurudwara.getObjectByName('mainBuilding') as THREE.Group;
-        const parikrama = gurudwara.getObjectByName('parikrama') as THREE.Mesh;
-        gurudwara.remove(mainBuilding);
-        gurudwara.remove(parikrama);
+        gurudwara.rotation.y = Math.PI;
+        gridGroup.add(gurudwara);
+        staticCollidersRef.current.push(gurudwara);
+        currentZ += 110;
 
-        mainBuilding.position.copy(gurudwara.position);
-        mainBuilding.rotation.copy(gurudwara.rotation);
-        parikrama.position.copy(gurudwara.position);
-        parikrama.rotation.copy(gurudwara.rotation);
-
-        gridGroup.add(parikrama); // Add separately to avoid being a collider
-        gridGroup.add(mainBuilding);
-        staticCollidersRef.current.push(mainBuilding); // Only collide with the building
+        const coachingClass = createCoachingClass();
+        coachingClass.position.set(specialBuildingX, 0, currentZ);
+        coachingClass.rotation.y = Math.PI;
+        gridGroup.add(coachingClass);
+        staticCollidersRef.current.push(coachingClass);
 
         continue;
       }
@@ -356,3 +351,5 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
+
+    

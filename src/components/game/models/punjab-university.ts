@@ -290,6 +290,7 @@ export function createPunjabUniversity() {
 
   const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
   rampMesh.material.side = THREE.DoubleSide; // Make ramp visible from all angles
+  rampMesh.name = 'universityRamp';
   
   walkableGroup.add(rampMesh);
 
@@ -318,3 +319,5 @@ export function createPunjabUniversity() {
   universityWithBase.scale.set(1.5, 1.5, 1.5);
   return universityWithBase;
 }
+
+    

@@ -74,6 +74,7 @@ export default function GameWrapper() {
   const fountainWaterJetRef = React.useRef<THREE.Mesh>();
   const walkingNpcsRef = React.useRef<THREE.Group[]>([]);
   const staticCollidersRef = React.useRef<THREE.Group[]>([]);
+  const rampMeshRef = React.useRef<THREE.Mesh>();
 
 
   // Control mode refs
@@ -126,6 +127,7 @@ export default function GameWrapper() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     mountNode.appendChild(renderer.domElement);
+    const raycaster = new THREE.Raycaster();
 
     // --- AUDIO SETUP ---
     const listener = new THREE.AudioListener();
@@ -251,7 +253,7 @@ export default function GameWrapper() {
     }
     
     // --- GRID TRACK & SCENERY ---
-    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef);
+    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef);
     scene.add(gridGroup);
     
     // Find the water jet to animate it
@@ -512,6 +514,23 @@ export default function GameWrapper() {
       });
 
       if (player) {
+        // --- RAMP PHYSICS ---
+        if (rampMeshRef.current) {
+            raycaster.set(player.position.clone().setY(500), new THREE.Vector3(0, -1, 0));
+            const intersects = raycaster.intersectObject(rampMeshRef.current);
+            if (intersects.length > 0) {
+                const groundY = intersects[0].point.y;
+                if (player.position.y < groundY + 0.5) { // Add a small offset
+                   player.position.y = groundY + 0.5;
+                }
+            } else {
+                 if (player.position.y > 0.5) {
+                    player.position.y -= 9.8 * delta; // Basic gravity
+                    if(player.position.y < 0.5) player.position.y = 0.5;
+                }
+            }
+        }
+
         // --- BOUNDARY CHECKS ---
         const halfGrid = TOTAL_GRID_WIDTH / 2;
         player.position.x = Math.max(-halfGrid, Math.min(halfGrid, player.position.x));
@@ -812,7 +831,7 @@ export default function GameWrapper() {
             gridSize={GRID_SIZE}
             totalGridWidth={TOTAL_GRID_WIDTH}
             controlMode={gameData.controlMode}
-            onToggleControlMode={handleToggleControlMode}
+            onToggleControlMode={onToggleControlMode}
             onToggleLargeMap={() => setIsLargeMapOpen(prev => !prev)}
             onAcceleratorPress={() => {
               initAudioOnInteraction();
@@ -837,3 +856,5 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
+    
