@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 export function createPunjabUniversity() {
@@ -20,7 +21,7 @@ export function createPunjabUniversity() {
     roughness: 0.7,
   });
   const bottomFloorGlassMaterial = new THREE.MeshBasicMaterial({
-    color: 0x224488,
+    color: 0x4d6a8b, // Match the fin color
   });
   const dividerMaterial = new THREE.MeshStandardMaterial({
     color: 0xbbbbbb,
@@ -101,7 +102,7 @@ export function createPunjabUniversity() {
 
         // Larger Glass Panes
         const windowAngle = ((j + 0.5) / numMullions) * Math.PI * 2;
-        const windowWidth = (Math.PI * 2 * (radius + 2)) / numMullions - 3; // Subtract mullion width
+        const windowWidth = (Math.PI * 2 * radius) / numMullions - 3; // Subtract mullion width
         const windowHeight = floorHeight * 0.95;
         const windowRadius = radius + 2.1; // Place it slightly outside the mullions to prevent z-fighting
 
@@ -226,7 +227,7 @@ export function createPunjabUniversity() {
   library.add(balcony);
 
   // --- Base ---
-  const baseHeight = 10;
+  const baseHeight = 5; // Made slimmer
   const baseRadius = topRadius + 5; // Slightly wider than the top floor
   const baseGeometry = new THREE.CylinderGeometry(baseRadius, baseRadius, baseHeight, 64);
   const baseMesh = new THREE.Mesh(baseGeometry, brownBaseMaterial);
