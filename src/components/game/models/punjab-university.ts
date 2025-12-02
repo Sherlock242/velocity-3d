@@ -114,8 +114,8 @@ export function createPunjabUniversity() {
 
 
   // --- Spiral Ramp ---
-  const rampRadius = mainRadius + 15;
-  const rampWidth = 30;
+  const rampRadius = mainRadius + 10;
+  const rampWidth = 20;
   const rampWallHeight = 8;
   const rampTotalHeight = floorHeight * 4; // Ramp goes up to floor 4
   const rampSegments = 256;
