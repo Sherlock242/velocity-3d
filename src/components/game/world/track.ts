@@ -211,7 +211,6 @@ export function createGridAndScenery(
         for (let k = 0; k < numNpcs; k++) {
           const gender = Math.random() > 0.5 ? 'male' : 'female';
           const npc = createLegoPerson(false, gender);
-          npc.scale.set(1.5, 1.5, 1.5);
           const safeArea = (CELL_SIZE - ROAD_WIDTH) / 2 - 20; // Stay away from roads
           const x = cellCenterX + (Math.random() - 0.5) * safeArea;
           const z = cellCenterZ + (Math.random() - 0.5) * safeArea;
