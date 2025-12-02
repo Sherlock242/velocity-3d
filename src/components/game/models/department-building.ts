@@ -30,33 +30,45 @@ export function createDepartmentBuilding() {
     roughness: 0.1,
   });
 
-  const numWindows = 10;
-  const windowWidth = (buildingWidth - 40) / numWindows;
+  const numWindowsPerSide = 5;
+  const entranceWidth = 20; // Space for the entrance
+  const totalWindowSpace = buildingWidth - entranceWidth;
+  const windowSectionWidth = totalWindowSpace / 2;
+  const windowWidth = (windowSectionWidth / numWindowsPerSide) * 0.8;
+  const windowSpacing = windowSectionWidth / numWindowsPerSide;
   const windowHeight = 8;
-  const windowSpacing = windowWidth * 1.1;
 
-  for (let i = 0; i < numWindows; i++) {
-    const windowGeom = new THREE.BoxGeometry(windowWidth * 0.9, windowHeight, 1);
+
+  // Left side windows
+  for (let i = 0; i < numWindowsPerSide; i++) {
+    const windowGeom = new THREE.BoxGeometry(windowWidth, windowHeight, 1);
+    const xPos = -buildingWidth / 2 + (i + 0.5) * windowSpacing;
     
-    // Skip the middle for the entrance
-    const positionIndex = i < numWindows / 2 ? i : i + 1;
-    const xPos = - (buildingWidth / 2) + 20 + positionIndex * windowSpacing;
+    const frontWindow = new THREE.Mesh(windowGeom, windowMaterial);
+    frontWindow.position.set(xPos, buildingHeight * 0.6, buildingDepth / 2 + 0.1);
+    building.add(frontWindow);
+
+    const backWindow = new THREE.Mesh(windowGeom, windowMaterial);
+    backWindow.position.set(xPos, buildingHeight * 0.6, -buildingDepth / 2 - 0.1);
+    building.add(backWindow);
+  }
+
+  // Right side windows
+  for (let i = 0; i < numWindowsPerSide; i++) {
+    const windowGeom = new THREE.BoxGeometry(windowWidth, windowHeight, 1);
+    const xPos = buildingWidth / 2 - (i + 0.5) * windowSpacing;
     
-    // Front windows
     const frontWindow = new THREE.Mesh(windowGeom, windowMaterial);
     frontWindow.position.set(xPos, buildingHeight * 0.6, buildingDepth / 2 + 0.1);
     building.add(frontWindow);
     
-    // Back windows
     const backWindow = new THREE.Mesh(windowGeom, windowMaterial);
     backWindow.position.set(xPos, buildingHeight * 0.6, -buildingDepth / 2 - 0.1);
     building.add(backWindow);
   }
   
   // Add Entrance
-  const entranceWidth = 10;
-  const entranceHeight = 15;
-  const entranceGeom = new THREE.BoxGeometry(entranceWidth, entranceHeight, 2);
+  const entranceGeom = new THREE.BoxGeometry(10, entranceHeight, 2);
   const entranceMaterial = new THREE.MeshStandardMaterial({
       color: 0x333333,
   });
