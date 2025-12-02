@@ -1,71 +1,6 @@
 
 import * as THREE from 'three';
 
-function createKhandaSymbol() {
-  const khandaGroup = new THREE.Group();
-  const material = new THREE.MeshStandardMaterial({
-    color: 0x808080, // Gray color
-    metalness: 0.2,
-    roughness: 0.8,
-  });
-
-  // 1. Chakkar (the circle)
-  const chakkarGeom = new THREE.TorusGeometry(10, 1.5, 16, 100);
-  const chakkar = new THREE.Mesh(chakkarGeom, material);
-  chakkar.rotation.x = Math.PI / 2;
-  khandaGroup.add(chakkar);
-
-  // 2. Central Khanda (double-edged sword)
-  const khandaShape = new THREE.Shape();
-  khandaShape.moveTo(0, -18);
-  khandaShape.lineTo(2, -16);
-  khandaShape.lineTo(1, 0);
-  khandaShape.lineTo(4, 15);
-  khandaShape.lineTo(2, 16);
-  khandaShape.lineTo(0, 18); // Tip
-  khandaShape.lineTo(-2, 16);
-  khandaShape.lineTo(-4, 15);
-  khandaShape.lineTo(-1, 0);
-  khandaShape.lineTo(-2, -16);
-  khandaShape.lineTo(0, -18);
-
-  const extrudeSettings = { depth: 1, bevelEnabled: false };
-  const khandaGeom = new THREE.ExtrudeGeometry(khandaShape, extrudeSettings);
-  const centralKhanda = new THREE.Mesh(khandaGeom, material);
-  centralKhanda.position.z = -0.5;
-  khandaGroup.add(centralKhanda);
-
-
-  // 3. Kirpans (the curved swords)
-  function createKirpan() {
-    const kirpanShape = new THREE.Shape();
-    kirpanShape.moveTo(-1, -15);
-    kirpanShape.bezierCurveTo(-2, 0, 5, 10, 1, 15);
-    kirpanShape.lineTo(0, 16);
-    kirpanShape.bezierCurveTo(6, 11, -1, 1, -2, -15);
-    kirpanShape.lineTo(-1, -15);
-    
-    const kirpanGeom = new THREE.ExtrudeGeometry(kirpanShape, extrudeSettings);
-    return new THREE.Mesh(kirpanGeom, material);
-  }
-
-  const leftKirpan = createKirpan();
-  leftKirpan.rotation.z = -Math.PI / 6; // ~30 degrees
-  leftKirpan.position.x = -6;
-  leftKirpan.position.y = -2;
-  
-  const rightKirpan = createKirpan();
-  rightKirpan.rotation.z = Math.PI / 6; // ~30 degrees
-  rightKirpan.position.x = 6;
-  rightKirpan.position.y = -2;
-  
-  khandaGroup.add(leftKirpan, rightKirpan);
-  
-  khandaGroup.scale.set(0.5, 0.5, 0.5);
-  return khandaGroup;
-}
-
-
 export function createPunjabUniversity() {
   const universityWithBase = new THREE.Group();
   const library = new THREE.Group();
@@ -370,16 +305,6 @@ export function createPunjabUniversity() {
   landingPlatform.rotation.z = -landingAngle + Math.PI / 2;
 
   universityWithBase.add(landingPlatform);
-
-  // --- Add Khanda Symbol ---
-  const khandaSymbol = createKhandaSymbol();
-  // Position it on the landing platform
-  khandaSymbol.position.copy(landingPlatform.position);
-  khandaSymbol.position.y += 20; // Raise it above the platform
-  // Rotate it to face outwards from the ramp
-  khandaSymbol.rotation.y = landingAngle + Math.PI;
-
-  universityWithBase.add(khandaSymbol);
 
 
   universityWithBase.scale.set(1.5, 1.5, 1.5);
