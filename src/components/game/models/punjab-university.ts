@@ -9,23 +9,16 @@ export function createPunjabUniversity() {
     color: 0xaaaaaa, // Darker grey
     roughness: 0.8,
   });
-  const glassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4d6a8b, // Light Blue
-    roughness: 0.1,
-    metalness: 0.2,
-    transparent: true,
-    opacity: 0.6,
-  });
   const finMaterial = new THREE.MeshStandardMaterial({
     color: 0x4d6a8b, // Blue color for fins
     roughness: 0.7,
   });
   const bottomFloorGlassMaterial = new THREE.MeshStandardMaterial({
     color: 0x4d6a8b,
-    roughness: 0.2,
+    roughness: 0.1,
     metalness: 0.1,
     transparent: true,
-    opacity: 0.7
+    opacity: 0.7,
   });
   const dividerMaterial = new THREE.MeshStandardMaterial({
     color: 0xbbbbbb,
@@ -42,7 +35,7 @@ export function createPunjabUniversity() {
 
   const mainRadius = 80;
   const topRadius = 85;
-  const floorHeight = 15;
+  const floorHeight = 25; // Increased from 15
   const finHeight = floorHeight * 0.8;
   const numFins = 48; // For upper floors
   const numMullions = 24; // For lower floors
@@ -83,7 +76,7 @@ export function createPunjabUniversity() {
           (Math.PI * 2 * (radius - 4)) / numFins,
           finHeight * 0.9
         );
-        const window = new THREE.Mesh(windowGeom, glassMaterial);
+        const window = new THREE.Mesh(windowGeom, bottomFloorGlassMaterial);
         const windowX = Math.sin(angle) * (radius - 4);
         const windowZ = Math.cos(angle) * (radius - 4);
         window.position.set(windowX, yPos + floorHeight / 2, windowZ);
