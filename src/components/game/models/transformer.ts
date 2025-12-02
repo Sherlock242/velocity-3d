@@ -25,23 +25,27 @@ export function createLegoPerson(isPlayer = false) {
   const hairColor = 0x080808; // Black
 
   // Head
-  const headGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16);
-  const headMat = new THREE.MeshStandardMaterial({ color: skinTone });
-  const head = new THREE.Mesh(headGeo, headMat);
+  const head = new THREE.Group();
 
-  // Hair (as a simple box at the back)
-  const hairGeo = new THREE.BoxGeometry(headRadius * 2, headHeight, headRadius * 0.5);
+  // Face (Front Half)
+  const faceGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, -Math.PI / 2, Math.PI);
+  const faceMat = new THREE.MeshStandardMaterial({ color: skinTone });
+  const face = new THREE.Mesh(faceGeo, faceMat);
+  head.add(face);
+
+  // Hair (Back Half)
+  const hairGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, Math.PI / 2, Math.PI);
   const hairMat = new THREE.MeshStandardMaterial({ color: hairColor });
   const hair = new THREE.Mesh(hairGeo, hairMat);
-  hair.position.z = -headRadius * 0.5;
-  head.add(hair); // Add hair as a child of the head mesh
+  head.add(hair);
 
   // Add the hair on top
   const hairTopGeo = new THREE.CylinderGeometry(headRadius, headRadius, 0.1, 16);
   const hairTopMat = new THREE.MeshStandardMaterial({ color: hairColor });
   const hairTop = new THREE.Mesh(hairTopGeo, hairTopMat);
-  hairTop.position.y = headHeight / 2;
+  hairTop.position.y = headHeight / 2 - 0.05; // Slightly lower to avoid z-fighting
   head.add(hairTop);
+
 
   const torsoHeight = 1.2;
   const legHeight = 1.4;
@@ -88,7 +92,7 @@ export function createLegoPerson(isPlayer = false) {
   leftArmGroup.add(leftArm);
   leftArmGroup.add(leftHand);
   // Position arms relative to torso
-  leftArmGroup.position.set(0.75, totalLegHeight + torsoHeight / 2, 0);
+  leftArmGroup.position.set(0.75, torso.position.y, 0);
   legoPerson.add(leftArmGroup);
 
   const rightArmGroup = new THREE.Group();
@@ -97,7 +101,7 @@ export function createLegoPerson(isPlayer = false) {
   rightHand.position.y = -0.65;
   rightArmGroup.add(rightArm);
   rightArmGroup.add(rightHand);
-  rightArmGroup.position.set(-0.75, totalLegHeight + torsoHeight / 2, 0);
+  rightArmGroup.position.set(-0.75, torso.position.y, 0);
   legoPerson.add(rightArmGroup);
 
 
@@ -379,11 +383,11 @@ export function updateTransformerAnimation(
 
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
-      const lArmPersonPos = new THREE.Vector3(0.75, totalLegHeight + torsoHeight / 2, 0);
+      const lArmPersonPos = new THREE.Vector3(0.75, torsoPersonPos.y, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-0.75, totalLegHeight + torsoHeight / 2, 0);
+      const rArmPersonPos = new THREE.Vector3(-0.75, torsoPersonPos.y, 0);
       personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
 
       // Legs from back wheels
