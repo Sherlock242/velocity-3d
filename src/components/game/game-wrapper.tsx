@@ -514,34 +514,33 @@ export default function GameWrapper() {
       });
 
       if (player) {
+        const playerHeight = controlModeRef.current === 'car' ? 0.5 : 2.0;
+        let onRamp = false;
+
         // --- RAMP PHYSICS ---
         if (rampMeshRef.current) {
-            raycaster.set(player.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));
-            const intersects = raycaster.intersectObjects([rampMeshRef.current], true);
-            
-            if (intersects.length > 0) {
-                // Find the closest intersection point that is below the player
-                const closestIntersect = intersects
-                    .filter(i => i.point.y < player.position.y + 1)
-                    .sort((a, b) => a.distance - b.distance)[0];
+          raycaster.set(
+            player.position.clone().add(new THREE.Vector3(0, 10, 0)),
+            new THREE.Vector3(0, -1, 0)
+          );
+          const intersects = raycaster.intersectObject(rampMeshRef.current, true);
+          
+          const closestIntersect = intersects
+            .filter(i => i.point.y < player.position.y + 1)
+            .sort((a, b) => a.distance - b.distance)[0];
 
-                if (closestIntersect) {
-                    const groundY = closestIntersect.point.y;
-                    const playerHeight = controlModeRef.current === 'car' ? 0.5 : 2.0; // Adjust height based on mode
-                    player.position.y = groundY + playerHeight;
-                } else {
-                     // Gravity if no valid ramp intersection below player
-                    if (player.position.y > 0.5) {
-                        player.position.y -= 9.8 * delta; 
-                        if(player.position.y < 0.5) player.position.y = 0.5;
-                    }
-                }
-            } else {
-                 // Gravity if not over the ramp
-                 if (player.position.y > 0.5) {
-                    player.position.y -= 9.8 * delta;
-                    if(player.position.y < 0.5) player.position.y = 0.5;
-                }
+          if (closestIntersect) {
+            const groundY = closestIntersect.point.y;
+            player.position.y = groundY + playerHeight;
+            onRamp = true;
+          }
+        }
+
+        // --- GRAVITY ---
+        if (!onRamp && player.position.y > playerHeight) {
+            player.position.y -= 9.8 * delta; // Apply gravity
+            if (player.position.y < playerHeight) {
+                player.position.y = playerHeight; // Clamp to ground
             }
         }
 
@@ -871,3 +870,5 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
+    
