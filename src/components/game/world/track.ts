@@ -13,6 +13,8 @@ import { createChandigarhHouse } from '../models/chandigarh-house';
 import { createLegoPerson } from '../models/transformer';
 import type { MutableRefObject } from 'react';
 import { createPunjabUniversity } from '../models/punjab-university';
+import { createGovtHouse } from '../models/govt-house';
+import { createDepartmentBuilding } from '../models/department-building';
 
 function createTextSprite(text: string) {
   const canvas = document.createElement('canvas');
@@ -135,12 +137,41 @@ export function createGridAndScenery(
       const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
       const sectorNumber = j * GRID_SIZE + i + 1;
 
-      if (sectorNumber === 14) { // Sector 14 for Punjab University
+      if (sectorNumber === 14) { 
+        // Main University Library
         const university = createPunjabUniversity();
         university.position.set(cellCenterX, 0, cellCenterZ);
         university.rotation.y = -Math.PI / 2;
         gridGroup.add(university);
         staticCollidersRef.current.push(university);
+
+        // Department Buildings
+        const departments = ['Mathematics', 'Physics', 'Chemistry', 'Biology'];
+        departments.forEach((dept, index) => {
+          const deptBuilding = createDepartmentBuilding(dept);
+          const angle = (index / departments.length) * Math.PI * 2;
+          const x = cellCenterX + Math.cos(angle) * 350;
+          const z = cellCenterZ + Math.sin(angle) * 350;
+          deptBuilding.position.set(x, 0, z);
+          deptBuilding.lookAt(university.position);
+          gridGroup.add(deptBuilding);
+          staticCollidersRef.current.push(deptBuilding);
+        });
+
+        // Corner Government Houses
+        const cornerOffset = CELL_SIZE / 2 - 100;
+        const corners = [
+            { x: cellCenterX - cornerOffset, z: cellCenterZ - cornerOffset },
+            { x: cellCenterX + cornerOffset, z: cellCenterZ - cornerOffset },
+            { x: cellCenterX - cornerOffset, z: cellCenterZ + cornerOffset },
+            { x: cellCenterX + cornerOffset, z: cellCenterZ + cornerOffset },
+        ];
+        corners.forEach(corner => {
+            const house = createGovtHouse();
+            house.position.set(corner.x, 0, corner.z);
+            gridGroup.add(house);
+            staticCollidersRef.current.push(house);
+        });
         continue;
       }
 
