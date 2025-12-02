@@ -233,7 +233,7 @@ export function createGridAndScenery(
         satsangBuilding.rotation.y = -Math.PI / 2;
         gridGroup.add(satsangBuilding);
         staticCollidersRef.current.push(satsangBuilding);
-        currentZ += 150;
+        currentZ += 105;
 
         const kaliMandir = createKaliMandir();
         kaliMandir.position.set(specialBuildingX, 0, currentZ);
@@ -247,14 +247,24 @@ export function createGridAndScenery(
         coachingClass.rotation.y = -Math.PI / 2;
         gridGroup.add(coachingClass);
         staticCollidersRef.current.push(coachingClass);
-        currentZ += 105;
+        currentZ += 110;
 
         const gurudwara = createGurudwara();
         gurudwara.position.set(specialBuildingX, 0, currentZ);
         gurudwara.rotation.y = -Math.PI / 2;
-        gridGroup.add(gurudwara);
-        staticCollidersRef.current.push(gurudwara);
-        currentZ += 110;
+        const mainBuilding = gurudwara.getObjectByName('mainBuilding') as THREE.Group;
+        const parikrama = gurudwara.getObjectByName('parikrama') as THREE.Mesh;
+        gurudwara.remove(mainBuilding);
+        gurudwara.remove(parikrama);
+
+        mainBuilding.position.copy(gurudwara.position);
+        mainBuilding.rotation.copy(gurudwara.rotation);
+        parikrama.position.copy(gurudwara.position);
+        parikrama.rotation.copy(gurudwara.rotation);
+
+        gridGroup.add(parikrama); // Add separately to avoid being a collider
+        gridGroup.add(mainBuilding);
+        staticCollidersRef.current.push(mainBuilding); // Only collide with the building
 
         continue;
       }

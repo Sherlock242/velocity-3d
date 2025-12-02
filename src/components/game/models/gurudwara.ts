@@ -21,10 +21,12 @@ export function createGurudwara() {
   const parikrama = new THREE.Mesh(parikramaGeom, whiteMaterial);
   parikrama.position.y = 0.5;
   parikrama.receiveShadow = true;
+  parikrama.name = 'parikrama'; // Name it for separation
   gurudwara.add(parikrama);
 
   // Main building group (to be placed in the center of the sarovar)
   const mainBuildingGroup = new THREE.Group();
+  mainBuildingGroup.name = 'mainBuilding'; // Name it for separation
   gurudwara.add(mainBuildingGroup);
 
   // Main building base
