@@ -15,6 +15,8 @@ export function createPunjabUniversity() {
     color: 0x88aacc,
     roughness: 0.3,
     metalness: 0.2,
+    transparent: true,
+    opacity: 0.8,
   });
 
   const mainRadius = 80;
