@@ -16,13 +16,23 @@ const CLOTHING_COLORS = [
   0x17becf, // Blue-Teal
 ];
 
-export function createLegoPerson(isPlayer = false) {
+const HAIR_COLORS = [
+    0x080808, // Black
+    0x4a321a, // Brown
+    0xb8860b, // Blonde
+    0xd62728, // Red
+];
+
+
+export function createLegoPerson(isPlayer = false, gender: 'male' | 'female' = 'male') {
   const legoPerson = new THREE.Group();
 
   const headRadius = 0.4;
   const headHeight = 0.5;
   const skinTone = 0xffdbac;
-  const hairColor = 0x080808; // Black
+  
+  const hairColor = isPlayer ? 0x080808 : HAIR_COLORS[Math.floor(Math.random() * HAIR_COLORS.length)];
+
 
   // Head
   const head = new THREE.Group();
@@ -43,8 +53,16 @@ export function createLegoPerson(isPlayer = false) {
   const hairTopGeo = new THREE.CylinderGeometry(headRadius, headRadius, 0.1, 16);
   const hairTopMat = new THREE.MeshStandardMaterial({ color: hairColor });
   const hairTop = new THREE.Mesh(hairTopGeo, hairTopMat);
-  hairTop.position.y = headHeight / 2; // Position it flush on top of the head
+  hairTop.position.y = headHeight / 2 + 0.01; // Position it slightly above to avoid z-fighting
   head.add(hairTop);
+  
+    // Female long hair style
+  if (gender === 'female') {
+    const longHairGeom = new THREE.BoxGeometry(0.8, 1, 0.2);
+    const longHair = new THREE.Mesh(longHairGeom, hairMat);
+    longHair.position.set(0, -0.4, -headRadius);
+    head.add(longHair);
+  }
 
 
   const torsoHeight = 1.2;
@@ -324,7 +342,7 @@ export function createTransformer() {
   transformer.position.y = 0.5;
 
   const carModel = createLamborghini();
-  const personModel = createLegoPerson(true); // isPlayer = true
+  const personModel = createLegoPerson(true, 'male'); // isPlayer = true
   personModel.visible = false; // Start as car
 
   transformer.add(carModel);
