@@ -15,10 +15,11 @@ export function createPunjabUniversity() {
     opacity: 0.6,
   });
   const bottomFloorGlassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4682B4, // A distinct blue color
-    roughness: 0.1,
-    metalness: 0.9,
-    transparent: false,
+    color: 0x4682b4, // A distinct blue color
+    roughness: 0.2,
+    metalness: 0.1,
+    transparent: true,
+    opacity: 0.7,
   });
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: 0xb0b0b0,
