@@ -42,7 +42,7 @@ export function createLegoPerson(isPlayer = false) {
   const headTopGeo = new THREE.CircleGeometry(headRadius, 16);
   const headTopMat = new THREE.MeshStandardMaterial({ color: hairColor, side: THREE.DoubleSide });
   const headTop = new THREE.Mesh(headTopGeo, headTopMat);
-  headTop.position.y = headHeight / 2;
+  headTop.position.y = headHeight / 2 - 0.001; // Slightly lower to prevent z-fighting
   headTop.rotation.x = Math.PI / 2;
   headGroup.add(headTop);
 
