@@ -155,6 +155,7 @@ export function createGridAndScenery(
           const z = cellCenterZ + Math.sin(angle) * 350;
           deptBuilding.position.set(x, 0, z);
           deptBuilding.lookAt(university.position);
+          deptBuilding.rotation.y += Math.PI; // Rotate 180 degrees
           gridGroup.add(deptBuilding);
           staticCollidersRef.current.push(deptBuilding);
         });
