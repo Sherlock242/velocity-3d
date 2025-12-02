@@ -16,6 +16,11 @@ import type { MutableRefObject } from 'react';
 import { createPunjabUniversity } from '../models/punjab-university';
 import { createGovtHouse } from '../models/govt-house';
 import { createDepartmentBuilding } from '../models/department-building';
+import { createGurudwara } from '../models/gurudwara';
+import { createKaliMandir } from '../models/kali-mandir';
+import { createCoachingClass } from '../models/coaching-class';
+import { createSatsangBuilding } from '../models/satsang-building';
+import { createLightMandir } from '../models/light-mandir';
 
 export function createGridAndScenery(
   theme: TrackTheme,
@@ -147,7 +152,6 @@ export function createGridAndScenery(
           const deptBuilding = createDepartmentBuilding();
           deptBuilding.position.set(buildingX, 0, buildingZ);
           deptBuilding.lookAt(university.position);
-          deptBuilding.rotation.y += Math.PI; // Rotate 180 degrees
           gridGroup.add(deptBuilding);
           staticCollidersRef.current.push(deptBuilding);
           
@@ -197,20 +201,54 @@ export function createGridAndScenery(
          const houseSpacing = 120;
          const rowSpacing = 150;
          
-         const startX = cellCenterX + (CELL_SIZE / 2) - ROAD_WIDTH / 2 - 50;
+         const startX = cellCenterX - (CELL_SIZE / 2) + ROAD_WIDTH + 150;
          const startZ = cellCenterZ - (CELL_SIZE / 2) + (ROAD_WIDTH / 2) + 50;
 
          for (let row = 0; row < numRows; row++) {
           for (let col = 0; col < numHousesPerRow; col++) {
               const house = createChandigarhHouse();
-              const x = startX - row * rowSpacing;
+              const x = startX + row * rowSpacing;
               const z = startZ + col * houseSpacing;
               house.position.set(x, 0, z);
               house.rotation.y = -Math.PI / 2;
               gridGroup.add(house);
           }
         }
-         continue;
+        
+        // Add the new special buildings in front of the houses
+        const specialBuildingZ = startZ - 200;
+        let currentX = startX;
+
+        const gurudwara = createGurudwara();
+        gurudwara.position.set(currentX, 0, specialBuildingZ);
+        gridGroup.add(gurudwara);
+        staticCollidersRef.current.push(gurudwara);
+        currentX += 120;
+
+        const kaliMandir = createKaliMandir();
+        kaliMandir.position.set(currentX, 0, specialBuildingZ);
+        gridGroup.add(kaliMandir);
+        staticCollidersRef.current.push(kaliMandir);
+        currentX += 80;
+
+        const coachingClass = createCoachingClass();
+        coachingClass.position.set(currentX, 0, specialBuildingZ);
+        gridGroup.add(coachingClass);
+        staticCollidersRef.current.push(coachingClass);
+        currentX += 80;
+
+        const satsangBuilding = createSatsangBuilding();
+        satsangBuilding.position.set(currentX, 0, specialBuildingZ);
+        gridGroup.add(satsangBuilding);
+        staticCollidersRef.current.push(satsangBuilding);
+        currentX += 150;
+        
+        const lightMandir = createLightMandir();
+        lightMandir.position.set(currentX, 0, specialBuildingZ);
+        gridGroup.add(lightMandir);
+        staticCollidersRef.current.push(lightMandir);
+
+        continue;
       }
 
       // Add random scenery for other sectors
