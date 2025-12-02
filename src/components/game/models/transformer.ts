@@ -39,11 +39,11 @@ export function createLegoPerson(isPlayer = false) {
   const hair = new THREE.Mesh(hairGeo, hairMat);
   head.add(hair);
 
-  // Hair Top
+  // Hair Top to show volume
   const hairTopGeo = new THREE.CylinderGeometry(headRadius, headRadius, 0.1, 16);
   const hairTopMat = new THREE.MeshStandardMaterial({ color: hairColor });
   const hairTop = new THREE.Mesh(hairTopGeo, hairTopMat);
-  hairTop.position.y = headHeight / 2 - 0.05; // Slightly lower to avoid z-fighting
+  hairTop.position.y = headHeight / 2 - 0.05; // Position it on top of the head
   head.add(hairTop);
 
 
