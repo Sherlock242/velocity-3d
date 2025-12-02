@@ -201,7 +201,7 @@ export function createGridAndScenery(
          const houseSpacing = 120;
          const rowSpacing = 150;
          
-         const startX = cellCenterX - (CELL_SIZE / 2) + ROAD_WIDTH + 150;
+         const startX = cellCenterX - (CELL_SIZE / 2) + (ROAD_WIDTH / 2) + 50;
          const startZ = cellCenterZ - (CELL_SIZE / 2) + (ROAD_WIDTH / 2) + 50;
 
          for (let row = 0; row < numRows; row++) {
@@ -210,13 +210,13 @@ export function createGridAndScenery(
               const x = startX + row * rowSpacing;
               const z = startZ + col * houseSpacing;
               house.position.set(x, 0, z);
-              house.rotation.y = -Math.PI / 2;
+              house.rotation.y = Math.PI / 2;
               gridGroup.add(house);
           }
         }
         
         // Add the new special buildings in front of the houses
-        const specialBuildingZ = startZ - 200;
+        const specialBuildingZ = startZ + numHousesPerRow * houseSpacing;
         let currentX = startX;
 
         const gurudwara = createGurudwara();
