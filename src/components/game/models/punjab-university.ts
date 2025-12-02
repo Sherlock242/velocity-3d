@@ -187,21 +187,33 @@ export function createPunjabUniversity() {
 
   class CustomSpiralCurve extends THREE.Curve<THREE.Vector3> {
     scale: number;
-    constructor(scale = 1) {
+    taper: boolean;
+
+    constructor(scale = 1, taper = false) {
       super();
       this.scale = scale;
+      this.taper = taper;
     }
 
     getPoint(t: number): THREE.Vector3 {
       const angle = rampStartAngle + t * rampAngleSweep;
       const x = Math.cos(angle) * rampRadius;
-      const y = baseHeight + (t * rampTotalHeight);
+      
+      let y = t * rampTotalHeight;
+      if (this.taper) {
+          const taperEnd = 0.1; // Taper over the first 10% of the ramp
+          if (t < taperEnd) {
+              const taperFactor = t / taperEnd;
+              y = taperFactor * (taperEnd * rampTotalHeight);
+          }
+      }
+      
       const z = Math.sin(angle) * rampRadius;
       return new THREE.Vector3(x, y, z).multiplyScalar(this.scale);
     }
   }
 
-  const rampPath = new CustomSpiralCurve(1);
+  const rampPath = new CustomSpiralCurve(1, true);
 
   const rampShape = new THREE.Shape();
   const halfWidth = rampWidth / 2;
