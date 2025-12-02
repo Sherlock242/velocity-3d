@@ -523,7 +523,7 @@ export default function GameWrapper() {
                 player.position.clone().add(new THREE.Vector3(0, 10, 0)),
                 new THREE.Vector3(0, -1, 0)
             );
-            const intersects = raycaster.intersectObject(rampMeshRef.current, true);
+            const intersects = raycaster.intersectObjects([rampMeshRef.current], true);
             
             const closestIntersect = intersects
                 .filter(i => i.point.y < player.position.y + 1)
@@ -626,18 +626,9 @@ export default function GameWrapper() {
         staticCollidersRef.current.forEach((collider) => {
             const colliderBox = new THREE.Box3().setFromObject(collider);
             if (playerBox.intersectsBox(colliderBox)) {
-                // Check if it's the university building
-                if (collider.name === 'LibraryBuilding' && controlModeRef.current === 'car') {
-                    // Slide along the wall instead of knocking back
-                    const collisionNormal = player.position.clone().sub(collider.position).normalize();
-                    const dot = velocityRef.current.dot(collisionNormal);
-                    velocityRef.current.sub(collisionNormal.multiplyScalar(dot));
-                } else if (collider.name !== 'LibraryBuilding') {
-                    // Regular knockback for other buildings
-                    velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
-                    const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
-                    player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
-                }
+                velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
+                const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
+                player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
             }
         });
 
