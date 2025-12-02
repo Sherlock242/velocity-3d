@@ -234,6 +234,30 @@ export function createPunjabUniversity() {
   
   universityWithBase.add(rampMesh);
 
+  // --- Landing Platform ---
+  const landingRadius = rampWidth / 2;
+  const landingGeom = new THREE.CircleGeometry(landingRadius, 32, 0, Math.PI);
+  const landingPlatform = new THREE.Mesh(landingGeom, concreteMaterial);
+  
+  const endPoint = rampPath.getPoint(1);
+  landingPlatform.position.copy(endPoint);
+
+  // Position it at the end of the ramp road surface, not the wall top
+  landingPlatform.position.y += rampWallHeight / 2;
+  
+  // Rotate to align with ramp end
+  const tangent = rampPath.getTangent(1).normalize();
+  const up = new THREE.Vector3(0, 1, 0);
+  const right = new THREE.Vector3().crossVectors(up, tangent).normalize();
+
+  const landingAngle = Math.atan2(tangent.x, tangent.z);
+  
+  landingPlatform.rotation.x = -Math.PI / 2; // Lay it flat
+  landingPlatform.rotation.z = -landingAngle + Math.PI / 2;
+
+  universityWithBase.add(landingPlatform);
+
+
   universityWithBase.scale.set(1.5, 1.5, 1.5);
   return universityWithBase;
 }
