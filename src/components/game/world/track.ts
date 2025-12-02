@@ -217,36 +217,36 @@ export function createGridAndScenery(
           }
         }
 
-        // --- SPECIAL BUILDINGS IN TOP-LEFT ---
-        const specialBuildingZ = cellCenterZ - (CELL_SIZE / 2) + 150;
-        let currentX = cellCenterX - (CELL_SIZE / 2) + 100;
+        // --- SPECIAL BUILDINGS IN TOP-LEFT (VERTICALLY) ---
+        let currentZ = cellCenterZ - (CELL_SIZE / 2) + 150;
+        const specialBuildingX = cellCenterX - (CELL_SIZE / 2) + 100;
 
         const gurudwara = createGurudwara();
-        gurudwara.position.set(currentX, 0, specialBuildingZ);
+        gurudwara.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(gurudwara);
         staticCollidersRef.current.push(gurudwara);
-        currentX += 120;
+        currentZ += 120;
 
         const kaliMandir = createKaliMandir();
-        kaliMandir.position.set(currentX, 0, specialBuildingZ);
+        kaliMandir.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(kaliMandir);
         staticCollidersRef.current.push(kaliMandir);
-        currentX += 80;
+        currentZ += 80;
 
         const coachingClass = createCoachingClass();
-        coachingClass.position.set(currentX, 0, specialBuildingZ);
+        coachingClass.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(coachingClass);
         staticCollidersRef.current.push(coachingClass);
-        currentX += 80;
+        currentZ += 80;
 
         const satsangBuilding = createSatsangBuilding();
-        satsangBuilding.position.set(currentX, 0, specialBuildingZ);
+        satsangBuilding.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(satsangBuilding);
         staticCollidersRef.current.push(satsangBuilding);
-        currentX += 150;
+        currentZ += 150;
 
         const lightMandir = createLightMandir();
-        lightMandir.position.set(currentX, 0, specialBuildingZ);
+        lightMandir.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(lightMandir);
         staticCollidersRef.current.push(lightMandir);
 
