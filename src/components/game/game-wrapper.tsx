@@ -831,7 +831,7 @@ export default function GameWrapper() {
             gridSize={GRID_SIZE}
             totalGridWidth={TOTAL_GRID_WIDTH}
             controlMode={gameData.controlMode}
-            onToggleControlMode={onToggleControlMode}
+            onToggleControlMode={handleToggleControlMode}
             onToggleLargeMap={() => setIsLargeMapOpen(prev => !prev)}
             onAcceleratorPress={() => {
               initAudioOnInteraction();
@@ -856,5 +856,3 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
-
-    
