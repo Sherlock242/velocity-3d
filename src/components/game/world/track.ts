@@ -221,12 +221,6 @@ export function createGridAndScenery(
         let currentZ = cellCenterZ - (CELL_SIZE / 2) + 150;
         const specialBuildingX = cellCenterX - (CELL_SIZE / 2) + 100;
 
-        const kaliMandir = createKaliMandir();
-        kaliMandir.position.set(specialBuildingX, 0, currentZ);
-        gridGroup.add(kaliMandir);
-        staticCollidersRef.current.push(kaliMandir);
-        currentZ += 120;
-
         const lightMandir = createLightMandir();
         lightMandir.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(lightMandir);
@@ -239,6 +233,12 @@ export function createGridAndScenery(
         gridGroup.add(satsangBuilding);
         staticCollidersRef.current.push(satsangBuilding);
         currentZ += 150;
+        
+        const kaliMandir = createKaliMandir();
+        kaliMandir.position.set(specialBuildingX, 0, currentZ);
+        gridGroup.add(kaliMandir);
+        staticCollidersRef.current.push(kaliMandir);
+        currentZ += 120;
 
         const coachingClass = createCoachingClass();
         coachingClass.position.set(specialBuildingX, 0, currentZ);
