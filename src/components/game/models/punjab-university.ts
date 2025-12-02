@@ -8,11 +8,11 @@ export function createPunjabUniversity() {
     roughness: 0.8,
   });
   const glassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4d6a8b, // Dark, reflective blue-tinted glass
+    color: 0x87ceeb, // Light Sky Blue
     roughness: 0.2,
     metalness: 0.5,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.7,
   });
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: 0xb0b0b0, // A slightly darker gray for the ramp
@@ -22,98 +22,83 @@ export function createPunjabUniversity() {
     color: 0x4d6a8b, // Blue color for the fins
     roughness: 0.7,
   });
+  const dividerMaterial = new THREE.MeshStandardMaterial({
+    color: 0xaaaaaa, // Slightly different grey for dividers
+    roughness: 0.8,
+  });
 
   const mainRadius = 80;
   const topRadius = 85;
   const floorHeight = 15;
   const finHeight = floorHeight * 0.8;
   const numFins = 48;
+  const dividerHeight = 2;
+  const dividerRadius = mainRadius + 1;
+  const topDividerRadius = topRadius + 1;
+
 
   // --- Layered construction for accuracy ---
+  let currentY = 0;
 
-  // Layer 0: Ground Floor (Solid Cylinder)
-  const groundFloorY = 0;
-  const groundFloorGeom = new THREE.CylinderGeometry(mainRadius, mainRadius, floorHeight, 64);
-  const groundFloor = new THREE.Mesh(groundFloorGeom, concreteMaterial);
-  groundFloor.position.y = groundFloorY + floorHeight / 2;
-  library.add(groundFloor);
-  
-  // Layer 1: First main floor
-  const floor1Y = groundFloorY + floorHeight;
-  const floor1Geom = new THREE.CylinderGeometry(mainRadius, mainRadius, floorHeight, 64);
-  const floor1 = new THREE.Mesh(floor1Geom, concreteMaterial);
-  floor1.position.y = floor1Y + floorHeight / 2;
-  library.add(floor1);
+  // Function to create a floor with fins, windows, and a divider above it
+  function createFloor(yPos: number, radius: number, isTopFloor = false) {
+    const floorGroup = new THREE.Group();
 
-  // Layer 2: Second main floor (with ramp/balcony)
-  const floor2Y = floor1Y + floorHeight;
-  const floor2Geom = new THREE.CylinderGeometry(mainRadius, mainRadius, floorHeight, 64);
-  const floor2 = new THREE.Mesh(floor2Geom, concreteMaterial);
-  floor2.position.y = floor2Y + floorHeight / 2;
-  library.add(floor2);
-  
-  // Fins and windows for the main floors
-  [groundFloorY, floor1Y, floor2Y].forEach(yPos => {
-     for (let j = 0; j < numFins; j++) {
+    // The main cylinder of the floor
+    const floorGeom = new THREE.CylinderGeometry(radius, radius, floorHeight, 64);
+    const floor = new THREE.Mesh(floorGeom, concreteMaterial);
+    floor.position.y = yPos + floorHeight / 2;
+    floorGroup.add(floor);
+
+    // Fins and windows for the floor
+    for (let j = 0; j < numFins; j++) {
         const angle = (j / numFins) * Math.PI * 2;
         
         // Fins
         const finGeom = new THREE.BoxGeometry(2, finHeight, 6);
         const fin = new THREE.Mesh(finGeom, finMaterial);
-        const finX = Math.sin(angle) * (mainRadius - 1);
-        const finZ = Math.cos(angle) * (mainRadius - 1);
+        const finX = Math.sin(angle) * (radius - 1);
+        const finZ = Math.cos(angle) * (radius - 1);
         fin.position.set(finX, yPos + floorHeight / 2, finZ);
         fin.lookAt(0, yPos + floorHeight / 2, 0);
-        library.add(fin);
+        floorGroup.add(fin);
 
         // Windows
-        const windowGeom = new THREE.PlaneGeometry(Math.PI * 2 * (mainRadius-4) / numFins, finHeight * 0.9);
+        const windowGeom = new THREE.PlaneGeometry(Math.PI * 2 * (radius-4) / numFins, finHeight * 0.9);
         const window = new THREE.Mesh(windowGeom, glassMaterial);
-        const windowX = Math.sin(angle) * (mainRadius - 4);
-        const windowZ = Math.cos(angle) * (mainRadius - 4);
+        const windowX = Math.sin(angle) * (radius - 4);
+        const windowZ = Math.cos(angle) * (radius - 4);
         window.position.set(windowX, yPos + floorHeight / 2, windowZ);
         window.lookAt(0, yPos + floorHeight / 2, 0);
-        library.add(window);
-      }
-  });
+        floorGroup.add(window);
+    }
 
+    // Divider slab on top of the floor
+    const currentDividerRadius = isTopFloor ? topDividerRadius : dividerRadius;
+    const dividerGeom = new THREE.CylinderGeometry(currentDividerRadius, currentDividerRadius, dividerHeight, 64);
+    const divider = new THREE.Mesh(dividerGeom, dividerMaterial);
+    divider.position.y = yPos + floorHeight + dividerHeight / 2;
+    floorGroup.add(divider);
 
-  // Layer 3: Overhanging Top Floor
-  const floor3Y = floor2Y + floorHeight;
-  const floor3Geom = new THREE.CylinderGeometry(topRadius, topRadius, floorHeight, 64);
-  const floor3 = new THREE.Mesh(floor3Geom, concreteMaterial);
-  floor3.position.y = floor3Y + floorHeight/2;
-  library.add(floor3);
-  
-  // Fins and windows for top floor
-  for (let j = 0; j < numFins; j++) {
-    const angle = (j / numFins) * Math.PI * 2;
-    
-    // Fins
-    const finGeom = new THREE.BoxGeometry(2, finHeight, 4);
-    const fin = new THREE.Mesh(finGeom, finMaterial);
-    const finX = Math.sin(angle) * (topRadius - 1);
-    const finZ = Math.cos(angle) * (topRadius - 1);
-    fin.position.set(finX, floor3Y + floorHeight/2, finZ);
-    fin.lookAt(0, floor3Y + floorHeight/2, 0);
-    library.add(fin);
-
-    // Windows
-    const windowGeom = new THREE.PlaneGeometry(Math.PI * 2 * (topRadius-4) / numFins, finHeight * 0.9);
-    const window = new THREE.Mesh(windowGeom, glassMaterial);
-    const windowX = Math.sin(angle) * (topRadius-4);
-    const windowZ = Math.cos(angle) * (topRadius-4);
-    window.position.set(windowX, floor3Y + floorHeight/2, windowZ);
-    window.lookAt(0, floor3Y + floorHeight/2, 0);
-    library.add(window);
+    return floorGroup;
   }
-
+  
+  // Create 3 main floors
+  for (let i = 0; i < 3; i++) {
+    const floor = createFloor(currentY, mainRadius);
+    library.add(floor);
+    currentY += floorHeight + dividerHeight;
+  }
+  
+  // Layer 3: Overhanging Top Floor
+  const topFloor = createFloor(currentY, topRadius, true);
+  library.add(topFloor);
+  currentY += floorHeight + dividerHeight;
 
   // Layer 4: Top-most solid cylinder (Roof structure)
-  const topCylinderY = floor3Y + floorHeight;
   const topCylinderGeom = new THREE.CylinderGeometry(topRadius, topRadius, floorHeight * 0.5, 64);
   const topCylinder = new THREE.Mesh(topCylinderGeom, concreteMaterial);
-  topCylinder.position.y = topCylinderY + (floorHeight*0.5)/2;
+  topCylinder.position.y = currentY + (floorHeight*0.5)/2;
   library.add(topCylinder);
 
 
@@ -121,10 +106,10 @@ export function createPunjabUniversity() {
   const rampRadius = mainRadius + 10;
   const rampWidth = 20;
   const rampWallHeight = 8;
-  const rampTotalHeight = floorHeight * 4; // Ramp goes up to floor 4
+  const rampTotalHeight = (floorHeight + dividerHeight) * 3; // Ramp goes up to floor 3
   const rampSegments = 256;
   const rampStartAngle = Math.PI * 0.5;
-  const rampAngleSweep = Math.PI * 2.25; // Sweep for four floors
+  const rampAngleSweep = Math.PI * 2.25;
 
   class CustomSpiralCurve extends THREE.Curve<THREE.Vector3> {
     scale: number;
@@ -144,14 +129,13 @@ export function createPunjabUniversity() {
 
   const rampPath = new CustomSpiralCurve(1);
 
-  // Define the shape of the ramp cross-section (a flat surface with walls)
   const rampShape = new THREE.Shape();
   const halfWidth = rampWidth / 2;
   rampShape.moveTo(-halfWidth, 0);
-  rampShape.lineTo(-halfWidth, rampWallHeight); // Outer wall
-  rampShape.lineTo(halfWidth, rampWallHeight); // Top of inner wall
-  rampShape.lineTo(halfWidth, 0); // Inner wall
-  rampShape.lineTo(-halfWidth, 0); // Close shape (floor of the ramp)
+  rampShape.lineTo(halfWidth, 0);
+  rampShape.lineTo(halfWidth, rampWallHeight);
+  rampShape.lineTo(-halfWidth, rampWallHeight);
+  rampShape.lineTo(-halfWidth, 0);
 
   const extrudeSettings = {
     steps: rampSegments,
@@ -165,14 +149,15 @@ export function createPunjabUniversity() {
 
   // Balcony section that cuts into the ramp
   const balcony = new THREE.Group();
+  const balconyFloorY = (floorHeight + dividerHeight) * 1 + floorHeight / 2;
   const balconyFloorGeom = new THREE.BoxGeometry(30, 2, 40);
   const balconyFloor = new THREE.Mesh(balconyFloorGeom, concreteMaterial);
-  balconyFloor.position.set(mainRadius-15, floorHeight * 2, 20);
+  balconyFloor.position.set(mainRadius-15, balconyFloorY + 5, 20);
   balcony.add(balconyFloor);
 
   const balconyWallGeom = new THREE.BoxGeometry(30, 8, 2);
   const balconyWall = new THREE.Mesh(balconyWallGeom, concreteMaterial);
-  balconyWall.position.set(mainRadius - 15, floorHeight * 2 + 4, 40);
+  balconyWall.position.set(mainRadius - 15, balconyFloorY + 9, 40);
   balcony.add(balconyWall);
 
   library.add(balcony);
