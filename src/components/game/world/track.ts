@@ -225,25 +225,26 @@ export function createGridAndScenery(
         lightMandir.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(lightMandir);
         staticCollidersRef.current.push(lightMandir);
-        currentZ += 130;
+        currentZ += 135;
 
         const satsangBuilding = createSatsangBuilding();
         satsangBuilding.position.set(specialBuildingX, 0, currentZ);
+        satsangBuilding.rotation.y = Math.PI / 2;
         gridGroup.add(satsangBuilding);
         staticCollidersRef.current.push(satsangBuilding);
-        currentZ += 110;
+        currentZ += 105;
         
         const kaliMandir = createKaliMandir();
         kaliMandir.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(kaliMandir);
         staticCollidersRef.current.push(kaliMandir);
-        currentZ += 70;
+        currentZ += 65;
 
         const coachingClass = createCoachingClass();
         coachingClass.position.set(specialBuildingX, 0, currentZ);
         gridGroup.add(coachingClass);
         staticCollidersRef.current.push(coachingClass);
-        currentZ += 110;
+        currentZ += 105;
 
         const gurudwara = createGurudwara();
         gurudwara.position.set(specialBuildingX, 0, currentZ);
