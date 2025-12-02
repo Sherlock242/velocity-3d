@@ -60,17 +60,17 @@ export function createPunjabUniversity() {
         // Fins
         const finGeom = new THREE.BoxGeometry(2, finHeight, 6);
         const fin = new THREE.Mesh(finGeom, concreteMaterial);
-        const finX = Math.sin(angle) * (mainRadius - 5);
-        const finZ = Math.cos(angle) * (mainRadius - 5);
+        const finX = Math.sin(angle) * (mainRadius - 1);
+        const finZ = Math.cos(angle) * (mainRadius - 1);
         fin.position.set(finX, yPos + floorHeight / 2, finZ);
         fin.lookAt(0, yPos + floorHeight / 2, 0);
         library.add(fin);
 
         // Windows
-        const windowGeom = new THREE.BoxGeometry(4, finHeight * 0.9, 1);
+        const windowGeom = new THREE.PlaneGeometry(Math.PI * 2 * (mainRadius-4) / numFins, finHeight * 0.9);
         const window = new THREE.Mesh(windowGeom, glassMaterial);
-        const windowX = Math.sin(angle) * (mainRadius - 8);
-        const windowZ = Math.cos(angle) * (mainRadius - 8);
+        const windowX = Math.sin(angle) * (mainRadius - 4);
+        const windowZ = Math.cos(angle) * (mainRadius - 4);
         window.position.set(windowX, yPos + floorHeight / 2, windowZ);
         window.lookAt(0, yPos + floorHeight / 2, 0);
         library.add(window);
@@ -88,63 +88,90 @@ export function createPunjabUniversity() {
   // Fins for top floor
   for (let j = 0; j < numFins; j++) {
     const angle = (j / numFins) * Math.PI * 2;
-    const finX = Math.sin(angle) * (topRadius - 5);
-    const finZ = Math.cos(angle) * (topRadius - 5);
-
+    
+    // Fins
     const finGeom = new THREE.BoxGeometry(2, finHeight, 4);
     const fin = new THREE.Mesh(finGeom, concreteMaterial);
+    const finX = Math.sin(angle) * (topRadius - 1);
+    const finZ = Math.cos(angle) * (topRadius - 1);
     fin.position.set(finX, floor3Y + floorHeight/2, finZ);
     fin.lookAt(0, floor3Y + floorHeight/2, 0);
     library.add(fin);
+
+    // Windows
+    const windowGeom = new THREE.PlaneGeometry(Math.PI * 2 * (topRadius-4) / numFins, finHeight * 0.9);
+    const window = new THREE.Mesh(windowGeom, glassMaterial);
+    const windowX = Math.sin(angle) * (topRadius-4);
+    const windowZ = Math.cos(angle) * (topRadius-4);
+    window.position.set(windowX, floor3Y + floorHeight/2, windowZ);
+    window.lookAt(0, floor3Y + floorHeight/2, 0);
+    library.add(window);
   }
 
 
-  // Layer 4: Top-most cylinder
+  // Layer 4: Top-most solid cylinder
   const topCylinderY = floor3Y + floorHeight;
   const topCylinderGeom = new THREE.CylinderGeometry(topRadius, topRadius, floorHeight * 0.75, 64);
-  const topCylinder = new THREE.Mesh(topCylinderGeom, darkConcreteMaterial);
+  const topCylinder = new THREE.Mesh(topCylinderGeom, concreteMaterial);
   topCylinder.position.y = topCylinderY + (floorHeight*0.75)/2;
   library.add(topCylinder);
 
 
   // Spiral Ramp
-  const rampRadius = mainRadius;
+  const rampGroup = new THREE.Group();
+  const rampRadius = mainRadius + 1; // move it out slightly
   const rampWidth = 20;
   const rampHeight = floorHeight; 
-  const rampSegments = 64;
-  const rampAngle = Math.PI * 1.5;
+  const rampSegments = 128;
+  const rampStartAngle = Math.PI * 0.6;
+  const rampAngleSweep = Math.PI * -1.8;
 
-  const rampPoints = [];
-  for (let i = 0; i <= rampSegments; i++) {
-    const ratio = i / rampSegments;
-    const angle = ratio * rampAngle;
-    const x = Math.cos(angle) * (rampRadius + rampWidth/2);
-    const y = ratio * rampHeight + floorHeight * 1.5; // Starts from floor 1, ends at floor 2
-    const z = Math.sin(angle) * (rampRadius + rampWidth/2);
-    rampPoints.push(new THREE.Vector3(x, y, z));
-  }
-  const rampCurve = new THREE.CatmullRomCurve3(rampPoints);
-  const rampGeom = new THREE.TubeGeometry(rampCurve, rampSegments, rampWidth, 8, false);
-  const rampMaterial = new THREE.MeshStandardMaterial({
-    color: 0xcccccc,
-    roughness: 0.8,
-    side: THREE.DoubleSide,
-  });
-  const rampMesh = new THREE.Mesh(rampGeom, rampMaterial);
-  rampMesh.scale.y = 0.1; // Flatten tube to ramp
-  rampMesh.position.y += 3;
-  library.add(rampMesh);
+  const rampShape = new THREE.Shape();
+  rampShape.moveTo(rampRadius - rampWidth/2, 0);
+  rampShape.lineTo(rampRadius + rampWidth/2, 0);
+
+  const extrudeSettings = {
+      steps: rampSegments,
+      bevelEnabled: false,
+      extrudePath: (function () {
+          const points = [];
+          for (let i = 0; i <= rampSegments; i++) {
+              const ratio = i / rampSegments;
+              const angle = rampStartAngle + ratio * rampAngleSweep;
+              const x = Math.cos(angle) * rampRadius;
+              const y = floorHeight + ratio * rampHeight;
+              const z = Math.sin(angle) * rampRadius;
+              points.push(new THREE.Vector3(x, y, z));
+          }
+          return new THREE.CatmullRomCurve3(points);
+      })(),
+  };
+
+  const rampGeometry = new THREE.ExtrudeGeometry(rampShape, extrudeSettings);
+  const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
+  rampGroup.add(rampMesh);
+
+  // Add walls to the ramp
+  const innerWallShape = new THREE.Shape();
+  innerWallShape.moveTo(0,0);
+  innerWallShape.lineTo(0, 5); // wall height
+  const innerWallGeometry = new THREE.ExtrudeGeometry(innerWallShape, extrudeSettings);
+  const innerWallMesh = new THREE.Mesh(innerWallGeometry, concreteMaterial);
+  rampGroup.add(innerWallMesh);
+
+  library.add(rampGroup);
+
 
   // Balcony section that cuts into the ramp
   const balcony = new THREE.Group();
-  const balconyFloorGeom = new THREE.BoxGeometry(40, 2, 20);
+  const balconyFloorGeom = new THREE.BoxGeometry(30, 2, 40);
   const balconyFloor = new THREE.Mesh(balconyFloorGeom, darkConcreteMaterial);
-  balconyFloor.position.set(mainRadius - 10, floorHeight * 2, 0);
+  balconyFloor.position.set(mainRadius-15, floorHeight * 2, 20);
   balcony.add(balconyFloor);
 
-  const balconyWallGeom = new THREE.BoxGeometry(2, 10, 20);
+  const balconyWallGeom = new THREE.BoxGeometry(30, 8, 2);
   const balconyWall = new THREE.Mesh(balconyWallGeom, concreteMaterial);
-  balconyWall.position.set(mainRadius - 20, floorHeight * 2 + 5, 0);
+  balconyWall.position.set(mainRadius - 15, floorHeight * 2 + 4, 40);
   balcony.add(balconyWall);
 
   library.add(balcony);
