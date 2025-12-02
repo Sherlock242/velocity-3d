@@ -170,7 +170,7 @@ export function createMansion() {
   const wallGroup = new THREE.Group();
   const wallHeight = 10;
   const wallThickness = 8;
-  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // Brown color
 
   function createWallSegment(width: number, depth: number) {
     const segment = new THREE.Group();
