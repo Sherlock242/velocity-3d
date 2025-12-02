@@ -14,6 +14,12 @@ export function createPunjabUniversity() {
     transparent: true,
     opacity: 0.6,
   });
+  const bottomFloorGlassMaterial = new THREE.MeshStandardMaterial({
+    color: 0x4682B4, // A distinct blue color
+    roughness: 0.1,
+    metalness: 0.9,
+    transparent: false,
+  });
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: 0xb0b0b0,
     roughness: 0.8,
@@ -102,7 +108,7 @@ export function createPunjabUniversity() {
           windowWidth,
           floorHeight * 0.9
         );
-        const window = new THREE.Mesh(windowGeom, glassMaterial);
+        const window = new THREE.Mesh(windowGeom, bottomFloorGlassMaterial);
         const windowX = Math.sin(windowAngle) * (radius - 4);
         const windowZ = Math.cos(windowAngle) * (radius - 4);
         window.position.set(windowX, yPos + floorHeight / 2, windowZ);
