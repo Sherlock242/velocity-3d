@@ -177,13 +177,13 @@ export function createPunjabUniversity() {
   universityWithBase.add(library);
 
   // --- Spiral Ramp ---
-  const rampRadius = mainRadius + 10;
+  const rampRadius = mainRadius + 30;
   const rampWidth = 20;
   const rampWallHeight = 8;
-  const rampTotalHeight = (floorHeight + dividerHeight) * 3; // End at 4th floor
-  const rampSegments = 384;
+  const rampTotalHeight = (floorHeight + dividerHeight) * 2;
+  const rampSegments = 256;
   const rampStartAngle = Math.PI * 0.5;
-  const rampAngleSweep = Math.PI * 3; 
+  const rampAngleSweep = Math.PI * 1.5; 
 
   class CustomSpiralCurve extends THREE.Curve<THREE.Vector3> {
     scale: number;
@@ -195,7 +195,7 @@ export function createPunjabUniversity() {
     getPoint(t: number): THREE.Vector3 {
       const angle = rampStartAngle + t * rampAngleSweep;
       const x = Math.cos(angle) * rampRadius;
-      const y = baseHeight + (t * rampTotalHeight); // Start from top of base
+      const y = t * rampTotalHeight;
       const z = Math.sin(angle) * rampRadius;
       return new THREE.Vector3(x, y, z).multiplyScalar(this.scale);
     }
