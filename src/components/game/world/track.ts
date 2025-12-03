@@ -20,6 +20,7 @@ import { createKaliMandir } from '../models/kali-mandir';
 import { createCoachingClass } from '../models/coaching-class';
 import { createSatsangBuilding } from '../models/satsang-building';
 import { createLightMandir } from '../models/light-mandir';
+import { createGovtHouse } from '../models/govt-house';
 
 export function createGridAndScenery(
   theme: TrackTheme,
@@ -143,11 +144,7 @@ export function createGridAndScenery(
         const innerRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
         const darkGrayRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
         const campusRoadWidth = 50;
-        const ringRoadOffset = 250; // Distance from the center for the ring road
-        const buildingOffset = 380; // Distance from the center for buildings
-        const pathWidth = 15;
-        const pathLength = buildingOffset - ringRoadOffset - campusRoadWidth / 2;
-
+        const ringRoadOffset = 250; 
 
         const ringRoadSize = ringRoadOffset * 2 - campusRoadWidth;
         const horizontalRoadGeom = new THREE.PlaneGeometry(ringRoadSize, campusRoadWidth);
@@ -180,20 +177,22 @@ export function createGridAndScenery(
         gridGroup.add(innerRoadGroup);
 
         // --- Department Buildings ---
-        const deptSpacing = 200;
+        const buildingOffset = 420; // Pushed back
+        const pathWidth = 15;
+        const pathLength = buildingOffset - ringRoadOffset - campusRoadWidth / 2;
         const deptPositions = [
-            // Back wall (-Z)
-            { x: cellCenterX - deptSpacing / 2, z: cellCenterZ - buildingOffset, rot: 0 },
-            { x: cellCenterX + deptSpacing / 2, z: cellCenterZ - buildingOffset, rot: 0 },
-            // Front wall (+Z)
-            { x: cellCenterX - deptSpacing / 2, z: cellCenterZ + buildingOffset, rot: Math.PI },
-            { x: cellCenterX + deptSpacing / 2, z: cellCenterZ + buildingOffset, rot: Math.PI },
-            // Left wall (-X)
-            { x: cellCenterX - buildingOffset, z: cellCenterZ - deptSpacing / 2, rot: Math.PI / 2 },
-            { x: cellCenterX - buildingOffset, z: cellCenterZ + deptSpacing / 2, rot: Math.PI / 2 },
-            // Right wall (+X)
-            { x: cellCenterX + buildingOffset, z: cellCenterZ - deptSpacing / 2, rot: -Math.PI / 2 },
-            { x: cellCenterX + buildingOffset, z: cellCenterZ + deptSpacing / 2, rot: -Math.PI / 2 },
+            // Back wall (-Z) - 2 buildings
+            { x: cellCenterX - 200, z: cellCenterZ - buildingOffset, rot: 0 },
+            { x: cellCenterX + 200, z: cellCenterZ - buildingOffset, rot: 0 },
+            // Front wall (+Z) - 2 buildings
+            { x: cellCenterX - 200, z: cellCenterZ + buildingOffset, rot: Math.PI },
+            { x: cellCenterX + 200, z: cellCenterZ + buildingOffset, rot: Math.PI },
+            // Left wall (-X) - 2 buildings
+            { x: cellCenterX - buildingOffset, z: cellCenterZ - 200, rot: Math.PI / 2 },
+            { x: cellCenterX - buildingOffset, z: cellCenterZ + 200, rot: Math.PI / 2 },
+            // Right wall (+X) - 2 buildings
+            { x: cellCenterX + buildingOffset, z: cellCenterZ - 200, rot: -Math.PI / 2 },
+            { x: cellCenterX + buildingOffset, z: cellCenterZ + 200, rot: -Math.PI / 2 },
         ];
 
         deptPositions.forEach(pos => {
@@ -207,22 +206,23 @@ export function createGridAndScenery(
             const pathGeom = new THREE.PlaneGeometry(pathWidth, pathLength);
             const path = new THREE.Mesh(pathGeom, darkGrayRoadMaterial);
             path.rotation.x = -Math.PI/2;
-            path.rotation.z = pos.rot;
             
             const pathOffset = ringRoadOffset + campusRoadWidth/2 + pathLength / 2;
+            let pathX = pos.x;
+            let pathZ = pos.z;
 
             if(pos.rot === 0) { // Back wall
-                 path.position.set(pos.x, 0.12, cellCenterZ - pathOffset);
+                 pathZ = cellCenterZ - pathOffset;
             } else if (pos.rot === Math.PI) { // Front wall
-                 path.position.set(pos.x, 0.12, cellCenterZ + pathOffset);
-                 path.rotation.z = 0; // needs to be set to 0 to align properly
+                 pathZ = cellCenterZ + pathOffset;
             } else if (pos.rot === Math.PI / 2) { // Left wall
-                path.position.set(cellCenterX - pathOffset, 0.12, pos.z);
+                pathX = cellCenterX - pathOffset;
                 path.rotation.z = Math.PI / 2;
             } else { // Right wall
-                path.position.set(cellCenterX + pathOffset, 0.12, pos.z);
+                pathX = cellCenterX + pathOffset;
                 path.rotation.z = -Math.PI / 2;
             }
+            path.position.set(pathX, 0.12, pathZ);
             gridGroup.add(path);
         });
 
