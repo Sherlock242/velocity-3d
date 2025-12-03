@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 
 export function createCollegeBuilding() {
-  const college = new THREE.Group();
+  const collegeGroup = new THREE.Group();
 
   const longWingWidth = 400;
   const shortWingWidth = 250;
@@ -55,6 +55,8 @@ export function createCollegeBuilding() {
   
   const courtyardWidth = longWingWidth - wingDepth * 2;
   const courtyardDepth = shortWingWidth - wingDepth * 2;
+  
+  const college = new THREE.Group();
 
   // Back Wing (long)
   const backWing = createWing(longWingWidth, wingDepth);
@@ -94,9 +96,57 @@ export function createCollegeBuilding() {
   hut.position.y = 5;
   hut.position.z = 0;
   college.add(hut);
+  
+  collegeGroup.add(college);
 
-  college.castShadow = true;
-  college.receiveShadow = true;
 
-  return college;
+  // --- Compound Wall ---
+  const wallGroup = new THREE.Group();
+  const plotWidth = longWingWidth + 100;
+  const plotDepth = shortWingWidth + 100;
+  const wallHeight = 15;
+  const wallThickness = 5;
+  const gateWidth = 40;
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000, roughness: 0.8 });
+
+  function createWallSegment(width: number, depth: number) {
+      const wallGeom = new THREE.BoxGeometry(width, wallHeight, depth);
+      const wallMesh = new THREE.Mesh(wallGeom, wallMaterial);
+      wallMesh.position.y = wallHeight / 2;
+      return wallMesh;
+  }
+  
+  // Back wall
+  const backWall = createWallSegment(plotWidth, wallThickness);
+  backWall.position.z = -plotDepth / 2;
+  wallGroup.add(backWall);
+
+  // Side walls
+  const leftWall = createWallSegment(wallThickness, plotDepth);
+  leftWall.position.x = -plotWidth / 2;
+  wallGroup.add(leftWall);
+  
+  const rightWall = createWallSegment(wallThickness, plotDepth);
+  rightWall.position.x = plotWidth / 2;
+  wallGroup.add(rightWall);
+
+  // Front wall (with gate)
+  const frontWallSegmentWidth = (plotWidth - gateWidth) / 2;
+  const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
+  frontWallLeft.position.x = -(gateWidth / 2 + frontWallSegmentWidth / 2);
+  frontWallLeft.position.z = plotDepth / 2;
+  wallGroup.add(frontWallLeft);
+
+  const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
+  frontWallRight.position.x = (gateWidth / 2 + frontWallSegmentWidth / 2);
+  frontWallRight.position.z = plotDepth / 2;
+  wallGroup.add(frontWallRight);
+  
+  collegeGroup.add(wallGroup);
+
+
+  collegeGroup.castShadow = true;
+  collegeGroup.receiveShadow = true;
+
+  return collegeGroup;
 }
