@@ -193,7 +193,7 @@ export function createGridAndScenery(
         
         const gateXPosition = gateUpwardShift;
 
-        const entranceRoadLength = 200;
+        const entranceRoadLength = 240;
         const entranceRoadGeom = new THREE.PlaneGeometry(25, entranceRoadLength);
         const entranceRoad = new THREE.Mesh(entranceRoadGeom, darkRoadMaterial);
         entranceRoad.rotation.x = -Math.PI / 2;
@@ -205,7 +205,7 @@ export function createGridAndScenery(
         const pathToCollegeGeom = new THREE.PlaneGeometry(pathToCollegeLength + gateXPosition, 15);
         const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
         pathToCollege.rotation.x = -Math.PI / 2;
-        pathToCollege.position.set((gateXPosition - pathToCollegeLength) / 2, 0.15, frontWallZ + entranceRoadLength);
+        pathToCollege.position.set((gateXPosition - pathToCollegeLength) / 2, 0.15, frontWallZ + entranceRoadLength - 7.5);
         campusContainer.add(pathToCollege);
         
         // --- College Building ---
