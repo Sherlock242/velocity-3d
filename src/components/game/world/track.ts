@@ -14,7 +14,6 @@ import { createChandigarhHouse } from '../models/chandigarh-house';
 import { createLegoPerson } from '../models/transformer';
 import type { MutableRefObject } from 'react';
 import { createPunjabUniversity } from '../models/punjab-university';
-import { createGovtHouse } from '../models/govt-house';
 import { createDepartmentBuilding } from '../models/department-building';
 import { createGurudwara } from '../models/gurudwara';
 import { createKaliMandir } from '../models/kali-mandir';
@@ -142,17 +141,17 @@ export function createGridAndScenery(
         // --- Department Buildings ---
         const deptPositions = [
             // Front wall (+Z)
-            { x: cellCenterX - 250, z: cellCenterZ + 400, rot: Math.PI },
-            { x: cellCenterX + 250, z: cellCenterZ + 400, rot: Math.PI },
+            { x: cellCenterX - 150, z: cellCenterZ + 400, rot: Math.PI },
+            { x: cellCenterX + 150, z: cellCenterZ + 400, rot: Math.PI },
             // Back wall (-Z)
-            { x: cellCenterX - 250, z: cellCenterZ - 400, rot: 0 },
-            { x: cellCenterX + 250, z: cellCenterZ - 400, rot: 0 },
+            { x: cellCenterX - 150, z: cellCenterZ - 400, rot: 0 },
+            { x: cellCenterX + 150, z: cellCenterZ - 400, rot: 0 },
             // Left wall (-X)
-            { x: cellCenterX - 400, z: cellCenterZ - 250, rot: Math.PI / 2 },
-            { x: cellCenterX - 400, z: cellCenterZ + 250, rot: Math.PI / 2 },
+            { x: cellCenterX - 400, z: cellCenterZ - 150, rot: Math.PI / 2 },
+            { x: cellCenterX - 400, z: cellCenterZ + 150, rot: Math.PI / 2 },
             // Right wall (+X)
-            { x: cellCenterX + 400, z: cellCenterZ - 250, rot: -Math.PI / 2 },
-            { x: cellCenterX + 400, z: cellCenterZ + 250, rot: -Math.PI / 2 },
+            { x: cellCenterX + 400, z: cellCenterZ - 150, rot: -Math.PI / 2 },
+            { x: cellCenterX + 400, z: cellCenterZ + 150, rot: -Math.PI / 2 },
         ];
 
         deptPositions.forEach(pos => {
@@ -163,6 +162,41 @@ export function createGridAndScenery(
             staticCollidersRef.current.push(deptBuilding);
         });
 
+        // --- Department Connecting Roads ---
+        const innerRoadGroup = new THREE.Group();
+        const innerRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+        const roadWidth = 50;
+        const roadOffset = 300; // Distance from the center
+
+        const horizontalRoadGeom = new THREE.PlaneGeometry(roadOffset * 2 + roadWidth, roadWidth);
+        const verticalRoadGeom = new THREE.PlaneGeometry(roadWidth, roadOffset * 2 - roadWidth);
+
+        // Top Road
+        const topRoad = new THREE.Mesh(horizontalRoadGeom, innerRoadMaterial);
+        topRoad.rotation.x = -Math.PI / 2;
+        topRoad.position.set(cellCenterX, 0.1, cellCenterZ + roadOffset);
+        innerRoadGroup.add(topRoad);
+
+        // Bottom Road
+        const bottomRoad = new THREE.Mesh(horizontalRoadGeom, innerRoadMaterial);
+        bottomRoad.rotation.x = -Math.PI / 2;
+        bottomRoad.position.set(cellCenterX, 0.1, cellCenterZ - roadOffset);
+        innerRoadGroup.add(bottomRoad);
+
+        // Left Road
+        const leftRoad = new THREE.Mesh(verticalRoadGeom, innerRoadMaterial);
+        leftRoad.rotation.x = -Math.PI / 2;
+        leftRoad.position.set(cellCenterX - roadOffset, 0.1, cellCenterZ);
+        innerRoadGroup.add(leftRoad);
+
+        // Right Road
+        const rightRoad = new THREE.Mesh(verticalRoadGeom, innerRoadMaterial);
+        rightRoad.rotation.x = -Math.PI / 2;
+        rightRoad.position.set(cellCenterX + roadOffset, 0.1, cellCenterZ);
+        innerRoadGroup.add(rightRoad);
+
+        gridGroup.add(innerRoadGroup);
+
 
         // --- Sector 14 Boundary Walls ---
         const wallGroup = new THREE.Group();
@@ -172,7 +206,8 @@ export function createGridAndScenery(
 
         const gateWidth = 80;
         const halfCell = CELL_SIZE / 2;
-        const outerEdge = halfCell - ROAD_WIDTH / 2;
+        const outerEdge = halfCell - ROAD_WIDTH / 2 - (wallThickness / 2);
+        
         const wallSegmentLen = (CELL_SIZE - ROAD_WIDTH - gateWidth) / 2;
 
         function createWallSegment(width: number, depth: number) {
@@ -259,7 +294,7 @@ export function createGridAndScenery(
         // --- SPECIAL BUILDINGS IN TOP-LEFT (VERTICALLY) ---
         let currentZ = cellCenterZ - (CELL_SIZE / 2) + 150;
         const specialBuildingX = cellCenterX - (CELL_SIZE / 2) + 100;
-        const specialBuildingSpacing = 120;
+        const specialBuildingSpacing = 200;
 
         const lightMandir = createLightMandir();
         lightMandir.position.set(specialBuildingX, 0, currentZ);
