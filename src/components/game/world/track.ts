@@ -212,7 +212,7 @@ export function createGridAndScenery(
         // --- College Building ---
         const college = createCollegeBuilding();
         college.scale.set(0.6, 0.6, 0.6);
-        college.position.set(0, 0, -plotDepth/2 + 50);
+        college.position.set(-plotWidth / 4, 0, -plotDepth / 4);
         campusContainer.add(college);
         const mainBuilding = college.getObjectByName('collegeBuilding');
         if (mainBuilding) {
