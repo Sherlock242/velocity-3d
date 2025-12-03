@@ -109,80 +109,6 @@ export function createCollegeBuilding() {
   
   collegeGroup.add(college);
 
-
-  // --- Compound Wall ---
-  const wallGroup = new THREE.Group();
-  wallGroup.name = 'compoundWall';
-  const plotWidth = longWingWidth + 100;
-  const plotDepth = shortWingWidth + 100;
-  const wallHeight = 15;
-  const wallThickness = 5;
-  const gateWidth = 40;
-  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
-  const redBorderMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000 }); // Red for top border
-
-  function createWallSegment(width: number, depth: number) {
-    const segment = new THREE.Group();
-    const mainWallHeight = wallHeight * 0.9;
-    const borderHeight = wallHeight * 0.1;
-
-    const mainWallGeom = new THREE.BoxGeometry(width, mainWallHeight, depth);
-    const mainWall = new THREE.Mesh(mainWallGeom, wallMaterial);
-    mainWall.position.y = mainWallHeight / 2;
-    segment.add(mainWall);
-
-    const topBorderGeom = new THREE.BoxGeometry(width, borderHeight, depth);
-    const topBorder = new THREE.Mesh(topBorderGeom, redBorderMaterial);
-    topBorder.position.y = mainWallHeight + borderHeight / 2;
-    segment.add(topBorder);
-
-    // Add pillars on top of the border
-    const pillarGeom = new THREE.CylinderGeometry(2, 2, 4, 8);
-    const pillarMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
-    const numPillars = Math.floor(width > depth ? width / 30 : depth / 30);
-
-    for(let i = 0; i < numPillars; i++) {
-        const pillar = new THREE.Mesh(pillarGeom, pillarMaterial);
-        const pillarPos = - (width > depth ? width : depth) / 2 + (i + 0.5) * ((width > depth ? width : depth) / numPillars);
-        if (width > depth) {
-            pillar.position.set(pillarPos, wallHeight + 2, 0);
-        } else {
-            pillar.position.set(0, wallHeight + 2, pillarPos);
-        }
-        segment.add(pillar);
-    }
-    
-    return segment;
-  }
-  
-  // Back wall
-  const backWall = createWallSegment(plotWidth, wallThickness);
-  backWall.position.z = -plotDepth / 2;
-  wallGroup.add(backWall);
-
-  // Side walls
-  const leftWall = createWallSegment(wallThickness, plotDepth);
-  leftWall.position.x = -plotWidth / 2;
-  wallGroup.add(leftWall);
-  
-  const rightWall = createWallSegment(wallThickness, plotDepth);
-  rightWall.position.x = plotWidth / 2;
-  wallGroup.add(rightWall);
-
-  // Front wall (with gate)
-  const frontWallSegmentWidth = (plotWidth - gateWidth) / 2;
-  const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
-  frontWallLeft.position.x = -(gateWidth / 2 + frontWallSegmentWidth / 2);
-  frontWallLeft.position.z = plotDepth / 2;
-  wallGroup.add(frontWallLeft);
-
-  const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
-  frontWallRight.position.x = (gateWidth / 2 + frontWallSegmentWidth / 2);
-  frontWallRight.position.z = plotDepth / 2;
-  wallGroup.add(frontWallRight);
-  
-  collegeGroup.add(wallGroup);
-
   // Rotate the entire college group to face the correct direction
   collegeGroup.rotation.y = Math.PI;
 
@@ -191,3 +117,5 @@ export function createCollegeBuilding() {
 
   return collegeGroup;
 }
+
+    

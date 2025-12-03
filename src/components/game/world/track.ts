@@ -24,6 +24,9 @@ import { createGovtHouse } from '../models/govt-house';
 import { createCollegeBuilding } from '../models/college-building';
 import { createLuisPark } from '../models/park';
 import { createShop } from '../models/shop';
+import { createScoutGuideBuilding } from '../models/scout-guide-building';
+import { createDanceStage } from '../models/dance-stage';
+import { createClassroomBlock } from '../models/classroom-block';
 
 export function createGridAndScenery(
   theme: TrackTheme,
@@ -120,13 +123,74 @@ export function createGridAndScenery(
       const sectorNumber = j * GRID_SIZE + i + 1;
 
       if (sectorNumber === 10) {
+        const campusContainer = new THREE.Group();
+        campusContainer.position.set(cellCenterX, 0, cellCenterZ);
+
+        // --- Compound Wall ---
+        const wallGroup = new THREE.Group();
+        wallGroup.name = 'compoundWall';
+        const plotWidth = CELL_SIZE - ROAD_WIDTH * 2;
+        const plotDepth = CELL_SIZE - ROAD_WIDTH * 2;
+        const wallHeight = 15;
+        const wallThickness = 5;
+        const gateWidth = 40;
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
+        const redBorderMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000 }); // Red for top border
+
+        function createWallSegment(width: number, depth: number) {
+          const segment = new THREE.Group();
+          const mainWallHeight = wallHeight * 0.9;
+          const borderHeight = wallHeight * 0.1;
+
+          const mainWallGeom = new THREE.BoxGeometry(width, mainWallHeight, depth);
+          const mainWall = new THREE.Mesh(mainWallGeom, wallMaterial);
+          mainWall.position.y = mainWallHeight / 2;
+          segment.add(mainWall);
+
+          const topBorderGeom = new THREE.BoxGeometry(width, borderHeight, depth);
+          const topBorder = new THREE.Mesh(topBorderGeom, redBorderMaterial);
+          topBorder.position.y = mainWallHeight + borderHeight / 2;
+          segment.add(topBorder);
+          
+          return segment;
+        }
+        
+        // Back wall
+        const backWall = createWallSegment(plotWidth, wallThickness);
+        backWall.position.z = -plotDepth / 2;
+        wallGroup.add(backWall);
+
+        // Side walls
+        const leftWall = createWallSegment(wallThickness, plotDepth);
+        leftWall.position.x = -plotWidth / 2;
+        wallGroup.add(leftWall);
+        
+        const rightWall = createWallSegment(wallThickness, plotDepth);
+        rightWall.position.x = plotWidth / 2;
+        wallGroup.add(rightWall);
+
+        // Front wall (with gate)
+        const frontWallSegmentWidth = (plotWidth - gateWidth) / 2;
+        const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
+        frontWallLeft.position.x = -(gateWidth / 2 + frontWallSegmentWidth / 2);
+        frontWallLeft.position.z = plotDepth / 2;
+        wallGroup.add(frontWallLeft);
+
+        const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
+        frontWallRight.position.x = (gateWidth / 2 + frontWallSegmentWidth / 2);
+        frontWallRight.position.z = plotDepth / 2;
+        wallGroup.add(frontWallRight);
+        
+        campusContainer.add(wallGroup);
+        wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
+
+        // --- College Building ---
         const college = createCollegeBuilding();
-        college.position.set(cellCenterX, 0, cellCenterZ);
-        gridGroup.add(college);
-      
+        college.position.set(-plotWidth / 4, 0, 0); // Position to one side
+        campusContainer.add(college);
+
         const mainBuilding = college.getObjectByName('collegeBuilding');
         if (mainBuilding) {
-            // Add each wing as a separate collider
             const backWing = mainBuilding.getObjectByName('backWing');
             const frontWing = mainBuilding.getObjectByName('frontWing');
             const leftWing = mainBuilding.getObjectByName('leftWing');
@@ -137,13 +201,27 @@ export function createGridAndScenery(
             if (leftWing) staticCollidersRef.current.push(leftWing as THREE.Group);
             if (rightWing) staticCollidersRef.current.push(rightWing as THREE.Group);
         }
-      
-        const wallGroup = college.getObjectByName('compoundWall');
-        if (wallGroup) {
-          wallGroup.children.forEach(wallSegment => {
-            staticCollidersRef.current.push(wallSegment as THREE.Group);
-          });
-        }
+
+        // --- Dance Stage ---
+        const danceStage = createDanceStage();
+        danceStage.position.set(plotWidth / 4, 0, 0);
+        campusContainer.add(danceStage);
+        staticCollidersRef.current.push(danceStage);
+        
+        // --- Classroom Block ---
+        const classroomBlock = createClassroomBlock();
+        classroomBlock.position.set(plotWidth / 4, 0, plotDepth / 4);
+        campusContainer.add(classroomBlock);
+        staticCollidersRef.current.push(classroomBlock);
+        
+        // --- Scout and Guide Building ---
+        const scoutBuilding = createScoutGuideBuilding();
+        scoutBuilding.position.set(plotWidth / 4, 0, -plotDepth / 4);
+        campusContainer.add(scoutBuilding);
+        staticCollidersRef.current.push(scoutBuilding);
+        
+        gridGroup.add(campusContainer);
+
         continue;
       }
 
@@ -519,3 +597,5 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
+
+    
