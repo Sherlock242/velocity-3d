@@ -138,20 +138,62 @@ export function createGridAndScenery(
             rampMeshRef.current = rampMesh;
         }
         
+        // --- Department Connecting Roads ---
+        const innerRoadGroup = new THREE.Group();
+        const innerRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+        const darkGrayRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        const campusRoadWidth = 50;
+        const ringRoadOffset = 250; // Distance from the center for the ring road
+        const buildingOffset = 380; // Distance from the center for buildings
+        const pathWidth = 15;
+        const pathLength = buildingOffset - ringRoadOffset - campusRoadWidth / 2;
+
+
+        const ringRoadSize = ringRoadOffset * 2 - campusRoadWidth;
+        const horizontalRoadGeom = new THREE.PlaneGeometry(ringRoadSize, campusRoadWidth);
+        const verticalRoadGeom = new THREE.PlaneGeometry(campusRoadWidth, ringRoadSize + campusRoadWidth);
+
+        // Top Road
+        const topRoad = new THREE.Mesh(horizontalRoadGeom, innerRoadMaterial);
+        topRoad.rotation.x = -Math.PI / 2;
+        topRoad.position.set(cellCenterX, 0.1, cellCenterZ + ringRoadOffset);
+        innerRoadGroup.add(topRoad);
+
+        // Bottom Road
+        const bottomRoad = new THREE.Mesh(horizontalRoadGeom, innerRoadMaterial);
+        bottomRoad.rotation.x = -Math.PI / 2;
+        bottomRoad.position.set(cellCenterX, 0.1, cellCenterZ - ringRoadOffset);
+        innerRoadGroup.add(bottomRoad);
+
+        // Left Road
+        const leftRoad = new THREE.Mesh(verticalRoadGeom, innerRoadMaterial);
+        leftRoad.rotation.x = -Math.PI / 2;
+        leftRoad.position.set(cellCenterX - ringRoadOffset, 0.1, cellCenterZ);
+        innerRoadGroup.add(leftRoad);
+
+        // Right Road
+        const rightRoad = new THREE.Mesh(verticalRoadGeom, innerRoadMaterial);
+        rightRoad.rotation.x = -Math.PI / 2;
+        rightRoad.position.set(cellCenterX + ringRoadOffset, 0.1, cellCenterZ);
+        innerRoadGroup.add(rightRoad);
+
+        gridGroup.add(innerRoadGroup);
+
         // --- Department Buildings ---
+        const deptSpacing = 200;
         const deptPositions = [
-            // Front wall (+Z)
-            { x: cellCenterX - 150, z: cellCenterZ + 400, rot: Math.PI },
-            { x: cellCenterX + 150, z: cellCenterZ + 400, rot: Math.PI },
             // Back wall (-Z)
-            { x: cellCenterX - 150, z: cellCenterZ - 400, rot: 0 },
-            { x: cellCenterX + 150, z: cellCenterZ - 400, rot: 0 },
+            { x: cellCenterX - deptSpacing / 2, z: cellCenterZ - buildingOffset, rot: 0 },
+            { x: cellCenterX + deptSpacing / 2, z: cellCenterZ - buildingOffset, rot: 0 },
+            // Front wall (+Z)
+            { x: cellCenterX - deptSpacing / 2, z: cellCenterZ + buildingOffset, rot: Math.PI },
+            { x: cellCenterX + deptSpacing / 2, z: cellCenterZ + buildingOffset, rot: Math.PI },
             // Left wall (-X)
-            { x: cellCenterX - 400, z: cellCenterZ - 150, rot: Math.PI / 2 },
-            { x: cellCenterX - 400, z: cellCenterZ + 150, rot: Math.PI / 2 },
+            { x: cellCenterX - buildingOffset, z: cellCenterZ - deptSpacing / 2, rot: Math.PI / 2 },
+            { x: cellCenterX - buildingOffset, z: cellCenterZ + deptSpacing / 2, rot: Math.PI / 2 },
             // Right wall (+X)
-            { x: cellCenterX + 400, z: cellCenterZ - 150, rot: -Math.PI / 2 },
-            { x: cellCenterX + 400, z: cellCenterZ + 150, rot: -Math.PI / 2 },
+            { x: cellCenterX + buildingOffset, z: cellCenterZ - deptSpacing / 2, rot: -Math.PI / 2 },
+            { x: cellCenterX + buildingOffset, z: cellCenterZ + deptSpacing / 2, rot: -Math.PI / 2 },
         ];
 
         deptPositions.forEach(pos => {
@@ -160,42 +202,29 @@ export function createGridAndScenery(
             deptBuilding.rotation.y = pos.rot;
             gridGroup.add(deptBuilding);
             staticCollidersRef.current.push(deptBuilding);
+            
+            // Add connecting dark gray path
+            const pathGeom = new THREE.PlaneGeometry(pathWidth, pathLength);
+            const path = new THREE.Mesh(pathGeom, darkGrayRoadMaterial);
+            path.rotation.x = -Math.PI/2;
+            path.rotation.z = pos.rot;
+            
+            const pathOffset = ringRoadOffset + campusRoadWidth/2 + pathLength / 2;
+
+            if(pos.rot === 0) { // Back wall
+                 path.position.set(pos.x, 0.12, cellCenterZ - pathOffset);
+            } else if (pos.rot === Math.PI) { // Front wall
+                 path.position.set(pos.x, 0.12, cellCenterZ + pathOffset);
+                 path.rotation.z = 0; // needs to be set to 0 to align properly
+            } else if (pos.rot === Math.PI / 2) { // Left wall
+                path.position.set(cellCenterX - pathOffset, 0.12, pos.z);
+                path.rotation.z = Math.PI / 2;
+            } else { // Right wall
+                path.position.set(cellCenterX + pathOffset, 0.12, pos.z);
+                path.rotation.z = -Math.PI / 2;
+            }
+            gridGroup.add(path);
         });
-
-        // --- Department Connecting Roads ---
-        const innerRoadGroup = new THREE.Group();
-        const innerRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
-        const roadWidth = 50;
-        const roadOffset = 300; // Distance from the center
-
-        const horizontalRoadGeom = new THREE.PlaneGeometry(roadOffset * 2 + roadWidth, roadWidth);
-        const verticalRoadGeom = new THREE.PlaneGeometry(roadWidth, roadOffset * 2 - roadWidth);
-
-        // Top Road
-        const topRoad = new THREE.Mesh(horizontalRoadGeom, innerRoadMaterial);
-        topRoad.rotation.x = -Math.PI / 2;
-        topRoad.position.set(cellCenterX, 0.1, cellCenterZ + roadOffset);
-        innerRoadGroup.add(topRoad);
-
-        // Bottom Road
-        const bottomRoad = new THREE.Mesh(horizontalRoadGeom, innerRoadMaterial);
-        bottomRoad.rotation.x = -Math.PI / 2;
-        bottomRoad.position.set(cellCenterX, 0.1, cellCenterZ - roadOffset);
-        innerRoadGroup.add(bottomRoad);
-
-        // Left Road
-        const leftRoad = new THREE.Mesh(verticalRoadGeom, innerRoadMaterial);
-        leftRoad.rotation.x = -Math.PI / 2;
-        leftRoad.position.set(cellCenterX - roadOffset, 0.1, cellCenterZ);
-        innerRoadGroup.add(leftRoad);
-
-        // Right Road
-        const rightRoad = new THREE.Mesh(verticalRoadGeom, innerRoadMaterial);
-        rightRoad.rotation.x = -Math.PI / 2;
-        rightRoad.position.set(cellCenterX + roadOffset, 0.1, cellCenterZ);
-        innerRoadGroup.add(rightRoad);
-
-        gridGroup.add(innerRoadGroup);
 
 
         // --- Sector 14 Boundary Walls ---
@@ -208,7 +237,7 @@ export function createGridAndScenery(
         const halfCell = CELL_SIZE / 2;
         const outerEdge = halfCell - ROAD_WIDTH / 2 - (wallThickness / 2);
         
-        const wallSegmentLen = (CELL_SIZE - ROAD_WIDTH - gateWidth) / 2;
+        const wallSegmentLen = (CELL_SIZE - ROAD_WIDTH * 2 - gateWidth);
 
         function createWallSegment(width: number, depth: number) {
           const segment = new THREE.Group();
@@ -220,38 +249,30 @@ export function createGridAndScenery(
         }
         
         const halfSegment = wallSegmentLen / 2;
+        const sideWallLen = CELL_SIZE - (ROAD_WIDTH * 2);
 
         // Front Wall (+Z)
-        const frontWallLeft = createWallSegment(wallSegmentLen, wallThickness);
-        frontWallLeft.position.set(cellCenterX - (gateWidth / 2 + halfSegment), 0, cellCenterZ + outerEdge);
+        const frontWallLeft = createWallSegment(halfSegment, wallThickness);
+        frontWallLeft.position.set(cellCenterX - (gateWidth / 2 + halfSegment / 2) , 0, cellCenterZ + outerEdge);
         wallGroup.add(frontWallLeft);
-        const frontWallRight = createWallSegment(wallSegmentLen, wallThickness);
-        frontWallRight.position.set(cellCenterX + (gateWidth / 2 + halfSegment), 0, cellCenterZ + outerEdge);
+        const frontWallRight = createWallSegment(halfSegment, wallThickness);
+        frontWallRight.position.set(cellCenterX + (gateWidth / 2 + halfSegment / 2), 0, cellCenterZ + outerEdge);
         wallGroup.add(frontWallRight);
         
         // Back Wall (-Z)
-        const backWallLeft = createWallSegment(wallSegmentLen, wallThickness);
-        backWallLeft.position.set(cellCenterX - (gateWidth / 2 + halfSegment), 0, cellCenterZ - outerEdge);
-        wallGroup.add(backWallLeft);
-        const backWallRight = createWallSegment(wallSegmentLen, wallThickness);
-        backWallRight.position.set(cellCenterX + (gateWidth / 2 + halfSegment), 0, cellCenterZ - outerEdge);
-        wallGroup.add(backWallRight);
+        const backWall = createWallSegment(sideWallLen, wallThickness);
+        backWall.position.set(cellCenterX, 0, cellCenterZ - outerEdge);
+        wallGroup.add(backWall);
 
         // Left Wall (-X)
-        const leftWallTop = createWallSegment(wallThickness, wallSegmentLen);
-        leftWallTop.position.set(cellCenterX - outerEdge, 0, cellCenterZ - (gateWidth / 2 + halfSegment));
-        wallGroup.add(leftWallTop);
-        const leftWallBottom = createWallSegment(wallThickness, wallSegmentLen);
-        leftWallBottom.position.set(cellCenterX - outerEdge, 0, cellCenterZ + (gateWidth / 2 + halfSegment));
-        wallGroup.add(leftWallBottom);
+        const leftWall = createWallSegment(wallThickness, sideWallLen);
+        leftWall.position.set(cellCenterX - outerEdge, 0, cellCenterZ);
+        wallGroup.add(leftWall);
         
         // Right Wall (+X)
-        const rightWallTop = createWallSegment(wallThickness, wallSegmentLen);
-        rightWallTop.position.set(cellCenterX + outerEdge, 0, cellCenterZ - (gateWidth / 2 + halfSegment));
-        wallGroup.add(rightWallTop);
-        const rightWallBottom = createWallSegment(wallThickness, wallSegmentLen);
-        rightWallBottom.position.set(cellCenterX + outerEdge, 0, cellCenterZ + (gateWidth / 2 + halfSegment));
-        wallGroup.add(rightWallBottom);
+        const rightWall = createWallSegment(wallThickness, sideWallLen);
+        rightWall.position.set(cellCenterX + outerEdge, 0, cellCenterZ);
+        wallGroup.add(rightWall);
 
         gridGroup.add(wallGroup);
         wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
