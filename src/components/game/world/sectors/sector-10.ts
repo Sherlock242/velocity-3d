@@ -98,11 +98,11 @@ export function createSector10({
   campusContainer.add(entranceRoad);
 
   // Walkable Path to College (Horizontal)
-  const pathToCollegeLength = 150;
-  const pathToCollegeGeom = new THREE.PlaneGeometry(pathToCollegeLength + gateXPosition, 15);
+  const pathToCollegeLength = 100;
+  const pathToCollegeGeom = new THREE.PlaneGeometry(pathToCollegeLength, 15);
   const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
   pathToCollege.rotation.x = -Math.PI / 2;
-  pathToCollege.position.set((gateXPosition - pathToCollegeLength) / 2, 0.15, frontWallZ + entranceRoadLength - 7.5);
+  pathToCollege.position.set(gateXPosition - (pathToCollegeLength/2), 0.15, frontWallZ + entranceRoadLength - 7.5);
   campusContainer.add(pathToCollege);
 
   // --- College Building ---
