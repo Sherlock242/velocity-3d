@@ -10,12 +10,11 @@ export function createCollegeBuilding() {
   const wingDepth = 30;
   const numFloors = 4;
   const floorHeight = 15;
-  const totalHeight = numFloors * floorHeight;
 
   const redMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000, roughness: 0.8 });
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
-  const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.9 });
-  
+  const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x55903c });
+
   function createWing(width: number, depth: number) {
       const wing = new THREE.Group();
 
@@ -65,6 +64,7 @@ export function createCollegeBuilding() {
   const courtyardDepth = shortWingWidth - wingDepth * 2;
   
   const college = new THREE.Group();
+  college.name = 'collegeBuilding';
 
   // Back Wing (long)
   const backWing = createWing(longWingWidth, wingDepth);
@@ -90,7 +90,6 @@ export function createCollegeBuilding() {
 
   // Courtyard Ground
   const groundGeom = new THREE.PlaneGeometry(courtyardWidth, courtyardDepth);
-  const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x55903c });
   const ground = new THREE.Mesh(groundGeom, groundMaterial);
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = 0.1;
@@ -115,13 +114,41 @@ export function createCollegeBuilding() {
   const wallHeight = 15;
   const wallThickness = 5;
   const gateWidth = 40;
-  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000, roughness: 0.8 });
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
+  const redBorderMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000 }); // Red for top border
 
   function createWallSegment(width: number, depth: number) {
-      const wallGeom = new THREE.BoxGeometry(width, wallHeight, depth);
-      const wallMesh = new THREE.Mesh(wallGeom, wallMaterial);
-      wallMesh.position.y = wallHeight / 2;
-      return wallMesh;
+    const segment = new THREE.Group();
+    const mainWallHeight = wallHeight * 0.9;
+    const borderHeight = wallHeight * 0.1;
+
+    const mainWallGeom = new THREE.BoxGeometry(width, mainWallHeight, depth);
+    const mainWall = new THREE.Mesh(mainWallGeom, wallMaterial);
+    mainWall.position.y = mainWallHeight / 2;
+    segment.add(mainWall);
+
+    const topBorderGeom = new THREE.BoxGeometry(width, borderHeight, depth);
+    const topBorder = new THREE.Mesh(topBorderGeom, redBorderMaterial);
+    topBorder.position.y = mainWallHeight + borderHeight / 2;
+    segment.add(topBorder);
+
+    // Add pillars on top of the border
+    const pillarGeom = new THREE.CylinderGeometry(2, 2, 4, 8);
+    const pillarMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
+    const numPillars = Math.floor(width > depth ? width / 30 : depth / 30);
+
+    for(let i = 0; i < numPillars; i++) {
+        const pillar = new THREE.Mesh(pillarGeom, pillarMaterial);
+        const pillarPos = - (width > depth ? width : depth) / 2 + (i + 0.5) * ((width > depth ? width : depth) / numPillars);
+        if (width > depth) {
+            pillar.position.set(pillarPos, wallHeight + 2, 0);
+        } else {
+            pillar.position.set(0, wallHeight + 2, pillarPos);
+        }
+        segment.add(pillar);
+    }
+    
+    return segment;
   }
   
   // Back wall
