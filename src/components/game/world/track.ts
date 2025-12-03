@@ -224,7 +224,7 @@ export function createGridAndScenery(
         // --- Dance Stage ---
         const danceStage = createDanceStage();
         danceStage.scale.set(0.8, 0.8, 0.8);
-        danceStage.position.set(plotWidth / 4, 0, plotDepth / 4); // Bottom-right
+        danceStage.position.set(-plotWidth/2 + 50, 0, -plotDepth/2 + 50); // Top-left
         campusContainer.add(danceStage);
         staticCollidersRef.current.push(danceStage);
         
@@ -238,7 +238,7 @@ export function createGridAndScenery(
         // --- Scout and Guide Building ---
         const scoutBuilding = createScoutGuideBuilding();
         scoutBuilding.scale.set(0.9, 0.9, 0.9);
-        scoutBuilding.position.set(-plotWidth/2 + 50, 0, -plotDepth/2 + 50);
+        scoutBuilding.position.set(plotWidth / 4, 0, plotDepth / 4); // Bottom-right
         campusContainer.add(scoutBuilding);
         staticCollidersRef.current.push(scoutBuilding);
         
