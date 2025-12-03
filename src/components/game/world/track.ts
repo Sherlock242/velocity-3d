@@ -120,36 +120,36 @@ export function createGridAndScenery(
       const sectorNumber = j * GRID_SIZE + i + 1;
 
       if (sectorNumber === 10) {
-        // College Building
+        const halfCell = CELL_SIZE / 2;
+        // College Building in top-left
         const college = createCollegeBuilding();
-        college.position.set(cellCenterX, 0, cellCenterZ - 150);
-        college.rotation.y = Math.PI;
+        college.position.set(cellCenterX - halfCell / 2, 0, cellCenterZ - halfCell / 2);
+        college.rotation.y = Math.PI / 4;
         gridGroup.add(college);
         staticCollidersRef.current.push(college);
 
-        // Luis Park
+        // Luis Park next to it (top-right)
         const park = createLuisPark();
-        park.position.set(cellCenterX + 250, 0.1, cellCenterZ - 150);
+        park.position.set(cellCenterX + halfCell / 2, 0.1, cellCenterZ - halfCell / 2);
         gridGroup.add(park);
-        // Add individual trees to colliders if needed, for now just the sign
         const parkSign = park.getObjectByName('LuisParkSign');
         if (parkSign) {
           staticCollidersRef.current.push(parkSign as THREE.Group);
         }
 
-        // Shops
+        // Shops behind the college (bottom-left)
         const shopColors = [0xff6347, 0x4682b4, 0x3cb371, 0xffd700, 0x6a5acd];
         const numShops = 5;
         const shopSpacing = 60;
         const totalShopWidth = numShops * shopSpacing;
-        const shopStartX = cellCenterX - totalShopWidth / 2 + shopSpacing / 2;
-        
-        for(let k = 0; k < numShops; k++) {
-            const shop = createShop(shopColors[k % shopColors.length]);
-            shop.position.set(shopStartX + k * shopSpacing, 0, cellCenterZ + 200);
-            shop.rotation.y = Math.PI;
-            gridGroup.add(shop);
-            staticCollidersRef.current.push(shop);
+        const shopStartX = cellCenterX - halfCell / 2 - totalShopWidth / 2 + shopSpacing / 2;
+
+        for (let k = 0; k < numShops; k++) {
+          const shop = createShop(shopColors[k % shopColors.length]);
+          shop.position.set(shopStartX + k * shopSpacing, 0, cellCenterZ + halfCell / 2);
+          shop.rotation.y = Math.PI;
+          gridGroup.add(shop);
+          staticCollidersRef.current.push(shop);
         }
 
         continue;
@@ -298,7 +298,10 @@ export function createGridAndScenery(
         const gateWidth = 80;
         const halfCell = CELL_SIZE / 2;
         const outerEdge = halfCell - ROAD_WIDTH / 2;
-        const wallSegmentLen = (outerEdge * 2 - gateWidth) / 2;
+        const sideWallLen = CELL_SIZE - ROAD_WIDTH;
+        const wallSegmentLen = (sideWallLen - gateWidth) / 2;
+        const segmentOffset = gateWidth / 2 + wallSegmentLen / 2;
+        const wallPosition = outerEdge - wallThickness / 2;
 
 
         function createWallSegment(width: number, depth: number) {
@@ -309,9 +312,6 @@ export function createGridAndScenery(
           segment.add(mainWall);
           return segment;
         }
-        
-        const segmentOffset = gateWidth / 2 + wallSegmentLen / 2;
-        const wallPosition = outerEdge - wallThickness / 2;
 
         // Front Wall (+Z)
         const frontWallLeft = createWallSegment(wallSegmentLen, wallThickness);
@@ -320,7 +320,7 @@ export function createGridAndScenery(
         const frontWallRight = createWallSegment(wallSegmentLen, wallThickness);
         frontWallRight.position.set(cellCenterX + segmentOffset, 0, cellCenterZ + wallPosition);
         wallGroup.add(frontWallRight);
-        
+
         // Back Wall (-Z)
         const backWallLeft = createWallSegment(wallSegmentLen, wallThickness);
         backWallLeft.position.set(cellCenterX - segmentOffset, 0, cellCenterZ - wallPosition);
@@ -330,23 +330,19 @@ export function createGridAndScenery(
         wallGroup.add(backWallRight);
 
         // Left Wall (-X)
-        const sideWallLen = CELL_SIZE - ROAD_WIDTH;
-        const sideWallSegmentLen = (sideWallLen - gateWidth) / 2;
-        const sideSegmentOffset = gateWidth / 2 + sideWallSegmentLen / 2;
-
-        const leftWallTop = createWallSegment(wallThickness, sideWallSegmentLen);
-        leftWallTop.position.set(cellCenterX - wallPosition, 0, cellCenterZ + sideSegmentOffset);
+        const leftWallTop = createWallSegment(wallThickness, wallSegmentLen);
+        leftWallTop.position.set(cellCenterX - wallPosition, 0, cellCenterZ + segmentOffset);
         wallGroup.add(leftWallTop);
-        const leftWallBottom = createWallSegment(wallThickness, sideWallSegmentLen);
-        leftWallBottom.position.set(cellCenterX - wallPosition, 0, cellCenterZ - sideSegmentOffset);
+        const leftWallBottom = createWallSegment(wallThickness, wallSegmentLen);
+        leftWallBottom.position.set(cellCenterX - wallPosition, 0, cellCenterZ - segmentOffset);
         wallGroup.add(leftWallBottom);
-        
+
         // Right Wall (+X)
-        const rightWallTop = createWallSegment(wallThickness, sideWallSegmentLen);
-        rightWallTop.position.set(cellCenterX + wallPosition, 0, cellCenterZ + sideSegmentOffset);
+        const rightWallTop = createWallSegment(wallThickness, wallSegmentLen);
+        rightWallTop.position.set(cellCenterX + wallPosition, 0, cellCenterZ + segmentOffset);
         wallGroup.add(rightWallTop);
-        const rightWallBottom = createWallSegment(wallThickness, sideWallSegmentLen);
-        rightWallBottom.position.set(cellCenterX + wallPosition, 0, cellCenterZ - sideSegmentOffset);
+        const rightWallBottom = createWallSegment(wallThickness, wallSegmentLen);
+        rightWallBottom.position.set(cellCenterX + wallPosition, 0, cellCenterZ - segmentOffset);
         wallGroup.add(rightWallBottom);
 
         gridGroup.add(wallGroup);
