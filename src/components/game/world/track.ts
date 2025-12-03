@@ -125,13 +125,11 @@ export function createGridAndScenery(
       if (sectorNumber === 10) {
         const campusContainer = new THREE.Group();
         campusContainer.position.set(cellCenterX, 0, cellCenterZ);
-        campusContainer.rotation.y = -Math.PI / 2; // Rotate the whole campus layout
 
-        // Define a fixed plot size for the mini-campus
         const plotWidth = 480; 
         const plotDepth = 480;
 
-        // --- Compound Wall (L-Shape) ---
+        // --- Compound Wall ---
         const wallGroup = new THREE.Group();
         wallGroup.name = 'compoundWall';
         const wallHeight = 15;
@@ -163,10 +161,10 @@ export function createGridAndScenery(
         backWall.position.z = -plotDepth / 2;
         wallGroup.add(backWall);
 
-        // Right wall
-        const rightWall = createWallSegment(wallThickness, plotDepth);
-        rightWall.position.x = plotWidth / 2;
-        wallGroup.add(rightWall);
+        // Bottom Wall
+        const bottomWall = createWallSegment(plotWidth, wallThickness);
+        bottomWall.position.z = plotDepth / 2;
+        wallGroup.add(bottomWall);
         
         // Left wall (with entrance gap)
         const leftWallSegmentHeight = (plotDepth - gateWidth) / 2;
@@ -183,34 +181,31 @@ export function createGridAndScenery(
         campusContainer.add(wallGroup);
         wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
 
-        // --- Entrance Road ---
-        const entranceRoadGeom = new THREE.PlaneGeometry(25, 100);
+        // --- Roads and Paths ---
         const darkRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+        const pathMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
+        
+        // Entrance Road (Vertical)
+        const entranceRoadGeom = new THREE.PlaneGeometry(25, 300);
         const entranceRoad = new THREE.Mesh(entranceRoadGeom, darkRoadMaterial);
         entranceRoad.rotation.x = -Math.PI / 2;
-        entranceRoad.position.set(-plotWidth / 2 + 12.5, 0.15, plotDepth / 2 - 50);
+        entranceRoad.position.set(-plotWidth / 2 + 50, 0.15, 0);
         campusContainer.add(entranceRoad);
 
-        // --- Walkable Paths ---
-        const pathMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
-        const path1_Geom = new THREE.PlaneGeometry(100, 15);
+        // Walkable Path (Horizontal)
+        const path1_Geom = new THREE.PlaneGeometry(150, 15);
         const path1 = new THREE.Mesh(path1_Geom, pathMaterial);
         path1.rotation.x = -Math.PI / 2;
-        path1.position.set(-plotWidth / 2 + 65, 0.15, plotDepth / 2 - 100 - 7.5);
+        path1.position.set(-plotWidth / 2 + 160, 0.15, -150);
         campusContainer.add(path1);
-        
-        const path2_Geom = new THREE.PlaneGeometry(15, 150);
-        const path2 = new THREE.Mesh(path2_Geom, pathMaterial);
-        path2.rotation.x = -Math.PI / 2;
-        path2.position.set(-plotWidth/2 + 100 + 7.5, 0.15, plotDepth / 2 - 180);
-        campusContainer.add(path2);
 
         // --- College Building ---
         const college = createCollegeBuilding();
-        college.scale.set(0.6, 0.6, 0.6); // Scale it down
-        college.position.set(20, 0, -50); // Position it centrally
+        college.scale.set(0.6, 0.6, 0.6);
+        college.position.set(20, 0, -20);
         campusContainer.add(college);
 
+        // Add college wings as colliders, not the whole group
         const mainBuilding = college.getObjectByName('collegeBuilding');
         if (mainBuilding) {
             const backWing = mainBuilding.getObjectByName('backWing');
@@ -224,17 +219,18 @@ export function createGridAndScenery(
             if (rightWing) staticCollidersRef.current.push(rightWing as THREE.Group);
         }
 
+
         // --- Dance Stage ---
         const danceStage = createDanceStage();
         danceStage.scale.set(0.8, 0.8, 0.8);
-        danceStage.position.set(plotWidth / 2 - 50, 0, -plotDepth/2 + 180);
+        danceStage.position.set(plotWidth / 2 - 80, 0, 100);
         campusContainer.add(danceStage);
         staticCollidersRef.current.push(danceStage);
         
         // --- Classroom Block ---
         const classroomBlock = createClassroomBlock();
         classroomBlock.scale.set(0.8, 0.8, 0.8);
-        classroomBlock.position.set(0, 0, -plotDepth/2 + 50);
+        classroomBlock.position.set(50, 0, -plotDepth/2 + 50);
         campusContainer.add(classroomBlock);
         staticCollidersRef.current.push(classroomBlock);
         
