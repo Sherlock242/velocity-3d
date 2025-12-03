@@ -125,20 +125,23 @@ export function createGridAndScenery(
       if (sectorNumber === 10) {
         const campusContainer = new THREE.Group();
         campusContainer.position.set(cellCenterX, 0, cellCenterZ);
+        campusContainer.rotation.y = -Math.PI / 2; // Rotate the whole campus layout
 
-        // --- Compound Wall ---
+        // Define a fixed plot size for the mini-campus
+        const plotWidth = 480; 
+        const plotDepth = 480;
+
+        // --- Compound Wall (L-Shape) ---
         const wallGroup = new THREE.Group();
         wallGroup.name = 'compoundWall';
-        const plotWidth = 480;
-        const plotDepth = 480;
         const wallHeight = 15;
         const wallThickness = 5;
         const gateWidth = 40;
-        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
-        const redBorderMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000 }); // Red for top border
-
+        
         function createWallSegment(width: number, depth: number) {
           const segment = new THREE.Group();
+          const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
+          const redBorderMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000 });
           const mainWallHeight = wallHeight * 0.9;
           const borderHeight = wallHeight * 0.1;
 
@@ -160,33 +163,52 @@ export function createGridAndScenery(
         backWall.position.z = -plotDepth / 2;
         wallGroup.add(backWall);
 
-        // Side walls
-        const leftWall = createWallSegment(wallThickness, plotDepth);
-        leftWall.position.x = -plotWidth / 2;
-        wallGroup.add(leftWall);
-        
+        // Right wall
         const rightWall = createWallSegment(wallThickness, plotDepth);
         rightWall.position.x = plotWidth / 2;
         wallGroup.add(rightWall);
+        
+        // Left wall (with entrance gap)
+        const leftWallSegmentHeight = (plotDepth - gateWidth) / 2;
+        const leftWallTop = createWallSegment(wallThickness, leftWallSegmentHeight);
+        leftWallTop.position.x = -plotWidth / 2;
+        leftWallTop.position.z = -(gateWidth / 2 + leftWallSegmentHeight / 2);
+        wallGroup.add(leftWallTop);
 
-        // Front wall (with gate)
-        const frontWallSegmentWidth = (plotWidth - gateWidth) / 2;
-        const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
-        frontWallLeft.position.x = -(gateWidth / 2 + frontWallSegmentWidth / 2);
-        frontWallLeft.position.z = plotDepth / 2;
-        wallGroup.add(frontWallLeft);
-
-        const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
-        frontWallRight.position.x = (gateWidth / 2 + frontWallSegmentWidth / 2);
-        frontWallRight.position.z = plotDepth / 2;
-        wallGroup.add(frontWallRight);
+        const leftWallBottom = createWallSegment(wallThickness, leftWallSegmentHeight);
+        leftWallBottom.position.x = -plotWidth / 2;
+        leftWallBottom.position.z = (gateWidth / 2 + leftWallSegmentHeight / 2);
+        wallGroup.add(leftWallBottom);
         
         campusContainer.add(wallGroup);
         wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
 
+        // --- Entrance Road ---
+        const entranceRoadGeom = new THREE.PlaneGeometry(25, 100);
+        const darkRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+        const entranceRoad = new THREE.Mesh(entranceRoadGeom, darkRoadMaterial);
+        entranceRoad.rotation.x = -Math.PI / 2;
+        entranceRoad.position.set(-plotWidth / 2 + 12.5, 0.15, plotDepth / 2 - 50);
+        campusContainer.add(entranceRoad);
+
+        // --- Walkable Paths ---
+        const pathMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
+        const path1_Geom = new THREE.PlaneGeometry(100, 15);
+        const path1 = new THREE.Mesh(path1_Geom, pathMaterial);
+        path1.rotation.x = -Math.PI / 2;
+        path1.position.set(-plotWidth / 2 + 65, 0.15, plotDepth / 2 - 100 - 7.5);
+        campusContainer.add(path1);
+        
+        const path2_Geom = new THREE.PlaneGeometry(15, 150);
+        const path2 = new THREE.Mesh(path2_Geom, pathMaterial);
+        path2.rotation.x = -Math.PI / 2;
+        path2.position.set(-plotWidth/2 + 100 + 7.5, 0.15, plotDepth / 2 - 180);
+        campusContainer.add(path2);
+
         // --- College Building ---
         const college = createCollegeBuilding();
-        college.position.set(-plotWidth / 4, 0, 0); // Position to one side
+        college.scale.set(0.6, 0.6, 0.6); // Scale it down
+        college.position.set(20, 0, -50); // Position it centrally
         campusContainer.add(college);
 
         const mainBuilding = college.getObjectByName('collegeBuilding');
@@ -204,19 +226,22 @@ export function createGridAndScenery(
 
         // --- Dance Stage ---
         const danceStage = createDanceStage();
-        danceStage.position.set(plotWidth / 4, 0, 0);
+        danceStage.scale.set(0.8, 0.8, 0.8);
+        danceStage.position.set(plotWidth / 2 - 50, 0, -plotDepth/2 + 180);
         campusContainer.add(danceStage);
         staticCollidersRef.current.push(danceStage);
         
         // --- Classroom Block ---
         const classroomBlock = createClassroomBlock();
-        classroomBlock.position.set(plotWidth / 4, 0, plotDepth / 4);
+        classroomBlock.scale.set(0.8, 0.8, 0.8);
+        classroomBlock.position.set(0, 0, -plotDepth/2 + 50);
         campusContainer.add(classroomBlock);
         staticCollidersRef.current.push(classroomBlock);
         
         // --- Scout and Guide Building ---
         const scoutBuilding = createScoutGuideBuilding();
-        scoutBuilding.position.set(plotWidth / 4, 0, -plotDepth / 4);
+        scoutBuilding.scale.set(0.9, 0.9, 0.9);
+        scoutBuilding.position.set(-plotWidth/2 + 50, 0, -plotDepth/2 + 50);
         campusContainer.add(scoutBuilding);
         staticCollidersRef.current.push(scoutBuilding);
         
