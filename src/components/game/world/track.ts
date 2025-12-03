@@ -212,7 +212,7 @@ export function createGridAndScenery(
         // --- College Building ---
         const college = createCollegeBuilding();
         college.scale.set(0.6, 0.6, 0.6);
-        college.position.set(-plotWidth / 4, 0, plotDepth / 4); // Bottom-left
+        college.position.set(0, 0, -plotDepth/2 + 50);
         campusContainer.add(college);
         const mainBuilding = college.getObjectByName('collegeBuilding');
         if (mainBuilding) {
@@ -222,7 +222,7 @@ export function createGridAndScenery(
         // --- Classroom Block ---
         const classroomBlock = createClassroomBlock();
         classroomBlock.scale.set(0.8, 0.8, 0.8);
-        classroomBlock.position.set(0, 0, -plotDepth/2 + 50);
+        classroomBlock.position.set(-plotWidth / 4, 0, plotDepth / 4); // Bottom-left
         campusContainer.add(classroomBlock);
         staticCollidersRef.current.push(classroomBlock);
         
