@@ -221,7 +221,8 @@ export function createGridAndScenery(
         // --- Open College Building ---
         const openCollegeBuilding = createOpenCollegeBuilding();
         openCollegeBuilding.scale.set(0.6, 0.6, 0.6);
-        openCollegeBuilding.position.set(-140, 0, 190); // Bottom-left corner
+        openCollegeBuilding.position.set(-120, 0, 120); // Bottom-left corner
+        openCollegeBuilding.rotation.y = Math.PI / 2;
         campusContainer.add(openCollegeBuilding);
         const openMainBuilding = openCollegeBuilding.getObjectByName('openCollegeBuilding');
         if (openMainBuilding) {
