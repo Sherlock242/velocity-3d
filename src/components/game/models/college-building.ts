@@ -144,6 +144,8 @@ export function createCollegeBuilding() {
   
   collegeGroup.add(wallGroup);
 
+  // Rotate the entire college group to face the correct direction
+  collegeGroup.rotation.y = Math.PI;
 
   collegeGroup.castShadow = true;
   collegeGroup.receiveShadow = true;
