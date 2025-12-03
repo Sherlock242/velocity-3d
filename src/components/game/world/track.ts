@@ -126,7 +126,7 @@ export function createGridAndScenery(
         const campusContainer = new THREE.Group();
         campusContainer.position.set(cellCenterX, 0, cellCenterZ);
 
-        const plotWidth = 480; 
+        const plotWidth = 480;
         const plotDepth = 480;
 
         // --- Compound Wall ---
@@ -155,29 +155,35 @@ export function createGridAndScenery(
           
           return segment;
         }
-        
-        // Back wall
+
+        // Back wall (-Z)
         const backWall = createWallSegment(plotWidth, wallThickness);
         backWall.position.z = -plotDepth / 2;
         wallGroup.add(backWall);
 
-        // Bottom Wall
-        const bottomWall = createWallSegment(plotWidth, wallThickness);
-        bottomWall.position.z = plotDepth / 2;
-        wallGroup.add(bottomWall);
+        // Right wall (+X)
+        const rightWall = createWallSegment(wallThickness, plotDepth);
+        rightWall.position.x = plotWidth / 2;
+        wallGroup.add(rightWall);
         
-        // Left wall (with entrance gap)
-        const leftWallSegmentHeight = (plotDepth - gateWidth) / 2;
-        const leftWallTop = createWallSegment(wallThickness, leftWallSegmentHeight);
-        leftWallTop.position.x = -plotWidth / 2;
-        leftWallTop.position.z = -(gateWidth / 2 + leftWallSegmentHeight / 2);
-        wallGroup.add(leftWallTop);
+        // Left wall (-X)
+        const leftWall = createWallSegment(wallThickness, plotDepth);
+        leftWall.position.x = -plotWidth / 2;
+        wallGroup.add(leftWall);
 
-        const leftWallBottom = createWallSegment(wallThickness, leftWallSegmentHeight);
-        leftWallBottom.position.x = -plotWidth / 2;
-        leftWallBottom.position.z = (gateWidth / 2 + leftWallSegmentHeight / 2);
-        wallGroup.add(leftWallBottom);
+        // Bottom wall (with entrance gap)
+        const bottomWallSegmentWidth = (plotWidth - gateWidth) / 2;
         
+        const bottomWallLeft = createWallSegment(bottomWallSegmentWidth, wallThickness);
+        bottomWallLeft.position.x = -(gateWidth / 2 + bottomWallSegmentWidth / 2);
+        bottomWallLeft.position.z = plotDepth / 2;
+        wallGroup.add(bottomWallLeft);
+
+        const bottomWallRight = createWallSegment(bottomWallSegmentWidth, wallThickness);
+        bottomWallRight.position.x = (gateWidth / 2 + bottomWallSegmentWidth / 2);
+        bottomWallRight.position.z = plotDepth / 2;
+        wallGroup.add(bottomWallRight);
+
         campusContainer.add(wallGroup);
         wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
 
@@ -186,51 +192,48 @@ export function createGridAndScenery(
         const pathMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
         
         // Entrance Road (Vertical)
-        const entranceRoadGeom = new THREE.PlaneGeometry(25, 300);
+        const entranceRoadGeom = new THREE.PlaneGeometry(25, 200);
         const entranceRoad = new THREE.Mesh(entranceRoadGeom, darkRoadMaterial);
         entranceRoad.rotation.x = -Math.PI / 2;
-        entranceRoad.position.set(-plotWidth / 2 + 50, 0.15, 0);
+        entranceRoad.position.set(0, 0.15, plotDepth / 2 - 100);
         campusContainer.add(entranceRoad);
 
-        // Walkable Path (Horizontal)
-        const path1_Geom = new THREE.PlaneGeometry(150, 15);
-        const path1 = new THREE.Mesh(path1_Geom, pathMaterial);
-        path1.rotation.x = -Math.PI / 2;
-        path1.position.set(-plotWidth / 2 + 160, 0.15, -150);
-        campusContainer.add(path1);
+        // Walkable Path to College (Horizontal)
+        const pathToCollegeGeom = new THREE.PlaneGeometry(150, 15);
+        const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
+        pathToCollege.rotation.x = -Math.PI / 2;
+        pathToCollege.position.set(-plotWidth / 2 + 75, 0.15, plotDepth / 2 - 200);
+        campusContainer.add(pathToCollege);
+        
+        // Path to Classrooms (Horizontal)
+        const pathToClassesGeom = new THREE.PlaneGeometry(200, 15);
+        const pathToClasses = new THREE.Mesh(pathToClassesGeom, pathMaterial);
+        pathToClasses.rotation.x = -Math.PI / 2;
+        pathToClasses.position.set(0, 0.15, -plotDepth/2 + 70);
+        campusContainer.add(pathToClasses);
 
         // --- College Building ---
         const college = createCollegeBuilding();
         college.scale.set(0.6, 0.6, 0.6);
-        college.position.set(plotWidth / 2 - 80, 0, 100);
+        college.position.set(-plotWidth / 2 + 100, 0, plotDepth / 2 - 130);
+        college.rotation.y = Math.PI / 2;
         campusContainer.add(college);
-
-        // Add college wings as colliders, not the whole group
         const mainBuilding = college.getObjectByName('collegeBuilding');
         if (mainBuilding) {
-            const backWing = mainBuilding.getObjectByName('backWing');
-            const frontWing = mainBuilding.getObjectByName('frontWing');
-            const leftWing = mainBuilding.getObjectByName('leftWing');
-            const rightWing = mainBuilding.getObjectByName('rightWing');
-
-            if (backWing) staticCollidersRef.current.push(backWing as THREE.Group);
-            if (frontWing) staticCollidersRef.current.push(frontWing as THREE.Group);
-            if (leftWing) staticCollidersRef.current.push(leftWing as THREE.Group);
-            if (rightWing) staticCollidersRef.current.push(rightWing as THREE.Group);
+            mainBuilding.children.forEach(child => staticCollidersRef.current.push(child as THREE.Group));
         }
-
 
         // --- Dance Stage ---
         const danceStage = createDanceStage();
         danceStage.scale.set(0.8, 0.8, 0.8);
-        danceStage.position.set(-plotWidth / 2 + 100, 0, 100);
+        danceStage.position.set(plotWidth / 2 - 50, 0, plotDepth / 2 - 50);
         campusContainer.add(danceStage);
         staticCollidersRef.current.push(danceStage);
         
         // --- Classroom Block ---
         const classroomBlock = createClassroomBlock();
         classroomBlock.scale.set(0.8, 0.8, 0.8);
-        classroomBlock.position.set(50, 0, -plotDepth/2 + 50);
+        classroomBlock.position.set(0, 0, -plotDepth/2 + 50);
         campusContainer.add(classroomBlock);
         staticCollidersRef.current.push(classroomBlock);
         
