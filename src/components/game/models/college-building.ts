@@ -9,7 +9,7 @@ export function createCollegeBuilding() {
   const shortWingWidth = 250;
   const wingDepth = 30;
   const numFloors = 4;
-  const floorHeight = 15;
+  const floorHeight = 30;
 
   const redMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000, roughness: 0.8 });
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
@@ -37,7 +37,7 @@ export function createCollegeBuilding() {
           const numPillars = Math.floor(width / 20);
           for (let j = 0; j < numPillars; j++) {
               const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
-              const pillar = new THREE.Mesh(pillarGeom, redMaterial);
+              const pillar = new THREE.Mesh(pillarGeom, yellowMaterial);
               const xPos = -width/2 + 10 + j * 20;
               pillar.position.set(xPos, floorHeight / 2, depth / 2 + 2);
               floorGroup.add(pillar);
@@ -50,7 +50,7 @@ export function createCollegeBuilding() {
           
           for (let j = 0; j < numPillars; j++) {
               const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
-              const pillar = new THREE.Mesh(pillarGeom, redMaterial);
+              const pillar = new THREE.Mesh(pillarGeom, yellowMaterial);
               const xPos = -width/2 + 10 + j * 20;
               pillar.position.set(xPos, floorHeight / 2, -depth / 2 - 2);
               floorGroup.add(pillar);
