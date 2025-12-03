@@ -215,29 +215,40 @@ export function createGridAndScenery(
           segment.add(mainWall);
           return segment;
         }
+        
+        const wallSegmentWidth = (CELL_SIZE - gateWidth) / 2;
 
-        // Front Wall (with gate) - on the +Z side
-        const frontWallSegmentWidth = (CELL_SIZE - gateWidth) / 2;
-        const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
-        frontWallLeft.position.set(cellCenterX - (gateWidth / 2 + frontWallSegmentWidth / 2), 0, cellCenterZ + cellEdge);
+        // Front Wall (+Z)
+        const frontWallLeft = createWallSegment(wallSegmentWidth, wallThickness);
+        frontWallLeft.position.set(cellCenterX - (gateWidth / 2 + wallSegmentWidth / 2), 0, cellCenterZ + cellEdge);
         wallGroup.add(frontWallLeft);
-        const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
-        frontWallRight.position.set(cellCenterX + (gateWidth / 2 + frontWallSegmentWidth / 2), 0, cellCenterZ + cellEdge);
+        const frontWallRight = createWallSegment(wallSegmentWidth, wallThickness);
+        frontWallRight.position.set(cellCenterX + (gateWidth / 2 + wallSegmentWidth / 2), 0, cellCenterZ + cellEdge);
         wallGroup.add(frontWallRight);
         
-        // Back Wall - on the -Z side
-        const backWall = createWallSegment(CELL_SIZE, wallThickness);
-        backWall.position.set(cellCenterX, 0, cellCenterZ - cellEdge);
-        wallGroup.add(backWall);
+        // Back Wall (-Z)
+        const backWallLeft = createWallSegment(wallSegmentWidth, wallThickness);
+        backWallLeft.position.set(cellCenterX - (gateWidth / 2 + wallSegmentWidth / 2), 0, cellCenterZ - cellEdge);
+        wallGroup.add(backWallLeft);
+        const backWallRight = createWallSegment(wallSegmentWidth, wallThickness);
+        backWallRight.position.set(cellCenterX + (gateWidth / 2 + wallSegmentWidth / 2), 0, cellCenterZ - cellEdge);
+        wallGroup.add(backWallRight);
 
-        // Side Walls
-        const sideWallLeft = createWallSegment(wallThickness, CELL_SIZE);
-        sideWallLeft.position.set(cellCenterX - cellEdge, 0, cellCenterZ);
-        wallGroup.add(sideWallLeft);
+        // Left Wall (-X)
+        const leftWallTop = createWallSegment(wallThickness, wallSegmentWidth);
+        leftWallTop.position.set(cellCenterX - cellEdge, 0, cellCenterZ - (gateWidth / 2 + wallSegmentWidth / 2));
+        wallGroup.add(leftWallTop);
+        const leftWallBottom = createWallSegment(wallThickness, wallSegmentWidth);
+        leftWallBottom.position.set(cellCenterX - cellEdge, 0, cellCenterZ + (gateWidth / 2 + wallSegmentWidth / 2));
+        wallGroup.add(leftWallBottom);
         
-        const sideWallRight = createWallSegment(wallThickness, CELL_SIZE);
-        sideWallRight.position.set(cellCenterX + cellEdge, 0, cellCenterZ);
-        wallGroup.add(sideWallRight);
+        // Right Wall (+X)
+        const rightWallTop = createWallSegment(wallThickness, wallSegmentWidth);
+        rightWallTop.position.set(cellCenterX + cellEdge, 0, cellCenterZ - (gateWidth / 2 + wallSegmentWidth / 2));
+        wallGroup.add(rightWallTop);
+        const rightWallBottom = createWallSegment(wallThickness, wallSegmentWidth);
+        rightWallBottom.position.set(cellCenterX + cellEdge, 0, cellCenterZ + (gateWidth / 2 + wallSegmentWidth / 2));
+        wallGroup.add(rightWallBottom);
 
         gridGroup.add(wallGroup);
         wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
@@ -280,7 +291,7 @@ export function createGridAndScenery(
         // --- SPECIAL BUILDINGS IN TOP-LEFT (VERTICALLY) ---
         let currentZ = cellCenterZ - (CELL_SIZE / 2) + 150;
         const specialBuildingX = cellCenterX - (CELL_SIZE / 2) + 100;
-        const specialBuildingSpacing = 150;
+        const specialBuildingSpacing = 120;
 
         const lightMandir = createLightMandir();
         lightMandir.position.set(specialBuildingX, 0, currentZ);
