@@ -135,6 +135,7 @@ export function createGridAndScenery(
         const wallHeight = 15;
         const wallThickness = 5;
         const gateWidth = 40;
+        const entranceZOffset = 50; // How far "up" to move the entrance wall
         
         function createWallSegment(width: number, depth: number) {
           const segment = new THREE.Group();
@@ -158,14 +159,15 @@ export function createGridAndScenery(
         
         // Front wall (+Z, faces Sector 15)
         const frontWallSegmentWidth = (plotWidth - gateWidth) / 2;
+        const frontWallZ = plotDepth / 2 - entranceZOffset;
         const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
         frontWallLeft.position.x = -(gateWidth / 2 + frontWallSegmentWidth / 2);
-        frontWallLeft.position.z = plotDepth / 2;
+        frontWallLeft.position.z = frontWallZ;
         wallGroup.add(frontWallLeft);
         
         const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
         frontWallRight.position.x = (gateWidth / 2 + frontWallSegmentWidth / 2);
-        frontWallRight.position.z = plotDepth / 2;
+        frontWallRight.position.z = frontWallZ;
         wallGroup.add(frontWallRight);
 
         // Back wall (-Z)
@@ -174,13 +176,15 @@ export function createGridAndScenery(
         wallGroup.add(backWall);
 
         // Right wall (+X)
-        const rightWall = createWallSegment(wallThickness, plotDepth);
+        const rightWall = createWallSegment(wallThickness, plotDepth - entranceZOffset);
         rightWall.position.x = plotWidth / 2;
+        rightWall.position.z = (-plotDepth / 2 + (plotDepth - entranceZOffset)/2)
         wallGroup.add(rightWall);
         
         // Left wall (-X)
-        const leftWall = createWallSegment(wallThickness, plotDepth);
+        const leftWall = createWallSegment(wallThickness, plotDepth - entranceZOffset);
         leftWall.position.x = -plotWidth / 2;
+        leftWall.position.z = (-plotDepth / 2 + (plotDepth - entranceZOffset)/2)
         wallGroup.add(leftWall);
 
         campusContainer.add(wallGroup);
@@ -191,10 +195,11 @@ export function createGridAndScenery(
         const pathMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
         
         // Entrance Road (Vertical)
-        const entranceRoadGeom = new THREE.PlaneGeometry(25, 200);
+        const entranceRoadLength = 200;
+        const entranceRoadGeom = new THREE.PlaneGeometry(25, entranceRoadLength);
         const entranceRoad = new THREE.Mesh(entranceRoadGeom, darkRoadMaterial);
         entranceRoad.rotation.x = -Math.PI / 2;
-        entranceRoad.position.set(0, 0.15, plotDepth / 2 - 100);
+        entranceRoad.position.set(0, 0.15, frontWallZ - entranceRoadLength / 2);
         campusContainer.add(entranceRoad);
 
         // Walkable Path to College (Horizontal)
