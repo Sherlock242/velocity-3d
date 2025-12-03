@@ -3,6 +3,7 @@ import * as THREE from 'three';
 
 export function createCollegeBuilding() {
   const collegeGroup = new THREE.Group();
+  collegeGroup.name = 'collegeBuilding';
 
   const longWingWidth = 400;
   const shortWingWidth = 250;
@@ -107,6 +108,7 @@ export function createCollegeBuilding() {
 
   // --- Compound Wall ---
   const wallGroup = new THREE.Group();
+  wallGroup.name = 'compoundWall';
   const plotWidth = longWingWidth + 100;
   const plotDepth = shortWingWidth + 100;
   const wallHeight = 15;
@@ -157,3 +159,5 @@ export function createCollegeBuilding() {
 
   return collegeGroup;
 }
+
+    

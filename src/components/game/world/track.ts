@@ -123,7 +123,18 @@ export function createGridAndScenery(
         const college = createCollegeBuilding();
         college.position.set(cellCenterX, 0, cellCenterZ);
         gridGroup.add(college);
-        staticCollidersRef.current.push(college);
+
+        // Add college building and walls to colliders separately
+        const mainBuilding = college.getObjectByName('collegeBuilding');
+        if (mainBuilding) {
+            staticCollidersRef.current.push(mainBuilding as THREE.Group);
+        }
+        const wallGroup = college.getObjectByName('compoundWall');
+        if (wallGroup) {
+            wallGroup.children.forEach(wallSegment => {
+                staticCollidersRef.current.push(wallSegment as THREE.Group);
+            });
+        }
         continue;
       }
 
@@ -499,3 +510,5 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
+
+    
