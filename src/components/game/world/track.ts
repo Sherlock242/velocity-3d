@@ -221,7 +221,7 @@ export function createGridAndScenery(
         // --- Classroom Block ---
         const classroomBlock = createClassroomBlock();
         classroomBlock.scale.set(0.8, 0.8, 0.8);
-        classroomBlock.position.set(-100, 0, 150); // Bottom-left
+        classroomBlock.position.set(-140, 0, 190); // Bottom-left corner
         campusContainer.add(classroomBlock);
         staticCollidersRef.current.push(classroomBlock);
         
