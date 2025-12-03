@@ -94,14 +94,14 @@ export function createOpenCollegeBuilding() {
   college.add(ground);
 
   // Stage
-  const stageWidth = 100;
+  const stageWidth = 80;
   const stageHeight = 5;
-  const stageDepth = 50;
-  const stageMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // SaddleBrown
+  const stageDepth = 40;
+  const stageMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
   const stageGeom = new THREE.BoxGeometry(stageWidth, stageHeight, stageDepth);
   const stage = new THREE.Mesh(stageGeom, stageMaterial);
   stage.position.y = stageHeight / 2;
-  stage.position.z = -shortWingWidth / 2 + wingDepth / 2 + stageDepth / 2; // Position against back wall
+  stage.position.z = -shortWingWidth / 2 + wingDepth / 2 + stageDepth / 2 + 10; // Position against back wall with 10 units of space
   stage.castShadow = true;
   stage.receiveShadow = true;
   college.add(stage);
