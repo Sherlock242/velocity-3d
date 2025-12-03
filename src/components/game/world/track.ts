@@ -156,9 +156,10 @@ export function createGridAndScenery(
           return segment;
         }
         
+        // This moves the gate "up" along the front wall
         const gateUpwardShift = 100;
 
-        // Front wall (+Z, faces Sector 15)
+        // Front wall (-Z)
         const frontWallZ = -plotDepth / 2;
         const frontWallLeftSegmentWidth = (plotWidth / 2) - (gateWidth / 2) + gateUpwardShift;
         const frontWallRightSegmentWidth = plotWidth - frontWallLeftSegmentWidth - gateWidth;
@@ -171,7 +172,7 @@ export function createGridAndScenery(
         frontWallRight.position.set((plotWidth / 2) - (frontWallRightSegmentWidth / 2), 0, frontWallZ);
         wallGroup.add(frontWallRight);
 
-        // Back wall (-Z)
+        // Back wall (+Z)
         const backWall = createWallSegment(plotWidth, wallThickness);
         backWall.position.z = plotDepth / 2;
         wallGroup.add(backWall);
