@@ -139,9 +139,9 @@ export function createSector10({
   // --- Scouts Building ---
   const scoutsBuilding = createScoutsBuilding();
   scoutsBuilding.scale.set(0.6, 0.6, 0.6);
-  // Position it in front of the open college building
-  scoutsBuilding.position.set(-120, 0, -20);
-  scoutsBuilding.rotation.y = Math.PI / 2;
+  // Position it in the bottom right
+  scoutsBuilding.position.set(150, 0, 150);
+  scoutsBuilding.rotation.y = -Math.PI / 2;
   campusContainer.add(scoutsBuilding);
   staticCollidersRef.current.push(scoutsBuilding);
 
