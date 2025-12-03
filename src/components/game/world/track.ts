@@ -119,15 +119,7 @@ export function createGridAndScenery(
       if (sectorNumber === 14) {
         // --- University Campus ---
         const campusRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
-        const campusParkingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
 
-        // Central Plaza
-        const plazaGeom = new THREE.CircleGeometry(250, 64);
-        const plaza = new THREE.Mesh(plazaGeom, campusRoadMaterial);
-        plaza.rotation.x = -Math.PI / 2;
-        plaza.position.set(cellCenterX, 0.13, cellCenterZ);
-        gridGroup.add(plaza);
-        
         // Main University Library
         const { university, library, walkableGroup, rampWalls: walls } = createPunjabUniversity();
         university.position.set(cellCenterX, 0, cellCenterZ);
@@ -148,46 +140,53 @@ export function createGridAndScenery(
             rampMeshRef.current = rampMesh;
         }
 
-        // Department Buildings
+        // Department Buildings in arcs
         const departments = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'History', 'Art', 'Music'];
-        const buildingSpacing = 200;
+        const arcRadius = 350;
+        const totalAngle = Math.PI * 0.8; // Spread over 144 degrees
         const numDeptsPerSide = Math.ceil(departments.length / 2);
-        const totalWidth = (numDeptsPerSide - 1) * buildingSpacing;
-        const startX = cellCenterX - totalWidth / 2;
-        const zPos1 = cellCenterZ - 300;
-        const zPos2 = cellCenterZ + 300;
 
-        departments.forEach((dept, index) => {
-          const isTopRow = index < numDeptsPerSide;
-          const rowIndex = isTopRow ? index : index - numDeptsPerSide;
-          
-          const buildingX = startX + rowIndex * buildingSpacing;
-          const buildingZ = isTopRow ? zPos1 : zPos2;
+        // Left Arc
+        for (let k = 0; k < numDeptsPerSide; k++) {
+            const angle = (k / (numDeptsPerSide - 1) - 0.5) * totalAngle + Math.PI;
+            const buildingX = cellCenterX + Math.cos(angle) * arcRadius;
+            const buildingZ = cellCenterZ + Math.sin(angle) * arcRadius;
+            
+            const deptBuilding = createDepartmentBuilding();
+            deptBuilding.position.set(buildingX, 0, buildingZ);
+            deptBuilding.rotation.y = angle + Math.PI / 2;
 
-          const deptBuilding = createDepartmentBuilding();
-          deptBuilding.position.set(buildingX, 0, buildingZ);
+            gridGroup.add(deptBuilding);
+            staticCollidersRef.current.push(deptBuilding);
+        }
+        
+        // Right Arc
+        for (let k = 0; k < numDeptsPerSide; k++) {
+            const angle = (k / (numDeptsPerSide - 1) - 0.5) * totalAngle;
+            const buildingX = cellCenterX + Math.cos(angle) * arcRadius;
+            const buildingZ = cellCenterZ + Math.sin(angle) * arcRadius;
 
-          if (!isTopRow) {
-            // Make the bottom row face the university
-            deptBuilding.rotation.y = Math.PI;
-          }
-
-          gridGroup.add(deptBuilding);
-          staticCollidersRef.current.push(deptBuilding);
-        });
+            const deptBuilding = createDepartmentBuilding();
+            deptBuilding.position.set(buildingX, 0, buildingZ);
+            deptBuilding.rotation.y = angle - Math.PI / 2;
+            
+            gridGroup.add(deptBuilding);
+            staticCollidersRef.current.push(deptBuilding);
+        }
 
 
         // Corner Government Houses
-        const cornerOffset = CELL_SIZE / 2 - 100;
-        const corners = [
-            { x: cellCenterX - cornerOffset, z: cellCenterZ - cornerOffset },
-            { x: cellCenterX + cornerOffset, z: cellCenterZ - cornerOffset },
-            { x: cellCenterX - cornerOffset, z: cellCenterZ + cornerOffset },
-            { x: cellCenterX + cornerOffset, z: cellCenterZ + cornerOffset },
+        const houseOffset = CELL_SIZE / 2 - 100;
+        const housePositions = [
+            { x: cellCenterX - houseOffset, z: cellCenterZ - houseOffset, rot: Math.PI / 4 },
+            { x: cellCenterX + houseOffset, z: cellCenterZ - houseOffset, rot: -Math.PI / 4  },
+            { x: cellCenterX - houseOffset, z: cellCenterZ + houseOffset, rot: 3 * Math.PI / 4  },
+            { x: cellCenterX + houseOffset, z: cellCenterZ + houseOffset, rot: -3 * Math.PI / 4 },
         ];
-        corners.forEach(corner => {
+        housePositions.forEach(pos => {
             const house = createGovtHouse();
-            house.position.set(corner.x, 0, corner.z);
+            house.position.set(pos.x, 0, pos.z);
+            house.rotation.y = pos.rot;
             gridGroup.add(house);
             staticCollidersRef.current.push(house);
         });
@@ -201,6 +200,7 @@ export function createGridAndScenery(
         const gateWidth = 80;
         const halfCell = CELL_SIZE / 2;
         const boundaryOffset = halfCell - ROAD_WIDTH / 2;
+        const wallSegmentLen = (CELL_SIZE - ROAD_WIDTH - gateWidth) / 2;
 
         function createWallSegment(width: number, depth: number) {
           const segment = new THREE.Group();
@@ -211,38 +211,40 @@ export function createGridAndScenery(
           return segment;
         }
         
-        const wallSegmentLen = (CELL_SIZE - ROAD_WIDTH - gateWidth) / 2;
+        const outerEdge = halfCell - ROAD_WIDTH / 2;
+        const segmentLength = (CELL_SIZE - ROAD_WIDTH - gateWidth) / 2;
+        const halfSegment = segmentLength / 2;
 
         // Front Wall (+Z)
-        const frontWallLeft = createWallSegment(wallSegmentLen, wallThickness);
-        frontWallLeft.position.set(cellCenterX - (gateWidth / 2 + wallSegmentLen / 2), 0, cellCenterZ + boundaryOffset);
+        const frontWallLeft = createWallSegment(segmentLength, wallThickness);
+        frontWallLeft.position.set(cellCenterX - (gateWidth / 2 + halfSegment), 0, cellCenterZ + outerEdge);
         wallGroup.add(frontWallLeft);
-        const frontWallRight = createWallSegment(wallSegmentLen, wallThickness);
-        frontWallRight.position.set(cellCenterX + (gateWidth / 2 + wallSegmentLen / 2), 0, cellCenterZ + boundaryOffset);
+        const frontWallRight = createWallSegment(segmentLength, wallThickness);
+        frontWallRight.position.set(cellCenterX + (gateWidth / 2 + halfSegment), 0, cellCenterZ + outerEdge);
         wallGroup.add(frontWallRight);
         
         // Back Wall (-Z)
-        const backWallLeft = createWallSegment(wallSegmentLen, wallThickness);
-        backWallLeft.position.set(cellCenterX - (gateWidth / 2 + wallSegmentLen / 2), 0, cellCenterZ - boundaryOffset);
+        const backWallLeft = createWallSegment(segmentLength, wallThickness);
+        backWallLeft.position.set(cellCenterX - (gateWidth / 2 + halfSegment), 0, cellCenterZ - outerEdge);
         wallGroup.add(backWallLeft);
-        const backWallRight = createWallSegment(wallSegmentLen, wallThickness);
-        backWallRight.position.set(cellCenterX + (gateWidth / 2 + wallSegmentLen / 2), 0, cellCenterZ - boundaryOffset);
+        const backWallRight = createWallSegment(segmentLength, wallThickness);
+        backWallRight.position.set(cellCenterX + (gateWidth / 2 + halfSegment), 0, cellCenterZ - outerEdge);
         wallGroup.add(backWallRight);
 
         // Left Wall (-X)
-        const leftWallTop = createWallSegment(wallThickness, wallSegmentLen);
-        leftWallTop.position.set(cellCenterX - boundaryOffset, 0, cellCenterZ - (gateWidth / 2 + wallSegmentLen / 2));
+        const leftWallTop = createWallSegment(wallThickness, segmentLength);
+        leftWallTop.position.set(cellCenterX - outerEdge, 0, cellCenterZ - (gateWidth / 2 + halfSegment));
         wallGroup.add(leftWallTop);
-        const leftWallBottom = createWallSegment(wallThickness, wallSegmentLen);
-        leftWallBottom.position.set(cellCenterX - boundaryOffset, 0, cellCenterZ + (gateWidth / 2 + wallSegmentLen / 2));
+        const leftWallBottom = createWallSegment(wallThickness, segmentLength);
+        leftWallBottom.position.set(cellCenterX - outerEdge, 0, cellCenterZ + (gateWidth / 2 + halfSegment));
         wallGroup.add(leftWallBottom);
         
         // Right Wall (+X)
-        const rightWallTop = createWallSegment(wallThickness, wallSegmentLen);
-        rightWallTop.position.set(cellCenterX + boundaryOffset, 0, cellCenterZ - (gateWidth / 2 + wallSegmentLen / 2));
+        const rightWallTop = createWallSegment(wallThickness, segmentLength);
+        rightWallTop.position.set(cellCenterX + outerEdge, 0, cellCenterZ - (gateWidth / 2 + halfSegment));
         wallGroup.add(rightWallTop);
-        const rightWallBottom = createWallSegment(wallThickness, wallSegmentLen);
-        rightWallBottom.position.set(cellCenterX + boundaryOffset, 0, cellCenterZ + (gateWidth / 2 + wallSegmentLen / 2));
+        const rightWallBottom = createWallSegment(wallThickness, segmentLength);
+        rightWallBottom.position.set(cellCenterX + outerEdge, 0, cellCenterZ + (gateWidth / 2 + halfSegment));
         wallGroup.add(rightWallBottom);
 
         gridGroup.add(wallGroup);
@@ -286,7 +288,7 @@ export function createGridAndScenery(
         // --- SPECIAL BUILDINGS IN TOP-LEFT (VERTICALLY) ---
         let currentZ = cellCenterZ - (CELL_SIZE / 2) + 150;
         const specialBuildingX = cellCenterX - (CELL_SIZE / 2) + 100;
-        const specialBuildingSpacing = 120;
+        const specialBuildingSpacing = 200;
 
         const lightMandir = createLightMandir();
         lightMandir.position.set(specialBuildingX, 0, currentZ);
