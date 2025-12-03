@@ -21,6 +21,9 @@ import { createCoachingClass } from '../models/coaching-class';
 import { createSatsangBuilding } from '../models/satsang-building';
 import { createLightMandir } from '../models/light-mandir';
 import { createGovtHouse } from '../models/govt-house';
+import { createCollegeBuilding } from '../models/college-building';
+import { createLuisPark } from '../models/park';
+import { createShop } from '../models/shop';
 
 export function createGridAndScenery(
   theme: TrackTheme,
@@ -115,6 +118,42 @@ export function createGridAndScenery(
       const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
       const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
       const sectorNumber = j * GRID_SIZE + i + 1;
+
+      if (sectorNumber === 10) {
+        // College Building
+        const college = createCollegeBuilding();
+        college.position.set(cellCenterX, 0, cellCenterZ - 150);
+        college.rotation.y = Math.PI;
+        gridGroup.add(college);
+        staticCollidersRef.current.push(college);
+
+        // Luis Park
+        const park = createLuisPark();
+        park.position.set(cellCenterX + 250, 0.1, cellCenterZ - 150);
+        gridGroup.add(park);
+        // Add individual trees to colliders if needed, for now just the sign
+        const parkSign = park.getObjectByName('LuisParkSign');
+        if (parkSign) {
+          staticCollidersRef.current.push(parkSign as THREE.Group);
+        }
+
+        // Shops
+        const shopColors = [0xff6347, 0x4682b4, 0x3cb371, 0xffd700, 0x6a5acd];
+        const numShops = 5;
+        const shopSpacing = 60;
+        const totalShopWidth = numShops * shopSpacing;
+        const shopStartX = cellCenterX - totalShopWidth / 2 + shopSpacing / 2;
+        
+        for(let k = 0; k < numShops; k++) {
+            const shop = createShop(shopColors[k % shopColors.length]);
+            shop.position.set(shopStartX + k * shopSpacing, 0, cellCenterZ + 200);
+            shop.rotation.y = Math.PI;
+            gridGroup.add(shop);
+            staticCollidersRef.current.push(shop);
+        }
+
+        continue;
+      }
 
       if (sectorNumber === 14) {
         // --- University Campus ---
@@ -291,19 +330,23 @@ export function createGridAndScenery(
         wallGroup.add(backWallRight);
 
         // Left Wall (-X)
-        const leftWallTop = createWallSegment(wallThickness, wallSegmentLen);
-        leftWallTop.position.set(cellCenterX - wallPosition, 0, cellCenterZ + segmentOffset);
+        const sideWallLen = CELL_SIZE - ROAD_WIDTH;
+        const sideWallSegmentLen = (sideWallLen - gateWidth) / 2;
+        const sideSegmentOffset = gateWidth / 2 + sideWallSegmentLen / 2;
+
+        const leftWallTop = createWallSegment(wallThickness, sideWallSegmentLen);
+        leftWallTop.position.set(cellCenterX - wallPosition, 0, cellCenterZ + sideSegmentOffset);
         wallGroup.add(leftWallTop);
-        const leftWallBottom = createWallSegment(wallThickness, wallSegmentLen);
-        leftWallBottom.position.set(cellCenterX - wallPosition, 0, cellCenterZ - segmentOffset);
+        const leftWallBottom = createWallSegment(wallThickness, sideWallSegmentLen);
+        leftWallBottom.position.set(cellCenterX - wallPosition, 0, cellCenterZ - sideSegmentOffset);
         wallGroup.add(leftWallBottom);
         
         // Right Wall (+X)
-        const rightWallTop = createWallSegment(wallThickness, wallSegmentLen);
-        rightWallTop.position.set(cellCenterX + wallPosition, 0, cellCenterZ + segmentOffset);
+        const rightWallTop = createWallSegment(wallThickness, sideWallSegmentLen);
+        rightWallTop.position.set(cellCenterX + wallPosition, 0, cellCenterZ + sideSegmentOffset);
         wallGroup.add(rightWallTop);
-        const rightWallBottom = createWallSegment(wallThickness, wallSegmentLen);
-        rightWallBottom.position.set(cellCenterX + wallPosition, 0, cellCenterZ - segmentOffset);
+        const rightWallBottom = createWallSegment(wallThickness, sideWallSegmentLen);
+        rightWallBottom.position.set(cellCenterX + wallPosition, 0, cellCenterZ - sideSegmentOffset);
         wallGroup.add(rightWallBottom);
 
         gridGroup.add(wallGroup);
@@ -488,3 +531,5 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
+
+    
