@@ -6,7 +6,7 @@ export function createOpenCollegeBuilding() {
   collegeGroup.name = 'openCollegeBuildingWrapper';
 
   const longWingWidth = 350;
-  const shortWingWidth = 300;
+  const shortWingWidth = 350;
   const wingDepth = 30;
   const numFloors = 1; // Only one story
   const floorHeight = 30;
