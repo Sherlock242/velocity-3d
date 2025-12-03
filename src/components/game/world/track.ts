@@ -202,7 +202,7 @@ export function createGridAndScenery(
         // --- College Building ---
         const college = createCollegeBuilding();
         college.scale.set(0.6, 0.6, 0.6);
-        college.position.set(20, 0, -20);
+        college.position.set(plotWidth / 2 - 80, 0, 100);
         campusContainer.add(college);
 
         // Add college wings as colliders, not the whole group
@@ -223,7 +223,7 @@ export function createGridAndScenery(
         // --- Dance Stage ---
         const danceStage = createDanceStage();
         danceStage.scale.set(0.8, 0.8, 0.8);
-        danceStage.position.set(plotWidth / 2 - 80, 0, 100);
+        danceStage.position.set(-plotWidth / 2 + 100, 0, 100);
         campusContainer.add(danceStage);
         staticCollidersRef.current.push(danceStage);
         
