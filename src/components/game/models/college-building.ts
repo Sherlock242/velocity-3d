@@ -21,40 +21,42 @@ export function createCollegeBuilding() {
 
       for (let i = 0; i < numFloors; i++) {
           const yPos = i * floorHeight;
+          const floorGroup = new THREE.Group();
+          floorGroup.position.y = yPos;
 
           // Floor base
           const floorGeom = new THREE.PlaneGeometry(width, depth);
           const floor = new THREE.Mesh(floorGeom, floorMaterial);
           floor.rotation.x = -Math.PI / 2;
-          floor.position.set(0, yPos, 0);
-          wing.add(floor);
+          floorGroup.add(floor);
 
           // Front-facing details (courtyard side)
           const frontBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 1, 1.2), yellowMaterial);
-          frontBorder.position.set(0, yPos + floorHeight - 5, depth / 2 - 1);
-          wing.add(frontBorder);
+          frontBorder.position.set(0, floorHeight - 5, depth / 2 - 1);
+          floorGroup.add(frontBorder);
           
           const numPillars = Math.floor(width / 20);
           for (let j = 0; j < numPillars; j++) {
               const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
               const pillar = new THREE.Mesh(pillarGeom, redMaterial);
               const xPos = -width/2 + 10 + j * 20;
-              pillar.position.set(xPos, yPos + floorHeight / 2, depth / 2 - 5);
-              wing.add(pillar);
+              pillar.position.set(xPos, floorHeight / 2, depth / 2 - 5);
+              floorGroup.add(pillar);
           }
           
           // Back-facing details (exterior side)
           const backBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 1, 1.2), yellowMaterial);
-          backBorder.position.set(0, yPos + floorHeight - 5, -depth / 2 + 1);
-          wing.add(backBorder);
+          backBorder.position.set(0, floorHeight - 5, -depth / 2 + 1);
+          floorGroup.add(backBorder);
           
           for (let j = 0; j < numPillars; j++) {
               const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
               const pillar = new THREE.Mesh(pillarGeom, redMaterial);
               const xPos = -width/2 + 10 + j * 20;
-              pillar.position.set(xPos, yPos + floorHeight / 2, -depth / 2 + 5);
-              wing.add(pillar);
+              pillar.position.set(xPos, floorHeight / 2, -depth / 2 + 5);
+              floorGroup.add(pillar);
           }
+          wing.add(floorGroup);
       }
       return wing;
   }
@@ -159,5 +161,3 @@ export function createCollegeBuilding() {
 
   return collegeGroup;
 }
-
-    
