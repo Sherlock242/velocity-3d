@@ -154,7 +154,6 @@ export function createGridAndScenery(
           return segment;
         }
         
-        // This moves the gate "up" along the front wall
         const gateUpwardShift = 100;
 
         // Front wall (-Z)
@@ -212,7 +211,7 @@ export function createGridAndScenery(
         // --- College Building ---
         const college = createCollegeBuilding();
         college.scale.set(0.6, 0.6, 0.6);
-        college.position.set(-plotWidth / 4, 0, -plotDepth / 4);
+        college.position.set(-80, 0, -80);
         campusContainer.add(college);
         const mainBuilding = college.getObjectByName('collegeBuilding');
         if (mainBuilding) {
