@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { createCollegeBuilding } from '../../models/college-building';
 import { createOpenCollegeBuilding } from '../../models/open-college-building';
+import { createScoutsBuilding } from '../../models/scouts-building';
 import type { MutableRefObject } from 'react';
 
 type Sector10Props = {
@@ -99,24 +100,19 @@ export function createSector10({
 
   // Walkable Path to College
   const pathWidth = 15;
+  const pathToCollegeLength = 100;
+  const pathToCollegeGeom = new THREE.PlaneGeometry(pathToCollegeLength, pathWidth);
+  const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
+  pathToCollege.rotation.x = -Math.PI / 2;
+  pathToCollege.position.set(gateXPosition - (pathToCollegeLength / 2), 0.15, frontWallZ + entranceRoadLength - pathWidth / 2);
+  campusContainer.add(pathToCollege);
   
-  // Horizontal part of the L-shape
-  const horizontalPathLength = 100;
-  const horizontalPathGeom = new THREE.PlaneGeometry(horizontalPathLength, pathWidth);
-  const horizontalPath = new THREE.Mesh(horizontalPathGeom, pathMaterial);
-  horizontalPath.rotation.x = -Math.PI / 2;
-  const horizontalPathZ = frontWallZ + entranceRoadLength - pathWidth / 2;
-  horizontalPath.position.set(gateXPosition - (horizontalPathLength / 2), 0.15, horizontalPathZ);
-  campusContainer.add(horizontalPath);
-  
-  // Vertical part of the L-shape (corridor)
-  const verticalPathLength = 50;
-  const verticalPathGeom = new THREE.PlaneGeometry(pathWidth, verticalPathLength);
-  const verticalPath = new THREE.Mesh(verticalPathGeom, pathMaterial);
-  verticalPath.rotation.x = -Math.PI / 2;
-  const corridorX = gateXPosition - horizontalPathLength;
-  verticalPath.position.set(corridorX, 0.15, horizontalPathZ - (verticalPathLength / 2) - (pathWidth / 2) );
-  campusContainer.add(verticalPath);
+  const corridorLength = 50;
+  const corridorGeom = new THREE.PlaneGeometry(pathWidth, corridorLength);
+  const corridor = new THREE.Mesh(corridorGeom, pathMaterial);
+  corridor.rotation.x = -Math.PI / 2;
+  corridor.position.set(gateXPosition - pathToCollegeLength, 0.15, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) );
+  campusContainer.add(corridor);
 
 
   // --- College Building ---
@@ -139,6 +135,16 @@ export function createSector10({
   if (openMainBuilding) {
     openMainBuilding.children.forEach(child => staticCollidersRef.current.push(child as THREE.Group));
   }
+
+  // --- Scouts Building ---
+  const scoutsBuilding = createScoutsBuilding();
+  scoutsBuilding.scale.set(0.6, 0.6, 0.6);
+  // Position it in front of the open college building
+  scoutsBuilding.position.set(-120, 0, -20);
+  scoutsBuilding.rotation.y = Math.PI / 2;
+  campusContainer.add(scoutsBuilding);
+  staticCollidersRef.current.push(scoutsBuilding);
+
 
   sectorGroup.add(campusContainer);
 
