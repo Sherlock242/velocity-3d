@@ -100,8 +100,9 @@ export function createSector10({
   campusContainer.add(entranceRoad);
 
   // New wall to the right of the road
-  const innerWall = createWallSegment(wallThickness, entranceRoadLength);
-  innerWall.position.set(gateXPosition + entranceRoadWidth / 2 + wallThickness / 2 + 15, 0, frontWallZ + entranceRoadLength / 2);
+  const innerWallLength = 340;
+  const innerWall = createWallSegment(wallThickness, innerWallLength);
+  innerWall.position.set(gateXPosition + entranceRoadWidth / 2 + wallThickness / 2 + 15, 0, frontWallZ + innerWallLength / 2);
   campusContainer.add(innerWall);
   staticCollidersRef.current.push(innerWall);
 
