@@ -23,7 +23,7 @@ import { createLightMandir } from '../models/light-mandir';
 import { createGovtHouse } from '../models/govt-house';
 import { createCollegeBuilding } from '../models/college-building';
 import { createShop } from '../models/shop';
-import { createClassroomBlock } from '../models/classroom-block';
+import { createOpenCollegeBuilding } from '../models/open-college-building';
 
 export function createGridAndScenery(
   theme: TrackTheme,
@@ -218,12 +218,15 @@ export function createGridAndScenery(
             mainBuilding.children.forEach(child => staticCollidersRef.current.push(child as THREE.Group));
         }
         
-        // --- Classroom Block ---
-        const classroomBlock = createClassroomBlock();
-        classroomBlock.scale.set(0.8, 0.8, 0.8);
-        classroomBlock.position.set(-140, 0, 190); // Bottom-left corner
-        campusContainer.add(classroomBlock);
-        staticCollidersRef.current.push(classroomBlock);
+        // --- Open College Building ---
+        const openCollegeBuilding = createOpenCollegeBuilding();
+        openCollegeBuilding.scale.set(0.6, 0.6, 0.6);
+        openCollegeBuilding.position.set(-140, 0, 190); // Bottom-left corner
+        campusContainer.add(openCollegeBuilding);
+        const openMainBuilding = openCollegeBuilding.getObjectByName('openCollegeBuilding');
+        if (openMainBuilding) {
+            openMainBuilding.children.forEach(child => staticCollidersRef.current.push(child as THREE.Group));
+        }
         
 
         gridGroup.add(campusContainer);
