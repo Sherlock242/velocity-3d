@@ -166,6 +166,12 @@ export function createGridAndScenery(
 
           const deptBuilding = createDepartmentBuilding();
           deptBuilding.position.set(buildingX, 0, buildingZ);
+
+          if (!isTopRow) {
+            // Make the bottom row face the university
+            deptBuilding.rotation.y = Math.PI;
+          }
+
           gridGroup.add(deptBuilding);
           staticCollidersRef.current.push(deptBuilding);
         });
