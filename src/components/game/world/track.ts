@@ -197,7 +197,7 @@ export function createGridAndScenery(
         const pathWidth = 15;
         const pathLength = buildingOffset - ringRoadOffset - campusRoadWidth / 2;
         
-        const buildingSpacing = 200; // Space between two buildings on the same wall
+        const buildingSpacing = 250;
 
         const deptPositions = [
             // Back wall (-Z) - 2 buildings
@@ -258,10 +258,9 @@ export function createGridAndScenery(
 
         const gateWidth = 80;
         const halfCell = CELL_SIZE / 2;
-        const outerEdge = halfCell - ROAD_WIDTH / 2 - (wallThickness / 2);
-        
-        const sideWallLen = CELL_SIZE - (ROAD_WIDTH * 2);
-        const wallSegmentLen = (sideWallLen - gateWidth) / 2;
+        const outerEdge = halfCell - ROAD_WIDTH / 2;
+        const wallSegmentLen = (outerEdge * 2 - gateWidth) / 2;
+
 
         function createWallSegment(width: number, depth: number) {
           const segment = new THREE.Group();
@@ -273,37 +272,38 @@ export function createGridAndScenery(
         }
         
         const segmentOffset = gateWidth / 2 + wallSegmentLen / 2;
+        const wallPosition = outerEdge - wallThickness / 2;
 
         // Front Wall (+Z)
         const frontWallLeft = createWallSegment(wallSegmentLen, wallThickness);
-        frontWallLeft.position.set(cellCenterX - segmentOffset, 0, cellCenterZ + outerEdge);
+        frontWallLeft.position.set(cellCenterX - segmentOffset, 0, cellCenterZ + wallPosition);
         wallGroup.add(frontWallLeft);
         const frontWallRight = createWallSegment(wallSegmentLen, wallThickness);
-        frontWallRight.position.set(cellCenterX + segmentOffset, 0, cellCenterZ + outerEdge);
+        frontWallRight.position.set(cellCenterX + segmentOffset, 0, cellCenterZ + wallPosition);
         wallGroup.add(frontWallRight);
         
         // Back Wall (-Z)
         const backWallLeft = createWallSegment(wallSegmentLen, wallThickness);
-        backWallLeft.position.set(cellCenterX - segmentOffset, 0, cellCenterZ - outerEdge);
+        backWallLeft.position.set(cellCenterX - segmentOffset, 0, cellCenterZ - wallPosition);
         wallGroup.add(backWallLeft);
         const backWallRight = createWallSegment(wallSegmentLen, wallThickness);
-        backWallRight.position.set(cellCenterX + segmentOffset, 0, cellCenterZ - outerEdge);
+        backWallRight.position.set(cellCenterX + segmentOffset, 0, cellCenterZ - wallPosition);
         wallGroup.add(backWallRight);
 
         // Left Wall (-X)
         const leftWallTop = createWallSegment(wallThickness, wallSegmentLen);
-        leftWallTop.position.set(cellCenterX - outerEdge, 0, cellCenterZ + segmentOffset);
+        leftWallTop.position.set(cellCenterX - wallPosition, 0, cellCenterZ + segmentOffset);
         wallGroup.add(leftWallTop);
         const leftWallBottom = createWallSegment(wallThickness, wallSegmentLen);
-        leftWallBottom.position.set(cellCenterX - outerEdge, 0, cellCenterZ - segmentOffset);
+        leftWallBottom.position.set(cellCenterX - wallPosition, 0, cellCenterZ - segmentOffset);
         wallGroup.add(leftWallBottom);
         
         // Right Wall (+X)
         const rightWallTop = createWallSegment(wallThickness, wallSegmentLen);
-        rightWallTop.position.set(cellCenterX + outerEdge, 0, cellCenterZ + segmentOffset);
+        rightWallTop.position.set(cellCenterX + wallPosition, 0, cellCenterZ + segmentOffset);
         wallGroup.add(rightWallTop);
         const rightWallBottom = createWallSegment(wallThickness, wallSegmentLen);
-        rightWallBottom.position.set(cellCenterX + outerEdge, 0, cellCenterZ - segmentOffset);
+        rightWallBottom.position.set(cellCenterX + wallPosition, 0, cellCenterZ - segmentOffset);
         wallGroup.add(rightWallBottom);
 
         gridGroup.add(wallGroup);
