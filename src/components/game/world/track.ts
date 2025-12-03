@@ -309,6 +309,26 @@ export function createGridAndScenery(
         gridGroup.add(wallGroup);
         wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
 
+        // --- Connect main roads to campus roads ---
+        const connectionRoadLength = halfCell - ringRoadOffset - campusRoadWidth / 2;
+        const connectionRoadWidth = ROAD_WIDTH;
+
+        const connectionPositions = [
+            { x: cellCenterX, z: cellCenterZ + ringRoadOffset + campusRoadWidth / 2 + connectionRoadLength / 2, len: connectionRoadLength, rot: 0 }, // Top
+            { x: cellCenterX, z: cellCenterZ - ringRoadOffset - campusRoadWidth / 2 - connectionRoadLength / 2, len: connectionRoadLength, rot: 0 }, // Bottom
+            { x: cellCenterX + ringRoadOffset + campusRoadWidth / 2 + connectionRoadLength / 2, z: cellCenterZ, len: connectionRoadLength, rot: Math.PI / 2 }, // Right
+            { x: cellCenterX - ringRoadOffset - campusRoadWidth / 2 - connectionRoadLength / 2, z: cellCenterZ, len: connectionRoadLength, rot: Math.PI / 2 } // Left
+        ];
+
+        connectionPositions.forEach(pos => {
+            const connRoadGeom = new THREE.PlaneGeometry(connectionRoadWidth, pos.len);
+            const connRoad = new THREE.Mesh(connRoadGeom, innerRoadMaterial);
+            connRoad.rotation.x = -Math.PI / 2;
+            connRoad.rotation.z = pos.rot;
+            connRoad.position.set(pos.x, 0.1, pos.z);
+            gridGroup.add(connRoad);
+        });
+
         continue;
       }
 
