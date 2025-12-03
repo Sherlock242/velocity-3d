@@ -753,7 +753,9 @@ export default function GameWrapper() {
         mark.mesh.geometry.dispose();
       });
       tireMarksRef.current = [];
-      audioListenerRef.current?.context.close();
+      if (audioListenerRef.current?.context.state !== 'closed') {
+        audioListenerRef.current?.context.close();
+      }
       audioInitializedRef.current = false;
     };
   }, [theme, toast, topDownSector]);
@@ -899,3 +901,5 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
+    
