@@ -75,6 +75,7 @@ export default function GameWrapper() {
   const walkingNpcsRef = React.useRef<THREE.Group[]>([]);
   const staticCollidersRef = React.useRef<THREE.Group[]>([]);
   const rampMeshRef = React.useRef<THREE.Mesh>();
+  const rampWallsRef = React.useRef<THREE.Group>();
 
 
   // Control mode refs
@@ -253,7 +254,7 @@ export default function GameWrapper() {
     }
     
     // --- GRID TRACK & SCENERY ---
-    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef);
+    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef);
     scene.add(gridGroup);
     
     // Find the water jet to animate it
@@ -305,6 +306,8 @@ export default function GameWrapper() {
     });
     tireMarkMaterial.polygonOffset = true;
     tireMarkMaterial.polygonOffsetFactor = -1;
+
+    let previousSector = -1;
 
     const animate = () => {
       animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -553,6 +556,17 @@ export default function GameWrapper() {
             velocityRef.current.y = 0;
         }
 
+        // --- SECTOR-BASED LOGIC ---
+        const playerGridX = Math.floor((player.position.x + halfTotalWidth) / CELL_SIZE);
+        const playerGridZ = Math.floor((player.position.z + halfTotalWidth) / CELL_SIZE);
+        const currentSector = playerGridZ * GRID_SIZE + playerGridX + 1;
+
+        if (currentSector !== previousSector) {
+          if (rampWallsRef.current) {
+            rampWallsRef.current.visible = currentSector !== 14;
+          }
+          previousSector = currentSector;
+        }
 
         // --- BOUNDARY CHECKS ---
         const halfGrid = TOTAL_GRID_WIDTH / 2;

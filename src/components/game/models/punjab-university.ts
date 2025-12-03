@@ -224,6 +224,9 @@ export function createPunjabUniversity() {
   const rampPath = new CustomSpiralCurve(1, true);
   const rampVertices: THREE.Vector3[] = [];
   const rampFaces: number[] = [];
+  const wallVertices: THREE.Vector3[] = [];
+  const wallFaces: number[] = [];
+
   const segments = 128;
   const wallHeight = 4;
   const rampHalfWidth = rampWidth / 2;
@@ -244,82 +247,90 @@ export function createPunjabUniversity() {
       currentWallHeight = THREE.MathUtils.lerp(0, wallHeight, (1 - t) / taperLength);
     }
   
-    // Inner wall top/bottom
-    const innerBottom = point.clone().add(binormal.clone().multiplyScalar(-rampHalfWidth));
-    const innerTop = innerBottom.clone().add(normal.clone().multiplyScalar(currentWallHeight));
-  
-    // Outer wall top/bottom
-    const outerBottom = point.clone().add(binormal.clone().multiplyScalar(rampHalfWidth));
-    const outerTop = outerBottom.clone().add(normal.clone().multiplyScalar(currentWallHeight));
-  
-    // Road surface points
-    const roadInner = innerBottom.clone();
-    const roadOuter = outerBottom.clone();
-  
-    rampVertices.push(
-      innerBottom, innerTop, outerBottom, outerTop, roadInner, roadOuter
-    );
+    // Points for the road surface
+    const roadInner = point.clone().add(binormal.clone().multiplyScalar(-rampHalfWidth));
+    const roadOuter = point.clone().add(binormal.clone().multiplyScalar(rampHalfWidth));
+    rampVertices.push(roadInner, roadOuter);
+
+    // Points for the walls
+    const innerWallBottom = roadInner.clone();
+    const innerWallTop = innerWallBottom.clone().add(normal.clone().multiplyScalar(currentWallHeight));
+    const outerWallBottom = roadOuter.clone();
+    const outerWallTop = outerWallBottom.clone().add(normal.clone().multiplyScalar(currentWallHeight));
+    wallVertices.push(innerWallBottom, innerWallTop, outerWallBottom, outerWallTop);
   
     if (i > 0) {
-      const base = (i - 1) * 6;
-      // Indices for one segment of the ramp walls and road
-      // Outer wall
-      rampFaces.push(base + 3, base + 2, base + 8); // tri 1
-      rampFaces.push(base + 3, base + 8, base + 9); // tri 2
+      const roadBase = (i - 1) * 2;
+      rampFaces.push(roadBase + 0, roadBase + 1, roadBase + 3);
+      rampFaces.push(roadBase + 0, roadBase + 3, roadBase + 2);
+
+      const wallBase = (i - 1) * 4;
       // Inner wall
-      rampFaces.push(base + 0, base + 1, base + 7);
-      rampFaces.push(base + 0, base + 7, base + 6);
-      // Road surface
-      rampFaces.push(base + 4, base + 5, base + 11);
-      rampFaces.push(base + 4, base + 11, base + 10);
+      wallFaces.push(wallBase + 0, wallBase + 1, wallBase + 5);
+      wallFaces.push(wallBase + 0, wallBase + 5, wallBase + 4);
+      // Outer wall
+      wallFaces.push(wallBase + 3, wallBase + 2, wallBase + 6);
+      wallFaces.push(wallBase + 3, wallBase + 6, wallBase + 7);
     }
   }
-  
 
   // --- Landing Platform ---
-  const landingRadius = rampWidth * 1.5; // Make platform wider than ramp
+  const landingRadius = rampWidth * 1.5;
   const landingSegments = 32;
   const endPoint = rampPath.getPoint(1);
-  const startIndex = rampVertices.length;
-
-  // Create platform vertices
+  let startIndex = rampVertices.length;
+  
   rampVertices.push(endPoint); // Center point
   for (let i = 0; i <= landingSegments; i++) {
-      const angle = (i / landingSegments) * Math.PI * 2;
-      const x = endPoint.x + Math.cos(angle) * landingRadius;
-      const z = endPoint.z + Math.sin(angle) * landingRadius;
-      rampVertices.push(new THREE.Vector3(x, endPoint.y, z));
-  }
-
-  // Create platform faces (triangles)
-  for (let i = 1; i <= landingSegments; i++) {
-      rampFaces.push(startIndex, startIndex + i, startIndex + i + 1);
-  }
-
-  // --- Build the final merged geometry ---
-  const rampGeometry = new THREE.BufferGeometry();
-  const positions = new Float32Array(rampVertices.length * 3);
-  for (let i = 0; i < rampVertices.length; i++) {
-    positions[i * 3] = rampVertices[i].x;
-    positions[i * 3 + 1] = rampVertices[i].y;
-    positions[i * 3 + 2] = rampVertices[i].z;
+    const angle = (i / landingSegments) * Math.PI * 2;
+    const x = endPoint.x + Math.cos(angle) * landingRadius;
+    const z = endPoint.z + Math.sin(angle) * landingRadius;
+    rampVertices.push(new THREE.Vector3(x, endPoint.y, z));
   }
   
-  rampGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  for (let i = 1; i <= landingSegments; i++) {
+    rampFaces.push(startIndex, startIndex + i, startIndex + i + 1);
+  }
+  
+  const rampGeometry = new THREE.BufferGeometry();
+  const rampPositions = new Float32Array(rampVertices.length * 3);
+  for (let i = 0; i < rampVertices.length; i++) {
+    rampPositions[i * 3] = rampVertices[i].x;
+    rampPositions[i * 3 + 1] = rampVertices[i].y;
+    rampPositions[i * 3 + 2] = rampVertices[i].z;
+  }
+  rampGeometry.setAttribute('position', new THREE.BufferAttribute(rampPositions, 3));
   rampGeometry.setIndex(rampFaces);
   rampGeometry.computeVertexNormals();
 
+  const wallGeometry = new THREE.BufferGeometry();
+  const wallPositions = new Float32Array(wallVertices.length * 3);
+  for(let i = 0; i < wallVertices.length; i++) {
+      wallPositions[i * 3] = wallVertices[i].x;
+      wallPositions[i * 3 + 1] = wallVertices[i].y;
+      wallPositions[i * 3 + 2] = wallVertices[i].z;
+  }
+  wallGeometry.setAttribute('position', new THREE.BufferAttribute(wallPositions, 3));
+  wallGeometry.setIndex(wallFaces);
+  wallGeometry.computeVertexNormals();
+
 
   const rampMesh = new THREE.Mesh(rampGeometry, concreteMaterial);
-  rampMesh.material.side = THREE.DoubleSide; // Make ramp visible from all angles
+  rampMesh.material.side = THREE.DoubleSide;
   rampMesh.name = 'universityRamp';
-  
   walkableGroup.add(rampMesh);
 
+  const rampWalls = new THREE.Mesh(wallGeometry, concreteMaterial);
+  rampWalls.material.side = THREE.DoubleSide;
+  rampWalls.name = 'universityRampWalls';
+  
+  const wallsGroup = new THREE.Group();
+  wallsGroup.add(rampWalls);
+  walkableGroup.add(wallsGroup);
 
   const universityWithBase = new THREE.Group();
   universityWithBase.add(library, walkableGroup);
   universityWithBase.scale.set(1.5, 1.5, 1.5);
   
-  return { university: universityWithBase, library, walkableGroup };
+  return { university: universityWithBase, library, walkableGroup, rampWalls: wallsGroup };
 }

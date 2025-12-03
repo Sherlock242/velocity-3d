@@ -26,7 +26,8 @@ export function createGridAndScenery(
   theme: TrackTheme,
   walkingNpcsRef: MutableRefObject<THREE.Group[]>,
   staticCollidersRef: MutableRefObject<THREE.Group[]>,
-  rampMeshRef: MutableRefObject<THREE.Mesh | undefined>
+  rampMeshRef: MutableRefObject<THREE.Mesh | undefined>,
+  rampWallsRef: MutableRefObject<THREE.Group | undefined>
 ) {
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
@@ -128,11 +129,15 @@ export function createGridAndScenery(
         gridGroup.add(plaza);
         
         // Main University Library
-        const { university, library, walkableGroup } = createPunjabUniversity();
+        const { university, library, walkableGroup, rampWalls: walls } = createPunjabUniversity();
         university.position.set(cellCenterX, 0, cellCenterZ);
         university.rotation.y = -Math.PI / 2;
         gridGroup.add(university);
         
+        if (walls) {
+            rampWallsRef.current = walls;
+        }
+
         // Add only the building part to colliders
         if (library) {
             staticCollidersRef.current.push(library);
