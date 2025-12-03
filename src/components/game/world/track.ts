@@ -197,6 +197,51 @@ export function createGridAndScenery(
             gridGroup.add(house);
             staticCollidersRef.current.push(house);
         });
+        
+        // --- Sector 14 Boundary Walls ---
+        const wallGroup = new THREE.Group();
+        const wallHeight = 20;
+        const wallThickness = 10;
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xcb4154 }); // Red color
+
+        const gateWidth = 80;
+        const cellEdge = CELL_SIZE / 2 - ROAD_WIDTH / 2;
+
+        function createWallSegment(width: number, depth: number) {
+          const segment = new THREE.Group();
+          const mainWallGeom = new THREE.BoxGeometry(width, wallHeight, depth);
+          const mainWall = new THREE.Mesh(mainWallGeom, wallMaterial);
+          mainWall.position.y = wallHeight / 2;
+          segment.add(mainWall);
+          return segment;
+        }
+
+        // Front Wall (with gate) - on the +Z side
+        const frontWallSegmentWidth = (CELL_SIZE - gateWidth) / 2;
+        const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
+        frontWallLeft.position.set(cellCenterX - (gateWidth / 2 + frontWallSegmentWidth / 2), 0, cellCenterZ + cellEdge);
+        wallGroup.add(frontWallLeft);
+        const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
+        frontWallRight.position.set(cellCenterX + (gateWidth / 2 + frontWallSegmentWidth / 2), 0, cellCenterZ + cellEdge);
+        wallGroup.add(frontWallRight);
+        
+        // Back Wall - on the -Z side
+        const backWall = createWallSegment(CELL_SIZE, wallThickness);
+        backWall.position.set(cellCenterX, 0, cellCenterZ - cellEdge);
+        wallGroup.add(backWall);
+
+        // Side Walls
+        const sideWallLeft = createWallSegment(wallThickness, CELL_SIZE);
+        sideWallLeft.position.set(cellCenterX - cellEdge, 0, cellCenterZ);
+        wallGroup.add(sideWallLeft);
+        
+        const sideWallRight = createWallSegment(wallThickness, CELL_SIZE);
+        sideWallRight.position.set(cellCenterX + cellEdge, 0, cellCenterZ);
+        wallGroup.add(sideWallRight);
+
+        gridGroup.add(wallGroup);
+        wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
+
         continue;
       }
 
@@ -235,34 +280,35 @@ export function createGridAndScenery(
         // --- SPECIAL BUILDINGS IN TOP-LEFT (VERTICALLY) ---
         let currentZ = cellCenterZ - (CELL_SIZE / 2) + 150;
         const specialBuildingX = cellCenterX - (CELL_SIZE / 2) + 100;
+        const specialBuildingSpacing = 150;
 
         const lightMandir = createLightMandir();
         lightMandir.position.set(specialBuildingX, 0, currentZ);
         lightMandir.rotation.y = -Math.PI / 2;
         gridGroup.add(lightMandir);
         staticCollidersRef.current.push(lightMandir);
-        currentZ += 120;
+        currentZ += specialBuildingSpacing;
 
         const satsangBuilding = createSatsangBuilding();
         satsangBuilding.position.set(specialBuildingX, 0, currentZ);
         satsangBuilding.rotation.y = -Math.PI / 2;
         gridGroup.add(satsangBuilding);
         staticCollidersRef.current.push(satsangBuilding);
-        currentZ += 120;
+        currentZ += specialBuildingSpacing;
 
         const kaliMandir = createKaliMandir();
         kaliMandir.position.set(specialBuildingX, 0, currentZ);
         kaliMandir.rotation.y = -Math.PI / 2;
         gridGroup.add(kaliMandir);
         staticCollidersRef.current.push(kaliMandir);
-        currentZ += 120;
+        currentZ += specialBuildingSpacing;
 
         const gurudwara = createGurudwara();
         gurudwara.position.set(specialBuildingX, 0, currentZ);
         gurudwara.rotation.y = -Math.PI / 2;
         gridGroup.add(gurudwara);
         staticCollidersRef.current.push(gurudwara);
-        currentZ += 120;
+        currentZ += specialBuildingSpacing;
 
         const coachingClass = createCoachingClass();
         coachingClass.position.set(specialBuildingX, 0, currentZ);
