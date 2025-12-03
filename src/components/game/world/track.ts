@@ -597,5 +597,3 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
-
-    
