@@ -24,7 +24,7 @@ import { createGovtHouse } from '../models/govt-house';
 import { createCollegeBuilding } from '../models/college-building';
 import { createLuisPark } from '../models/park';
 import { createShop } from '../models/shop';
-import { createScoutGuideBuilding } from '../models/scout-guide-building';
+import { createScoutGuideBuilding }from '../models/scout-guide-building';
 import { createDanceStage } from '../models/dance-stage';
 import { createClassroomBlock } from '../models/classroom-block';
 
@@ -155,6 +155,18 @@ export function createGridAndScenery(
           
           return segment;
         }
+        
+        // Front wall (+Z, faces Sector 15)
+        const frontWallSegmentWidth = (plotWidth - gateWidth) / 2;
+        const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
+        frontWallLeft.position.x = -(gateWidth / 2 + frontWallSegmentWidth / 2);
+        frontWallLeft.position.z = plotDepth / 2;
+        wallGroup.add(frontWallLeft);
+        
+        const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
+        frontWallRight.position.x = (gateWidth / 2 + frontWallSegmentWidth / 2);
+        frontWallRight.position.z = plotDepth / 2;
+        wallGroup.add(frontWallRight);
 
         // Back wall (-Z)
         const backWall = createWallSegment(plotWidth, wallThickness);
@@ -170,19 +182,6 @@ export function createGridAndScenery(
         const leftWall = createWallSegment(wallThickness, plotDepth);
         leftWall.position.x = -plotWidth / 2;
         wallGroup.add(leftWall);
-
-        // Bottom wall (with entrance gap)
-        const bottomWallSegmentWidth = (plotWidth - gateWidth) / 2;
-        
-        const bottomWallLeft = createWallSegment(bottomWallSegmentWidth, wallThickness);
-        bottomWallLeft.position.x = -(gateWidth / 2 + bottomWallSegmentWidth / 2);
-        bottomWallLeft.position.z = plotDepth / 2;
-        wallGroup.add(bottomWallLeft);
-
-        const bottomWallRight = createWallSegment(bottomWallSegmentWidth, wallThickness);
-        bottomWallRight.position.x = (gateWidth / 2 + bottomWallSegmentWidth / 2);
-        bottomWallRight.position.z = plotDepth / 2;
-        wallGroup.add(bottomWallRight);
 
         campusContainer.add(wallGroup);
         wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
@@ -202,21 +201,13 @@ export function createGridAndScenery(
         const pathToCollegeGeom = new THREE.PlaneGeometry(150, 15);
         const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
         pathToCollege.rotation.x = -Math.PI / 2;
-        pathToCollege.position.set(-plotWidth / 2 + 75, 0.15, plotDepth / 2 - 200);
+        pathToCollege.position.set(0, 0.15, -plotDepth/4);
         campusContainer.add(pathToCollege);
         
-        // Path to Classrooms (Horizontal)
-        const pathToClassesGeom = new THREE.PlaneGeometry(200, 15);
-        const pathToClasses = new THREE.Mesh(pathToClassesGeom, pathMaterial);
-        pathToClasses.rotation.x = -Math.PI / 2;
-        pathToClasses.position.set(0, 0.15, -plotDepth/2 + 70);
-        campusContainer.add(pathToClasses);
-
         // --- College Building ---
         const college = createCollegeBuilding();
         college.scale.set(0.6, 0.6, 0.6);
-        college.position.set(-plotWidth / 2 + 100, 0, plotDepth / 2 - 130);
-        college.rotation.y = Math.PI / 2;
+        college.position.set(plotWidth / 4, 0, -plotDepth / 4); // Bottom-right
         campusContainer.add(college);
         const mainBuilding = college.getObjectByName('collegeBuilding');
         if (mainBuilding) {
@@ -226,7 +217,7 @@ export function createGridAndScenery(
         // --- Dance Stage ---
         const danceStage = createDanceStage();
         danceStage.scale.set(0.8, 0.8, 0.8);
-        danceStage.position.set(plotWidth / 2 - 50, 0, plotDepth / 2 - 50);
+        danceStage.position.set(-plotWidth / 4, 0, -plotDepth / 4); // Bottom-left
         campusContainer.add(danceStage);
         staticCollidersRef.current.push(danceStage);
         
