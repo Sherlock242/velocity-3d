@@ -199,8 +199,8 @@ export function createGridAndScenery(
         const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xcb4154 }); // Red color
 
         const gateWidth = 80;
-        const cellEdge = CELL_SIZE / 2 - ROAD_WIDTH / 2;
-        const totalWallLength = CELL_SIZE - (ROAD_WIDTH * 2);
+        const halfCell = CELL_SIZE / 2;
+        const boundaryOffset = halfCell - ROAD_WIDTH / 2;
 
         function createWallSegment(width: number, depth: number) {
           const segment = new THREE.Group();
@@ -211,38 +211,38 @@ export function createGridAndScenery(
           return segment;
         }
         
-        const wallSegmentWidth = (totalWallLength - gateWidth) / 2;
+        const wallSegmentLen = (CELL_SIZE - ROAD_WIDTH - gateWidth) / 2;
 
         // Front Wall (+Z)
-        const frontWallLeft = createWallSegment(wallSegmentWidth, wallThickness);
-        frontWallLeft.position.set(cellCenterX - (gateWidth / 2 + wallSegmentWidth / 2), 0, cellCenterZ + cellEdge);
+        const frontWallLeft = createWallSegment(wallSegmentLen, wallThickness);
+        frontWallLeft.position.set(cellCenterX - (gateWidth / 2 + wallSegmentLen / 2), 0, cellCenterZ + boundaryOffset);
         wallGroup.add(frontWallLeft);
-        const frontWallRight = createWallSegment(wallSegmentWidth, wallThickness);
-        frontWallRight.position.set(cellCenterX + (gateWidth / 2 + wallSegmentWidth / 2), 0, cellCenterZ + cellEdge);
+        const frontWallRight = createWallSegment(wallSegmentLen, wallThickness);
+        frontWallRight.position.set(cellCenterX + (gateWidth / 2 + wallSegmentLen / 2), 0, cellCenterZ + boundaryOffset);
         wallGroup.add(frontWallRight);
         
         // Back Wall (-Z)
-        const backWallLeft = createWallSegment(wallSegmentWidth, wallThickness);
-        backWallLeft.position.set(cellCenterX - (gateWidth / 2 + wallSegmentWidth / 2), 0, cellCenterZ - cellEdge);
+        const backWallLeft = createWallSegment(wallSegmentLen, wallThickness);
+        backWallLeft.position.set(cellCenterX - (gateWidth / 2 + wallSegmentLen / 2), 0, cellCenterZ - boundaryOffset);
         wallGroup.add(backWallLeft);
-        const backWallRight = createWallSegment(wallSegmentWidth, wallThickness);
-        backWallRight.position.set(cellCenterX + (gateWidth / 2 + wallSegmentWidth / 2), 0, cellCenterZ - cellEdge);
+        const backWallRight = createWallSegment(wallSegmentLen, wallThickness);
+        backWallRight.position.set(cellCenterX + (gateWidth / 2 + wallSegmentLen / 2), 0, cellCenterZ - boundaryOffset);
         wallGroup.add(backWallRight);
 
         // Left Wall (-X)
-        const leftWallTop = createWallSegment(wallThickness, wallSegmentWidth);
-        leftWallTop.position.set(cellCenterX - cellEdge, 0, cellCenterZ - (gateWidth / 2 + wallSegmentWidth / 2));
+        const leftWallTop = createWallSegment(wallThickness, wallSegmentLen);
+        leftWallTop.position.set(cellCenterX - boundaryOffset, 0, cellCenterZ - (gateWidth / 2 + wallSegmentLen / 2));
         wallGroup.add(leftWallTop);
-        const leftWallBottom = createWallSegment(wallThickness, wallSegmentWidth);
-        leftWallBottom.position.set(cellCenterX - cellEdge, 0, cellCenterZ + (gateWidth / 2 + wallSegmentWidth / 2));
+        const leftWallBottom = createWallSegment(wallThickness, wallSegmentLen);
+        leftWallBottom.position.set(cellCenterX - boundaryOffset, 0, cellCenterZ + (gateWidth / 2 + wallSegmentLen / 2));
         wallGroup.add(leftWallBottom);
         
         // Right Wall (+X)
-        const rightWallTop = createWallSegment(wallThickness, wallSegmentWidth);
-        rightWallTop.position.set(cellCenterX + cellEdge, 0, cellCenterZ - (gateWidth / 2 + wallSegmentWidth / 2));
+        const rightWallTop = createWallSegment(wallThickness, wallSegmentLen);
+        rightWallTop.position.set(cellCenterX + boundaryOffset, 0, cellCenterZ - (gateWidth / 2 + wallSegmentLen / 2));
         wallGroup.add(rightWallTop);
-        const rightWallBottom = createWallSegment(wallThickness, wallSegmentWidth);
-        rightWallBottom.position.set(cellCenterX + cellEdge, 0, cellCenterZ + (gateWidth / 2 + wallSegmentWidth / 2));
+        const rightWallBottom = createWallSegment(wallThickness, wallSegmentLen);
+        rightWallBottom.position.set(cellCenterX + boundaryOffset, 0, cellCenterZ + (gateWidth / 2 + wallSegmentLen / 2));
         wallGroup.add(rightWallBottom);
 
         gridGroup.add(wallGroup);
