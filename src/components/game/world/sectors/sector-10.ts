@@ -28,7 +28,7 @@ export function createSector10({
   // --- Compound Wall ---
   const wallGroup = new THREE.Group();
   wallGroup.name = 'compoundWall';
-  const wallHeight = 15;
+  const wallHeight = 30;
   const wallThickness = 5;
   const gateWidth = 40;
 
@@ -149,7 +149,7 @@ export function createSector10({
   const scoutsBuilding = createScoutsBuilding();
   scoutsBuilding.scale.set(1.0, 1.0, 1.0);
   // Position it in the bottom right
-  scoutsBuilding.position.set(60, 0, 195);
+  scoutsBuilding.position.set(70, 0, 195);
   scoutsBuilding.rotation.y = Math.PI;
   campusContainer.add(scoutsBuilding);
   staticCollidersRef.current.push(scoutsBuilding);
