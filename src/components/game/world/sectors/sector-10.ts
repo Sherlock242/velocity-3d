@@ -97,13 +97,27 @@ export function createSector10({
   entranceRoad.position.set(gateXPosition, 0.15, frontWallZ + entranceRoadLength / 2);
   campusContainer.add(entranceRoad);
 
-  // Walkable Path to College (Horizontal)
-  const pathToCollegeLength = 100;
-  const pathToCollegeGeom = new THREE.PlaneGeometry(pathToCollegeLength, 15);
-  const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
-  pathToCollege.rotation.x = -Math.PI / 2;
-  pathToCollege.position.set(gateXPosition - (pathToCollegeLength/2), 0.15, frontWallZ + entranceRoadLength - 7.5);
-  campusContainer.add(pathToCollege);
+  // Walkable Path to College
+  const pathWidth = 15;
+  
+  // Horizontal part of the L-shape
+  const horizontalPathLength = 100;
+  const horizontalPathGeom = new THREE.PlaneGeometry(horizontalPathLength, pathWidth);
+  const horizontalPath = new THREE.Mesh(horizontalPathGeom, pathMaterial);
+  horizontalPath.rotation.x = -Math.PI / 2;
+  const horizontalPathZ = frontWallZ + entranceRoadLength - pathWidth / 2;
+  horizontalPath.position.set(gateXPosition - (horizontalPathLength / 2), 0.15, horizontalPathZ);
+  campusContainer.add(horizontalPath);
+  
+  // Vertical part of the L-shape (corridor)
+  const verticalPathLength = 50;
+  const verticalPathGeom = new THREE.PlaneGeometry(pathWidth, verticalPathLength);
+  const verticalPath = new THREE.Mesh(verticalPathGeom, pathMaterial);
+  verticalPath.rotation.x = -Math.PI / 2;
+  const corridorX = gateXPosition - horizontalPathLength;
+  verticalPath.position.set(corridorX, 0.15, horizontalPathZ - (verticalPathLength / 2) - (pathWidth / 2) );
+  campusContainer.add(verticalPath);
+
 
   // --- College Building ---
   const college = createCollegeBuilding();
