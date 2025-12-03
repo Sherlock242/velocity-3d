@@ -28,25 +28,30 @@ export function createCollegeBuilding() {
           floor.position.set(0, yPos, 0);
           wing.add(floor);
 
-          // Back wall
-          const wallGeom = new THREE.BoxGeometry(width, floorHeight, 1);
-          const wall = new THREE.Mesh(wallGeom, redMaterial);
-          wall.position.set(0, yPos + floorHeight / 2, -depth / 2);
-          wing.add(wall);
+          // Front-facing details (courtyard side)
+          const frontBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 1, 1.2), yellowMaterial);
+          frontBorder.position.set(0, yPos + floorHeight - 5, depth / 2 - 1);
+          wing.add(frontBorder);
           
-          // Yellow border below windows
-          const borderGeom = new THREE.BoxGeometry(width, 1, 1.2);
-          const border = new THREE.Mesh(borderGeom, yellowMaterial);
-          border.position.set(0, yPos + floorHeight - 5, -depth / 2 + 1);
-          wing.add(border);
-
-          // Pillars
-          const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
           const numPillars = Math.floor(width / 20);
           for (let j = 0; j < numPillars; j++) {
+              const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
               const pillar = new THREE.Mesh(pillarGeom, redMaterial);
               const xPos = -width/2 + 10 + j * 20;
               pillar.position.set(xPos, yPos + floorHeight / 2, depth / 2 - 5);
+              wing.add(pillar);
+          }
+          
+          // Back-facing details (exterior side)
+          const backBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 1, 1.2), yellowMaterial);
+          backBorder.position.set(0, yPos + floorHeight - 5, -depth / 2 + 1);
+          wing.add(backBorder);
+          
+          for (let j = 0; j < numPillars; j++) {
+              const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
+              const pillar = new THREE.Mesh(pillarGeom, redMaterial);
+              const xPos = -width/2 + 10 + j * 20;
+              pillar.position.set(xPos, yPos + floorHeight / 2, -depth / 2 + 5);
               wing.add(pillar);
           }
       }
@@ -66,7 +71,7 @@ export function createCollegeBuilding() {
   // Front Wing (long)
   const frontWing = createWing(longWingWidth, wingDepth);
   frontWing.position.z = shortWingWidth / 2;
-  frontWing.rotation.y = Math.PI;
+  // No rotation needed now as both sides are detailed
   college.add(frontWing);
 
   // Left Wing (short)
