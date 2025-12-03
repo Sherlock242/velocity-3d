@@ -140,7 +140,7 @@ export function createSector10({
   const scoutsBuilding = createScoutsBuilding();
   scoutsBuilding.scale.set(0.6, 0.6, 0.6);
   // Position it in the bottom right
-  scoutsBuilding.position.set(120, 0, 120);
+  scoutsBuilding.position.set(200, 0, 200);
   scoutsBuilding.rotation.y = Math.PI;
   campusContainer.add(scoutsBuilding);
   staticCollidersRef.current.push(scoutsBuilding);
