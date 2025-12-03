@@ -129,8 +129,8 @@ export function createGridAndScenery(
         // --- Compound Wall ---
         const wallGroup = new THREE.Group();
         wallGroup.name = 'compoundWall';
-        const plotWidth = CELL_SIZE - ROAD_WIDTH * 2;
-        const plotDepth = CELL_SIZE - ROAD_WIDTH * 2;
+        const plotWidth = 480;
+        const plotDepth = 480;
         const wallHeight = 15;
         const wallThickness = 5;
         const gateWidth = 40;
