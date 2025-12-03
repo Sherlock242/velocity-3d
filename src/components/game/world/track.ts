@@ -195,7 +195,7 @@ export function createGridAndScenery(
         const darkRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
         const pathMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
         
-        const gateXPosition = -plotWidth/2 + frontWallLeftSegmentWidth + gateWidth/2;
+        const gateXPosition = gateUpwardShift;
 
         const entranceRoadLength = 200;
         const entranceRoadGeom = new THREE.PlaneGeometry(25, entranceRoadLength);
@@ -205,10 +205,11 @@ export function createGridAndScenery(
         campusContainer.add(entranceRoad);
         
         // Walkable Path to College (Horizontal)
-        const pathToCollegeGeom = new THREE.PlaneGeometry(150, 15);
+        const pathToCollegeLength = 150;
+        const pathToCollegeGeom = new THREE.PlaneGeometry(pathToCollegeLength + gateXPosition, 15);
         const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
         pathToCollege.rotation.x = -Math.PI / 2;
-        pathToCollege.position.set(0, 0.15, 0);
+        pathToCollege.position.set((gateXPosition - pathToCollegeLength) / 2, 0.15, frontWallZ + entranceRoadLength);
         campusContainer.add(pathToCollege);
         
         // --- College Building ---
@@ -224,7 +225,7 @@ export function createGridAndScenery(
         // --- Dance Stage ---
         const danceStage = createDanceStage();
         danceStage.scale.set(0.8, 0.8, 0.8);
-        danceStage.position.set(-plotWidth/2 + 50, 0, -plotDepth/2 + 50); // Top-left
+        danceStage.position.set(plotWidth / 4, 0, -plotDepth / 4); // Top-right
         campusContainer.add(danceStage);
         staticCollidersRef.current.push(danceStage);
         
@@ -238,10 +239,22 @@ export function createGridAndScenery(
         // --- Scout and Guide Building ---
         const scoutBuilding = createScoutGuideBuilding();
         scoutBuilding.scale.set(0.9, 0.9, 0.9);
-        scoutBuilding.position.set(plotWidth / 4, 0, plotDepth / 4); // Bottom-right
+        scoutBuilding.position.set(-plotWidth / 4, 0, -plotDepth / 4); // Top-left
         campusContainer.add(scoutBuilding);
         staticCollidersRef.current.push(scoutBuilding);
         
+        // --- Park ---
+        const park = createLuisPark();
+        park.scale.set(0.4, 0.4, 0.4);
+        park.position.set(plotWidth / 2 - 100, 0, 0);
+        campusContainer.add(park);
+        const parkGround = park.getObjectByName('ground');
+        if (parkGround) {
+            // only ground is not a collider
+            park.children.filter(c => c !== parkGround).forEach(child => staticCollidersRef.current.push(child as THREE.Group));
+        }
+
+
         gridGroup.add(campusContainer);
 
         continue;
