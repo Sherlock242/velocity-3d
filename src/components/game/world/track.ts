@@ -22,7 +22,6 @@ import { createSatsangBuilding } from '../models/satsang-building';
 import { createLightMandir } from '../models/light-mandir';
 import { createGovtHouse } from '../models/govt-house';
 import { createCollegeBuilding } from '../models/college-building';
-import { createLuisPark } from '../models/park';
 import { createShop } from '../models/shop';
 import { createScoutGuideBuilding }from '../models/scout-guide-building';
 import { createDanceStage } from '../models/dance-stage';
@@ -243,17 +242,6 @@ export function createGridAndScenery(
         campusContainer.add(scoutBuilding);
         staticCollidersRef.current.push(scoutBuilding);
         
-        // --- Park ---
-        const park = createLuisPark();
-        park.scale.set(0.4, 0.4, 0.4);
-        park.position.set(plotWidth / 2 - 100, 0, 0);
-        campusContainer.add(park);
-        const parkGround = park.getObjectByName('ground');
-        if (parkGround) {
-            // only ground is not a collider
-            park.children.filter(c => c !== parkGround).forEach(child => staticCollidersRef.current.push(child as THREE.Group));
-        }
-
 
         gridGroup.add(campusContainer);
 
