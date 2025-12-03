@@ -90,13 +90,21 @@ export function createSector10({
   const pathMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
 
   const gateXPosition = gateUpwardShift;
+  const entranceRoadWidth = 25;
 
   const entranceRoadLength = 240;
-  const entranceRoadGeom = new THREE.PlaneGeometry(25, entranceRoadLength);
+  const entranceRoadGeom = new THREE.PlaneGeometry(entranceRoadWidth, entranceRoadLength);
   const entranceRoad = new THREE.Mesh(entranceRoadGeom, darkRoadMaterial);
   entranceRoad.rotation.x = -Math.PI / 2;
   entranceRoad.position.set(gateXPosition, 0.15, frontWallZ + entranceRoadLength / 2);
   campusContainer.add(entranceRoad);
+
+  // New wall to the right of the road
+  const innerWall = createWallSegment(wallThickness, entranceRoadLength);
+  innerWall.position.set(gateXPosition + entranceRoadWidth / 2 + wallThickness / 2, 0, frontWallZ + entranceRoadLength / 2);
+  campusContainer.add(innerWall);
+  staticCollidersRef.current.push(innerWall);
+
 
   // Walkable Path to College
   const pathWidth = 15;
