@@ -125,6 +125,7 @@ export function createGridAndScenery(
       if (sectorNumber === 10) {
         const campusContainer = new THREE.Group();
         campusContainer.position.set(cellCenterX, 0, cellCenterZ);
+        campusContainer.rotation.y = Math.PI;
 
         const plotWidth = 480;
         const plotDepth = 480;
