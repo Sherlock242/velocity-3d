@@ -23,8 +23,6 @@ import { createLightMandir } from '../models/light-mandir';
 import { createGovtHouse } from '../models/govt-house';
 import { createCollegeBuilding } from '../models/college-building';
 import { createShop } from '../models/shop';
-import { createScoutGuideBuilding }from '../models/scout-guide-building';
-import { createDanceStage } from '../models/dance-stage';
 import { createClassroomBlock } from '../models/classroom-block';
 
 export function createGridAndScenery(
@@ -220,13 +218,6 @@ export function createGridAndScenery(
         if (mainBuilding) {
             mainBuilding.children.forEach(child => staticCollidersRef.current.push(child as THREE.Group));
         }
-
-        // --- Dance Stage ---
-        const danceStage = createDanceStage();
-        danceStage.scale.set(0.8, 0.8, 0.8);
-        danceStage.position.set(plotWidth / 4, 0, -plotDepth / 4); // Top-right
-        campusContainer.add(danceStage);
-        staticCollidersRef.current.push(danceStage);
         
         // --- Classroom Block ---
         const classroomBlock = createClassroomBlock();
@@ -234,13 +225,6 @@ export function createGridAndScenery(
         classroomBlock.position.set(0, 0, -plotDepth/2 + 50);
         campusContainer.add(classroomBlock);
         staticCollidersRef.current.push(classroomBlock);
-        
-        // --- Scout and Guide Building ---
-        const scoutBuilding = createScoutGuideBuilding();
-        scoutBuilding.scale.set(0.9, 0.9, 0.9);
-        scoutBuilding.position.set(-plotWidth / 4, 0, -plotDepth / 4); // Top-left
-        campusContainer.add(scoutBuilding);
-        staticCollidersRef.current.push(scoutBuilding);
         
 
         gridGroup.add(campusContainer);
