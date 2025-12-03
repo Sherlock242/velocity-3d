@@ -135,7 +135,6 @@ export function createGridAndScenery(
         const wallHeight = 15;
         const wallThickness = 5;
         const gateWidth = 40;
-        const entranceZOffset = 50; // How far "up" to move the entrance wall
         
         function createWallSegment(width: number, depth: number) {
           const segment = new THREE.Group();
@@ -157,34 +156,34 @@ export function createGridAndScenery(
           return segment;
         }
         
+        const gateUpwardShift = 100;
+
         // Front wall (+Z, faces Sector 15)
-        const frontWallSegmentWidth = (plotWidth - gateWidth) / 2;
-        const frontWallZ = plotDepth / 2 - entranceZOffset;
-        const frontWallLeft = createWallSegment(frontWallSegmentWidth, wallThickness);
-        frontWallLeft.position.x = -(gateWidth / 2 + frontWallSegmentWidth / 2);
-        frontWallLeft.position.z = frontWallZ;
+        const frontWallZ = -plotDepth / 2;
+        const frontWallLeftSegmentWidth = (plotWidth / 2) - (gateWidth / 2) + gateUpwardShift;
+        const frontWallRightSegmentWidth = plotWidth - frontWallLeftSegmentWidth - gateWidth;
+        
+        const frontWallLeft = createWallSegment(frontWallLeftSegmentWidth, wallThickness);
+        frontWallLeft.position.set(-(plotWidth / 2) + (frontWallLeftSegmentWidth / 2), 0, frontWallZ);
         wallGroup.add(frontWallLeft);
         
-        const frontWallRight = createWallSegment(frontWallSegmentWidth, wallThickness);
-        frontWallRight.position.x = (gateWidth / 2 + frontWallSegmentWidth / 2);
-        frontWallRight.position.z = frontWallZ;
+        const frontWallRight = createWallSegment(frontWallRightSegmentWidth, wallThickness);
+        frontWallRight.position.set((plotWidth / 2) - (frontWallRightSegmentWidth / 2), 0, frontWallZ);
         wallGroup.add(frontWallRight);
 
         // Back wall (-Z)
         const backWall = createWallSegment(plotWidth, wallThickness);
-        backWall.position.z = -plotDepth / 2;
+        backWall.position.z = plotDepth / 2;
         wallGroup.add(backWall);
 
         // Right wall (+X)
-        const rightWall = createWallSegment(wallThickness, plotDepth - entranceZOffset);
+        const rightWall = createWallSegment(wallThickness, plotDepth);
         rightWall.position.x = plotWidth / 2;
-        rightWall.position.z = (-plotDepth / 2 + (plotDepth - entranceZOffset)/2)
         wallGroup.add(rightWall);
         
         // Left wall (-X)
-        const leftWall = createWallSegment(wallThickness, plotDepth - entranceZOffset);
+        const leftWall = createWallSegment(wallThickness, plotDepth);
         leftWall.position.x = -plotWidth / 2;
-        leftWall.position.z = (-plotDepth / 2 + (plotDepth - entranceZOffset)/2)
         wallGroup.add(leftWall);
 
         campusContainer.add(wallGroup);
@@ -194,25 +193,26 @@ export function createGridAndScenery(
         const darkRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
         const pathMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
         
-        // Entrance Road (Vertical)
+        const gateXPosition = -plotWidth/2 + frontWallLeftSegmentWidth + gateWidth/2;
+
         const entranceRoadLength = 200;
         const entranceRoadGeom = new THREE.PlaneGeometry(25, entranceRoadLength);
         const entranceRoad = new THREE.Mesh(entranceRoadGeom, darkRoadMaterial);
         entranceRoad.rotation.x = -Math.PI / 2;
-        entranceRoad.position.set(0, 0.15, frontWallZ - entranceRoadLength / 2);
+        entranceRoad.position.set(gateXPosition, 0.15, frontWallZ + entranceRoadLength / 2);
         campusContainer.add(entranceRoad);
-
+        
         // Walkable Path to College (Horizontal)
         const pathToCollegeGeom = new THREE.PlaneGeometry(150, 15);
         const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
         pathToCollege.rotation.x = -Math.PI / 2;
-        pathToCollege.position.set(0, 0.15, -plotDepth/4);
+        pathToCollege.position.set(0, 0.15, 0);
         campusContainer.add(pathToCollege);
         
         // --- College Building ---
         const college = createCollegeBuilding();
         college.scale.set(0.6, 0.6, 0.6);
-        college.position.set(plotWidth / 4, 0, -plotDepth / 4); // Bottom-right
+        college.position.set(-plotWidth / 4, 0, plotDepth / 4); // Bottom-left
         campusContainer.add(college);
         const mainBuilding = college.getObjectByName('collegeBuilding');
         if (mainBuilding) {
@@ -222,7 +222,7 @@ export function createGridAndScenery(
         // --- Dance Stage ---
         const danceStage = createDanceStage();
         danceStage.scale.set(0.8, 0.8, 0.8);
-        danceStage.position.set(-plotWidth / 4, 0, -plotDepth / 4); // Bottom-left
+        danceStage.position.set(plotWidth / 4, 0, plotDepth / 4); // Bottom-right
         campusContainer.add(danceStage);
         staticCollidersRef.current.push(danceStage);
         
