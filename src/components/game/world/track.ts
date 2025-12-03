@@ -148,40 +148,28 @@ export function createGridAndScenery(
             rampMeshRef.current = rampMesh;
         }
 
-        // Department Buildings, Roads, and Parking
+        // Department Buildings
         const departments = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'History', 'Art', 'Music'];
-        const deptRingRadius = 350;
-
-        // Circular road connecting departments
-        const ringRoadGeom = new THREE.RingGeometry(deptRingRadius - 15, deptRingRadius + 15, 64);
-        const ringRoad = new THREE.Mesh(ringRoadGeom, campusRoadMaterial);
-        ringRoad.rotation.x = -Math.PI / 2;
-        ringRoad.position.set(cellCenterX, 0.13, cellCenterZ);
-        gridGroup.add(ringRoad);
+        const buildingSpacing = 200;
+        const numDeptsPerSide = Math.ceil(departments.length / 2);
+        const totalWidth = (numDeptsPerSide - 1) * buildingSpacing;
+        const startX = cellCenterX - totalWidth / 2;
+        const zPos1 = cellCenterZ - 300;
+        const zPos2 = cellCenterZ + 300;
 
         departments.forEach((dept, index) => {
-          const angle = (index / departments.length) * Math.PI * 2;
-          const buildingX = cellCenterX + Math.cos(angle) * deptRingRadius;
-          const buildingZ = cellCenterZ + Math.sin(angle) * deptRingRadius;
+          const isTopRow = index < numDeptsPerSide;
+          const rowIndex = isTopRow ? index : index - numDeptsPerSide;
           
+          const buildingX = startX + rowIndex * buildingSpacing;
+          const buildingZ = isTopRow ? zPos1 : zPos2;
+
           const deptBuilding = createDepartmentBuilding();
           deptBuilding.position.set(buildingX, 0, buildingZ);
-          deptBuilding.lookAt(university.position);
           gridGroup.add(deptBuilding);
           staticCollidersRef.current.push(deptBuilding);
-          
-          
-          // Connecting road from ring to parking
-          const connectorRoadLength = 60 - 15; // from ring edge to parking
-          const connectorRoadGeom = new THREE.PlaneGeometry(20, connectorRoadLength);
-          const connectorRoad = new THREE.Mesh(connectorRoadGeom, campusRoadMaterial);
-          const connectorX = buildingX + Math.cos(angle + Math.PI) * (connectorRoadLength / 2 + 15);
-          const connectorZ = buildingZ + Math.sin(angle + Math.PI) * (connectorRoadLength / 2 + 15);
-          connectorRoad.position.set(connectorX, 0.14, connectorZ);
-          connectorRoad.rotation.x = -Math.PI / 2;
-          connectorRoad.rotation.y = angle + Math.PI / 2;
-          gridGroup.add(connectorRoad);
         });
+
 
         // Corner Government Houses
         const cornerOffset = CELL_SIZE / 2 - 100;
@@ -206,7 +194,7 @@ export function createGridAndScenery(
 
         const gateWidth = 80;
         const cellEdge = CELL_SIZE / 2 - ROAD_WIDTH / 2;
-        const totalWallLength = CELL_SIZE - (ROAD_WIDTH) - wallThickness;
+        const totalWallLength = CELL_SIZE - (ROAD_WIDTH * 2) - wallThickness;
 
         function createWallSegment(width: number, depth: number) {
           const segment = new THREE.Group();
@@ -413,3 +401,5 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
+
+    
