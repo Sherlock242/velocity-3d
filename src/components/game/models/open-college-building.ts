@@ -5,8 +5,8 @@ export function createOpenCollegeBuilding() {
   const collegeGroup = new THREE.Group();
   collegeGroup.name = 'openCollegeBuildingWrapper';
 
-  const longWingWidth = 400;
-  const shortWingWidth = 250;
+  const longWingWidth = 350;
+  const shortWingWidth = 300;
   const wingDepth = 30;
   const numFloors = 1; // Only one story
   const floorHeight = 30;
