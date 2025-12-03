@@ -120,38 +120,10 @@ export function createGridAndScenery(
       const sectorNumber = j * GRID_SIZE + i + 1;
 
       if (sectorNumber === 10) {
-        const halfCell = CELL_SIZE / 2;
-        // College Building in top-left
         const college = createCollegeBuilding();
-        college.position.set(cellCenterX - halfCell / 2, 0, cellCenterZ - halfCell / 2);
-        college.rotation.y = Math.PI / 4;
+        college.position.set(cellCenterX, 0, cellCenterZ);
         gridGroup.add(college);
         staticCollidersRef.current.push(college);
-
-        // Luis Park next to it (top-right)
-        const park = createLuisPark();
-        park.position.set(cellCenterX + halfCell / 2, 0.1, cellCenterZ - halfCell / 2);
-        gridGroup.add(park);
-        const parkSign = park.getObjectByName('LuisParkSign');
-        if (parkSign) {
-          staticCollidersRef.current.push(parkSign as THREE.Group);
-        }
-
-        // Shops behind the college (bottom-left)
-        const shopColors = [0xff6347, 0x4682b4, 0x3cb371, 0xffd700, 0x6a5acd];
-        const numShops = 5;
-        const shopSpacing = 60;
-        const totalShopWidth = numShops * shopSpacing;
-        const shopStartX = cellCenterX - halfCell / 2 - totalShopWidth / 2 + shopSpacing / 2;
-
-        for (let k = 0; k < numShops; k++) {
-          const shop = createShop(shopColors[k % shopColors.length]);
-          shop.position.set(shopStartX + k * shopSpacing, 0, cellCenterZ + halfCell / 2);
-          shop.rotation.y = Math.PI;
-          gridGroup.add(shop);
-          staticCollidersRef.current.push(shop);
-        }
-
         continue;
       }
 
@@ -527,5 +499,3 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
-
-    

@@ -4,7 +4,8 @@ import * as THREE from 'three';
 export function createCollegeBuilding() {
   const college = new THREE.Group();
 
-  const wingWidth = 250;
+  const longWingWidth = 400;
+  const shortWingWidth = 250;
   const wingDepth = 30;
   const numFloors = 4;
   const floorHeight = 15;
@@ -51,34 +52,35 @@ export function createCollegeBuilding() {
       }
       return wing;
   }
+  
+  const courtyardWidth = longWingWidth - wingDepth * 2;
+  const courtyardDepth = shortWingWidth - wingDepth * 2;
 
-  const courtyardSize = wingWidth - wingDepth * 2;
-
-  // Back Wing
-  const backWing = createWing(wingWidth, wingDepth);
-  backWing.position.z = -courtyardSize / 2 - wingDepth / 2;
+  // Back Wing (long)
+  const backWing = createWing(longWingWidth, wingDepth);
+  backWing.position.z = -shortWingWidth / 2;
   college.add(backWing);
   
-  // Front Wing
-  const frontWing = createWing(wingWidth, wingDepth);
-  frontWing.position.z = courtyardSize / 2 + wingDepth / 2;
+  // Front Wing (long)
+  const frontWing = createWing(longWingWidth, wingDepth);
+  frontWing.position.z = shortWingWidth / 2;
   frontWing.rotation.y = Math.PI;
   college.add(frontWing);
 
-  // Left Wing
-  const leftWing = createWing(courtyardSize + wingDepth*2, wingDepth);
-  leftWing.position.x = -wingWidth / 2 + wingDepth / 2;
+  // Left Wing (short)
+  const leftWing = createWing(shortWingWidth, wingDepth);
+  leftWing.position.x = -longWingWidth / 2;
   leftWing.rotation.y = Math.PI / 2;
   college.add(leftWing);
   
-  // Right Wing
-  const rightWing = createWing(courtyardSize + wingDepth*2, wingDepth);
-  rightWing.position.x = wingWidth / 2 - wingDepth / 2;
+  // Right Wing (short)
+  const rightWing = createWing(shortWingWidth, wingDepth);
+  rightWing.position.x = longWingWidth / 2;
   rightWing.rotation.y = -Math.PI / 2;
   college.add(rightWing);
 
   // Courtyard Ground
-  const groundGeom = new THREE.PlaneGeometry(courtyardSize, courtyardSize);
+  const groundGeom = new THREE.PlaneGeometry(courtyardWidth, courtyardDepth);
   const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x55903c });
   const ground = new THREE.Mesh(groundGeom, groundMaterial);
   ground.rotation.x = -Math.PI / 2;
@@ -90,7 +92,7 @@ export function createCollegeBuilding() {
   const hutMaterial = new THREE.MeshStandardMaterial({color: 0x9a3e3e});
   const hut = new THREE.Mesh(hutGeom, hutMaterial);
   hut.position.y = 5;
-  hut.position.z = -50;
+  hut.position.z = 0;
   college.add(hut);
 
   college.castShadow = true;
