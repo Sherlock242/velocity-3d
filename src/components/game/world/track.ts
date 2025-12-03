@@ -200,7 +200,7 @@ export function createGridAndScenery(
 
         const gateWidth = 80;
         const cellEdge = CELL_SIZE / 2 - ROAD_WIDTH / 2;
-        const totalWallLength = CELL_SIZE - (ROAD_WIDTH * 2) - wallThickness;
+        const totalWallLength = CELL_SIZE - (ROAD_WIDTH * 2);
 
         function createWallSegment(width: number, depth: number) {
           const segment = new THREE.Group();
