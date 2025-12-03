@@ -123,17 +123,26 @@ export function createGridAndScenery(
         const college = createCollegeBuilding();
         college.position.set(cellCenterX, 0, cellCenterZ);
         gridGroup.add(college);
-
-        // Add college building and walls to colliders separately
+      
         const mainBuilding = college.getObjectByName('collegeBuilding');
         if (mainBuilding) {
-            staticCollidersRef.current.push(mainBuilding as THREE.Group);
+            // Add each wing as a separate collider
+            const backWing = mainBuilding.getObjectByName('backWing');
+            const frontWing = mainBuilding.getObjectByName('frontWing');
+            const leftWing = mainBuilding.getObjectByName('leftWing');
+            const rightWing = mainBuilding.getObjectByName('rightWing');
+
+            if (backWing) staticCollidersRef.current.push(backWing as THREE.Group);
+            if (frontWing) staticCollidersRef.current.push(frontWing as THREE.Group);
+            if (leftWing) staticCollidersRef.current.push(leftWing as THREE.Group);
+            if (rightWing) staticCollidersRef.current.push(rightWing as THREE.Group);
         }
+      
         const wallGroup = college.getObjectByName('compoundWall');
         if (wallGroup) {
-            wallGroup.children.forEach(wallSegment => {
-                staticCollidersRef.current.push(wallSegment as THREE.Group);
-            });
+          wallGroup.children.forEach(wallSegment => {
+            staticCollidersRef.current.push(wallSegment as THREE.Group);
+          });
         }
         continue;
       }
@@ -332,7 +341,7 @@ export function createGridAndScenery(
         wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
 
         // --- Connect main roads to campus roads ---
-        const connectionRoadLength = halfCell - ringRoadOffset - campusRoadWidth / 2;
+        const connectionRoadLength = (halfCell - ROAD_WIDTH / 2) - (ringRoadOffset + campusRoadWidth / 2);
         const connectionRoadWidth = ROAD_WIDTH;
 
         const connectionPositions = [
@@ -510,5 +519,3 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
-
-    
