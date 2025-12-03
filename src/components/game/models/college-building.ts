@@ -14,7 +14,7 @@ export function createCollegeBuilding() {
   });
 
   const buildingWidth = 200;
-  const buildingHeight = 60;
+  const buildingHeight = 120;
   const buildingDepth = 40;
   const borderWidth = 2;
   const floorHeight = 15;
