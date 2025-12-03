@@ -173,6 +173,22 @@ export function createGridAndScenery(
         rightRoad.rotation.x = -Math.PI / 2;
         rightRoad.position.set(cellCenterX + ringRoadOffset, 0.1, cellCenterZ);
         innerRoadGroup.add(rightRoad);
+        
+        // Road Corners
+        const cornerGeom = new THREE.PlaneGeometry(campusRoadWidth, campusRoadWidth);
+        const cornerPositions = [
+            { x: cellCenterX - ringRoadOffset, z: cellCenterZ - ringRoadOffset },
+            { x: cellCenterX + ringRoadOffset, z: cellCenterZ - ringRoadOffset },
+            { x: cellCenterX - ringRoadOffset, z: cellCenterZ + ringRoadOffset },
+            { x: cellCenterX + ringRoadOffset, z: cellCenterZ + ringRoadOffset },
+        ];
+        cornerPositions.forEach(pos => {
+            const corner = new THREE.Mesh(cornerGeom, innerRoadMaterial);
+            corner.rotation.x = -Math.PI / 2;
+            corner.position.set(pos.x, 0.1, pos.z);
+            innerRoadGroup.add(corner);
+        });
+
 
         gridGroup.add(innerRoadGroup);
 
@@ -213,6 +229,7 @@ export function createGridAndScenery(
             const pathOffset = ringRoadOffset + campusRoadWidth/2 + pathLength / 2;
             let pathX = pos.x;
             let pathZ = pos.z;
+            let pathRotation = 0;
 
             if(pos.rot === 0) { // Back wall
                  pathZ = cellCenterZ - pathOffset;
@@ -221,13 +238,14 @@ export function createGridAndScenery(
             } else if (pos.rot === Math.PI / 2) { // Left wall
                 pathX = cellCenterX - pathOffset;
                 pathZ = pos.z;
-                path.rotation.z = Math.PI / 2;
+                pathRotation = Math.PI / 2;
             } else { // Right wall
                 pathX = cellCenterX + pathOffset;
                 pathZ = pos.z;
-                path.rotation.z = -Math.PI / 2;
+                pathRotation = Math.PI / 2;
             }
             path.position.set(pathX, 0.12, pathZ);
+            path.rotation.z = pathRotation;
             gridGroup.add(path);
         });
 
