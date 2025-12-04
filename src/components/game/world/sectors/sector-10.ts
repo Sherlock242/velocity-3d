@@ -110,19 +110,22 @@ export function createSector10({
 
   // Walkable Path to College
   const pathWidth = 15;
-  const shedCorridorLength = 40;
-  const shedPathToCollegeLength = 112 - (shedCorridorLength / 2) - (pathWidth / 2);
+  const shedPathToCollegeLength = 112 - (pathWidth / 2);
+  const walkwayPathToCollegeLength = shedPathToCollegeLength + 20;
 
 
   const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2;
   const pathToCollegeShedX = gateXPosition - (shedPathToCollegeLength / 2) - 12.5;
+  const pathToCollegeWalkwayX = gateXPosition - (walkwayPathToCollegeLength / 2) - 12.5;
+
   
-  const pathToCollegeGeom = new THREE.PlaneGeometry(shedPathToCollegeLength, pathWidth);
+  const pathToCollegeGeom = new THREE.PlaneGeometry(walkwayPathToCollegeLength, pathWidth);
   const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
   pathToCollege.rotation.x = -Math.PI / 2;
-  pathToCollege.position.set(pathToCollegeShedX, 0.15, pathToCollegeZ);
+  pathToCollege.position.set(pathToCollegeWalkwayX, 0.15, pathToCollegeZ);
   campusContainer.add(pathToCollege);
   
+  const shedCorridorLength = 40;
   const corridorShedX = pathToCollegeShedX - (shedPathToCollegeLength / 2) - (pathWidth / 2);
   const corridorShedZ = pathToCollegeZ - pathWidth - (shedCorridorLength / 2) + 12;
 
