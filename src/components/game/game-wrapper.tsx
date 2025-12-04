@@ -223,7 +223,9 @@ export default function GameWrapper() {
     // --- PLAYER TRANSFORMER ---
     const transformer = createTransformer();
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    transformer.position.x = 2 * CELL_SIZE - halfTotalWidth;
+    // Position on main road of Sector 10
+    transformer.position.x = 2000; // Road at the edge of sector 10
+    transformer.position.z = -1000;
     scene.add(transformer);
     playerRef.current = transformer;
 
