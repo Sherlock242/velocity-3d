@@ -253,8 +253,22 @@ export function createCollegeBuilding() {
   platform2.position.x = platform1.position.x;
   platform2.position.z = platform1.position.z - rampLength - platformDepth;
 
+  // Ramp from 2nd to 3rd floor
+  const ramp3 = new THREE.Mesh(rampGeom, rampMaterial);
+  ramp3.position.y = rampRise * 2 + rampRise / 2;
+  ramp3.position.x = platform2.position.x - (platformWidth - rampWidth) / 2;
+  ramp3.position.z = platform2.position.z + platformDepth / 2 - rampLength / 2;
+  ramp3.rotation.x = -Math.atan(rampRise / rampLength);
+
+  // Platform on the 3rd floor
+  const platform3Geom = new THREE.BoxGeometry(platformWidth, rampThickness, platformDepth);
+  const platform3 = new THREE.Mesh(platform3Geom, rampMaterial);
+  platform3.position.y = rampRise * 3;
+  platform3.position.x = platform1.position.x;
+  platform3.position.z = platform1.position.z;
+
   const walkableRampGroup = new THREE.Group();
-  walkableRampGroup.add(ramp1, platform1, ramp2, platform2);
+  walkableRampGroup.add(ramp1, platform1, ramp2, platform2, ramp3, platform3);
   walkableRampGroup.name = 'collegeRamp';
   
   rampGroup.add(walkableRampGroup);
