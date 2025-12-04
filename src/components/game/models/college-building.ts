@@ -180,18 +180,22 @@ export function createCollegeBuilding() {
             floorGroup.add(bottomFrontBorder);
           }
           
-          const backBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 2, 1.2), yellowMaterial);
-          backBorder.position.set(0, floorHeight - 5, -depth / 2 - 0.1);
-          floorGroup.add(backBorder);
-
-          const bottomBackBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 2, 1.2), yellowMaterial);
-          bottomBackBorder.position.set(0, 5, -depth / 2 - 0.1);
-          floorGroup.add(bottomBackBorder);
+          if (!(hasEntrance && i === 0)) {
+            const backBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 2, 1.2), yellowMaterial);
+            backBorder.position.set(0, floorHeight - 5, -depth / 2 - 0.1);
+            floorGroup.add(backBorder);
+            const bottomBackBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 2, 1.2), yellowMaterial);
+            bottomBackBorder.position.set(0, 5, -depth / 2 - 0.1);
+            floorGroup.add(bottomBackBorder);
+          }
           
           for (let j = 0; j < numPillars; j++) {
+              const xPos = -width/2 + 10 + j * 20;
+              if (hasEntrance && i === 0 && xPos > entranceOffset - entranceWidth / 2 && xPos < entranceOffset + entranceWidth / 2) {
+                  continue;
+              }
               const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
               const pillar = new THREE.Mesh(pillarGeom, redMaterial);
-              const xPos = -width/2 + 10 + j * 20;
               pillar.position.set(xPos, floorHeight / 2, -depth / 2 - 2);
               floorGroup.add(pillar);
 
