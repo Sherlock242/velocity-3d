@@ -19,7 +19,6 @@ export function createCollegeBuilding() {
       const wing = new THREE.Group();
 
       const entranceWidth = 40;
-      const entranceCutoutWidth = entranceWidth + 4; // To avoid z-fighting
 
       for (let i = 0; i < numFloors; i++) {
           const yPos = i * floorHeight;
@@ -27,37 +26,40 @@ export function createCollegeBuilding() {
           floorGroup.position.y = yPos;
 
           if(isFrontWing && i === 0) {
-              // Create the wall with a hole for the entrance
-              const wallShape = new THREE.Shape();
-              const hw = width / 2;
-              const hh = floorHeight;
-              const hd = depth / 2;
+              // Create the wall with a hole for the entrance using two separate wall segments
+              const wallSegmentWidth = (width - entranceWidth) / 2;
               
-              wallShape.moveTo(-hw, 0);
-              wallShape.lineTo(hw, 0);
-              wallShape.lineTo(hw, hh);
-              wallShape.lineTo(-hw, hh);
-              wallShape.lineTo(-hw, 0);
+              // Left segment
+              const leftWallGeom = new THREE.BoxGeometry(wallSegmentWidth, floorHeight, depth);
+              const leftWall = new THREE.Mesh(leftWallGeom, redMaterial);
+              leftWall.position.x = -(entranceWidth / 2 + wallSegmentWidth / 2);
+              leftWall.position.y = floorHeight / 2;
+              floorGroup.add(leftWall);
 
-              // Define the hole for the entrance
-              const holeX = -entranceCutoutWidth / 2;
-              const holeY = 0;
-              const holeWidth = entranceCutoutWidth;
-              const holeHeight = floorHeight; // Full height of the floor
-              const holeShape = new THREE.Path();
-              holeShape.moveTo(holeX, holeY);
-              holeShape.lineTo(holeX + holeWidth, holeY);
-              holeShape.lineTo(holeX + holeWidth, holeY + holeHeight);
-              holeShape.lineTo(holeX, holeY + holeHeight);
-              holeShape.lineTo(holeX, holeY);
-              wallShape.holes.push(holeShape);
+              // Right segment
+              const rightWallGeom = new THREE.BoxGeometry(wallSegmentWidth, floorHeight, depth);
+              const rightWall = new THREE.Mesh(rightWallGeom, redMaterial);
+              rightWall.position.x = entranceWidth / 2 + wallSegmentWidth / 2;
+              rightWall.position.y = floorHeight / 2;
+              floorGroup.add(rightWall);
 
-              const extrudeSettings = { depth: depth, bevelEnabled: false };
-              const wallWithHoleGeom = new THREE.ExtrudeGeometry(wallShape, extrudeSettings);
-              wallWithHoleGeom.translate(0, -hh / 2, -hd);
-              const wallWithHole = new THREE.Mesh(wallWithHoleGeom, redMaterial);
-              wallWithHole.position.y = hh/2;
-              floorGroup.add(wallWithHole);
+              // Lintel above the entrance
+              const lintelGeom = new THREE.BoxGeometry(entranceWidth, 5, depth);
+              const lintel = new THREE.Mesh(lintelGeom, redMaterial);
+              lintel.position.y = floorHeight - 2.5; // Place at the top of the opening
+              floorGroup.add(lintel);
+
+              // Pillars for the entrance
+              const pillarHeight = floorHeight - 5; // To fit under the lintel
+              const pillarGeom = new THREE.BoxGeometry(4, pillarHeight, 4);
+
+              const leftPillar = new THREE.Mesh(pillarGeom, yellowMaterial);
+              leftPillar.position.set(-entranceWidth / 2 + 2, pillarHeight / 2, depth / 2);
+              floorGroup.add(leftPillar);
+              
+              const rightPillar = new THREE.Mesh(pillarGeom, yellowMaterial);
+              rightPillar.position.set(entranceWidth / 2 - 2, pillarHeight / 2, depth / 2);
+              floorGroup.add(rightPillar);
 
           } else {
             // Solid walls for other floors/wings
