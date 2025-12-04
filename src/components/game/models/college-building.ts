@@ -17,6 +17,7 @@ export function createCollegeBuilding() {
 
   function createWing(width: number, depth: number, hasEntrance = false) {
       const wing = new THREE.Group();
+      wing.name = 'collegeWing';
 
       const entranceWidth = 40;
 

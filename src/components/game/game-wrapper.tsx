@@ -644,7 +644,12 @@ export default function GameWrapper() {
                     if (controlModeRef.current === 'car') {
                         velocityRef.current.multiplyScalar(0.5); 
                     }
-                } else {
+                } else if (collider.name.includes('Wing')) {
+                    if (controlModeRef.current === 'car') {
+                        velocityRef.current.multiplyScalar(0.5);
+                    }
+                }
+                else {
                     velocityRef.current.multiplyScalar(0.1); 
                     const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
                     player.position.add(knockback.multiplyScalar(delta * 60));
