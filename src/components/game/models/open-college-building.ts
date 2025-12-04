@@ -139,6 +139,7 @@ export function createOpenCollegeBuilding() {
   const stage = new THREE.Mesh(stageGeom, stageMaterial);
   stage.position.y = stageHeight / 2;
   stage.position.z = 180; // Center the stage in the courtyard
+  stage.rotation.y = Math.PI / 2;
   stage.castShadow = true;
   stage.receiveShadow = true;
   college.add(stage);
