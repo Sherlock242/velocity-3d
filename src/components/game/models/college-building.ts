@@ -15,7 +15,7 @@ export function createCollegeBuilding() {
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
   const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x55903c });
 
-  function createWing(width: number, depth: number, isFrontWing = false) {
+  function createWing(width: number, depth: number, hasEntrance = false) {
       const wing = new THREE.Group();
 
       const entranceWidth = 40;
@@ -25,7 +25,7 @@ export function createCollegeBuilding() {
           const floorGroup = new THREE.Group();
           floorGroup.position.y = yPos;
 
-          if(isFrontWing && i === 0) {
+          if(hasEntrance && i === 0) {
               // Create the wall with a hole for the entrance using two separate wall segments
               const wallSegmentWidth = (width - entranceWidth) / 2;
               
@@ -108,7 +108,7 @@ export function createCollegeBuilding() {
   college.name = 'collegeBuilding';
 
   // Back Wing (long)
-  const backWing = createWing(longWingWidth, wingDepth);
+  const backWing = createWing(longWingWidth, wingDepth, true);
   backWing.position.z = -shortWingWidth / 2;
   backWing.name = 'backWing';
   college.add(backWing);
