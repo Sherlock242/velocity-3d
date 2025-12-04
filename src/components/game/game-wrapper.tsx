@@ -76,6 +76,7 @@ export default function GameWrapper() {
   const staticCollidersRef = React.useRef<THREE.Group[]>([]);
   const rampMeshRef = React.useRef<THREE.Mesh>();
   const rampWallsRef = React.useRef<THREE.Group>();
+  const collegeRampMeshRef = React.useRef<THREE.Mesh>();
 
 
   // Control mode refs
@@ -256,7 +257,7 @@ export default function GameWrapper() {
     }
     
     // --- GRID TRACK & SCENERY ---
-    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef);
+    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef);
     scene.add(gridGroup);
     
     // Find the water jet to animate it
@@ -524,11 +525,7 @@ export default function GameWrapper() {
 
         // --- RAMP PHYSICS ---
         // Combine university ramp and potential college ramp for raycasting
-        const rampObjects = [rampMeshRef.current].filter(Boolean) as THREE.Mesh[];
-        const collegeRampObject = staticCollidersRef.current.find(c => c.name === 'collegeRamp');
-        if (collegeRampObject) {
-            rampObjects.push(collegeRampObject as THREE.Mesh);
-        }
+        const rampObjects = [rampMeshRef.current, collegeRampMeshRef.current].filter(Boolean) as THREE.Mesh[];
 
         if (rampObjects.length > 0) {
             raycaster.set(
@@ -916,5 +913,3 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
-
-    

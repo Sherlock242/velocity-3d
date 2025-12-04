@@ -10,12 +10,14 @@ type Sector10Props = {
   cellCenterX: number;
   cellCenterZ: number;
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
+  collegeRampMeshRef: MutableRefObject<THREE.Mesh | undefined>;
 };
 
 export function createSector10({
   cellCenterX,
   cellCenterZ,
   staticCollidersRef,
+  collegeRampMeshRef,
 }: Sector10Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -170,16 +172,10 @@ export function createSector10({
   campusContainer.add(scoutsBuilding);
   staticCollidersRef.current.push(scoutsBuilding);
 
-  // Find the ramp and add it to colliders
-  const collegeRamp = college.getObjectByName('collegeRamp');
-  if (collegeRamp) {
-    const rampCollider = new THREE.Group();
-    rampCollider.add(collegeRamp.clone());
-    college.localToWorld(rampCollider.position.copy(collegeRamp.position));
-    rampCollider.rotation.copy(college.rotation);
-    rampCollider.scale.copy(college.scale);
-    rampCollider.name = 'collegeRamp'; // Make sure the group has the name for raycasting
-    staticCollidersRef.current.push(rampCollider);
+  // Find the ramp and pass its mesh reference up
+  const collegeRampObject = college.getObjectByName('collegeRamp');
+  if (collegeRampObject instanceof THREE.Mesh) {
+      collegeRampMeshRef.current = collegeRampObject;
   }
 
 

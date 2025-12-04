@@ -20,7 +20,8 @@ export function createGridAndScenery(
   walkingNpcsRef: MutableRefObject<THREE.Group[]>,
   staticCollidersRef: MutableRefObject<THREE.Group[]>,
   rampMeshRef: MutableRefObject<THREE.Mesh | undefined>,
-  rampWallsRef: MutableRefObject<THREE.Group | undefined>
+  rampWallsRef: MutableRefObject<THREE.Group | undefined>,
+  collegeRampMeshRef: MutableRefObject<THREE.Mesh | undefined>
 ) {
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
@@ -113,7 +114,7 @@ export function createGridAndScenery(
 
       switch (sectorNumber) {
         case 10:
-          sectorGroup = createSector10({ cellCenterX, cellCenterZ, staticCollidersRef });
+          sectorGroup = createSector10({ cellCenterX, cellCenterZ, staticCollidersRef, collegeRampMeshRef });
           break;
         case 14:
           sectorGroup = createSector14({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef, rampWallsRef });
