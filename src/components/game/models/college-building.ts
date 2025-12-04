@@ -61,7 +61,7 @@ export function createCollegeBuilding() {
     return latticeGroup;
   }
 
-  function createWing(width: number, depth: number, hasEntrance = false, entranceOffset = 0, addInternalRamp = false) {
+  function createWing(width: number, depth: number, hasEntrance = false, entranceOffset = 0) {
       const wing = new THREE.Group();
       wing.name = 'collegeWing';
 
@@ -173,29 +173,13 @@ export function createCollegeBuilding() {
           wing.add(floorGroup);
       }
 
-      if (addInternalRamp) {
-        const rampMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
-        const rampWidth = 20;
-        const rampLength = 60;
-        const rampRise = floorHeight;
-        
-        const internalRamp = new THREE.Mesh(
-            new THREE.BoxGeometry(rampWidth, 2, rampLength),
-            rampMaterial
-        );
-        internalRamp.position.set(0, rampRise * 2 + rampRise / 2, 0);
-        internalRamp.rotation.y = Math.PI / 2;
-        internalRamp.rotation.x = -Math.atan(rampRise / rampLength);
-        wing.add(internalRamp);
-      }
-
       return wing;
   }
   
   const college = new THREE.Group();
   college.name = 'collegeBuilding';
 
-  const backWing = createWing(longWingWidth, wingDepth, true, -110, true);
+  const backWing = createWing(longWingWidth, wingDepth, true, -110);
   backWing.position.z = -shortWingWidth / 2;
   backWing.name = 'backWing';
   college.add(backWing);
@@ -270,8 +254,20 @@ export function createCollegeBuilding() {
   platform2.position.x = platform1.position.x;
   platform2.position.z = platform1.position.z - rampLength - platformDepth;
 
+  // Ramp from 2nd to 3rd floor
+  const ramp3 = ramp1.clone();
+  ramp3.position.y = rampRise * 2 + rampRise / 2;
+  ramp3.position.x = 0;
+  ramp3.position.z = platform2.position.z - rampLength / 2 - platformDepth / 2;
+  ramp3.rotation.x = -Math.atan(rampRise / rampLength);
+
+  // Platform on the 3rd floor
+  const platform3 = platform1.clone();
+  platform3.position.y = rampRise * 3;
+  platform3.position.z = platform2.position.z - rampLength - platformDepth;
+
   const walkableRampGroup = new THREE.Group();
-  walkableRampGroup.add(ramp1, platform1, ramp2, platform2);
+  walkableRampGroup.add(ramp1, platform1, ramp2, platform2, ramp3, platform3);
   walkableRampGroup.name = 'collegeRamp';
   
   rampGroup.add(walkableRampGroup);
