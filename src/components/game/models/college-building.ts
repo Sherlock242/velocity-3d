@@ -217,7 +217,7 @@ export function createCollegeBuilding() {
 
   // Main Walkway Structure
   const walkwayGroup = new THREE.Group();
-  walkwayGroup.position.x = 50;
+  walkwayGroup.position.x = 70;
   courtyard.add(walkwayGroup);
   
   const rampWidth = 20;
