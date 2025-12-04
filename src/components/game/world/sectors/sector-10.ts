@@ -114,25 +114,25 @@ export function createSector10({
   const pathToCollegeGeom = new THREE.PlaneGeometry(pathToCollegeLength, pathWidth);
   const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
   pathToCollege.rotation.x = -Math.PI / 2;
-  pathToCollege.position.set(gateXPosition - (pathToCollegeLength / 2) - 10, 0.15, frontWallZ + entranceRoadLength - pathWidth / 2 + 6);
+  pathToCollege.position.set(gateXPosition - (pathToCollegeLength / 2) - 10, 0.15, frontWallZ + entranceRoadLength - pathWidth / 2);
   campusContainer.add(pathToCollege);
   
   const corridorLength = 40;
   const corridorGeom = new THREE.PlaneGeometry(pathWidth, corridorLength);
   const corridor = new THREE.Mesh(corridorGeom, pathMaterial);
   corridor.rotation.x = -Math.PI / 2;
-  corridor.position.set(gateXPosition - pathToCollegeLength - 20, 0.15, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2));
+  corridor.position.set(gateXPosition - pathToCollegeLength - 20, 0.15, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + 10);
   campusContainer.add(corridor);
 
 
   // --- Sheds for Walkways ---
   const pathToCollegeShed = createWalkwayShed(pathToCollegeLength, pathWidth);
-  pathToCollegeShed.position.set(gateXPosition - (pathToCollegeLength / 2) - 10, 0, frontWallZ + entranceRoadLength - pathWidth / 2 + 6);
+  pathToCollegeShed.position.set(gateXPosition - (pathToCollegeLength / 2) - 10, 0, frontWallZ + entranceRoadLength - pathWidth / 2);
   pathToCollegeShed.rotation.y = Math.PI / 2;
   campusContainer.add(pathToCollegeShed);
 
   const corridorShed = createWalkwayShed(corridorLength, pathWidth);
-  corridorShed.position.set(gateXPosition - pathToCollegeLength - 20, 0, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2));
+  corridorShed.position.set(gateXPosition - pathToCollegeLength - 20, 0, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + 10);
   campusContainer.add(corridorShed);
 
 
