@@ -73,77 +73,39 @@ export function createCollegeBuilding() {
           const floorGroup = new THREE.Group();
           floorGroup.position.y = yPos;
 
-          if(hasEntrance && i === 0) {
+          if(i === 0) {
               const wallSegmentWidthLeft = (width - entranceWidth) / 2 + entranceOffset;
               const wallSegmentWidthRight = (width - entranceWidth) / 2 - entranceOffset;
               
               // Inner red wall
-              const leftInnerWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth / 2);
-              const leftInnerWall = new THREE.Mesh(leftInnerWallGeom, redMaterial);
-              leftInnerWall.position.x = -(width / 2) + (wallSegmentWidthLeft / 2);
-              leftInnerWall.position.y = floorHeight / 2;
-              leftInnerWall.position.z = -depth / 4;
-              floorGroup.add(leftInnerWall);
-              
-              const rightInnerWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth / 2);
-              const rightInnerWall = new THREE.Mesh(rightInnerWallGeom, redMaterial);
-              rightInnerWall.position.x = (width / 2) - (wallSegmentWidthRight / 2);
-              rightInnerWall.position.y = floorHeight / 2;
-              rightInnerWall.position.z = -depth / 4;
-              floorGroup.add(rightInnerWall);
-
-              // Outer cream wall
-              const leftOuterWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth / 2);
-              const leftOuterWall = new THREE.Mesh(leftOuterWallGeom, creamYellowMaterial);
-              leftOuterWall.position.x = -(width / 2) + (wallSegmentWidthLeft / 2);
-              leftOuterWall.position.y = floorHeight / 2;
-              leftOuterWall.position.z = depth / 4;
-              floorGroup.add(leftOuterWall);
-              
-              const rightOuterWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth / 2);
-              const rightOuterWall = new THREE.Mesh(rightOuterWallGeom, creamYellowMaterial);
-              rightOuterWall.position.x = (width / 2) - (wallSegmentWidthRight / 2);
-              rightOuterWall.position.y = floorHeight / 2;
-              rightOuterWall.position.z = depth / 4;
-              floorGroup.add(rightOuterWall);
-
-              const corridorGeom = new THREE.PlaneGeometry(width, depth);
-              const corridorMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-              const corridor = new THREE.Mesh(corridorGeom, corridorMaterial);
-              corridor.rotation.x = -Math.PI / 2;
-              corridor.position.y = 0.2;
-              floorGroup.add(corridor);
+              if(hasEntrance) {
+                  const leftInnerWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth / 2);
+                  const leftInnerWall = new THREE.Mesh(leftInnerWallGeom, redMaterial);
+                  leftInnerWall.position.x = -(width / 2) + (wallSegmentWidthLeft / 2);
+                  leftInnerWall.position.y = floorHeight / 2;
+                  leftInnerWall.position.z = -depth / 4;
+                  floorGroup.add(leftInnerWall);
+                  
+                  const rightInnerWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth / 2);
+                  const rightInnerWall = new THREE.Mesh(rightInnerWallGeom, redMaterial);
+                  rightInnerWall.position.x = (width / 2) - (wallSegmentWidthRight / 2);
+                  rightInnerWall.position.y = floorHeight / 2;
+                  rightInnerWall.position.z = -depth / 4;
+                  floorGroup.add(rightInnerWall);
+              } else {
+                  const innerWallGeom = new THREE.BoxGeometry(width, floorHeight, depth / 2);
+                  const innerWall = new THREE.Mesh(innerWallGeom, redMaterial);
+                  innerWall.position.y = floorHeight / 2;
+                  innerWall.position.z = -depth / 4;
+                  floorGroup.add(innerWall);
+              }
 
           } else {
-            if (i === 0) {
-                // Ground floor: Create inner and outer halves separately
-                const innerWallGeom = new THREE.BoxGeometry(width, floorHeight, depth / 2);
-                const innerWall = new THREE.Mesh(innerWallGeom, redMaterial);
-                innerWall.position.y = floorHeight / 2;
-                innerWall.position.z = -depth / 4; // Position it as the inner half
-                floorGroup.add(innerWall);
-
-                const outerWallGeom = new THREE.BoxGeometry(width, floorHeight, depth / 2);
-                const outerWall = new THREE.Mesh(outerWallGeom, creamYellowMaterial);
-                outerWall.position.y = floorHeight / 2;
-                outerWall.position.z = depth / 4;
-                floorGroup.add(outerWall);
-
-                // Add corridor floor
-                const corridorGeom = new THREE.PlaneGeometry(width, depth);
-                const corridorMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-                const corridor = new THREE.Mesh(corridorGeom, corridorMaterial);
-                corridor.rotation.x = -Math.PI / 2;
-                corridor.position.y = 0.2;
-                floorGroup.add(corridor);
-
-            } else {
-                // Upper floors: Create the full solid wall
-                const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
-                const mainWall = new THREE.Mesh(wallGeom, redMaterial);
-                mainWall.position.y = floorHeight / 2;
-                floorGroup.add(mainWall);
-            }
+              // Upper floors: Create the full solid wall
+              const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
+              const mainWall = new THREE.Mesh(wallGeom, redMaterial);
+              mainWall.position.y = floorHeight / 2;
+              floorGroup.add(mainWall);
           }
 
           const numPillars = Math.floor(width / 20);
