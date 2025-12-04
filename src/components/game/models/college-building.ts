@@ -217,8 +217,8 @@ export function createCollegeBuilding() {
   const rampGroup = new THREE.Group();
   rampGroup.name = 'collegeRamp';
 
-  const rampWidth = 20;
-  const rampLength = 100;
+  const rampWidth = longWingWidth - wingDepth;
+  const rampLength = shortWingWidth - wingDepth;
   const rampThickness = 2;
   
   const rampGeom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
@@ -227,13 +227,10 @@ export function createCollegeBuilding() {
   
   const rampRise = floorHeight;
   ramp.position.y = rampRise / 2;
-  ramp.position.z = -rampLength / 2;
   ramp.rotation.x = -Math.atan(rampRise / rampLength);
   
   rampGroup.add(ramp);
-  // Position ramp near the main entrance of the back wing
-  const entranceCenter = -110;
-  rampGroup.position.set(entranceCenter, 0.2, -shortWingWidth / 2 + wingDepth / 2 + 5); 
+  rampGroup.position.set(0, 0.2, 0); 
   courtyard.add(rampGroup);
 
   collegeGroup.add(college);
