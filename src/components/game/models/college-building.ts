@@ -76,16 +76,18 @@ export function createCollegeBuilding() {
               const wallSegmentWidthLeft = (width - entranceWidth) / 2 + entranceOffset;
               const wallSegmentWidthRight = (width - entranceWidth) / 2 - entranceOffset;
               
-              const leftWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth);
+              const leftWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth / 2);
               const leftWall = new THREE.Mesh(leftWallGeom, redMaterial);
               leftWall.position.x = -(width / 2) + (wallSegmentWidthLeft / 2);
               leftWall.position.y = floorHeight / 2;
+              leftWall.position.z = -depth / 4;
               floorGroup.add(leftWall);
 
-              const rightWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth);
+              const rightWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth / 2);
               const rightWall = new THREE.Mesh(rightWallGeom, redMaterial);
               rightWall.position.x = (width / 2) - (wallSegmentWidthRight / 2);
               rightWall.position.y = floorHeight / 2;
+              rightWall.position.z = -depth / 4;
               floorGroup.add(rightWall);
 
               const lintelGeom = new THREE.BoxGeometry(entranceWidth, 5, depth);
@@ -113,6 +115,15 @@ export function createCollegeBuilding() {
                 innerWall.position.y = floorHeight / 2;
                 innerWall.position.z = -depth / 4; // Position it as the inner half
                 floorGroup.add(innerWall);
+
+                // Add corridor floor
+                const corridorGeom = new THREE.PlaneGeometry(width, depth);
+                const corridorMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+                const corridor = new THREE.Mesh(corridorGeom, corridorMaterial);
+                corridor.rotation.x = -Math.PI / 2;
+                corridor.position.y = 0.2;
+                floorGroup.add(corridor);
+
             } else {
                 // Upper floors: Create the full solid wall
                 const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
