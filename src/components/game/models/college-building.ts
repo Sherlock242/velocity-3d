@@ -215,68 +215,6 @@ export function createCollegeBuilding() {
   lawn.rotation.x = -Math.PI / 2;
   courtyard.add(lawn);
 
-  // Main Walkway Structure
-  const walkwayGroup = new THREE.Group();
-  walkwayGroup.position.x = 70;
-  courtyard.add(walkwayGroup);
-  
-  const rampWidth = 20;
-  const rampLength = (shortWingWidth - wingDepth - rampWidth) / 2;
-
-  // Function to create a ramped walkway level
-  function createWalkwayLevel(startFloor: number, endFloor: number) {
-      const levelGroup = new THREE.Group();
-      const startY = startFloor * floorHeight;
-      const endY = endFloor * floorHeight;
-
-      const rampGeom = new THREE.BoxGeometry(rampWidth, 0.5, rampLength);
-      const floorGeom = new THREE.BoxGeometry(rampWidth, 0.5, rampWidth);
-      const walkwayMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc });
-
-      // Ramp 1 (from startFloor down to center)
-      const ramp1 = new THREE.Mesh(rampGeom, walkwayMaterial);
-      ramp1.position.set(0, (startY + endY) / 2, -(rampWidth / 2 + rampLength / 2));
-      ramp1.rotation.x = -Math.atan((startY - endY) / rampLength);
-      levelGroup.add(ramp1);
-
-      // Center Platform
-      const centerPlatform = new THREE.Mesh(floorGeom, walkwayMaterial);
-      centerPlatform.position.y = endY;
-      levelGroup.add(centerPlatform);
-      
-      // Ramp 2 (from center down to endFloor)
-      const ramp2 = new THREE.Mesh(rampGeom, walkwayMaterial);
-      ramp2.position.set(0, (startY + endY) / 2, (rampWidth / 2 + rampLength / 2));
-      ramp2.rotation.x = Math.atan((startY - endY) / rampLength);
-      levelGroup.add(ramp2);
-      
-      // Support pillars
-      const pillarGeom = new THREE.CylinderGeometry(1, 1, endY, 12);
-      const pillarMaterial = new THREE.MeshStandardMaterial({ color: redMaterial.color });
-      
-      const pillar1 = new THREE.Mesh(pillarGeom, pillarMaterial);
-      pillar1.position.set(-rampWidth/2 + 2, endY/2, 0);
-      levelGroup.add(pillar1);
-      
-      const pillar2 = new THREE.Mesh(pillarGeom, pillarMaterial);
-      pillar2.position.set(rampWidth/2 - 2, endY/2, 0);
-      levelGroup.add(pillar2);
-
-      return levelGroup;
-  }
-  
-  // Create and place the walkway levels
-  const walkway3to2 = createWalkwayLevel(3, 2);
-  walkwayGroup.add(walkway3to2);
-
-  const walkway4to3 = createWalkwayLevel(4, 3);
-  walkwayGroup.add(walkway4to3);
-
-  // Add green shed roof to the top level
-  const shed = createWalkwayShed(shortWingWidth - wingDepth, rampWidth, false);
-  shed.position.y = 4 * floorHeight;
-  walkwayGroup.add(shed);
-
   // Big circular brick structure
   const bigCircleRadius = 40;
   const bigCircleHeight = 10;
