@@ -226,21 +226,35 @@ export function createCollegeBuilding() {
 
   // Ramp from ground to 1st floor
   const rampGeom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
-  const ramp = new THREE.Mesh(rampGeom, rampMaterial);
-  ramp.position.y = rampRise / 2;
-  ramp.position.z = -platformDepth / 2;
-  ramp.rotation.x = -Math.atan(rampRise / rampLength);
+  const ramp1 = new THREE.Mesh(rampGeom, rampMaterial);
+  ramp1.position.y = rampRise / 2;
+  ramp1.position.z = -platformDepth / 2;
+  ramp1.rotation.x = -Math.atan(rampRise / rampLength);
   
   // Platform on the 1st floor
-  const platformGeom = new THREE.BoxGeometry(platformWidth, rampThickness, platformDepth);
-  const platform = new THREE.Mesh(platformGeom, rampMaterial);
-  platform.position.y = rampRise;
-  platform.position.x = (platformWidth - rampWidth) / 2;
-  platform.position.z = (shortWingWidth - wingDepth) / 2 - platformDepth / 2;
+  const platform1Geom = new THREE.BoxGeometry(platformWidth, rampThickness, platformDepth);
+  const platform1 = new THREE.Mesh(platform1Geom, rampMaterial);
+  platform1.position.y = rampRise;
+  platform1.position.x = (platformWidth - rampWidth) / 2;
+  platform1.position.z = (shortWingWidth - wingDepth) / 2 - platformDepth / 2;
+
+  // Ramp from 1st to 2nd floor
+  const ramp2Geom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
+  const ramp2 = new THREE.Mesh(ramp2Geom, rampMaterial);
+  ramp2.position.y = rampRise + rampRise / 2;
+  ramp2.position.x = platformWidth - rampWidth;
+  ramp2.position.z = platform1.position.z - rampLength / 2 - platformDepth / 2;
+  ramp2.rotation.x = Math.atan(rampRise / rampLength);
+
+  // Platform on the 2nd floor
+  const platform2Geom = new THREE.BoxGeometry(platformWidth, rampThickness, platformDepth);
+  const platform2 = new THREE.Mesh(platform2Geom, rampMaterial);
+  platform2.position.y = rampRise * 2;
+  platform2.position.x = platform1.position.x;
+  platform2.position.z = platform1.position.z - rampLength - platformDepth;
 
   const walkableRampGroup = new THREE.Group();
-  walkableRampGroup.add(ramp);
-  walkableRampGroup.add(platform);
+  walkableRampGroup.add(ramp1, platform1, ramp2, platform2);
   walkableRampGroup.name = 'collegeRamp';
   
   rampGroup.add(walkableRampGroup);
