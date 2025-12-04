@@ -15,24 +15,39 @@ export function createCollegeBuilding() {
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
 
   function createLattice(width: number, height: number) {
-    const latticeGroup = new THREE.Group();
+    const latticeShape = new THREE.Shape();
+    latticeShape.moveTo(-width / 2, -height / 2);
+    latticeShape.lineTo(width / 2, -height / 2);
+    latticeShape.lineTo(width / 2, height / 2);
+    latticeShape.lineTo(-width / 2, height / 2);
+    latticeShape.lineTo(-width / 2, -height / 2);
+
+    const holeSize = 1.5;
+    const holeSpacingX = 4;
+    const holeSpacingY = 2.5;
+    const numHolesX = Math.floor(width / holeSpacingX);
+    const numHolesY = Math.floor(height / holeSpacingY);
+
+    for (let i = 0; i < numHolesY; i++) {
+      for (let j = 0; j < numHolesX; j++) {
+        const holePath = new THREE.Path();
+        const x = -width / 2 + (j + 0.5) * holeSpacingX;
+        const y = -height / 2 + (i + 0.5) * holeSpacingY;
+        holePath.moveTo(x - holeSize / 2, y - holeSize / 2);
+        holePath.lineTo(x + holeSize / 2, y - holeSize / 2);
+        holePath.lineTo(x + holeSize / 2, y + holeSize / 2);
+        holePath.lineTo(x - holeSize / 2, y + holeSize / 2);
+        holePath.closePath();
+        latticeShape.holes.push(holePath);
+      }
+    }
+
+    const extrudeSettings = { depth: 1, bevelEnabled: false };
+    const latticeGeometry = new THREE.ExtrudeGeometry(latticeShape, extrudeSettings);
     const latticeMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000, side: THREE.DoubleSide });
+    const latticeMesh = new THREE.Mesh(latticeGeometry, latticeMaterial);
 
-    const numBars = 5;
-    for (let i = 1; i <= numBars; i++) {
-        const hBarGeom = new THREE.BoxGeometry(width, 0.5, 0.5);
-        const hBar = new THREE.Mesh(hBarGeom, latticeMaterial);
-        hBar.position.y = -height/2 + (i * height / (numBars + 1));
-        latticeGroup.add(hBar);
-    }
-     for (let i = 1; i <= Math.floor(width / 5); i++) {
-        const vBarGeom = new THREE.BoxGeometry(0.5, height, 0.5);
-        const vBar = new THREE.Mesh(vBarGeom, latticeMaterial);
-        vBar.position.x = -width/2 + (i * width / (Math.floor(width / 5) + 1));
-        latticeGroup.add(vBar);
-    }
-
-    return latticeGroup;
+    return latticeMesh;
   }
 
   function createWing(width: number, depth: number, hasEntrance = false, entranceOffset = 0) {
