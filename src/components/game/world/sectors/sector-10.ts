@@ -110,29 +110,29 @@ export function createSector10({
 
   // Walkable Path to College
   const pathWidth = 15;
-  const pathToCollegeLength = 100;
+  const pathToCollegeLength = 105;
   const pathToCollegeGeom = new THREE.PlaneGeometry(pathToCollegeLength, pathWidth);
   const pathToCollege = new THREE.Mesh(pathToCollegeGeom, pathMaterial);
   pathToCollege.rotation.x = -Math.PI / 2;
-  pathToCollege.position.set(gateXPosition - (pathToCollegeLength / 2) - 10, 0.15, frontWallZ + entranceRoadLength - pathWidth / 2);
+  pathToCollege.position.set(gateXPosition - (pathToCollegeLength / 2) - 12.5, 0.15, frontWallZ + entranceRoadLength - pathWidth / 2 - 6);
   campusContainer.add(pathToCollege);
   
   const corridorLength = 40;
   const corridorGeom = new THREE.PlaneGeometry(pathWidth, corridorLength);
   const corridor = new THREE.Mesh(corridorGeom, pathMaterial);
   corridor.rotation.x = -Math.PI / 2;
-  corridor.position.set(gateXPosition - pathToCollegeLength - 20, 0.15, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + 10);
+  corridor.position.set(gateXPosition - 100 - 20, 0.15, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + 4);
   campusContainer.add(corridor);
 
 
   // --- Sheds for Walkways ---
   const pathToCollegeShed = createWalkwayShed(pathToCollegeLength, pathWidth);
-  pathToCollegeShed.position.set(gateXPosition - (pathToCollegeLength / 2) - 10, 0, frontWallZ + entranceRoadLength - pathWidth / 2);
+  pathToCollegeShed.position.set(gateXPosition - (pathToCollegeLength / 2) - 12.5, 0, frontWallZ + entranceRoadLength - pathWidth / 2 - 6);
   pathToCollegeShed.rotation.y = Math.PI / 2;
   campusContainer.add(pathToCollegeShed);
 
   const corridorShed = createWalkwayShed(corridorLength, pathWidth);
-  corridorShed.position.set(gateXPosition - pathToCollegeLength - 20, 0, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + 10);
+  corridorShed.position.set(gateXPosition - 100 - 20, 0, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + 4);
   campusContainer.add(corridorShed);
 
 
