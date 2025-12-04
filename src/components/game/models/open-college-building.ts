@@ -42,6 +42,46 @@ export function createOpenCollegeBuilding() {
       return latticeGroup;
   }
 
+  function createFacade(width: number, depth: number, sections: number, isFront: boolean) {
+    const facadeGroup = new THREE.Group();
+    const zOffset = isFront ? depth / 2 : -depth / 2;
+
+    for (let j = 0; j < sections; j++) {
+        const sectionGroup = new THREE.Group();
+        const sectionWidth = width / sections;
+        const xPos = -width / 2 + j * sectionWidth + sectionWidth / 2;
+        sectionGroup.position.x = xPos;
+        
+        // Vertical Pillar
+        const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
+        const pillar = new THREE.Mesh(pillarGeom, whiteMaterial);
+        pillar.position.set(-sectionWidth/2 + 2, floorHeight / 2, zOffset + (isFront ? 2 : -2));
+        sectionGroup.add(pillar);
+
+        // Create facade sections
+        const latticeHeight = floorHeight * 0.25;
+        const panelHeight = floorHeight * 0.4;
+
+        const topLattice = createLattice(sectionWidth - 4, latticeHeight);
+        topLattice.position.set(0, floorHeight - latticeHeight / 2, zOffset + (isFront ? 1 : -1));
+        sectionGroup.add(topLattice);
+
+        const greenPanel = new THREE.Mesh(
+            new THREE.BoxGeometry(sectionWidth - 4, panelHeight, 2),
+            greenMaterial
+        );
+        greenPanel.position.set(0, floorHeight - latticeHeight - panelHeight / 2, zOffset);
+        sectionGroup.add(greenPanel);
+        
+        const bottomLattice = createLattice(sectionWidth - 4, latticeHeight);
+        bottomLattice.position.set(0, floorHeight - latticeHeight * 2 - panelHeight - latticeHeight/2, zOffset + (isFront ? 1 : -1));
+        sectionGroup.add(bottomLattice);
+
+        facadeGroup.add(sectionGroup);
+    }
+    return facadeGroup;
+  }
+
   function createWing(width: number, depth: number) {
       const wing = new THREE.Group();
       wing.name = 'collegeWing';
@@ -54,53 +94,28 @@ export function createOpenCollegeBuilding() {
           const floorGroup = new THREE.Group();
           floorGroup.position.y = yPos;
 
-          // Back wall remains solid
-          const backWallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
-          const backWall = new THREE.Mesh(backWallGeom, whiteMaterial);
-          backWall.position.y = floorHeight / 2;
-          floorGroup.add(backWall);
+          // Main wall structure
+          const mainWallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
+          const mainWall = new THREE.Mesh(mainWallGeom, whiteMaterial);
+          mainWall.position.y = floorHeight / 2;
+          floorGroup.add(mainWall);
 
-          // Create the detailed facade
-          for (let j = 0; j < numSections; j++) {
-              const sectionGroup = new THREE.Group();
-              const xPos = -width / 2 + j * sectionWidth + sectionWidth / 2;
-              sectionGroup.position.x = xPos;
-              
-              // Vertical Pillar
-              const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
-              const pillar = new THREE.Mesh(pillarGeom, whiteMaterial);
-              pillar.position.set(-sectionWidth/2 + 2, floorHeight / 2, depth / 2 + 2);
-              sectionGroup.add(pillar);
+          // Window behind facade
+          const windowHeight = floorHeight * 0.6;
+          const windowGeom = new THREE.PlaneGeometry(width - 4, windowHeight);
+          const frontWindow = new THREE.Mesh(windowGeom, windowMaterial);
+          frontWindow.position.set(0, floorHeight / 2, depth/2 + 0.1);
+          const backWindow = new THREE.Mesh(windowGeom, windowMaterial);
+          backWindow.position.set(0, floorHeight / 2, -depth/2 - 0.1);
+          backWindow.rotation.y = Math.PI;
+          floorGroup.add(frontWindow, backWindow);
 
-              // Create facade sections
-              const latticeHeight = floorHeight * 0.25;
-              const panelHeight = floorHeight * 0.4;
-              const windowHeight = floorHeight * 0.6;
+          // Create the detailed facades
+          const frontFacade = createFacade(width, depth, numSections, true);
+          floorGroup.add(frontFacade);
 
-              const topLattice = createLattice(sectionWidth - 4, latticeHeight);
-              topLattice.position.set(0, floorHeight - latticeHeight / 2, depth/2 + 1);
-              sectionGroup.add(topLattice);
-
-              const greenPanel = new THREE.Mesh(
-                  new THREE.BoxGeometry(sectionWidth - 4, panelHeight, 2),
-                  greenMaterial
-              );
-              greenPanel.position.set(0, floorHeight - latticeHeight - panelHeight / 2, depth/2);
-              sectionGroup.add(greenPanel);
-              
-              const bottomLattice = createLattice(sectionWidth - 4, latticeHeight);
-              bottomLattice.position.set(0, floorHeight - latticeHeight * 2 - panelHeight - latticeHeight/2, depth/2 + 1);
-              sectionGroup.add(bottomLattice);
-
-              // Window behind
-              const windowGeom = new THREE.PlaneGeometry(sectionWidth - 4, windowHeight);
-              const window = new THREE.Mesh(windowGeom, windowMaterial);
-              window.position.set(0, floorHeight / 2, -depth/2 + 1);
-              sectionGroup.add(window);
-
-
-              floorGroup.add(sectionGroup);
-          }
+          const backFacade = createFacade(width, depth, numSections, false);
+          floorGroup.add(backFacade);
 
           wing.add(floorGroup);
       }
