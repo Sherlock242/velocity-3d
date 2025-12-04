@@ -51,13 +51,6 @@ export function createCollegeBuilding() {
     const latticeMesh = new THREE.Mesh(latticeGeometry, latticeMaterial);
     latticeMesh.position.z = 0.5; // Move lattice forward
     latticeGroup.add(latticeMesh);
-    
-    // Yellow backplate to show through the holes
-    const backplateGeom = new THREE.BoxGeometry(width, height, 1);
-    const backplate = new THREE.Mesh(backplateGeom, yellowMaterial);
-    backplate.position.z = -0.5; // Position it behind the lattice
-    latticeGroup.add(backplate);
-
 
     return latticeGroup;
   }
@@ -146,6 +139,16 @@ export function createCollegeBuilding() {
               const xPos = -width/2 + 10 + j * 20;
               pillar.position.set(xPos, floorHeight / 2, -depth / 2 - 2);
               floorGroup.add(pillar);
+
+               // Add latticework between pillars on upper floors (back side)
+               if (i > 0 && j < numPillars -1) {
+                const nextPillarXPos = -width/2 + 10 + (j + 1) * 20;
+                const latticeWidth = nextPillarXPos - xPos - 4;
+                const latticeHeight = floorHeight * 0.4;
+                const lattice = createLattice(latticeWidth, latticeHeight);
+                lattice.position.set(xPos + 2 + latticeWidth / 2, floorHeight / 2, -depth / 2 - 2);
+                floorGroup.add(lattice);
+            }
           }
           wing.add(floorGroup);
       }
