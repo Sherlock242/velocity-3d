@@ -4,6 +4,7 @@ import { createCollegeBuilding } from '../../models/college-building';
 import { createOpenCollegeBuilding } from '../../models/open-college-building';
 import { createScoutsBuilding } from '../../models/scouts-building';
 import { createWalkwayShed } from '../../models/walkway-shed';
+import { createPunjabUniversity } from '../../models/punjab-university';
 import type { MutableRefObject } from 'react';
 
 type Sector10Props = {
@@ -115,7 +116,7 @@ export function createSector10({
   const shedCorridorLength = 40;
 
 
-  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2 - 7 + 5;
+  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2 - 7;
   const pathToCollegeShedX = gateXPosition - (shedPathToCollegeLength / 2) - 12.5;
   const pathToCollegeWalkwayX = gateXPosition - (walkwayPathToCollegeLength / 2) - 12.5;
 
@@ -175,6 +176,16 @@ export function createSector10({
   scoutsBuilding.rotation.y = Math.PI;
   campusContainer.add(scoutsBuilding);
   staticCollidersRef.current.push(scoutsBuilding);
+
+  // --- Mini Punjab University ---
+  const { university: miniUniversity, library: miniLibrary } = createPunjabUniversity();
+  const walkwayEndPositionX = pathToCollegeWalkwayX - walkwayPathToCollegeLength / 2 - 50;
+  const walkwayEndPositionZ = pathToCollegeZ;
+  miniUniversity.scale.set(0.2, 0.2, 0.2);
+  miniUniversity.position.set(walkwayEndPositionX, 0, walkwayEndPositionZ);
+  miniUniversity.rotation.y = -Math.PI / 2;
+  campusContainer.add(miniUniversity);
+  staticCollidersRef.current.push(miniLibrary);
 
 
   sectorGroup.add(campusContainer);
