@@ -136,13 +136,6 @@ export function createCollegeBuilding() {
   rightWing.name = 'rightWing';
   college.add(rightWing);
 
-  // Courtyard Ground
-  const groundGeom = new THREE.PlaneGeometry(courtyardWidth, courtyardDepth);
-  const ground = new THREE.Mesh(groundGeom, groundMaterial);
-  ground.rotation.x = -Math.PI / 2;
-  ground.position.y = 0.15;
-  college.add(ground);
-
   // Small structure in courtyard
   const hutGeom = new THREE.CylinderGeometry(15, 15, 10, 8);
   const hutMaterial = new THREE.MeshStandardMaterial({color: 0x9a3e3e});
