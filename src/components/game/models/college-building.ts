@@ -180,7 +180,7 @@ export function createCollegeBuilding() {
   const college = new THREE.Group();
   college.name = 'collegeBuilding';
 
-  const backWing = createWing(longWingWidth, wingDepth, true, -130);
+  const backWing = createWing(longWingWidth, wingDepth, true, -110);
   backWing.position.z = -shortWingWidth / 2;
   backWing.name = 'backWing';
   college.add(backWing);
