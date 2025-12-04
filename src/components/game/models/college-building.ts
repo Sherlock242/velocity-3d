@@ -15,6 +15,9 @@ export function createCollegeBuilding() {
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
 
   function createLattice(width: number, height: number) {
+    const latticeGroup = new THREE.Group();
+
+    // The main red lattice with holes
     const latticeShape = new THREE.Shape();
     latticeShape.moveTo(-width / 2, -height / 2);
     latticeShape.lineTo(width / 2, -height / 2);
@@ -46,8 +49,17 @@ export function createCollegeBuilding() {
     const latticeGeometry = new THREE.ExtrudeGeometry(latticeShape, extrudeSettings);
     const latticeMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000, side: THREE.DoubleSide });
     const latticeMesh = new THREE.Mesh(latticeGeometry, latticeMaterial);
+    latticeMesh.position.z = 0.5; // Move lattice forward
+    latticeGroup.add(latticeMesh);
+    
+    // Yellow backplate to show through the holes
+    const backplateGeom = new THREE.BoxGeometry(width, height, 1);
+    const backplate = new THREE.Mesh(backplateGeom, yellowMaterial);
+    backplate.position.z = -0.5; // Position it behind the lattice
+    latticeGroup.add(backplate);
 
-    return latticeMesh;
+
+    return latticeGroup;
   }
 
   function createWing(width: number, depth: number, hasEntrance = false, entranceOffset = 0) {
