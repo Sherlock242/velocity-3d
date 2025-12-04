@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { createCollegeBuilding } from '../../models/college-building';
 import { createOpenCollegeBuilding } from '../../models/open-college-building';
 import { createScoutsBuilding } from '../../models/scouts-building';
+import { createWalkwayShed } from '../../models/walkway-shed';
 import type { MutableRefObject } from 'react';
 
 type Sector10Props = {
@@ -122,6 +123,16 @@ export function createSector10({
   corridor.rotation.x = -Math.PI / 2;
   corridor.position.set(gateXPosition - pathToCollegeLength, 0.15, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) );
   campusContainer.add(corridor);
+
+  // --- Sheds for Walkways ---
+  const pathToCollegeShed = createWalkwayShed(pathToCollegeLength, pathWidth);
+  pathToCollegeShed.position.set(gateXPosition - (pathToCollegeLength / 2), 0, frontWallZ + entranceRoadLength - pathWidth / 2);
+  pathToCollegeShed.rotation.y = Math.PI / 2;
+  campusContainer.add(pathToCollegeShed);
+
+  const corridorShed = createWalkwayShed(corridorLength, pathWidth);
+  corridorShed.position.set(gateXPosition - pathToCollegeLength, 0, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2));
+  campusContainer.add(corridorShed);
 
 
   // --- College Building ---
