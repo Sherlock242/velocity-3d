@@ -107,12 +107,12 @@ export function createCollegeBuilding() {
 
           } else {
             if (i === 0) {
-                // Ground floor: Only create outer half of the wall
-                const outerWallGeom = new THREE.BoxGeometry(width, floorHeight, depth / 2);
-                const outerWall = new THREE.Mesh(outerWallGeom, redMaterial);
-                outerWall.position.y = floorHeight / 2;
-                outerWall.position.z = depth / 4; // Position it as the outer half
-                floorGroup.add(outerWall);
+                // Ground floor: Only create inner half of the wall
+                const innerWallGeom = new THREE.BoxGeometry(width, floorHeight, depth / 2);
+                const innerWall = new THREE.Mesh(innerWallGeom, redMaterial);
+                innerWall.position.y = floorHeight / 2;
+                innerWall.position.z = -depth / 4; // Position it as the inner half
+                floorGroup.add(innerWall);
             } else {
                 // Upper floors: Create the full solid wall
                 const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
