@@ -262,21 +262,27 @@ export function createCollegeBuilding() {
       courtyard.add(tree);
   }
 
-  // Path with bushes
-  const pathGeom = new THREE.PlaneGeometry(15, 180);
-  const pathMaterial = new THREE.MeshStandardMaterial({ color: 0xbbbbbb });
-  const path = new THREE.Mesh(pathGeom, pathMaterial);
-  path.rotation.x = -Math.PI / 2;
-  path.position.set(-160, 0.2, 0);
-  courtyard.add(path);
+  // --- RAMP ---
+  const rampGroup = new THREE.Group();
+  rampGroup.name = 'collegeRamp';
+
+  const rampWidth = 20;
+  const rampLength = 100;
+  const rampThickness = 2;
   
-  for (let i = 0; i < 8; i++) {
-      const bushGeom = new THREE.SphereGeometry(5, 8, 6);
-      const bush = new THREE.Mesh(bushGeom, bushMaterial);
-      bush.position.set(-175, 2.5, -70 + i * 20);
-      courtyard.add(bush);
-  }
+  const rampGeom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
+  const rampMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
+  const ramp = new THREE.Mesh(rampGeom, rampMaterial);
   
+  const rampRise = floorHeight;
+  ramp.position.y = rampRise / 2;
+  ramp.position.z = -rampLength / 2;
+  ramp.rotation.x = -Math.atan(rampRise / rampLength);
+  
+  rampGroup.add(ramp);
+  rampGroup.position.set(0, 0.2, 50); // Position inside courtyard
+  courtyard.add(rampGroup);
+
   collegeGroup.add(college);
 
   collegeGroup.rotation.y = Math.PI;
