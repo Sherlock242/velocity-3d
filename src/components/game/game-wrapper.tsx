@@ -22,20 +22,12 @@ import type { TrackTheme } from '@/lib/types';
 import Hud from './hud';
 import AiOpponentGenerator from './ai-opponent-generator';
 import LargeMap from './large-map';
-import { handleAssessPenalty } from '@/app/actions';
-import { createTransformer, updateTransformerAnimation } from './models/transformer';
-import { createObstacleCar } from './models/obstacle-car';
-import { createGridAndScenery } from './world/track';
-import {
-  TRACK_THEMES,
-  GRID_SIZE,
-  CELL_SIZE,
-  TOTAL_GRID_WIDTH,
-  NUM_OBSTACLES,
-  ROAD_WIDTH,
-} from '@/lib/game-constants';
-
-type ControlMode = 'car' | 'person';
+import { TRACK_THEMES, GRID_SIZE, TOTAL_GRID_WIDTH } from '@/lib/game-constants';
+import { useGameState, type GameState } from './core/state';
+import { setupScene } from './core/scene';
+import { initAudio, initAudioOnInteraction } from './core/audio';
+import { createWorld } from './core/world';
+import { createAnimationLoop } from './core/animation';
 
 export default function GameWrapper() {
   const mountRef = React.useRef<HTMLDivElement>(null);
@@ -47,59 +39,19 @@ export default function GameWrapper() {
     time: 0,
     carPosition: { x: 0, z: 0 },
     carRotation: 0,
-    controlMode: 'car' as ControlMode,
+    controlMode: 'car' as 'car' | 'person',
   });
   const [isReady, setIsReady] = React.useState(false);
   const [isLargeMapOpen, setIsLargeMapOpen] = React.useState(false);
   const [topDownSector, setTopDownSector] = React.useState<number | null>(null);
 
-
-  // Game state refs
-  const gameTimeRef = React.useRef(0);
-  const playerRef = React.useRef<THREE.Group>();
-  const velocityRef = React.useRef(new THREE.Vector3());
-  const inputRef = React.useRef({
-    forward: false,
-    backward: false,
-    left: false,
-    right: false,
-  });
-  const wasOffTrackRef = React.useRef(false);
-  const penaltyCheckCooldownRef = React.useRef(false);
-  const animationFrameIdRef = React.useRef<number>();
-  const obstacleCarsRef = React.useRef<THREE.Group[]>([]);
-  const tireMarksRef = React.useRef<
-    { mesh: THREE.Mesh; createdAt: number }[]
-  >([]);
-  const fountainWaterJetRef = React.useRef<THREE.Mesh>();
-  const walkingNpcsRef = React.useRef<THREE.Group[]>([]);
-  const staticCollidersRef = React.useRef<THREE.Group[]>([]);
-  const rampMeshRef = React.useRef<THREE.Mesh>();
-  const rampWallsRef = React.useRef<THREE.Group>();
-  const collegeRampMeshRef = React.useRef<THREE.Mesh>();
-
-
-  // Control mode refs
-  const controlModeRef = React.useRef<ControlMode>('car');
-  const isTransformingRef = React.useRef(false);
-  const transformProgressRef = React.useRef(0);
-
-
-  // Camera control refs
-  const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 2, -6));
-
-  // Audio refs
-  const audioListenerRef = React.useRef<THREE.AudioListener>();
-  const engineSoundRef = React.useRef<THREE.Audio>();
-  const skidSoundRef = React.useRef<THREE.Audio>();
-  const audioInitializedRef = React.useRef(false);
-  const engineOscillatorRef = React.useRef<OscillatorNode>();
+  const gameState = useGameState();
 
   const handleToggleControlMode = () => {
-    if (isTransformingRef.current) return;
-    isTransformingRef.current = true;
-    controlModeRef.current = controlModeRef.current === 'car' ? 'person' : 'car';
-    setGameData(prev => ({ ...prev, controlMode: controlModeRef.current }));
+    if (gameState.isTransformingRef.current) return;
+    gameState.isTransformingRef.current = true;
+    gameState.controlModeRef.current = gameState.controlModeRef.current === 'car' ? 'person' : 'car';
+    setGameData(prev => ({ ...prev, controlMode: gameState.controlModeRef.current }));
   };
 
   const handleSectorSelect = (sector: number) => {
@@ -117,176 +69,24 @@ export default function GameWrapper() {
       return;
     }
 
-    // --- BASIC SETUP ---
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      5000 // Increased view distance for grid
-    );
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    mountNode.appendChild(renderer.domElement);
-    const raycaster = new THREE.Raycaster();
+    const { scene, camera, renderer, audioListener } = setupScene(mountNode);
+    gameState.audioListenerRef.current = audioListener;
 
-    // --- AUDIO SETUP ---
-    const listener = new THREE.AudioListener();
-    camera.add(listener);
-    audioListenerRef.current = listener;
-
-    const initAudio = () => {
-      if (audioInitializedRef.current) return;
-      if (listener.context.state === 'suspended') {
-        listener.context.resume();
-      }
-      audioInitializedRef.current = true;
-
-      // Engine sound
-      const engineSound = new THREE.Audio(listener);
-      const oscillator = listener.context.createOscillator();
-      oscillator.type = 'sawtooth';
-      oscillator.frequency.value = 50;
-      oscillator.start();
-      engineSound.setNodeSource(oscillator);
-      engineSound.setVolume(0);
-      engineSoundRef.current = engineSound;
-      engineOscillatorRef.current = oscillator;
-
-      // Skid sound
-      const skidSound = new THREE.Audio(listener);
-      const skidNoiseBuffer = listener.context.createBuffer(1, listener.context.sampleRate * 2, listener.context.sampleRate);
-      const output = skidNoiseBuffer.getChannelData(0);
-      for (let i = 0; i < output.length; i++) {
-        output[i] = Math.random() * 2 - 1;
-      }
-      skidSound.setBuffer(skidNoiseBuffer);
-      skidSound.setLoop(true);
-      skidSound.setVolume(0);
-      skidSound.play();
-      skidSoundRef.current = skidSound;
-    };
-
-
-    // --- SKYBOX ---
-    const skyGeometry = new THREE.BoxGeometry(4900, 4900, 4900);
-    const vertexShader = `
-      varying vec3 vWorldPosition;
-      void main() {
-        vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
-        vWorldPosition = worldPosition.xyz;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-      }
-    `;
-    const fragmentShader = `
-      uniform vec3 topColor;
-      uniform vec3 middleColor;
-      uniform vec3 bottomColor;
-      uniform float offset;
-      uniform float exponent;
-      varying vec3 vWorldPosition;
-      void main() {
-        float h = normalize(vWorldPosition).y;
-        vec3 finalColor;
-        if (h > 0.0) {
-          finalColor = mix(middleColor, topColor, pow(h, exponent));
-        } else {
-          finalColor = mix(middleColor, bottomColor, pow(-h, exponent));
-        }
-        gl_FragColor = vec4(finalColor, 1.0);
-      }
-    `;
-    const uniforms = {
-      topColor: { value: new THREE.Color(0x0077ff) },
-      middleColor: { value: new THREE.Color(0xffe488) },
-      bottomColor: { value: new THREE.Color(0xff8c00) },
-      offset: { value: 0 },
-      exponent: { value: 0.6 }
-    };
-    const skyMaterial = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms,
-      side: THREE.BackSide
-    });
-    const sky = new THREE.Mesh(skyGeometry, skyMaterial);
-    scene.add(sky);
-
-    // --- LIGHTING ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
-    dirLight.position.set(50, 100, 50);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
-
-    // --- PLAYER TRANSFORMER ---
-    const transformer = createTransformer();
-    const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    // Position on main road of Sector 10
-    transformer.position.x = 2000; // Road at the edge of sector 10
-    transformer.position.z = -1000;
-    scene.add(transformer);
-    playerRef.current = transformer;
-
-    camera.position.set(0, 5, -10);
-    camera.lookAt(transformer.position);
-
-
-    // --- OBSTACLE CARS ---
-    for (let i = 0; i < NUM_OBSTACLES; i++) {
-      const obstacle = createObstacleCar();
-      // Position them randomly on the grid
-      const onVerticalRoad = Math.random() > 0.5;
-      const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
-      const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
-      const halfGrid = TOTAL_GRID_WIDTH / 2;
-
-      if (onVerticalRoad) {
-        obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
-        obstacle.position.z = positionOnRoad;
-        obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI; // Face north or south
-      } else {
-        obstacle.position.x = positionOnRoad;
-        obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
-        obstacle.rotation.y = Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2; // Face east or west
-      }
-      scene.add(obstacle);
-      obstacleCarsRef.current.push(obstacle);
-    }
-    
-    // --- GRID TRACK & SCENERY ---
-    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef);
-    scene.add(gridGroup);
-    
-    // Find the water jet to animate it
-    const waterJet = gridGroup.getObjectByName('fountainWaterJet');
-    if (waterJet instanceof THREE.Mesh) {
-      fountainWaterJetRef.current = waterJet;
-    }
-
-
-    // --- EVENT LISTENERS ---
     const onKeyDown = (e: KeyboardEvent) => {
-      initAudio();
-      if (e.key === 'ArrowUp' || e.key === 'w') inputRef.current.forward = true;
-      if (e.key === 'ArrowDown' || e.key === 's')
-        inputRef.current.backward = true;
-      if (e.key === 'ArrowLeft' || e.key === 'a') inputRef.current.left = true;
-      if (e.key === 'ArrowRight' || e.key === 'd')
-        inputRef.current.right = true;
+      initAudio(gameState);
+      if (e.key === 'ArrowUp' || e.key === 'w') gameState.inputRef.current.forward = true;
+      if (e.key === 'ArrowDown' || e.key === 's') gameState.inputRef.current.backward = true;
+      if (e.key === 'ArrowLeft' || e.key === 'a') gameState.inputRef.current.left = true;
+      if (e.key === 'ArrowRight' || e.key === 'd') gameState.inputRef.current.right = true;
       if (e.key === 'e' || e.key === 'E') {
         handleToggleControlMode();
       }
     };
     const onKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowUp' || e.key === 'w') inputRef.current.forward = false;
-      if (e.key === 'ArrowDown' || e.key === 's')
-        inputRef.current.backward = false;
-      if (e.key === 'ArrowLeft' || e.key === 'a') inputRef.current.left = false;
-      if (e.key === 'ArrowRight' || e.key === 'd')
-        inputRef.current.right = false;
+      if (e.key === 'ArrowUp' || e.key === 'w') gameState.inputRef.current.forward = false;
+      if (e.key === 'ArrowDown' || e.key === 's') gameState.inputRef.current.backward = false;
+      if (e.key === 'ArrowLeft' || e.key === 'a') gameState.inputRef.current.left = false;
+      if (e.key === 'ArrowRight' || e.key === 'd') gameState.inputRef.current.right = false;
     };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
@@ -298,455 +98,32 @@ export default function GameWrapper() {
     window.addEventListener('resize', onResize);
 
 
-    const clock = new THREE.Clock();
-    let currentSteerAngle = 0;
+    createWorld(scene, theme, gameState);
 
-    const tireMarkGeometry = new THREE.PlaneGeometry(1, 4); // Small plane for a skid mark segment
-    const tireMarkMaterial = new THREE.MeshStandardMaterial({
-      color: 0x000000,
-      transparent: true,
-      opacity: 0.6,
-    });
-    tireMarkMaterial.polygonOffset = true;
-    tireMarkMaterial.polygonOffsetFactor = -1;
-
-    let previousSector = -1;
-
-    const animate = () => {
-      animationFrameIdRef.current = requestAnimationFrame(animate);
-      const player = playerRef.current;
-      const delta = clock.getDelta();
-      const now = clock.elapsedTime;
-      gameTimeRef.current += delta;
-      
-      // Animate fountain
-      if (fountainWaterJetRef.current) {
-        const waterJet = fountainWaterJetRef.current;
-        const time = now * 5;
-        waterJet.scale.y = Math.sin(time) * 0.5 + 0.5; // Scale from 0 to 1
-        waterJet.position.y = (waterJet.scale.y * 10) / 2 + 8; // Adjust position based on scale
-      }
-
-
-      // Handle transformation animation
-      if (isTransformingRef.current) {
-        const transformSpeed = 2; // speed of transformation
-        if (controlModeRef.current === 'person') {
-          transformProgressRef.current += delta * transformSpeed;
-          if (transformProgressRef.current >= 1) {
-            transformProgressRef.current = 1;
-            isTransformingRef.current = false;
-          }
-        } else { // transforming to car
-          transformProgressRef.current -= delta * transformSpeed;
-          if (transformProgressRef.current <= 0) {
-            transformProgressRef.current = 0;
-            isTransformingRef.current = false;
-          }
-        }
-      }
-      
-      // Update animation (transformation and walking)
-      if (player) {
-        updateTransformerAnimation(
-          player as THREE.Group & { userData: { parts: any } },
-          transformProgressRef.current,
-          velocityRef.current.length(),
-          now
-        );
-      }
-
-      // --- NPC WALKING ---
-      walkingNpcsRef.current.forEach(npc => {
-        const npcSpeed = 1;
-        const walkSpeed = 5;
-        const npcParts = npc.userData.parts;
-        const walkAmount = Math.sin(now * walkSpeed + npc.uuid.charCodeAt(0));
-        npcParts.leftLeg.rotation.x = walkAmount * 0.5;
-        npcParts.rightLeg.rotation.x = -walkAmount * 0.5;
-        npcParts.leftArm.rotation.x = -walkAmount * 0.4;
-        npcParts.rightArm.rotation.x = walkAmount * 0.4;
-
-        // Move forward
-        const forward = new THREE.Vector3();
-        npc.getWorldDirection(forward);
-        npc.position.add(forward.multiplyScalar(npcSpeed * delta));
-        
-        // Simple random turning
-        if (Math.random() < 0.01) {
-          npc.rotation.y += (Math.random() - 0.5) * Math.PI / 2;
-        }
-
-        // Boundary check within their cell
-        const bounds = npc.userData.bounds as THREE.Box2;
-        if (!bounds.containsPoint(new THREE.Vector2(npc.position.x, npc.position.z))) {
-            // If outside, turn around
-            npc.rotation.y += Math.PI;
-        }
-      });
-
-
-      if (player && controlModeRef.current === 'car' && !isTransformingRef.current) {
-        const maxSpeed = 100;
-        const acceleration = 80;
-        const turnSpeed = 2;
-        const friction = 0.98;
-
-        // --- MOVEMENT LOGIC ---
-        let targetSteerDirection = 0;
-        if (inputRef.current.left) targetSteerDirection = 1;
-        if (inputRef.current.right) targetSteerDirection = -1;
-
-        // Smoothly interpolate steering
-        currentSteerAngle += (targetSteerDirection - currentSteerAngle) * 0.1;
-
-        if (velocityRef.current.length() > 0.1) {
-          const turnAmount = currentSteerAngle * turnSpeed * delta;
-          player.rotation.y += turnAmount;
-        }
-
-        const forward = new THREE.Vector3();
-        player.getWorldDirection(forward);
-
-        let moveDirection = 0;
-        if (inputRef.current.forward) moveDirection = 1;
-        if (inputRef.current.backward) moveDirection = -1;
-
-        if (moveDirection !== 0) {
-          const force = forward.multiplyScalar(
-            acceleration * moveDirection * delta
-          );
-          velocityRef.current.add(force);
-        }
-
-        velocityRef.current.multiplyScalar(friction);
-
-        if (velocityRef.current.length() > maxSpeed) {
-          velocityRef.current.normalize().multiplyScalar(maxSpeed);
-        }
-
-        player.position.add(velocityRef.current.clone().multiplyScalar(delta));
-        
-        // --- AUDIO & TIRE MARK LOGIC ---
-        const speedRatio = velocityRef.current.length() / maxSpeed;
-        const steerRatio = Math.abs(currentSteerAngle);
-        const isDrifting = speedRatio > 0.2 && steerRatio > 0.5;
-
-        if (audioInitializedRef.current && engineSoundRef.current && skidSoundRef.current && engineOscillatorRef.current) {
-          engineSoundRef.current.setVolume(speedRatio * 0.1);
-          engineOscillatorRef.current.frequency.setTargetAtTime(50 + speedRatio * 150, audioListenerRef.current!.context.currentTime, 0.01);
-
-          const skidVolume = isDrifting ? speedRatio * steerRatio * 0.2 : 0;
-          skidSoundRef.current.setVolume(skidVolume);
-        }
-        
-        // Add tire marks when drifting
-        if (isDrifting) {
-          const tireMark = new THREE.Mesh(
-            tireMarkGeometry,
-            tireMarkMaterial.clone()
-          );
-          tireMark.position.copy(player.position);
-          tireMark.position.y = 0.13; // Just above the road markings
-          tireMark.quaternion.copy(player.quaternion);
-          tireMark.rotateX(-Math.PI / 2);
-          scene.add(tireMark);
-          tireMarksRef.current.push({ mesh: tireMark, createdAt: now });
-        }
-        
-        // Rotate wheels (part of transformer model)
-        const wheels = player.userData.parts.wheels;
-        const wheelRotationSpeed = velocityRef.current.length() * delta * 2;
-        wheels.forEach((wheel: THREE.Mesh) => {
-          wheel.rotation.x -= wheelRotationSpeed;
-        });
-        // Steer front wheels
-        const maxSteerAngle = 0.4;
-        const wheelSteerAngle = currentSteerAngle * maxSteerAngle;
-        wheels[0].rotation.y = wheelSteerAngle;
-        wheels[1].rotation.y = wheelSteerAngle;
-
-
-      } else if (player && controlModeRef.current === 'person' && !isTransformingRef.current) {
-         // --- PERSON MOVEMENT LOGIC ---
-        const personMoveSpeed = 50;
-        const personTurnSpeed = 3;
-        const maxPersonSpeed = 50 / 3.6; // 50 km/h in m/s
-        velocityRef.current.multiplyScalar(0.95); // friction
-
-        if (inputRef.current.forward) {
-          const forward = new THREE.Vector3();
-          player.getWorldDirection(forward);
-          velocityRef.current.add(forward.multiplyScalar(personMoveSpeed * delta));
-        }
-        if (inputRef.current.backward) {
-          const forward = new THREE.Vector3();
-          player.getWorldDirection(forward);
-          velocityRef.current.add(forward.multiplyScalar(-personMoveSpeed * delta * 0.5));
-        }
-        if (inputRef.current.left) {
-          player.rotation.y += personTurnSpeed * delta;
-        }
-        if (inputRef.current.right) {
-          player.rotation.y -= personTurnSpeed * delta;
-        }
-        
-        if (velocityRef.current.length() > maxPersonSpeed) {
-          velocityRef.current.normalize().multiplyScalar(maxPersonSpeed);
-        }
-
-        player.position.add(velocityRef.current.clone().multiplyScalar(delta));
-
-        // Stop sounds
-        if (audioInitializedRef.current && engineSoundRef.current && skidSoundRef.current) {
-            engineSoundRef.current.setVolume(0);
-            skidSoundRef.current.setVolume(0);
-        }
-      }
-      
-      // Fade and remove old tire marks
-      tireMarksRef.current = tireMarksRef.current.filter(mark => {
-        const age = now - mark.createdAt;
-        const FADE_DURATION = 2; // seconds
-        if (age > FADE_DURATION) {
-          scene.remove(mark.mesh);
-          (mark.mesh.material as THREE.Material).dispose();
-          mark.mesh.geometry.dispose();
-          return false;
-        } else {
-          (mark.mesh.material as THREE.MeshStandardMaterial).opacity = 0.6 * (1 - age / FADE_DURATION);
-          return true;
-        }
-      });
-
-      if (player) {
-        const playerHeight = controlModeRef.current === 'car' ? 0.6 : 2.0;
-        let onRamp = false;
-
-        // --- RAMP PHYSICS ---
-        // Combine university ramp and potential college ramp for raycasting
-        const rampObjects = [rampMeshRef.current, collegeRampMeshRef.current].filter(Boolean) as THREE.Mesh[];
-
-        if (rampObjects.length > 0) {
-            raycaster.set(
-                player.position.clone().add(new THREE.Vector3(0, 10, 0)),
-                new THREE.Vector3(0, -1, 0)
-            );
-            const intersects = raycaster.intersectObjects(rampObjects, true);
-
-            const closestIntersect = intersects
-                .filter(i => i.point.y < player.position.y + 1)
-                .sort((a, b) => a.distance - b.distance)[0];
-
-            if (closestIntersect) {
-                const groundY = closestIntersect.point.y;
-                if (player.position.y < groundY + playerHeight + 0.5) { // add a buffer
-                    player.position.y = groundY + playerHeight;
-                    onRamp = true;
-                }
-            }
-        }
-    
-        // --- GRAVITY ---
-        if (!onRamp) {
-            if (player.position.y > playerHeight) {
-                velocityRef.current.y -= 9.8 * delta * 2; // Gravity
-                player.position.y += velocityRef.current.y * delta;
-            }
-            if (player.position.y < playerHeight) {
-                player.position.y = playerHeight; // Clamp to ground
-                velocityRef.current.y = 0;
-            }
-        } else {
-            // If on ramp, reset vertical velocity
-            velocityRef.current.y = 0;
-        }
-
-        // --- SECTOR-BASED LOGIC ---
-        const playerGridX = Math.floor((player.position.x + halfTotalWidth) / CELL_SIZE);
-        const playerGridZ = Math.floor((player.position.z + halfTotalWidth) / CELL_SIZE);
-        const currentSector = playerGridZ * GRID_SIZE + playerGridX + 1;
-
-        if (currentSector !== previousSector) {
-          if (rampWallsRef.current) {
-            rampWallsRef.current.visible = currentSector !== 14;
-          }
-          previousSector = currentSector;
-        }
-
-        // --- BOUNDARY CHECKS ---
-        const halfGrid = TOTAL_GRID_WIDTH / 2;
-        player.position.x = Math.max(-halfGrid, Math.min(halfGrid, player.position.x));
-        player.position.z = Math.max(-halfGrid, Math.min(halfGrid, player.position.z));
-
-
-        // --- CAMERA LOGIC ---
-        if (topDownSector !== null) {
-          const row = Math.floor((topDownSector - 1) / GRID_SIZE);
-          const col = (topDownSector - 1) % GRID_SIZE;
-          const sectorCenterX = col * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-          const sectorCenterZ = row * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-          camera.position.set(sectorCenterX, 1200, sectorCenterZ);
-          camera.lookAt(sectorCenterX, 0, sectorCenterZ);
-        } else {
-          const offset = cameraOffsetRef.current.clone();
-          if (controlModeRef.current === 'person') {
-            offset.set(0, 4, -8); // Camera higher and further for person
-          } else {
-            offset.set(0, 2, -6);
-          }
-
-          offset.applyQuaternion(player.quaternion);
-          offset.add(player.position);
-
-          camera.position.copy(offset);
-          camera.lookAt(player.position);
-        }
-
-        // --- COLLISION DETECTION ---
-        const playerBox = new THREE.Box3().setFromObject(player);
-
-        // Dynamic Obstacles (Cars)
-        const obstacleSpeed = 50;
-        obstacleCarsRef.current.forEach((obstacle) => {
-          const forward = new THREE.Vector3();
-          obstacle.getWorldDirection(forward);
-          obstacle.position.add(forward.multiplyScalar(obstacleSpeed * delta));
-
-          // Reset obstacle if it's outside the grid
-          if (
-            Math.abs(obstacle.position.x) > halfGrid + CELL_SIZE ||
-            Math.abs(obstacle.position.z) > halfGrid + CELL_SIZE
-          ) {
-            const onVerticalRoad = Math.random() > 0.5;
-            const roadIndex = Math.floor(Math.random() * (GRID_SIZE + 1));
-            const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
-
-            if (onVerticalRoad) {
-              obstacle.position.x = roadIndex * CELL_SIZE - halfGrid;
-              obstacle.position.z = positionOnRoad;
-              obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI;
-            } else {
-              obstacle.position.x = positionOnRoad;
-              obstacle.position.z = roadIndex * CELL_SIZE - halfGrid;
-              obstacle.rotation.y =
-                Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2;
-            }
-          }
-
-          const obstacleBox = new THREE.Box3().setFromObject(obstacle);
-          if (playerBox.intersectsBox(obstacleBox)) {
-            velocityRef.current.multiplyScalar(0.1); // Drastic slowdown
-            const knockback = player.position.clone().sub(obstacle.position).normalize().multiplyScalar(5);
-            player.position.add(knockback.multiplyScalar(delta * 60)); // Apply knockback
-          }
-        });
-        
-        // Static Colliders (Buildings)
-        staticCollidersRef.current.forEach((collider) => {
-            if (collider.name === 'collegeRamp') return; // Skip ramp for this collision check
-            const colliderBox = new THREE.Box3().setFromObject(collider);
-            if (playerBox.intersectsBox(colliderBox)) {
-                if (collider.name.toLowerCase().includes('college')) {
-                    if (controlModeRef.current === 'car') {
-                        velocityRef.current.multiplyScalar(0.5); 
-                    }
-                } else if (collider.name === 'LibraryBuilding') {
-                    if (controlModeRef.current === 'car') {
-                        velocityRef.current.multiplyScalar(0.5);
-                    }
-                }
-                else {
-                    velocityRef.current.multiplyScalar(0.1); 
-                    const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
-                    player.position.add(knockback.multiplyScalar(delta * 60));
-                }
-            }
-        });
-
-
-        // Penalty check for off-road
-        const currentRoadXIndex = Math.round(
-          (player.position.x + halfGrid) / CELL_SIZE
-        );
-        const currentRoadZIndex = Math.round(
-          (player.position.z + halfGrid) / CELL_SIZE
-        );
-        const nearestRoadX = currentRoadXIndex * CELL_SIZE - halfGrid;
-        const nearestRoadZ = currentRoadZIndex * CELL_SIZE - halfGrid;
-
-        const onHorizontalRoad =
-          Math.abs(player.position.z - nearestRoadZ) < ROAD_WIDTH / 2;
-        const onVerticalRoad =
-          Math.abs(player.position.x - nearestRoadX) < ROAD_WIDTH / 2;
-        const isOffTrack = !(onHorizontalRoad || onVerticalRoad);
-
-        if (isOffTrack) {
-          wasOffTrackRef.current = true;
-          velocityRef.current.multiplyScalar(0.95); // Slow down off-track
-        }
-        if (
-          !isOffTrack &&
-          wasOffTrackRef.current &&
-          !penaltyCheckCooldownRef.current
-        ) {
-          wasOffTrackRef.current = false;
-          penaltyCheckCooldownRef.current = true;
-          setTimeout(() => (penaltyCheckCooldownRef.current = false), 5000); // 5 sec cooldown
-
-          handleAssessPenalty({
-            lapTime: gameTimeRef.current,
-            trackPosition: 'Player went off-road and returned.',
-            speed: velocityRef.current.length() * 3.6, // m/s to km/h approx
-          }).then((result) => {
-            if (result.penalty) {
-              toast({
-                title: 'Penalty Assessed!',
-                description: `${result.penalty} - ${result.reason}`,
-                variant: 'destructive',
-              });
-            }
-          });
-        }
-
-        // Update HUD
-        setGameData(prev => ({
-          ...prev,
-          speed: velocityRef.current.length() * 3.6, // Convert m/s to km/h
-          time: gameTimeRef.current,
-          carPosition: { x: player.position.x, z: player.position.z },
-          carRotation: player.rotation.y,
-        }));
-      }
-
-      renderer.render(scene, camera);
-    };
+    const animate = createAnimationLoop(scene, camera, renderer, gameState, toast, setGameData, topDownSector);
 
     animate();
     setIsReady(true);
 
     // --- CLEANUP ---
     return () => {
-      if (animationFrameIdRef.current) {
-        cancelAnimationFrame(animationFrameIdRef.current);
+      if (gameState.animationFrameIdRef.current) {
+        cancelAnimationFrame(gameState.animationFrameIdRef.current);
       }
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
 
       if (mountNode) {
-        // Check if the renderer's DOM element is still a child of mountNode
         if (renderer.domElement.parentNode === mountNode) {
           mountNode.removeChild(renderer.domElement);
         }
       }
 
-      // Dispose of Three.js objects
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           if (object.geometry) object.geometry.dispose();
           if (object.material) {
-            // If material is an array
             if (Array.isArray(object.material)) {
               object.material.forEach((material) => material.dispose());
             } else {
@@ -756,60 +133,24 @@ export default function GameWrapper() {
         }
       });
       renderer.dispose();
-      obstacleCarsRef.current = [];
-      walkingNpcsRef.current = [];
-      staticCollidersRef.current = [];
-      tireMarksRef.current.forEach(mark => {
+      
+      gameState.obstacleCarsRef.current = [];
+      gameState.walkingNpcsRef.current = [];
+      gameState.staticCollidersRef.current = [];
+      
+      gameState.tireMarksRef.current.forEach(mark => {
         scene.remove(mark.mesh);
         (mark.mesh.material as THREE.Material).dispose();
         mark.mesh.geometry.dispose();
       });
-      tireMarksRef.current = [];
-      if (audioListenerRef.current?.context.state !== 'closed') {
-        audioListenerRef.current?.context.close();
+      gameState.tireMarksRef.current = [];
+
+      if (gameState.audioListenerRef.current?.context.state !== 'closed') {
+        gameState.audioListenerRef.current?.context.close();
       }
-      audioInitializedRef.current = false;
+      gameState.audioInitializedRef.current = false;
     };
   }, [theme, toast, topDownSector]);
-
-  const initAudioOnInteraction = () => {
-    if (!audioInitializedRef.current && audioListenerRef.current) {
-      if (audioListenerRef.current.context.state === 'suspended') {
-        audioListenerRef.current.context.resume().then(() => {
-           // Call initAudio only after context is resumed
-           if (!audioInitializedRef.current) {
-             // This is a reconstruction of the initAudio function's logic
-              const listener = audioListenerRef.current!;
-              audioInitializedRef.current = true;
-
-              // Engine sound
-              const engineSound = new THREE.Audio(listener);
-              const oscillator = listener.context.createOscillator();
-              oscillator.type = 'sawtooth';
-              oscillator.frequency.value = 50;
-              oscillator.start();
-              engineSound.setNodeSource(oscillator);
-              engineSound.setVolume(0);
-              engineSoundRef.current = engineSound;
-              engineOscillatorRef.current = oscillator;
-
-              // Skid sound
-              const skidSound = new THREE.Audio(listener);
-              const skidNoiseBuffer = listener.context.createBuffer(1, listener.context.sampleRate * 2, listener.context.sampleRate);
-              const output = skidNoiseBuffer.getChannelData(0);
-              for (let i = 0; i < output.length; i++) {
-                output[i] = Math.random() * 2 - 1;
-              }
-              skidSound.setBuffer(skidNoiseBuffer);
-              skidSound.setLoop(true);
-              skidSound.setVolume(0);
-              skidSound.play();
-              skidSoundRef.current = skidSound;
-           }
-        });
-      }
-    }
-  };
 
 
   return (
@@ -891,20 +232,20 @@ export default function GameWrapper() {
             onToggleControlMode={handleToggleControlMode}
             onToggleLargeMap={() => setIsLargeMapOpen(prev => !prev)}
             onAcceleratorPress={() => {
-              initAudioOnInteraction();
-              inputRef.current.forward = true;
+              initAudioOnInteraction(gameState);
+              gameState.inputRef.current.forward = true;
             }}
-            onAcceleratorRelease={() => (inputRef.current.forward = false)}
+            onAcceleratorRelease={() => (gameState.inputRef.current.forward = false)}
             onSteerLeftPress={() => {
-              initAudioOnInteraction();
-              inputRef.current.left = true;
+              initAudioOnInteraction(gameState);
+              gameState.inputRef.current.left = true;
             }}
-            onSteerLeftRelease={() => (inputRef.current.left = false)}
+            onSteerLeftRelease={() => (gameState.inputRef.current.left = false)}
             onSteerRightPress={() => {
-              initAudioOnInteraction();
-              inputRef.current.right = true;
+              initAudioOnInteraction(gameState);
+              gameState.inputRef.current.right = true;
             }}
-            onSteerRightRelease={() => (inputRef.current.right = false)}
+            onSteerRightRelease={() => (gameState.inputRef.current.right = false)}
             isTopDownView={topDownSector !== null}
             onExitTopDownView={() => setTopDownSector(null)}
           />
