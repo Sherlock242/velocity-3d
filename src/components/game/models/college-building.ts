@@ -15,7 +15,7 @@ export function createCollegeBuilding() {
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
   const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x55903c });
 
-  function createWing(width: number, depth: number, hasEntrance = false) {
+  function createWing(width: number, depth: number, hasEntrance = false, entranceOffset = 0) {
       const wing = new THREE.Group();
       wing.name = 'collegeWing';
 
@@ -28,19 +28,20 @@ export function createCollegeBuilding() {
 
           if(hasEntrance && i === 0) {
               // Create the wall with a hole for the entrance using two separate wall segments
-              const wallSegmentWidth = (width - entranceWidth) / 2;
+              const wallSegmentWidthLeft = (width - entranceWidth) / 2 + entranceOffset;
+              const wallSegmentWidthRight = (width - entranceWidth) / 2 - entranceOffset;
               
               // Left segment
-              const leftWallGeom = new THREE.BoxGeometry(wallSegmentWidth, floorHeight, depth);
+              const leftWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth);
               const leftWall = new THREE.Mesh(leftWallGeom, redMaterial);
-              leftWall.position.x = -(entranceWidth / 2 + wallSegmentWidth / 2);
+              leftWall.position.x = -(width / 2) + (wallSegmentWidthLeft / 2);
               leftWall.position.y = floorHeight / 2;
               floorGroup.add(leftWall);
 
               // Right segment
-              const rightWallGeom = new THREE.BoxGeometry(wallSegmentWidth, floorHeight, depth);
+              const rightWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth);
               const rightWall = new THREE.Mesh(rightWallGeom, redMaterial);
-              rightWall.position.x = entranceWidth / 2 + wallSegmentWidth / 2;
+              rightWall.position.x = (width / 2) - (wallSegmentWidthRight / 2);
               rightWall.position.y = floorHeight / 2;
               floorGroup.add(rightWall);
 
@@ -48,6 +49,7 @@ export function createCollegeBuilding() {
               const lintelGeom = new THREE.BoxGeometry(entranceWidth, 5, depth);
               const lintel = new THREE.Mesh(lintelGeom, redMaterial);
               lintel.position.y = floorHeight - 2.5; // Place at the top of the opening
+              lintel.position.x = entranceOffset;
               floorGroup.add(lintel);
 
               // Pillars for the entrance
@@ -55,11 +57,11 @@ export function createCollegeBuilding() {
               const pillarGeom = new THREE.BoxGeometry(4, pillarHeight, 4);
 
               const leftPillar = new THREE.Mesh(pillarGeom, yellowMaterial);
-              leftPillar.position.set(-entranceWidth / 2 + 2, pillarHeight / 2, depth / 2);
+              leftPillar.position.set(-entranceWidth / 2 + 2 + entranceOffset, pillarHeight / 2, depth / 2);
               floorGroup.add(leftPillar);
               
               const rightPillar = new THREE.Mesh(pillarGeom, yellowMaterial);
-              rightPillar.position.set(entranceWidth / 2 - 2, pillarHeight / 2, depth / 2);
+              rightPillar.position.set(entranceWidth / 2 - 2 + entranceOffset, pillarHeight / 2, depth / 2);
               floorGroup.add(rightPillar);
 
           } else {
@@ -109,7 +111,7 @@ export function createCollegeBuilding() {
   college.name = 'collegeBuilding';
 
   // Back Wing (long)
-  const backWing = createWing(longWingWidth, wingDepth, true);
+  const backWing = createWing(longWingWidth, wingDepth, true, -100);
   backWing.position.z = -shortWingWidth / 2;
   backWing.name = 'backWing';
   college.add(backWing);
