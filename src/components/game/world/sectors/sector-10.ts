@@ -138,7 +138,7 @@ export function createSector10({
   const openCollegeBuilding = createOpenCollegeBuilding();
   openCollegeBuilding.scale.set(0.6, 0.6, 0.6);
   openCollegeBuilding.position.set(-120, 0, 120); // Bottom-left corner
-  openCollegeBuilding.rotation.y = Math.PI / 2;
+  openCollegeBuilding.rotation.y = Math.PI;
   campusContainer.add(openCollegeBuilding);
   const openMainBuilding = openCollegeBuilding.getObjectByName('openCollegeBuilding');
   if (openMainBuilding) {
