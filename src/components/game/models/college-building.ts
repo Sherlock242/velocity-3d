@@ -77,19 +77,36 @@ export function createCollegeBuilding() {
               const wallSegmentWidthLeft = (width - entranceWidth) / 2 + entranceOffset;
               const wallSegmentWidthRight = (width - entranceWidth) / 2 - entranceOffset;
               
-              const leftWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth / 2);
-              const leftWall = new THREE.Mesh(leftWallGeom, redMaterial);
-              leftWall.position.x = -(width / 2) + (wallSegmentWidthLeft / 2);
-              leftWall.position.y = floorHeight / 2;
-              leftWall.position.z = -depth / 4;
-              floorGroup.add(leftWall);
+              // Inner red wall
+              const leftInnerWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth / 2);
+              const leftInnerWall = new THREE.Mesh(leftInnerWallGeom, redMaterial);
+              leftInnerWall.position.x = -(width / 2) + (wallSegmentWidthLeft / 2);
+              leftInnerWall.position.y = floorHeight / 2;
+              leftInnerWall.position.z = -depth / 4;
+              floorGroup.add(leftInnerWall);
+              
+              const rightInnerWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth / 2);
+              const rightInnerWall = new THREE.Mesh(rightInnerWallGeom, redMaterial);
+              rightInnerWall.position.x = (width / 2) - (wallSegmentWidthRight / 2);
+              rightInnerWall.position.y = floorHeight / 2;
+              rightInnerWall.position.z = -depth / 4;
+              floorGroup.add(rightInnerWall);
 
-              const rightWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth / 2);
-              const rightWall = new THREE.Mesh(rightWallGeom, redMaterial);
-              rightWall.position.x = (width / 2) - (wallSegmentWidthRight / 2);
-              rightWall.position.y = floorHeight / 2;
-              rightWall.position.z = -depth / 4;
-              floorGroup.add(rightWall);
+              // Outer cream wall
+              const leftOuterWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth / 2);
+              const leftOuterWall = new THREE.Mesh(leftOuterWallGeom, creamYellowMaterial);
+              leftOuterWall.position.x = -(width / 2) + (wallSegmentWidthLeft / 2);
+              leftOuterWall.position.y = floorHeight / 2;
+              leftOuterWall.position.z = depth / 4;
+              floorGroup.add(leftOuterWall);
+              
+              const rightOuterWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth / 2);
+              const rightOuterWall = new THREE.Mesh(rightOuterWallGeom, creamYellowMaterial);
+              rightOuterWall.position.x = (width / 2) - (wallSegmentWidthRight / 2);
+              rightOuterWall.position.y = floorHeight / 2;
+              rightOuterWall.position.z = depth / 4;
+              floorGroup.add(rightOuterWall);
+
 
               const lintelGeom = new THREE.BoxGeometry(entranceWidth, 5, depth);
               const lintel = new THREE.Mesh(lintelGeom, redMaterial);
