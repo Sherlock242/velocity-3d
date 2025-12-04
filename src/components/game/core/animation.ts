@@ -292,14 +292,14 @@ export function createAnimationLoop(
                 if (collider.name === 'collegeRamp') return;
                 const colliderBox = new THREE.Box3().setFromObject(collider);
                 if (playerBox.intersectsBox(colliderBox)) {
-                    const isCollegeBuilding = collider.name.toLowerCase().includes('college');
+                    const isSpecialBuilding = collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding';
                     let slowdown = 0.1;
-                    if (isCollegeBuilding || collider.name === 'LibraryBuilding') {
+                    if (isSpecialBuilding) {
                         if (controlModeRef.current === 'car') slowdown = 0.5;
                     }
                     velocityRef.current.multiplyScalar(slowdown);
                     
-                    if (!isCollegeBuilding) {
+                    if (!isSpecialBuilding) {
                         const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
                         player.position.add(knockback.multiplyScalar(delta * 60));
                     }
