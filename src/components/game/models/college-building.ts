@@ -78,14 +78,14 @@ export function createCollegeBuilding() {
               const wallSegmentWidthRight = (width - entranceWidth) / 2 - entranceOffset;
               
               const leftWallGeom = new THREE.BoxGeometry(wallSegmentWidthLeft, floorHeight, depth / 2);
-              const leftWall = new THREE.Mesh(leftWallGeom, creamYellowMaterial);
+              const leftWall = new THREE.Mesh(leftWallGeom, redMaterial);
               leftWall.position.x = -(width / 2) + (wallSegmentWidthLeft / 2);
               leftWall.position.y = floorHeight / 2;
               leftWall.position.z = -depth / 4;
               floorGroup.add(leftWall);
 
               const rightWallGeom = new THREE.BoxGeometry(wallSegmentWidthRight, floorHeight, depth / 2);
-              const rightWall = new THREE.Mesh(rightWallGeom, creamYellowMaterial);
+              const rightWall = new THREE.Mesh(rightWallGeom, redMaterial);
               rightWall.position.x = (width / 2) - (wallSegmentWidthRight / 2);
               rightWall.position.y = floorHeight / 2;
               rightWall.position.z = -depth / 4;
@@ -119,7 +119,7 @@ export function createCollegeBuilding() {
             if (i === 0) {
                 // Ground floor: Only create inner half of the wall
                 const innerWallGeom = new THREE.BoxGeometry(width, floorHeight, depth / 2);
-                const innerWall = new THREE.Mesh(innerWallGeom, creamYellowMaterial);
+                const innerWall = new THREE.Mesh(innerWallGeom, redMaterial);
                 innerWall.position.y = floorHeight / 2;
                 innerWall.position.z = -depth / 4; // Position it as the inner half
                 floorGroup.add(innerWall);
