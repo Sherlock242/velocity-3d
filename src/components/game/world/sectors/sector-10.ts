@@ -111,10 +111,10 @@ export function createSector10({
   // Walkable Path to College
   const pathWidth = 15;
   const shedPathToCollegeLength = 112 - (pathWidth / 2);
-  const walkwayPathToCollegeLength = shedPathToCollegeLength + 20;
+  const walkwayPathToCollegeLength = shedPathToCollegeLength + 40;
 
 
-  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2;
+  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2 - 10;
   const pathToCollegeShedX = gateXPosition - (shedPathToCollegeLength / 2) - 12.5;
   const pathToCollegeWalkwayX = gateXPosition - (walkwayPathToCollegeLength / 2) - 12.5;
 
