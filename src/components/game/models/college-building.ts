@@ -1,5 +1,6 @@
 
 import * as THREE from 'three';
+import { createWalkwayShed } from './walkway-shed';
 
 export function createCollegeBuilding() {
   const collegeGroup = new THREE.Group();
@@ -202,12 +203,140 @@ export function createCollegeBuilding() {
   rightWing.name = 'rightWing';
   college.add(rightWing);
 
-  const hutGeom = new THREE.CylinderGeometry(15, 15, 10, 8);
-  const hutMaterial = new THREE.MeshStandardMaterial({color: 0x9a3e3e});
-  const hut = new THREE.Mesh(hutGeom, hutMaterial);
-  hut.position.y = 5;
-  hut.position.z = 0;
-  college.add(hut);
+  // --- Courtyard Elements ---
+  const courtyard = new THREE.Group();
+  courtyard.position.y = 0.1;
+  college.add(courtyard);
+
+  // Lawn
+  const lawnGeom = new THREE.PlaneGeometry(longWingWidth - wingDepth, shortWingWidth - wingDepth);
+  const lawnMaterial = new THREE.MeshStandardMaterial({ color: 0x2e6b34 }); // Darker green
+  const lawn = new THREE.Mesh(lawnGeom, lawnMaterial);
+  lawn.rotation.x = -Math.PI / 2;
+  courtyard.add(lawn);
+
+  // Main Walkway Structure
+  const walkwayGroup = new THREE.Group();
+  courtyard.add(walkwayGroup);
+  
+  const rampWidth = 20;
+  const rampLength = (shortWingWidth - wingDepth - rampWidth) / 2;
+
+  // Function to create a ramped walkway level
+  function createWalkwayLevel(startFloor: number, endFloor: number) {
+      const levelGroup = new THREE.Group();
+      const startY = startFloor * floorHeight;
+      const endY = endFloor * floorHeight;
+
+      const rampGeom = new THREE.BoxGeometry(rampWidth, 0.5, rampLength);
+      const floorGeom = new THREE.BoxGeometry(rampWidth, 0.5, rampWidth);
+      const walkwayMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+
+      // Ramp 1 (from startFloor down to center)
+      const ramp1 = new THREE.Mesh(rampGeom, walkwayMaterial);
+      ramp1.position.set(0, (startY + endY) / 2, -(rampWidth / 2 + rampLength / 2));
+      ramp1.rotation.x = -Math.atan((startY - endY) / rampLength);
+      levelGroup.add(ramp1);
+
+      // Center Platform
+      const centerPlatform = new THREE.Mesh(floorGeom, walkwayMaterial);
+      centerPlatform.position.y = endY;
+      levelGroup.add(centerPlatform);
+      
+      // Ramp 2 (from center down to endFloor)
+      const ramp2 = new THREE.Mesh(rampGeom, walkwayMaterial);
+      ramp2.position.set(0, (startY + endY) / 2, (rampWidth / 2 + rampLength / 2));
+      ramp2.rotation.x = Math.atan((startY - endY) / rampLength);
+      levelGroup.add(ramp2);
+      
+      // Support pillars
+      const pillarGeom = new THREE.CylinderGeometry(1, 1, endY, 12);
+      const pillarMaterial = new THREE.MeshStandardMaterial({ color: redMaterial.color });
+      
+      const pillar1 = new THREE.Mesh(pillarGeom, pillarMaterial);
+      pillar1.position.set(-rampWidth/2 + 2, endY/2, 0);
+      levelGroup.add(pillar1);
+      
+      const pillar2 = new THREE.Mesh(pillarGeom, pillarMaterial);
+      pillar2.position.set(rampWidth/2 - 2, endY/2, 0);
+      levelGroup.add(pillar2);
+
+      return levelGroup;
+  }
+  
+  // Create and place the walkway levels
+  const walkway3to2 = createWalkwayLevel(3, 2);
+  walkwayGroup.add(walkway3to2);
+
+  const walkway4to3 = createWalkwayLevel(4, 3);
+  walkwayGroup.add(walkway4to3);
+
+  // Add green shed roof to the top level
+  const shed = createWalkwayShed(shortWingWidth - wingDepth, rampWidth, false);
+  shed.position.y = 4 * floorHeight;
+  walkwayGroup.add(shed);
+
+  // Big circular brick structure
+  const bigCircleRadius = 40;
+  const bigCircleHeight = 10;
+  const bigCircleWallThickness = 2;
+  const bigCircleGeom = new THREE.RingGeometry(bigCircleRadius - bigCircleWallThickness, bigCircleRadius, 64);
+  const bigCircle = new THREE.Mesh(bigCircleGeom, redMaterial);
+  bigCircle.rotation.x = -Math.PI / 2;
+  bigCircle.position.set(-100, 0.2, 0);
+  courtyard.add(bigCircle);
+  
+  // Inner grass for big circle
+  const innerGrassGeom = new THREE.CircleGeometry(bigCircleRadius - bigCircleWallThickness, 64);
+  const innerGrass = new THREE.Mesh(innerGrassGeom, lawnMaterial);
+  innerGrass.rotation.x = -Math.PI / 2;
+  innerGrass.position.copy(bigCircle.position);
+  innerGrass.position.y = 0.15;
+  courtyard.add(innerGrass);
+
+
+  // Smaller beige seating area
+  const smallCircleRadius = 15;
+  const smallCircleHeight = 3;
+  const smallCircleGeom = new THREE.CylinderGeometry(smallCircleRadius, smallCircleRadius, smallCircleHeight, 32);
+  const smallCircle = new THREE.Mesh(smallCircleGeom, creamYellowMaterial);
+  smallCircle.position.set(100, smallCircleHeight / 2, -50);
+  courtyard.add(smallCircle);
+
+  // Trees and bushes
+  const treeMaterial = new THREE.MeshStandardMaterial({ color: 0x006400 });
+  const bushMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
+  
+  // Line of trees
+  for (let i = 0; i < 5; i++) {
+      const tree = new THREE.Group();
+      const trunkGeom = new THREE.CylinderGeometry(1, 1.5, 12, 8);
+      const trunk = new THREE.Mesh(trunkGeom, new THREE.MeshStandardMaterial({color: 0x8b4513}));
+      trunk.position.y = 6;
+      
+      const foliageGeom = new THREE.SphereGeometry(10, 16, 8);
+      const foliage = new THREE.Mesh(foliageGeom, treeMaterial);
+      foliage.position.y = 18;
+      
+      tree.add(trunk, foliage);
+      tree.position.set(160, 0, -80 + i * 40);
+      courtyard.add(tree);
+  }
+
+  // Path with bushes
+  const pathGeom = new THREE.PlaneGeometry(15, 180);
+  const pathMaterial = new THREE.MeshStandardMaterial({ color: 0xbbbbbb });
+  const path = new THREE.Mesh(pathGeom, pathMaterial);
+  path.rotation.x = -Math.PI / 2;
+  path.position.set(-160, 0.2, 0);
+  courtyard.add(path);
+  
+  for (let i = 0; i < 8; i++) {
+      const bushGeom = new THREE.SphereGeometry(5, 8, 6);
+      const bush = new THREE.Mesh(bushGeom, bushMaterial);
+      bush.position.set(-175, 2.5, -70 + i * 20);
+      courtyard.add(bush);
+  }
   
   collegeGroup.add(college);
 
