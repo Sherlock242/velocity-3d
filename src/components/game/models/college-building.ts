@@ -140,7 +140,7 @@ export function createCollegeBuilding() {
   const groundGeom = new THREE.PlaneGeometry(courtyardWidth, courtyardDepth);
   const ground = new THREE.Mesh(groundGeom, groundMaterial);
   ground.rotation.x = -Math.PI / 2;
-  ground.position.y = 0.1;
+  ground.position.y = 0.15;
   college.add(ground);
 
   // Small structure in courtyard
