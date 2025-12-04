@@ -111,7 +111,7 @@ export function createCollegeBuilding() {
   college.name = 'collegeBuilding';
 
   // Back Wing (long)
-  const backWing = createWing(longWingWidth, wingDepth, true, -110);
+  const backWing = createWing(longWingWidth, wingDepth, true, -130);
   backWing.position.z = -shortWingWidth / 2;
   backWing.name = 'backWing';
   college.add(backWing);
