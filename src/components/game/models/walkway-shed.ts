@@ -1,7 +1,7 @@
 
 import * as THREE from 'three';
 
-export function createWalkwayShed(length: number, width: number) {
+export function createWalkwayShed(length: number, width: number, withPillars = true) {
   const shed = new THREE.Group();
 
   const pillarHeight = 12;
@@ -30,32 +30,34 @@ export function createWalkwayShed(length: number, width: number) {
   );
 
   // --- Pillars and Railings ---
-  for (let i = 0; i <= numPillars; i++) {
-    const zPos = -length / 2 + i * (length / numPillars);
+  if (withPillars) {
+    for (let i = 0; i <= numPillars; i++) {
+      const zPos = -length / 2 + i * (length / numPillars);
 
-    // Left pillar
-    const leftPillar = new THREE.Mesh(pillarGeom, greenFrameMaterial);
-    leftPillar.position.set(-width / 2, pillarHeight / 2, zPos);
-    shed.add(leftPillar);
+      // Left pillar
+      const leftPillar = new THREE.Mesh(pillarGeom, greenFrameMaterial);
+      leftPillar.position.set(-width / 2, pillarHeight / 2, zPos);
+      shed.add(leftPillar);
 
-    // Right pillar
-    const rightPillar = new THREE.Mesh(pillarGeom, greenFrameMaterial);
-    rightPillar.position.set(width / 2, pillarHeight / 2, zPos);
-    shed.add(rightPillar);
+      // Right pillar
+      const rightPillar = new THREE.Mesh(pillarGeom, greenFrameMaterial);
+      rightPillar.position.set(width / 2, pillarHeight / 2, zPos);
+      shed.add(rightPillar);
 
-    // Railings between pillars
-    if (i < numPillars) {
-      const railLength = length / numPillars;
-      const railHeight = 3;
-      const railGeom = new THREE.BoxGeometry(0.5, railHeight, railLength);
-      
-      const leftRail = new THREE.Mesh(railGeom, greenFrameMaterial);
-      leftRail.position.set(-width/2, railHeight / 2, zPos + railLength / 2);
-      shed.add(leftRail);
-      
-      const rightRail = new THREE.Mesh(railGeom, greenFrameMaterial);
-      rightRail.position.set(width/2, railHeight / 2, zPos + railLength / 2);
-      shed.add(rightRail);
+      // Railings between pillars
+      if (i < numPillars) {
+        const railLength = length / numPillars;
+        const railHeight = 3;
+        const railGeom = new THREE.BoxGeometry(0.5, railHeight, railLength);
+        
+        const leftRail = new THREE.Mesh(railGeom, greenFrameMaterial);
+        leftRail.position.set(-width/2, railHeight / 2, zPos + railLength / 2);
+        shed.add(leftRail);
+        
+        const rightRail = new THREE.Mesh(railGeom, greenFrameMaterial);
+        rightRail.position.set(width/2, railHeight / 2, zPos + railLength / 2);
+        shed.add(rightRail);
+      }
     }
   }
 
@@ -83,15 +85,15 @@ export function createWalkwayShed(length: number, width: number) {
         const panelShape = new THREE.Shape();
         panelShape.moveTo(-width / 2, 0);
         panelShape.quadraticCurveTo(0, roofArchHeight, width / 2, 0);
-        panelShape.lineTo(width / 2, 0); 
-        panelShape.quadraticCurveTo(0, roofArchHeight - 0.1, -width / 2, 0); 
+        panelShape.lineTo(width / 2, 0.1); 
+        panelShape.quadraticCurveTo(0, roofArchHeight - 0.1, -width / 2, 0.1); 
         
         const extrudeSettings = { depth: panelLength, bevelEnabled: false };
         const panelGeom = new THREE.ExtrudeGeometry(panelShape, extrudeSettings);
         const panel = new THREE.Mesh(panelGeom, translucentRoofMaterial);
         
         panel.position.set(0, pillarHeight, zPos);
-        panel.rotation.y = Math.PI / 2; 
+        panel.rotation.y = 0; 
 
         shed.add(panel);
     }
