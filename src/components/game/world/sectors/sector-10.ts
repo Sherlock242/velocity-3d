@@ -170,6 +170,18 @@ export function createSector10({
   campusContainer.add(scoutsBuilding);
   staticCollidersRef.current.push(scoutsBuilding);
 
+  // Find the ramp and add it to colliders
+  const collegeRamp = college.getObjectByName('collegeRamp');
+  if (collegeRamp) {
+    const rampCollider = new THREE.Group();
+    rampCollider.add(collegeRamp.clone());
+    college.localToWorld(rampCollider.position.copy(collegeRamp.position));
+    rampCollider.rotation.copy(college.rotation);
+    rampCollider.scale.copy(college.scale);
+    rampCollider.name = 'collegeRamp'; // Make sure the group has the name for raycasting
+    staticCollidersRef.current.push(rampCollider);
+  }
+
 
   sectorGroup.add(campusContainer);
 

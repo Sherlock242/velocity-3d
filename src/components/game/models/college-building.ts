@@ -215,7 +215,6 @@ export function createCollegeBuilding() {
 
   // --- RAMP ---
   const rampGroup = new THREE.Group();
-  rampGroup.name = 'collegeRamp';
 
   const rampWidth = 40; // Narrower ramp
   const rampLength = shortWingWidth - wingDepth; // Span from front wing to back wing
@@ -224,6 +223,7 @@ export function createCollegeBuilding() {
   const rampGeom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
   const rampMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
   const ramp = new THREE.Mesh(rampGeom, rampMaterial);
+  ramp.name = 'collegeRamp';
   
   const rampRise = floorHeight;
   ramp.position.y = rampRise / 2;

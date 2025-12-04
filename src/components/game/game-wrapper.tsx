@@ -523,17 +523,24 @@ export default function GameWrapper() {
         let onRamp = false;
 
         // --- RAMP PHYSICS ---
-        if (rampMeshRef.current) {
+        // Combine university ramp and potential college ramp for raycasting
+        const rampObjects = [rampMeshRef.current].filter(Boolean) as THREE.Mesh[];
+        const collegeRampObject = staticCollidersRef.current.find(c => c.name === 'collegeRamp');
+        if (collegeRampObject) {
+            rampObjects.push(collegeRampObject as THREE.Mesh);
+        }
+
+        if (rampObjects.length > 0) {
             raycaster.set(
                 player.position.clone().add(new THREE.Vector3(0, 10, 0)),
                 new THREE.Vector3(0, -1, 0)
             );
-            const intersects = raycaster.intersectObjects([rampMeshRef.current], true);
-            
+            const intersects = raycaster.intersectObjects(rampObjects, true);
+
             const closestIntersect = intersects
                 .filter(i => i.point.y < player.position.y + 1)
                 .sort((a, b) => a.distance - b.distance)[0];
-    
+
             if (closestIntersect) {
                 const groundY = closestIntersect.point.y;
                 if (player.position.y < groundY + playerHeight + 0.5) { // add a buffer
@@ -640,6 +647,7 @@ export default function GameWrapper() {
         
         // Static Colliders (Buildings)
         staticCollidersRef.current.forEach((collider) => {
+            if (collider.name === 'collegeRamp') return; // Skip ramp for this collision check
             const colliderBox = new THREE.Box3().setFromObject(collider);
             if (playerBox.intersectsBox(colliderBox)) {
                 if (collider.name.toLowerCase().includes('college')) {
