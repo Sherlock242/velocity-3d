@@ -115,7 +115,7 @@ export function createSector10({
   const shedCorridorLength = 40;
 
 
-  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2 - 7;
+  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2 - 7 + 5;
   const pathToCollegeShedX = gateXPosition - (shedPathToCollegeLength / 2) - 12.5;
   const pathToCollegeWalkwayX = gateXPosition - (walkwayPathToCollegeLength / 2) - 12.5;
 
