@@ -107,24 +107,6 @@ export function createCollegeBuilding() {
               rightOuterWall.position.z = depth / 4;
               floorGroup.add(rightOuterWall);
 
-
-              const lintelGeom = new THREE.BoxGeometry(entranceWidth, 5, depth);
-              const lintel = new THREE.Mesh(lintelGeom, redMaterial);
-              lintel.position.y = floorHeight - 2.5; 
-              lintel.position.x = entranceOffset;
-              floorGroup.add(lintel);
-
-              const pillarHeight = floorHeight - 5; 
-              const pillarGeom = new THREE.BoxGeometry(4, pillarHeight, 4);
-
-              const leftPillar = new THREE.Mesh(pillarGeom, redMaterial);
-              leftPillar.position.set(-entranceWidth / 2 + 2 + entranceOffset, pillarHeight / 2, depth / 2);
-              floorGroup.add(leftPillar);
-              
-              const rightPillar = new THREE.Mesh(pillarGeom, redMaterial);
-              rightPillar.position.set(entranceWidth / 2 - 2 + entranceOffset, pillarHeight / 2, depth / 2);
-              floorGroup.add(rightPillar);
-
               const corridorGeom = new THREE.PlaneGeometry(width, depth);
               const corridorMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
               const corridor = new THREE.Mesh(corridorGeom, corridorMaterial);
