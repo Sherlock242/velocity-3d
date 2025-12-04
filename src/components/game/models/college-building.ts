@@ -1,6 +1,5 @@
 
 import * as THREE from 'three';
-import { createWalkwayShed } from './walkway-shed';
 
 export function createCollegeBuilding() {
   const collegeGroup = new THREE.Group();
@@ -14,7 +13,6 @@ export function createCollegeBuilding() {
 
   const redMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000, roughness: 0.8 });
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
-  const creamYellowMaterial = new THREE.MeshStandardMaterial({ color: 0xfffdd0, roughness: 0.8 });
 
   function createLattice(width: number, height: number) {
     const latticeGroup = new THREE.Group();
@@ -215,53 +213,6 @@ export function createCollegeBuilding() {
   lawn.rotation.x = -Math.PI / 2;
   courtyard.add(lawn);
 
-  // Big circular brick structure
-  const bigCircleRadius = 40;
-  const bigCircleHeight = 10;
-  const bigCircleWallThickness = 2;
-  const bigCircleGeom = new THREE.RingGeometry(bigCircleRadius - bigCircleWallThickness, bigCircleRadius, 64);
-  const bigCircle = new THREE.Mesh(bigCircleGeom, redMaterial);
-  bigCircle.rotation.x = -Math.PI / 2;
-  bigCircle.position.set(-100, 0.2, 0);
-  courtyard.add(bigCircle);
-  
-  // Inner grass for big circle
-  const innerGrassGeom = new THREE.CircleGeometry(bigCircleRadius - bigCircleWallThickness, 64);
-  const innerGrass = new THREE.Mesh(innerGrassGeom, lawnMaterial);
-  innerGrass.rotation.x = -Math.PI / 2;
-  innerGrass.position.copy(bigCircle.position);
-  innerGrass.position.y = 0.15;
-  courtyard.add(innerGrass);
-
-
-  // Smaller beige seating area
-  const smallCircleRadius = 15;
-  const smallCircleHeight = 3;
-  const smallCircleGeom = new THREE.CylinderGeometry(smallCircleRadius, smallCircleRadius, smallCircleHeight, 32);
-  const smallCircle = new THREE.Mesh(smallCircleGeom, creamYellowMaterial);
-  smallCircle.position.set(100, smallCircleHeight / 2, -50);
-  courtyard.add(smallCircle);
-
-  // Trees and bushes
-  const treeMaterial = new THREE.MeshStandardMaterial({ color: 0x006400 });
-  const bushMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
-  
-  // Line of trees
-  for (let i = 0; i < 5; i++) {
-      const tree = new THREE.Group();
-      const trunkGeom = new THREE.CylinderGeometry(1, 1.5, 12, 8);
-      const trunk = new THREE.Mesh(trunkGeom, new THREE.MeshStandardMaterial({color: 0x8b4513}));
-      trunk.position.y = 6;
-      
-      const foliageGeom = new THREE.SphereGeometry(10, 16, 8);
-      const foliage = new THREE.Mesh(foliageGeom, treeMaterial);
-      foliage.position.y = 18;
-      
-      tree.add(trunk, foliage);
-      tree.position.set(160, 0, -80 + i * 40);
-      courtyard.add(tree);
-  }
-
   // --- RAMP ---
   const rampGroup = new THREE.Group();
   rampGroup.name = 'collegeRamp';
@@ -280,7 +231,9 @@ export function createCollegeBuilding() {
   ramp.rotation.x = -Math.atan(rampRise / rampLength);
   
   rampGroup.add(ramp);
-  rampGroup.position.set(0, 0.2, 50); // Position inside courtyard
+  // Position ramp near the main entrance of the back wing
+  const entranceCenter = -110;
+  rampGroup.position.set(entranceCenter, 0.2, -shortWingWidth / 2 + wingDepth / 2 + 5); 
   courtyard.add(rampGroup);
 
   collegeGroup.add(college);
