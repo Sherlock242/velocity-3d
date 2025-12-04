@@ -56,11 +56,11 @@ export function createCollegeBuilding() {
               const pillarHeight = floorHeight - 5; // To fit under the lintel
               const pillarGeom = new THREE.BoxGeometry(4, pillarHeight, 4);
 
-              const leftPillar = new THREE.Mesh(pillarGeom, yellowMaterial);
+              const leftPillar = new THREE.Mesh(pillarGeom, redMaterial);
               leftPillar.position.set(-entranceWidth / 2 + 2 + entranceOffset, pillarHeight / 2, depth / 2);
               floorGroup.add(leftPillar);
               
-              const rightPillar = new THREE.Mesh(pillarGeom, yellowMaterial);
+              const rightPillar = new THREE.Mesh(pillarGeom, redMaterial);
               rightPillar.position.set(entranceWidth / 2 - 2 + entranceOffset, pillarHeight / 2, depth / 2);
               floorGroup.add(rightPillar);
 
@@ -81,7 +81,7 @@ export function createCollegeBuilding() {
           const numPillars = Math.floor(width / 20);
           for (let j = 0; j < numPillars; j++) {
               const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
-              const pillar = new THREE.Mesh(pillarGeom, yellowMaterial);
+              const pillar = new THREE.Mesh(pillarGeom, redMaterial);
               const xPos = -width/2 + 10 + j * 20;
               pillar.position.set(xPos, floorHeight / 2, depth / 2 + 2);
               floorGroup.add(pillar);
@@ -94,7 +94,7 @@ export function createCollegeBuilding() {
           
           for (let j = 0; j < numPillars; j++) {
               const pillarGeom = new THREE.BoxGeometry(4, floorHeight, 4);
-              const pillar = new THREE.Mesh(pillarGeom, yellowMaterial);
+              const pillar = new THREE.Mesh(pillarGeom, redMaterial);
               const xPos = -width/2 + 10 + j * 20;
               pillar.position.set(xPos, floorHeight / 2, -depth / 2 - 2);
               floorGroup.add(pillar);
