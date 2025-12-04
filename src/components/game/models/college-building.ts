@@ -106,10 +106,20 @@ export function createCollegeBuilding() {
               floorGroup.add(rightPillar);
 
           } else {
-            const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
-            const mainWall = new THREE.Mesh(wallGeom, redMaterial);
-            mainWall.position.y = floorHeight / 2;
-            floorGroup.add(mainWall);
+            if (i === 0) {
+                // Ground floor: Only create outer half of the wall
+                const outerWallGeom = new THREE.BoxGeometry(width, floorHeight, depth / 2);
+                const outerWall = new THREE.Mesh(outerWallGeom, redMaterial);
+                outerWall.position.y = floorHeight / 2;
+                outerWall.position.z = depth / 4; // Position it as the outer half
+                floorGroup.add(outerWall);
+            } else {
+                // Upper floors: Create the full solid wall
+                const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
+                const mainWall = new THREE.Mesh(wallGeom, redMaterial);
+                mainWall.position.y = floorHeight / 2;
+                floorGroup.add(mainWall);
+            }
           }
 
           const frontBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 2, 1.2), yellowMaterial);
@@ -191,7 +201,7 @@ export function createCollegeBuilding() {
   
   const rightWing = createWing(shortWingWidth, wingDepth);
   rightWing.position.x = longWingWidth / 2;
-  rightWing.rotation.y = Math.PI / 2; // Flipped from -PI/2
+  rightWing.rotation.y = -Math.PI / 2;
   rightWing.name = 'rightWing';
   college.add(rightWing);
 
