@@ -200,7 +200,8 @@ export function createAnimationLoop(
             const playerHeight = controlModeRef.current === 'car' ? 0.6 : 2.0;
             let onRamp = false;
             const raycaster = new THREE.Raycaster();
-            const rampObjects = [rampMeshRef.current, collegeRampMeshRef.current].filter(Boolean) as THREE.Mesh[];
+            
+            const rampObjects = [rampMeshRef.current, collegeRampMeshRef.current].filter(Boolean) as (THREE.Mesh | THREE.Group)[];
 
             if (rampObjects.length > 0) {
                 raycaster.set(player.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));

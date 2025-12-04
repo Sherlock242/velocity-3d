@@ -10,7 +10,7 @@ type Sector10Props = {
   cellCenterX: number;
   cellCenterZ: number;
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
-  collegeRampMeshRef: MutableRefObject<THREE.Mesh | undefined>;
+  collegeRampMeshRef: MutableRefObject<THREE.Group | undefined>;
 };
 
 export function createSector10({
@@ -174,7 +174,7 @@ export function createSector10({
 
   // Find the ramp and pass its mesh reference up
   const collegeRampObject = college.getObjectByName('collegeRamp');
-  if (collegeRampObject instanceof THREE.Mesh) {
+  if (collegeRampObject instanceof THREE.Group) {
       collegeRampMeshRef.current = collegeRampObject;
   }
 

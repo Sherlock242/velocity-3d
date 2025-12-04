@@ -215,21 +215,37 @@ export function createCollegeBuilding() {
 
   // --- RAMP ---
   const rampGroup = new THREE.Group();
-
-  const rampWidth = 40; // Narrower ramp
-  const rampLength = shortWingWidth - wingDepth; // Span from front wing to back wing
-  const rampThickness = 2;
-  
-  const rampGeom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
   const rampMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
-  const ramp = new THREE.Mesh(rampGeom, rampMaterial);
-  ramp.name = 'collegeRamp';
   
+  const rampWidth = 40;
+  const rampThickness = 2;
   const rampRise = floorHeight;
+  const platformSize = 40;
+  const rampLength = shortWingWidth - wingDepth - platformSize;
+
+  // Ramp from ground to 1st floor
+  const rampGeom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
+  const ramp = new THREE.Mesh(rampGeom, rampMaterial);
   ramp.position.y = rampRise / 2;
+  ramp.position.z = -platformSize / 2;
   ramp.rotation.x = -Math.atan(rampRise / rampLength);
   
-  rampGroup.add(ramp);
+  // Platform on the 1st floor
+  const platformGeom = new THREE.BoxGeometry(rampWidth, rampThickness, platformSize);
+  const platform = new THREE.Mesh(platformGeom, rampMaterial);
+  platform.position.y = rampRise;
+  platform.position.z = (shortWingWidth - wingDepth) / 2 - platformSize / 2;
+
+  // This part is a bit tricky. We need to create a new mesh from the combined geometries
+  // so that the raycaster treats it as a single object.
+  // A simpler way for now is to just group them and add a custom property.
+  // But for proper physics, merging is better. Let's group for now as merging is complex.
+  const walkableRampGroup = new THREE.Group();
+  walkableRampGroup.add(ramp);
+  walkableRampGroup.add(platform);
+  walkableRampGroup.name = 'collegeRamp'; // Name the group
+  
+  rampGroup.add(walkableRampGroup);
   rampGroup.position.set(0, 0.2, 0); 
   courtyard.add(rampGroup);
 

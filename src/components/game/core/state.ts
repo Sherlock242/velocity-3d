@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import * as THREE from 'three';
 
@@ -24,7 +25,7 @@ export type GameState = {
     staticCollidersRef: React.MutableRefObject<THREE.Group[]>;
     rampMeshRef: React.MutableRefObject<THREE.Mesh | undefined>;
     rampWallsRef: React.MutableRefObject<THREE.Group | undefined>;
-    collegeRampMeshRef: React.MutableRefObject<THREE.Mesh | undefined>;
+    collegeRampMeshRef: React.MutableRefObject<THREE.Group | undefined>;
     controlModeRef: React.MutableRefObject<ControlMode>;
     isTransformingRef: React.MutableRefObject<boolean>;
     transformProgressRef: React.MutableRefObject<number>;
@@ -57,7 +58,7 @@ export function useGameState(): GameState {
     const staticCollidersRef = React.useRef<THREE.Group[]>([]);
     const rampMeshRef = React.useRef<THREE.Mesh>();
     const rampWallsRef = React.useRef<THREE.Group>();
-    const collegeRampMeshRef = React.useRef<THREE.Mesh>();
+    const collegeRampMeshRef = React.useRef<THREE.Group>();
     const controlModeRef = React.useRef<ControlMode>('car');
     const isTransformingRef = React.useRef(false);
     const transformProgressRef = React.useRef(0);
