@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 import { handleAssessPenalty } from '@/app/actions';
 import { updateTransformerAnimation } from '../models/transformer';
@@ -290,13 +291,17 @@ export function createAnimationLoop(
                 if (collider.name === 'collegeRamp') return;
                 const colliderBox = new THREE.Box3().setFromObject(collider);
                 if (playerBox.intersectsBox(colliderBox)) {
+                    const isCollegeBuilding = collider.name.toLowerCase().includes('college');
                     let slowdown = 0.1;
-                    if (collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding') {
+                    if (isCollegeBuilding || collider.name === 'LibraryBuilding') {
                         if (controlModeRef.current === 'car') slowdown = 0.5;
                     }
                     velocityRef.current.multiplyScalar(slowdown);
-                    const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
-                    player.position.add(knockback.multiplyScalar(delta * 60));
+                    
+                    if (!isCollegeBuilding) {
+                        const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
+                        player.position.add(knockback.multiplyScalar(delta * 60));
+                    }
                 }
             });
 
