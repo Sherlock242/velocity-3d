@@ -179,6 +179,7 @@ export function createCollegeBuilding() {
   
   const frontWing = createWing(longWingWidth, wingDepth, false);
   frontWing.position.z = shortWingWidth / 2;
+  frontWing.rotation.y = Math.PI; // Flipped
   frontWing.name = 'frontWing';
   college.add(frontWing);
 
@@ -190,7 +191,7 @@ export function createCollegeBuilding() {
   
   const rightWing = createWing(shortWingWidth, wingDepth);
   rightWing.position.x = longWingWidth / 2;
-  rightWing.rotation.y = -Math.PI / 2;
+  rightWing.rotation.y = Math.PI / 2; // Flipped from -PI/2
   rightWing.name = 'rightWing';
   college.add(rightWing);
 
