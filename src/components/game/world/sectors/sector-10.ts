@@ -115,7 +115,7 @@ export function createSector10({
   const shedCorridorLength = 40;
 
 
-  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2 - 7 + 5;
+  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2 - 7 + 10;
   const pathToCollegeShedX = gateXPosition - (shedPathToCollegeLength / 2) - 12.5;
   const pathToCollegeWalkwayX = gateXPosition - (walkwayPathToCollegeLength / 2) - 12.5;
 
@@ -127,7 +127,7 @@ export function createSector10({
   campusContainer.add(pathToCollege);
   
   const corridorShedX = pathToCollegeShedX - (shedPathToCollegeLength / 2) - (pathWidth / 2);
-  const corridorShedZ = (frontWallZ + entranceRoadLength - pathWidth / 2 - 7) - pathWidth - (shedCorridorLength / 2) + 17;
+  const corridorShedZ = (frontWallZ + entranceRoadLength - pathWidth / 2 - 7) - pathWidth - (shedCorridorLength / 2) + 22;
 
   const corridorGeom = new THREE.PlaneGeometry(pathWidth, shedCorridorLength);
   const corridor = new THREE.Mesh(corridorGeom, pathMaterial);
@@ -151,10 +151,7 @@ export function createSector10({
   college.scale.set(0.6, 0.6, 0.6);
   college.position.set(-80, 0, -120);
   campusContainer.add(college);
-  const mainBuilding = college.getObjectByName('collegeBuilding');
-  if (mainBuilding) {
-    mainBuilding.children.forEach(child => staticCollidersRef.current.push(child as THREE.Group));
-  }
+  staticCollidersRef.current.push(college);
 
   // --- Open College Building ---
   const openCollegeBuilding = createOpenCollegeBuilding();
@@ -162,10 +159,7 @@ export function createSector10({
   openCollegeBuilding.position.set(-120, 0, 120); // Bottom-left corner
   openCollegeBuilding.rotation.y = Math.PI;
   campusContainer.add(openCollegeBuilding);
-  const openMainBuilding = openCollegeBuilding.getObjectByName('openCollegeBuilding');
-  if (openMainBuilding) {
-    openMainBuilding.children.forEach(child => staticCollidersRef.current.push(child as THREE.Group));
-  }
+  staticCollidersRef.current.push(openCollegeBuilding);
 
   // --- Scouts Building ---
   const scoutsBuilding = createScoutsBuilding();

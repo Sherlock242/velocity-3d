@@ -640,11 +640,11 @@ export default function GameWrapper() {
         staticCollidersRef.current.forEach((collider) => {
             const colliderBox = new THREE.Box3().setFromObject(collider);
             if (playerBox.intersectsBox(colliderBox)) {
-                if (collider.name === 'LibraryBuilding') {
+                if (collider.name.toLowerCase().includes('college')) {
                     if (controlModeRef.current === 'car') {
                         velocityRef.current.multiplyScalar(0.5); 
                     }
-                } else if (collider.name.includes('Wing')) {
+                } else if (collider.name === 'LibraryBuilding') {
                     if (controlModeRef.current === 'car') {
                         velocityRef.current.multiplyScalar(0.5);
                     }
