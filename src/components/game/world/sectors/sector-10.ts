@@ -96,7 +96,7 @@ export function createSector10({
   const entranceRoadGeom = new THREE.PlaneGeometry(entranceRoadWidth, entranceRoadLength);
   const entranceRoad = new THREE.Mesh(entranceRoadGeom, darkRoadMaterial);
   entranceRoad.rotation.x = -Math.PI / 2;
-  entranceRoad.position.set(gateXPosition, 0.15, frontWallZ + entranceRoadLength / 2);
+  entranceRoad.position.set(gateXPosition, 0.14, frontWallZ + entranceRoadLength / 2);
   campusContainer.add(entranceRoad);
 
   // New wall to the right of the road
