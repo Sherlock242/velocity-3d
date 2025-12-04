@@ -124,6 +124,14 @@ export function createSector10({
   corridor.position.set(gateXPosition - pathToCollegeLength, 0.15, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) );
   campusContainer.add(corridor);
 
+  // Corner piece for walkway
+  const cornerGeom = new THREE.PlaneGeometry(pathWidth, pathWidth);
+  const corner = new THREE.Mesh(cornerGeom, pathMaterial);
+  corner.rotation.x = -Math.PI / 2;
+  corner.position.set(gateXPosition - pathToCollegeLength, 0.15, frontWallZ + entranceRoadLength - pathWidth);
+  campusContainer.add(corner);
+
+
   // --- Sheds for Walkways ---
   const pathToCollegeShed = createWalkwayShed(pathToCollegeLength, pathWidth);
   pathToCollegeShed.position.set(gateXPosition - (pathToCollegeLength / 2), 0, frontWallZ + entranceRoadLength - pathWidth / 2);
@@ -133,6 +141,11 @@ export function createSector10({
   const corridorShed = createWalkwayShed(corridorLength, pathWidth);
   corridorShed.position.set(gateXPosition - pathToCollegeLength, 0, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2));
   campusContainer.add(corridorShed);
+  
+  // Corner piece for shed
+  const cornerShed = createWalkwayShed(pathWidth, pathWidth, false); // No pillars for corner piece
+  cornerShed.position.set(gateXPosition - pathToCollegeLength, 0, frontWallZ + entranceRoadLength - pathWidth);
+  campusContainer.add(cornerShed);
 
 
   // --- College Building ---
