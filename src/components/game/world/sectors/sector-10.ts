@@ -121,7 +121,7 @@ export function createSector10({
   const corridorGeom = new THREE.PlaneGeometry(pathWidth, corridorLength);
   const corridor = new THREE.Mesh(corridorGeom, pathMaterial);
   corridor.rotation.x = -Math.PI / 2;
-  corridor.position.set(gateXPosition - pathToCollegeLength + pathWidth / 2, 0.15, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + pathWidth / 2);
+  corridor.position.set(gateXPosition - pathToCollegeLength + pathWidth / 2, 0.15, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + pathWidth / 2 + 10);
   campusContainer.add(corridor);
 
 
@@ -132,7 +132,7 @@ export function createSector10({
   campusContainer.add(pathToCollegeShed);
 
   const corridorShed = createWalkwayShed(corridorLength, pathWidth);
-  corridorShed.position.set(gateXPosition - pathToCollegeLength + pathWidth / 2, 0, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + pathWidth/2);
+  corridorShed.position.set(gateXPosition - pathToCollegeLength + pathWidth / 2, 0, frontWallZ + entranceRoadLength - pathWidth - (corridorLength / 2) + pathWidth/2 + 10);
   campusContainer.add(corridorShed);
 
 
