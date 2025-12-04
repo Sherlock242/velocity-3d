@@ -517,7 +517,7 @@ export default function GameWrapper() {
       });
 
       if (player) {
-        const playerHeight = controlModeRef.current === 'car' ? 0.5 : 2.0;
+        const playerHeight = controlModeRef.current === 'car' ? 0.6 : 2.0;
         let onRamp = false;
 
         // --- RAMP PHYSICS ---
