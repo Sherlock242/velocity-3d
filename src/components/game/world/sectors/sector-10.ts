@@ -115,7 +115,7 @@ export function createSector10({
   const shedCorridorLength = 40;
 
 
-  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2 - 7;
+  const pathToCollegeZ = frontWallZ + entranceRoadLength - pathWidth / 2 - 7 + 5;
   const pathToCollegeShedX = gateXPosition - (shedPathToCollegeLength / 2) - 12.5;
   const pathToCollegeWalkwayX = gateXPosition - (walkwayPathToCollegeLength / 2) - 12.5;
 
@@ -127,7 +127,7 @@ export function createSector10({
   campusContainer.add(pathToCollege);
   
   const corridorShedX = pathToCollegeShedX - (shedPathToCollegeLength / 2) - (pathWidth / 2);
-  const corridorShedZ = pathToCollegeZ - pathWidth - (shedCorridorLength / 2) + 17;
+  const corridorShedZ = (frontWallZ + entranceRoadLength - pathWidth / 2 - 7) - pathWidth - (shedCorridorLength / 2) + 17;
 
   const corridorGeom = new THREE.PlaneGeometry(pathWidth, shedCorridorLength);
   const corridor = new THREE.Mesh(corridorGeom, pathMaterial);
