@@ -26,25 +26,24 @@ export function createCollegeBuilding() {
           const floorGroup = new THREE.Group();
           floorGroup.position.y = yPos;
 
-          // Solid walls for front and back
-          const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
-          const mainWall = new THREE.Mesh(wallGeom, redMaterial);
-          
           if(isFrontWing && i === 0) {
+              // Create the wall with a hole for the entrance
               const wallShape = new THREE.Shape();
               const hw = width / 2;
               const hh = floorHeight;
               const hd = depth / 2;
+              
               wallShape.moveTo(-hw, 0);
               wallShape.lineTo(hw, 0);
               wallShape.lineTo(hw, hh);
               wallShape.lineTo(-hw, hh);
               wallShape.lineTo(-hw, 0);
 
+              // Define the hole for the entrance
               const holeX = -entranceCutoutWidth / 2;
               const holeY = 0;
               const holeWidth = entranceCutoutWidth;
-              const holeHeight = floorHeight;
+              const holeHeight = floorHeight; // Full height of the floor
               const holeShape = new THREE.Path();
               holeShape.moveTo(holeX, holeY);
               holeShape.lineTo(holeX + holeWidth, holeY);
@@ -61,6 +60,9 @@ export function createCollegeBuilding() {
               floorGroup.add(wallWithHole);
 
           } else {
+            // Solid walls for other floors/wings
+            const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
+            const mainWall = new THREE.Mesh(wallGeom, redMaterial);
             mainWall.position.y = floorHeight / 2;
             floorGroup.add(mainWall);
           }
@@ -109,7 +111,7 @@ export function createCollegeBuilding() {
   backWing.name = 'backWing';
   college.add(backWing);
   
-  // Front Wing (long)
+  // Front Wing (long) with entrance
   const frontWing = createWing(longWingWidth, wingDepth, true);
   frontWing.position.z = shortWingWidth / 2;
   frontWing.name = 'frontWing';
@@ -128,30 +130,6 @@ export function createCollegeBuilding() {
   rightWing.rotation.y = -Math.PI / 2;
   rightWing.name = 'rightWing';
   college.add(rightWing);
-
-  // Entrance Archway
-  const entranceGroup = new THREE.Group();
-  const entranceArchWidth = 30;
-  const entranceArchHeight = 40;
-  const entrancePillarHeight = floorHeight;
-
-  const archPillarGeom = new THREE.BoxGeometry(6, entrancePillarHeight, 6);
-  const leftPillar = new THREE.Mesh(archPillarGeom, yellowMaterial);
-  leftPillar.position.set(-entranceArchWidth/2, entrancePillarHeight/2, 0);
-  entranceGroup.add(leftPillar);
-
-  const rightPillar = new THREE.Mesh(archPillarGeom, yellowMaterial);
-  rightPillar.position.set(entranceArchWidth/2, entrancePillarHeight/2, 0);
-  entranceGroup.add(rightPillar);
-
-  const archTopGeom = new THREE.BoxGeometry(entranceArchWidth + 6, 8, 6);
-  const archTop = new THREE.Mesh(archTopGeom, yellowMaterial);
-  archTop.position.set(0, entrancePillarHeight + 4, 0);
-  entranceGroup.add(archTop);
-
-  entranceGroup.position.set(0, 0, shortWingWidth / 2 + wingDepth / 2);
-  college.add(entranceGroup);
-
 
   // Courtyard Ground
   const groundGeom = new THREE.PlaneGeometry(courtyardWidth, courtyardDepth);
