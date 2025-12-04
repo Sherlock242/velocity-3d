@@ -9,7 +9,7 @@ export function createOpenCollegeBuilding() {
   const shortWingWidth = 350;
   const wingDepth = 30;
   const numFloors = 1; // Only one story
-  const floorHeight = 50;
+  const floorHeight = 80;
 
   const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
   const greenMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22, roughness: 0.7 });
