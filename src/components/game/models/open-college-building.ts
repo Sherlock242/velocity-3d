@@ -138,7 +138,7 @@ export function createOpenCollegeBuilding() {
   const stageGeom = new THREE.BoxGeometry(stageWidth, stageHeight, stageDepth);
   const stage = new THREE.Mesh(stageGeom, stageMaterial);
   stage.position.y = stageHeight / 2;
-  stage.position.z = 120; // Center the stage in the courtyard
+  stage.position.z = 180; // Center the stage in the courtyard
   stage.castShadow = true;
   stage.receiveShadow = true;
   college.add(stage);
