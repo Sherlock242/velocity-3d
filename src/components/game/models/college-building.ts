@@ -124,6 +124,12 @@ export function createCollegeBuilding() {
                 innerWall.position.z = -depth / 4; // Position it as the inner half
                 floorGroup.add(innerWall);
 
+                const outerWallGeom = new THREE.BoxGeometry(width, floorHeight, depth / 2);
+                const outerWall = new THREE.Mesh(outerWallGeom, creamYellowMaterial);
+                outerWall.position.y = floorHeight / 2;
+                outerWall.position.z = depth / 4;
+                floorGroup.add(outerWall);
+
                 // Add corridor floor
                 const corridorGeom = new THREE.PlaneGeometry(width, depth);
                 const corridorMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
