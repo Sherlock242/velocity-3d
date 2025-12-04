@@ -107,6 +107,13 @@ export function createCollegeBuilding() {
               rightPillar.position.set(entranceWidth / 2 - 2 + entranceOffset, pillarHeight / 2, depth / 2);
               floorGroup.add(rightPillar);
 
+              const corridorGeom = new THREE.PlaneGeometry(width, depth);
+              const corridorMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+              const corridor = new THREE.Mesh(corridorGeom, corridorMaterial);
+              corridor.rotation.x = -Math.PI / 2;
+              corridor.position.y = 0.2;
+              floorGroup.add(corridor);
+
           } else {
             if (i === 0) {
                 // Ground floor: Only create inner half of the wall
