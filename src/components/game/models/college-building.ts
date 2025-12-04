@@ -15,8 +15,11 @@ export function createCollegeBuilding() {
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
   const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x55903c });
 
-  function createWing(width: number, depth: number) {
+  function createWing(width: number, depth: number, isFrontWing = false) {
       const wing = new THREE.Group();
+
+      const entranceWidth = 40;
+      const entranceCutoutWidth = entranceWidth + 4; // To avoid z-fighting
 
       for (let i = 0; i < numFloors; i++) {
           const yPos = i * floorHeight;
@@ -26,8 +29,42 @@ export function createCollegeBuilding() {
           // Solid walls for front and back
           const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
           const mainWall = new THREE.Mesh(wallGeom, redMaterial);
-          mainWall.position.y = floorHeight / 2;
-          floorGroup.add(mainWall);
+          
+          if(isFrontWing && i === 0) {
+              const wallShape = new THREE.Shape();
+              const hw = width / 2;
+              const hh = floorHeight;
+              const hd = depth / 2;
+              wallShape.moveTo(-hw, 0);
+              wallShape.lineTo(hw, 0);
+              wallShape.lineTo(hw, hh);
+              wallShape.lineTo(-hw, hh);
+              wallShape.lineTo(-hw, 0);
+
+              const holeX = -entranceCutoutWidth / 2;
+              const holeY = 0;
+              const holeWidth = entranceCutoutWidth;
+              const holeHeight = floorHeight;
+              const holeShape = new THREE.Path();
+              holeShape.moveTo(holeX, holeY);
+              holeShape.lineTo(holeX + holeWidth, holeY);
+              holeShape.lineTo(holeX + holeWidth, holeY + holeHeight);
+              holeShape.lineTo(holeX, holeY + holeHeight);
+              holeShape.lineTo(holeX, holeY);
+              wallShape.holes.push(holeShape);
+
+              const extrudeSettings = { depth: depth, bevelEnabled: false };
+              const wallWithHoleGeom = new THREE.ExtrudeGeometry(wallShape, extrudeSettings);
+              wallWithHoleGeom.translate(0, -hh / 2, -hd);
+              const wallWithHole = new THREE.Mesh(wallWithHoleGeom, redMaterial);
+              wallWithHole.position.y = hh/2;
+              floorGroup.add(wallWithHole);
+
+          } else {
+            mainWall.position.y = floorHeight / 2;
+            floorGroup.add(mainWall);
+          }
+
 
           // Details for the front-facing (courtyard) side
           const frontBorder = new THREE.Mesh(new THREE.BoxGeometry(width, 1, 1.2), yellowMaterial);
@@ -73,7 +110,7 @@ export function createCollegeBuilding() {
   college.add(backWing);
   
   // Front Wing (long)
-  const frontWing = createWing(longWingWidth, wingDepth);
+  const frontWing = createWing(longWingWidth, wingDepth, true);
   frontWing.position.z = shortWingWidth / 2;
   frontWing.name = 'frontWing';
   college.add(frontWing);
@@ -91,6 +128,30 @@ export function createCollegeBuilding() {
   rightWing.rotation.y = -Math.PI / 2;
   rightWing.name = 'rightWing';
   college.add(rightWing);
+
+  // Entrance Archway
+  const entranceGroup = new THREE.Group();
+  const entranceArchWidth = 30;
+  const entranceArchHeight = 40;
+  const entrancePillarHeight = floorHeight;
+
+  const archPillarGeom = new THREE.BoxGeometry(6, entrancePillarHeight, 6);
+  const leftPillar = new THREE.Mesh(archPillarGeom, yellowMaterial);
+  leftPillar.position.set(-entranceArchWidth/2, entrancePillarHeight/2, 0);
+  entranceGroup.add(leftPillar);
+
+  const rightPillar = new THREE.Mesh(archPillarGeom, yellowMaterial);
+  rightPillar.position.set(entranceArchWidth/2, entrancePillarHeight/2, 0);
+  entranceGroup.add(rightPillar);
+
+  const archTopGeom = new THREE.BoxGeometry(entranceArchWidth + 6, 8, 6);
+  const archTop = new THREE.Mesh(archTopGeom, yellowMaterial);
+  archTop.position.set(0, entrancePillarHeight + 4, 0);
+  entranceGroup.add(archTop);
+
+  entranceGroup.position.set(0, 0, shortWingWidth / 2 + wingDepth / 2);
+  college.add(entranceGroup);
+
 
   // Courtyard Ground
   const groundGeom = new THREE.PlaneGeometry(courtyardWidth, courtyardDepth);
@@ -117,5 +178,3 @@ export function createCollegeBuilding() {
 
   return collegeGroup;
 }
-
-    
