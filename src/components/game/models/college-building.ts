@@ -325,7 +325,7 @@ export function createCollegeBuilding() {
   platform2.position.z = platform1.position.z - rampLength - platformDepth;
 
   // Ramp from 2nd to 3rd floor (extended to front wing)
-  const ramp3Length = rampLength + 27;
+  const ramp3Length = rampLength + 24;
   const ramp3Geom = new THREE.BoxGeometry(rampWidth, rampThickness, ramp3Length);
   const ramp3 = new THREE.Mesh(ramp3Geom, rampMaterial);
   ramp3.position.y = rampRise * 2.3; // Midpoint for 3rd floor ramp
