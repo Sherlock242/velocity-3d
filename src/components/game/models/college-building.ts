@@ -176,6 +176,33 @@ export function createCollegeBuilding() {
 
       return wing;
   }
+
+  function createRailing(length: number) {
+    const railingGroup = new THREE.Group();
+    const railingMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
+    const railingHeight = 4;
+    const pillarHeight = 5;
+    const pillarRadius = 0.25;
+    const numPillars = Math.floor(length / 10) + 1;
+
+    for (let i = 0; i < numPillars; i++) {
+        const pillar = new THREE.Mesh(
+            new THREE.CylinderGeometry(pillarRadius, pillarRadius, pillarHeight),
+            railingMaterial
+        );
+        pillar.position.z = -length / 2 + i * (length / (numPillars - 1));
+        pillar.position.y = pillarHeight / 2 - railingHeight / 2;
+        railingGroup.add(pillar);
+    }
+    const topRail = new THREE.Mesh(
+        new THREE.BoxGeometry(0.5, 0.5, length),
+        railingMaterial
+    );
+    topRail.position.y = pillarHeight - railingHeight / 2;
+    railingGroup.add(topRail);
+
+    return railingGroup;
+}
   
   const college = new THREE.Group();
   college.name = 'collegeBuilding';
@@ -233,12 +260,25 @@ export function createCollegeBuilding() {
   ramp1.position.y = rampRise / 2;
   ramp1.position.z = (shortWingWidth - wingDepth) / 2 - rampLength / 2;
   ramp1.rotation.x = -Math.atan(rampRise / rampLength);
+  const leftRailing1 = createRailing(rampLength);
+  leftRailing1.position.x = -rampWidth / 2;
+  ramp1.add(leftRailing1);
+  const rightRailing1 = createRailing(rampLength);
+  rightRailing1.position.x = rampWidth / 2;
+  ramp1.add(rightRailing1);
   
   // Platform on the 1st floor
   const platform1 = new THREE.Mesh(new THREE.BoxGeometry(platformWidth, rampThickness, platformDepth), rampMaterial);
   platform1.position.y = rampRise;
   platform1.position.x = (platformWidth - rampWidth) / 2;
   platform1.position.z = shortWingWidth / 2; // Position inside the wall
+  const p1_railing1 = createRailing(platformWidth);
+  p1_railing1.rotation.y = Math.PI / 2;
+  p1_railing1.position.z = -platformDepth / 2;
+  platform1.add(p1_railing1);
+  const p1_railing2 = createRailing(platformDepth);
+  p1_railing2.position.x = platformWidth / 2;
+  platform1.add(p1_railing2);
 
   // Ramp from 1st to 2nd floor
   const ramp2Geom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
@@ -247,21 +287,41 @@ export function createCollegeBuilding() {
   ramp2.position.x = platformWidth - rampWidth;
   ramp2.position.z = platform1.position.z - rampLength / 2 - platformDepth / 2;
   ramp2.rotation.x = Math.atan(rampRise / rampLength);
+  const leftRailing2 = createRailing(rampLength);
+  leftRailing2.position.x = -rampWidth / 2;
+  ramp2.add(leftRailing2);
+  const rightRailing2 = createRailing(rampLength);
+  rightRailing2.position.x = rampWidth / 2;
+  ramp2.add(rightRailing2);
 
   // Platform on the 2nd floor
   const platform2 = new THREE.Mesh(new THREE.BoxGeometry(platformWidth, rampThickness, platformDepth), rampMaterial);
   platform2.position.y = rampRise * 2;
   platform2.position.x = platform1.position.x;
   platform2.position.z = platform1.position.z - rampLength - platformDepth;
+  const p2_railing1 = createRailing(platformWidth);
+  p2_raailing1.rotation.y = Math.PI / 2;
+  p2_railing1.position.z = platformDepth / 2;
+  platform2.add(p2_railing1);
+  const p2_railing2 = createRailing(platformDepth);
+  p2_railing2.position.x = platformWidth / 2;
+  platform2.add(p2_railing2);
+
 
   // Ramp from 2nd to 3rd floor (extended to front wing)
   const ramp3Length = rampLength + 40;
   const ramp3Geom = new THREE.BoxGeometry(rampWidth, rampThickness, ramp3Length);
   const ramp3 = new THREE.Mesh(ramp3Geom, rampMaterial);
-  ramp3.position.y = rampRise * 2.5; // Midpoint for 3rd floor ramp
+  ramp3.position.y = rampRise * 2.4; // Midpoint for 3rd floor ramp
   ramp3.position.x = platform2.position.x - 30;
-  ramp3.position.z = platform2.position.z + ramp3Length / 2;
+  ramp3.position.z = platform2.position.z + ramp3Length / 2 - 15;
   ramp3.rotation.x = -Math.atan(rampRise / ramp3Length);
+  const leftRailing3 = createRailing(ramp3Length);
+  leftRailing3.position.x = -rampWidth / 2;
+  ramp3.add(leftRailing3);
+  const rightRailing3 = createRailing(ramp3Length);
+  rightRailing3.position.x = rampWidth / 2;
+  ramp3.add(rightRailing3);
 
   // Shed for the 3rd ramp
   const ramp3Shed = createWalkwayShed(ramp3Length, rampWidth, true);
