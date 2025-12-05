@@ -255,15 +255,16 @@ export function createCollegeBuilding() {
   platform2.position.z = platform1.position.z - rampLength - platformDepth;
 
   // Ramp from 2nd to 3rd floor (extended to front wing)
-  const ramp3Geom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
+  const ramp3Length = rampLength + 40;
+  const ramp3Geom = new THREE.BoxGeometry(rampWidth, rampThickness, ramp3Length);
   const ramp3 = new THREE.Mesh(ramp3Geom, rampMaterial);
   ramp3.position.y = rampRise * 2.5; // Midpoint for 3rd floor ramp
   ramp3.position.x = platform2.position.x - 30;
-  ramp3.position.z = platform2.position.z + rampLength / 2 + 40;
-  ramp3.rotation.x = -Math.atan(rampRise / rampLength);
+  ramp3.position.z = platform2.position.z + ramp3Length / 2;
+  ramp3.rotation.x = -Math.atan(rampRise / ramp3Length);
 
   // Shed for the 3rd ramp
-  const ramp3Shed = createWalkwayShed(rampLength, rampWidth, true);
+  const ramp3Shed = createWalkwayShed(ramp3Length, rampWidth, true);
   ramp3Shed.position.copy(ramp3.position);
   ramp3Shed.position.y += 10; // Adjust height to be above the ramp
   ramp3Shed.rotation.copy(ramp3.rotation);
