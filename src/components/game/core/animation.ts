@@ -314,13 +314,18 @@ export function createAnimationLoop(
                 const colliderBox = new THREE.Box3().setFromObject(collider);
                 if (playerBox.intersectsBox(colliderBox)) {
                     const isSpecialBuilding = collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding';
+                    const isCompoundWall = collider.name === 'compoundWall';
+                    
                     let slowdown = 0.1;
                     if (isSpecialBuilding) {
                         if (controlModeRef.current === 'car') slowdown = 0.5;
                     }
                     velocityRef.current.multiplyScalar(slowdown);
                     
-                    if (!isSpecialBuilding) {
+                    if (isCompoundWall) {
+                        const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(1);
+                        player.position.add(knockback.multiplyScalar(delta * 60));
+                    } else if (!isSpecialBuilding) {
                         const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
                         player.position.add(knockback.multiplyScalar(delta * 60));
                     }
