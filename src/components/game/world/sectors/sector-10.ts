@@ -202,7 +202,7 @@ export function createSector10({
   waterTankStructure.add(tank2);
 
   // Position it within the open college courtyard area
-  waterTankStructure.position.set(50, 0, 80);
+  waterTankStructure.position.set(-120, 0, 100);
   campusContainer.add(waterTankStructure);
   staticCollidersRef.current.push(waterTankStructure);
 
