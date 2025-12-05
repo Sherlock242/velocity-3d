@@ -13,7 +13,7 @@ import type { GameState } from './state';
 let currentSteerAngle = 0;
 let previousSector = -1;
 
-const tireMarkGeometry = new THREE.PlaneGeometry(1, 4);
+const tireMarkGeometry = new THREE.PlaneGeometry(0.3, 1);
 const tireMarkMaterial = new THREE.MeshStandardMaterial({
     color: 0x000000,
     transparent: true,
@@ -150,16 +150,30 @@ export function createAnimationLoop(
                 skidSoundRef.current.setVolume(isDrifting ? speedRatio * steerRatio * 0.2 : 0);
             }
 
-            if (isDrifting) {
-                const tireMark = new THREE.Mesh(tireMarkGeometry, tireMarkMaterial.clone());
-                tireMark.position.copy(player.position).setY(0.13);
-                tireMark.quaternion.copy(player.quaternion);
-                tireMark.rotateX(-Math.PI / 2);
-                scene.add(tireMark);
-                tireMarksRef.current.push({ mesh: tireMark, createdAt: now });
+            const wheels = player.userData.parts.wheels as THREE.Mesh[];
+
+            if (isDrifting && wheels && wheels.length >= 4) {
+                const rearLeftWheel = wheels[2];
+                const rearRightWheel = wheels[3];
+            
+                const rearLeftPos = new THREE.Vector3();
+                rearLeftWheel.getWorldPosition(rearLeftPos);
+            
+                const rearRightPos = new THREE.Vector3();
+                rearRightWheel.getWorldPosition(rearRightPos);
+            
+                const markPositions = [rearLeftPos, rearRightPos];
+            
+                markPositions.forEach(pos => {
+                    const tireMark = new THREE.Mesh(tireMarkGeometry, tireMarkMaterial.clone());
+                    tireMark.position.copy(pos).setY(0.13);
+                    tireMark.quaternion.copy(player.quaternion);
+                    tireMark.rotateX(-Math.PI / 2);
+                    scene.add(tireMark);
+                    tireMarksRef.current.push({ mesh: tireMark, createdAt: now });
+                });
             }
 
-            const wheels = player.userData.parts.wheels;
             const wheelRotationSpeed = velocityRef.current.length() * delta * 2;
             wheels.forEach((wheel: THREE.Mesh) => wheel.rotation.x -= wheelRotationSpeed);
             wheels[0].rotation.y = wheels[1].rotation.y = currentSteerAngle * 0.4;
@@ -358,3 +372,5 @@ export function createAnimationLoop(
     };
     return animate;
 }
+
+    
