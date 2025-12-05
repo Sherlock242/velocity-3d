@@ -103,18 +103,22 @@ export function createAnimationLoop(
         });
 
         if (player && controlModeRef.current === 'car' && !isTransformingRef.current) {
-            const maxSpeed = 100;
-            const acceleration = 80;
-            const turnSpeed = 2;
-            const friction = 0.98;
+            const maxSpeed = 70; // 252 km/h
+            const acceleration = 30;
+            const baseTurnSpeed = 2.5; 
+            const friction = 0.985;
 
             let targetSteerDirection = 0;
             if (inputRef.current.left) targetSteerDirection = 1;
             if (inputRef.current.right) targetSteerDirection = -1;
 
             currentSteerAngle += (targetSteerDirection - currentSteerAngle) * 0.1;
+            
+            const currentSpeed = velocityRef.current.length();
+            const speedRatioForTurning = Math.min(1, currentSpeed / maxSpeed);
+            const turnSpeed = baseTurnSpeed * (1 - speedRatioForTurning * 0.7);
 
-            if (velocityRef.current.length() > 0.1) {
+            if (currentSpeed > 0.1) {
                 player.rotation.y += currentSteerAngle * turnSpeed * delta;
             }
 
