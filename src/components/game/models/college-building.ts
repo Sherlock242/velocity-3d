@@ -223,20 +223,21 @@ export function createCollegeBuilding() {
   const rampRise = floorHeight;
   const platformWidth = 100;
   const platformDepth = 40;
-  const rampLength = shortWingWidth - wingDepth - platformDepth;
+  
+  const rampLength = shortWingWidth - wingDepth; // Extend ramp length
 
   // Ramp from ground to 1st floor
   const ramp1Geom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
   const ramp1 = new THREE.Mesh(ramp1Geom, rampMaterial);
   ramp1.position.y = rampRise / 2;
-  ramp1.position.z = -platformDepth / 2;
+  ramp1.position.z = (shortWingWidth - wingDepth) / 2 - rampLength / 2;
   ramp1.rotation.x = -Math.atan(rampRise / rampLength);
   
   // Platform on the 1st floor
   const platform1 = new THREE.Mesh(new THREE.BoxGeometry(platformWidth, rampThickness, platformDepth), rampMaterial);
   platform1.position.y = rampRise;
   platform1.position.x = (platformWidth - rampWidth) / 2;
-  platform1.position.z = (shortWingWidth - wingDepth) / 2 - platformDepth / 2;
+  platform1.position.z = shortWingWidth / 2; // Position inside the wall
 
   // Ramp from 1st to 2nd floor
   const ramp2Geom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
@@ -253,13 +254,12 @@ export function createCollegeBuilding() {
   platform2.position.z = platform1.position.z - rampLength - platformDepth;
 
   // Ramp from 2nd to 3rd floor (extended to front wing)
-  const newRampLength = (shortWingWidth / 2 - wingDepth / 2) - platform2.position.z;
-  const ramp3Geom = new THREE.BoxGeometry(rampWidth, rampThickness, newRampLength);
+  const ramp3Geom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
   const ramp3 = new THREE.Mesh(ramp3Geom, rampMaterial);
-  ramp3.position.y = rampRise * 2.4;
+  ramp3.position.y = rampRise * 2.5; // Midpoint for 3rd floor ramp
   ramp3.position.x = platform2.position.x - 30;
-  ramp3.position.z = platform2.position.z + newRampLength / 2;
-  ramp3.rotation.x = -Math.atan(rampRise / newRampLength);
+  ramp3.position.z = platform2.position.z + rampLength / 2;
+  ramp3.rotation.x = -Math.atan(rampRise / rampLength);
 
 
   const walkableRampGroup = new THREE.Group();
