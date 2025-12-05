@@ -11,7 +11,7 @@ export function createOpenCollegeBuilding() {
   const numFloors = 4;
   const floorHeight = 25;
 
-  const redMaterial = new THREE.MeshStandardMaterial({ color: 0x9a3e3e, roughness: 0.8 });
+  const greenMaterial = new THREE.MeshStandardMaterial({ color: 0x006400, roughness: 0.8 }); // Dark Green
   const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
   const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
 
@@ -66,12 +66,12 @@ export function createOpenCollegeBuilding() {
         topLattice.position.set(0, floorHeight - latticeHeight / 2, zOffset + (isFront ? 1 : -1));
         sectionGroup.add(topLattice);
 
-        const redPanel = new THREE.Mesh(
+        const greenPanel = new THREE.Mesh(
             new THREE.BoxGeometry(sectionWidth - 4, panelHeight, 2),
-            redMaterial
+            greenMaterial
         );
-        redPanel.position.set(0, floorHeight - latticeHeight - panelHeight / 2, zOffset);
-        sectionGroup.add(redPanel);
+        greenPanel.position.set(0, floorHeight - latticeHeight - panelHeight / 2, zOffset);
+        sectionGroup.add(greenPanel);
         
         const bottomLattice = createLattice(sectionWidth - 4, latticeHeight * 2, zOffset + (isFront ? 1 : -1));
         bottomLattice.position.set(0, floorHeight - latticeHeight - panelHeight - latticeHeight, zOffset + (isFront ? 1 : -1));
