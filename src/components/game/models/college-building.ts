@@ -180,8 +180,8 @@ export function createCollegeBuilding() {
   function createRailing(length: number) {
     const railingGroup = new THREE.Group();
     const railingMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
-    const railingHeight = 4;
-    const pillarHeight = 5;
+    const railingHeight = 8;
+    const pillarHeight = 8;
     const pillarRadius = 0.25;
     const numPillars = Math.floor(length / 10) + 1;
 
@@ -272,13 +272,6 @@ export function createCollegeBuilding() {
   platform1.position.y = rampRise;
   platform1.position.x = (platformWidth - rampWidth) / 2;
   platform1.position.z = shortWingWidth / 2; // Position inside the wall
-  const p1_railing1 = createRailing(platformWidth);
-  p1_railing1.rotation.y = Math.PI / 2;
-  p1_railing1.position.z = -platformDepth / 2;
-  platform1.add(p1_railing1);
-  const p1_railing2 = createRailing(platformDepth);
-  p1_railing2.position.x = platformWidth / 2;
-  platform1.add(p1_railing2);
 
   // Ramp from 1st to 2nd floor
   const ramp2Geom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
@@ -299,13 +292,6 @@ export function createCollegeBuilding() {
   platform2.position.y = rampRise * 2;
   platform2.position.x = platform1.position.x;
   platform2.position.z = platform1.position.z - rampLength - platformDepth;
-  const p2_railing1 = createRailing(platformWidth);
-  p2_railing1.rotation.y = Math.PI / 2;
-  p2_railing1.position.z = platformDepth / 2;
-  platform2.add(p2_railing1);
-  const p2_railing2 = createRailing(platformDepth);
-  p2_railing2.position.x = platformWidth / 2;
-  platform2.add(p2_railing2);
 
 
   // Ramp from 2nd to 3rd floor (extended to front wing)
