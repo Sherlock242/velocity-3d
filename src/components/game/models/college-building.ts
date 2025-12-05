@@ -114,17 +114,6 @@ export function createCollegeBuilding() {
                   floorGroup.add(innerWall);
               }
 
-              // Add a solid ground floor plane for raycasting
-              const groundFloorPlaneGeom = new THREE.PlaneGeometry(width, depth);
-              const groundFloorPlane = new THREE.Mesh(groundFloorPlaneGeom, new THREE.MeshStandardMaterial({color: 0x888888, visible: false}));
-              groundFloorPlane.rotation.x = -Math.PI / 2;
-              groundFloorPlane.position.y = 0.1; // Slightly above ground
-              floorGroup.add(groundFloorPlane);
-              
-              const walkablePlane = groundFloorPlane.clone();
-              walkablePlane.applyMatrix4(floorGroup.matrixWorld);
-              walkableRampGroup.add(walkablePlane);
-
           } else {
               // Upper floors: Create the full solid wall
               const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
@@ -197,19 +186,17 @@ export function createCollegeBuilding() {
             }
           }
           wing.add(floorGroup);
+          
+          floorGroup.updateMatrixWorld(true);
+          const floorPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(width, depth),
+            new THREE.MeshBasicMaterial({ visible: false })
+          );
+          floorPlane.rotation.x = -Math.PI / 2;
+          floorPlane.position.y = 0.1;
+          floorPlane.applyMatrix4(floorGroup.matrixWorld);
+          walkableRampGroup.add(floorPlane);
 
-          // Add walkable floor plane for upper floors
-          if (i > 0) {
-            const floorPlaneGeom = new THREE.PlaneGeometry(width, depth);
-            const floorPlane = new THREE.Mesh(floorPlaneGeom, new THREE.MeshStandardMaterial({color: 0x888888, visible: false}));
-            floorPlane.rotation.x = -Math.PI / 2;
-            floorPlane.position.y = 0.1;
-            floorGroup.add(floorPlane);
-            
-            const walkablePlane = floorPlane.clone();
-            walkablePlane.applyMatrix4(floorGroup.matrixWorld);
-            walkableRampGroup.add(walkablePlane);
-          }
       }
 
       return wing;
