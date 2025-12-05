@@ -149,11 +149,26 @@ export function createSector10({
 
 
   // --- College Building ---
-  const college = createCollegeBuilding();
-  college.scale.set(0.6, 0.6, 0.6);
-  college.position.set(-80, 0, -120);
-  campusContainer.add(college);
-  staticCollidersRef.current.push(college);
+  const collegeBuilding = createCollegeBuilding();
+  collegeBuilding.scale.set(0.6, 0.6, 0.6);
+  collegeBuilding.position.set(-80, 0, -120);
+  campusContainer.add(collegeBuilding);
+  
+  const collegeBuildingForCollision = collegeBuilding.getObjectByName('collegeBuilding');
+  if (collegeBuildingForCollision) {
+      staticCollidersRef.current.push(collegeBuildingForCollision as THREE.Group);
+  }
+
+  // Find the ramp and pass its mesh reference up
+  const collegeRampObject = collegeBuilding.getObjectByName('collegeRamp');
+  if (collegeRampObject instanceof THREE.Group) {
+      collegeRampMeshRef.current = collegeRampObject;
+  }
+  const walkableFloorsObject = collegeBuilding.getObjectByName('walkableFloors');
+  if (walkableFloorsObject instanceof THREE.Group && collegeRampMeshRef.current) {
+      collegeRampMeshRef.current.add(walkableFloorsObject);
+  }
+
 
   // --- Water Tank Structure ---
   const waterTankStructure = new THREE.Group();
@@ -185,9 +200,12 @@ export function createSector10({
   waterTankStructure.add(tank2);
 
   // Position it within the red college courtyard area
-  waterTankStructure.position.set(-80, 0, 0);
-  college.add(waterTankStructure);
-  staticCollidersRef.current.push(waterTankStructure);
+  const collegeMainBuilding = collegeBuilding.getObjectByName('collegeBuilding');
+  if (collegeMainBuilding) {
+    waterTankStructure.position.set(-80, 0, 0);
+    collegeMainBuilding.add(waterTankStructure);
+    staticCollidersRef.current.push(waterTankStructure);
+  }
 
 
   // --- Open College Building ---
@@ -206,14 +224,6 @@ export function createSector10({
   scoutsBuilding.rotation.y = Math.PI;
   campusContainer.add(scoutsBuilding);
   staticCollidersRef.current.push(scoutsBuilding);
-
-
-  // Find the ramp and pass its mesh reference up
-  const collegeRampObject = college.getObjectByName('collegeRamp');
-  if (collegeRampObject instanceof THREE.Group) {
-      collegeRampMeshRef.current = collegeRampObject;
-  }
-
 
   sectorGroup.add(campusContainer);
 
