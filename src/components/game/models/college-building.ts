@@ -100,6 +100,13 @@ export function createCollegeBuilding() {
                   floorGroup.add(innerWall);
               }
 
+              // Add a solid ground floor plane for raycasting
+              const groundFloorPlaneGeom = new THREE.PlaneGeometry(width, depth);
+              const groundFloorPlane = new THREE.Mesh(groundFloorPlaneGeom, new THREE.MeshStandardMaterial({color: 0x888888, visible: false}));
+              groundFloorPlane.rotation.x = -Math.PI / 2;
+              groundFloorPlane.position.y = yPos + 0.1; // Slightly above ground
+              walkableFloors.add(groundFloorPlane);
+
           } else {
               // Upper floors: Create the full solid wall
               const wallGeom = new THREE.BoxGeometry(width, floorHeight, depth);
