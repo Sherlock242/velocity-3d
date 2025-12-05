@@ -189,7 +189,6 @@ export function createCollegeBuilding() {
   function createRailing(length: number) {
     const railingGroup = new THREE.Group();
     const railingMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
-    const railingHeight = 8;
     const pillarHeight = 12;
     const pillarRadius = 0.25;
     const numPillars = Math.floor(length / 10) + 1;
@@ -200,14 +199,14 @@ export function createCollegeBuilding() {
             railingMaterial
         );
         pillar.position.z = -length / 2 + i * (length / (numPillars - 1));
-        pillar.position.y = pillarHeight / 2 - railingHeight / 2;
+        pillar.position.y = pillarHeight / 2;
         railingGroup.add(pillar);
     }
     const topRail = new THREE.Mesh(
         new THREE.BoxGeometry(0.5, 0.5, length),
         railingMaterial
     );
-    topRail.position.y = pillarHeight - railingHeight / 2;
+    topRail.position.y = pillarHeight;
     railingGroup.add(topRail);
 
     return railingGroup;
@@ -253,6 +252,7 @@ export function createCollegeBuilding() {
   const lawn = new THREE.Mesh(lawnGeom, lawnMaterial);
   lawn.rotation.x = -Math.PI / 2;
   courtyard.add(lawn);
+  walkableRampGroup.add(lawn);
 
   // --- RAMP ---
   const rampGroup = new THREE.Group();
