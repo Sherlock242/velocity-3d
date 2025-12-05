@@ -12,7 +12,7 @@ export function createCollegeBuilding() {
   const numFloors = 4;
   const floorHeight = 30;
 
-  const redMaterial = new THREE.MeshStandardMaterial({ color: 0xab4747, roughness: 0.8 });
+  const redMaterial = new THREE.MeshStandardMaterial({ color: 0xb54545, roughness: 0.8 });
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
   const darkGrayMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
   

@@ -38,7 +38,7 @@ export function createSector10({
   function createWallSegment(width: number, depth: number) {
     const segment = new THREE.Group();
     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
-    const redBorderMaterial = new THREE.MeshStandardMaterial({ color: 0xab4747 });
+    const redBorderMaterial = new THREE.MeshStandardMaterial({ color: 0xb54545 });
     const mainWallHeight = wallHeight * 0.9;
     const borderHeight = wallHeight * 0.1;
 
