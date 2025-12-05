@@ -155,23 +155,6 @@ export function createSector10({
   campusContainer.add(college);
   staticCollidersRef.current.push(college);
 
-  // --- Open College Building ---
-  const openCollegeBuilding = createOpenCollegeBuilding();
-  openCollegeBuilding.scale.set(0.6, 0.6, 0.6);
-  openCollegeBuilding.position.set(-120, 0, 120); // Bottom-left corner
-  openCollegeBuilding.rotation.y = Math.PI;
-  campusContainer.add(openCollegeBuilding);
-  staticCollidersRef.current.push(openCollegeBuilding);
-
-  // --- Scouts Building ---
-  const scoutsBuilding = createScoutsBuilding();
-  scoutsBuilding.scale.set(1.0, 1.0, 1.0);
-  // Position it in the bottom right
-  scoutsBuilding.position.set(70, 0, 195);
-  scoutsBuilding.rotation.y = Math.PI;
-  campusContainer.add(scoutsBuilding);
-  staticCollidersRef.current.push(scoutsBuilding);
-
   // --- Water Tank Structure ---
   const waterTankStructure = new THREE.Group();
   waterTankStructure.name = 'waterTankStructure';
@@ -201,10 +184,29 @@ export function createSector10({
   tank2.castShadow = true;
   waterTankStructure.add(tank2);
 
-  // Position it within the open college courtyard area
-  waterTankStructure.position.set(-120, 0, 100);
-  campusContainer.add(waterTankStructure);
+  // Position it within the red college courtyard area
+  waterTankStructure.position.set(-150, 0, 0);
+  college.add(waterTankStructure);
   staticCollidersRef.current.push(waterTankStructure);
+
+
+  // --- Open College Building ---
+  const openCollegeBuilding = createOpenCollegeBuilding();
+  openCollegeBuilding.scale.set(0.6, 0.6, 0.6);
+  openCollegeBuilding.position.set(-120, 0, 120); // Bottom-left corner
+  openCollegeBuilding.rotation.y = Math.PI;
+  campusContainer.add(openCollegeBuilding);
+  staticCollidersRef.current.push(openCollegeBuilding);
+
+  // --- Scouts Building ---
+  const scoutsBuilding = createScoutsBuilding();
+  scoutsBuilding.scale.set(1.0, 1.0, 1.0);
+  // Position it in the bottom right
+  scoutsBuilding.position.set(70, 0, 195);
+  scoutsBuilding.rotation.y = Math.PI;
+  campusContainer.add(scoutsBuilding);
+  staticCollidersRef.current.push(scoutsBuilding);
+
 
   // Find the ramp and pass its mesh reference up
   const collegeRampObject = college.getObjectByName('collegeRamp');
