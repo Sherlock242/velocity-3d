@@ -1,5 +1,6 @@
 
 import * as THREE from 'three';
+import { createWalkwayShed } from './walkway-shed';
 
 export function createCollegeBuilding() {
   const collegeGroup = new THREE.Group();
@@ -258,15 +259,22 @@ export function createCollegeBuilding() {
   const ramp3 = new THREE.Mesh(ramp3Geom, rampMaterial);
   ramp3.position.y = rampRise * 2.5; // Midpoint for 3rd floor ramp
   ramp3.position.x = platform2.position.x - 30;
-  ramp3.position.z = platform2.position.z + rampLength / 2 + 20;
+  ramp3.position.z = platform2.position.z + rampLength / 2 + 40;
   ramp3.rotation.x = -Math.atan(rampRise / rampLength);
+
+  // Shed for the 3rd ramp
+  const ramp3Shed = createWalkwayShed(rampLength, rampWidth, true);
+  ramp3Shed.position.copy(ramp3.position);
+  ramp3Shed.position.y += 10; // Adjust height to be above the ramp
+  ramp3Shed.rotation.copy(ramp3.rotation);
+  ramp3Shed.rotation.y = Math.PI; // Correct orientation
 
 
   const walkableRampGroup = new THREE.Group();
   walkableRampGroup.add(ramp1, platform1, ramp2, platform2, ramp3);
   walkableRampGroup.name = 'collegeRamp';
   
-  rampGroup.add(walkableRampGroup);
+  rampGroup.add(walkableRampGroup, ramp3Shed);
   rampGroup.position.set(0, 0.2, 0); 
   courtyard.add(rampGroup);
 
