@@ -300,7 +300,7 @@ export function createCollegeBuilding() {
   platform2.position.x = platform1.position.x;
   platform2.position.z = platform1.position.z - rampLength - platformDepth;
   const p2_railing1 = createRailing(platformWidth);
-  p2_raailing1.rotation.y = Math.PI / 2;
+  p2_railing1.rotation.y = Math.PI / 2;
   p2_railing1.position.z = platformDepth / 2;
   platform2.add(p2_railing1);
   const p2_railing2 = createRailing(platformDepth);
