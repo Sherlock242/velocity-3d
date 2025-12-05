@@ -144,7 +144,7 @@ export function createSector10({
   campusContainer.add(pathToCollegeShed);
 
   const corridorShed = createWalkwayShed(shedCorridorLength, pathWidth);
-  corridorShed.position.set(corridorShedX, 0, corridorShedZ);
+  corridorShed.position.set(corridorShedX, 0, corridorShedZ + 2);
   campusContainer.add(corridorShed);
 
 
