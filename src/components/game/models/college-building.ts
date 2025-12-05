@@ -226,8 +226,8 @@ export function createCollegeBuilding() {
   const rampLength = shortWingWidth - wingDepth - platformDepth;
 
   // Ramp from ground to 1st floor
-  const rampGeom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
-  const ramp1 = new THREE.Mesh(rampGeom, rampMaterial);
+  const ramp1Geom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
+  const ramp1 = new THREE.Mesh(ramp1Geom, rampMaterial);
   ramp1.position.y = rampRise / 2;
   ramp1.position.z = -platformDepth / 2;
   ramp1.rotation.x = -Math.atan(rampRise / rampLength);
@@ -254,8 +254,24 @@ export function createCollegeBuilding() {
   platform2.position.x = platform1.position.x;
   platform2.position.z = platform1.position.z - rampLength - platformDepth;
 
+  // Ramp from 2nd to 3rd floor
+  const ramp3Geom = new THREE.BoxGeometry(rampWidth, rampThickness, rampLength);
+  const ramp3 = new THREE.Mesh(ramp3Geom, rampMaterial);
+  ramp3.position.y = rampRise * 2 + rampRise / 2;
+  ramp3.position.x = platform2.position.x - platformWidth + rampWidth;
+  ramp3.position.z = platform2.position.z + rampLength / 2 + platformDepth / 2;
+  ramp3.rotation.x = -Math.atan(rampRise / rampLength);
+
+  // Platform on the 3rd floor
+  const platform3Geom = new THREE.BoxGeometry(platformWidth, rampThickness, platformDepth);
+  const platform3 = new THREE.Mesh(platform3Geom, rampMaterial);
+  platform3.position.y = rampRise * 3;
+  platform3.position.x = platform2.position.x;
+  platform3.position.z = platform2.position.z + rampLength + platformDepth;
+
+
   const walkableRampGroup = new THREE.Group();
-  walkableRampGroup.add(ramp1, platform1, ramp2, platform2);
+  walkableRampGroup.add(ramp1, platform1, ramp2, platform2, ramp3, platform3);
   walkableRampGroup.name = 'collegeRamp';
   
   rampGroup.add(walkableRampGroup);
