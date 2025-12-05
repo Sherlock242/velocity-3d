@@ -343,7 +343,7 @@ export function createCollegeBuilding() {
   // Shed for the 3rd ramp
   const ramp3Shed = createWalkwayShed(ramp3Length, rampWidth, true);
   ramp3Shed.position.copy(ramp3.position);
-  ramp3Shed.position.y += 10; // Adjust height to be above the ramp
+  ramp3Shed.position.y += 10.5; // Adjust height to be above the ramp
   ramp3Shed.rotation.copy(ramp3.rotation);
   ramp3Shed.rotation.y = Math.PI; // Correct orientation
 
