@@ -323,7 +323,7 @@ export function createAnimationLoop(
                     velocityRef.current.multiplyScalar(slowdown);
                     
                     if (isCompoundWall) {
-                        const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(1);
+                        const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(0);
                         player.position.add(knockback.multiplyScalar(delta * 60));
                     } else if (!isSpecialBuilding) {
                         const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
