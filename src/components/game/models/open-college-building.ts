@@ -158,7 +158,7 @@ export function createOpenCollegeBuilding() {
   const stageWidth = 80;
   const stageHeight = 5;
   const stageDepth = 40;
-  const stageMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White color
+  const stageMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 }); // Black color
   const stageGeom = new THREE.BoxGeometry(stageWidth, stageHeight, stageDepth);
   const stage = new THREE.Mesh(stageGeom, stageMaterial);
   stage.position.y = stageHeight / 2;
