@@ -185,7 +185,7 @@ export function createSector10({
   waterTankStructure.add(tank2);
 
   // Position it within the red college courtyard area
-  waterTankStructure.position.set(-120, 0, 0);
+  waterTankStructure.position.set(-80, 0, 0);
   college.add(waterTankStructure);
   staticCollidersRef.current.push(waterTankStructure);
 
