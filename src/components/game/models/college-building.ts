@@ -14,6 +14,7 @@ export function createCollegeBuilding() {
 
   const redMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000, roughness: 0.8 });
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
+  const darkGrayMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
   const walkableFloors = new THREE.Group();
   walkableFloors.name = 'walkableFloors';
 
@@ -76,6 +77,13 @@ export function createCollegeBuilding() {
           const floorGroup = new THREE.Group();
           floorGroup.position.y = yPos;
 
+          // Add visible dark gray floor plane
+          const visibleFloorPlaneGeom = new THREE.PlaneGeometry(width, depth);
+          const visibleFloorPlane = new THREE.Mesh(visibleFloorPlaneGeom, darkGrayMaterial);
+          visibleFloorPlane.rotation.x = -Math.PI / 2;
+          visibleFloorPlane.position.y = 0.15; // Slightly above ground/floor level
+          floorGroup.add(visibleFloorPlane);
+          
           if(i === 0) {
               const wallSegmentWidthLeft = (width - entranceWidth) / 2 + entranceOffset;
               const wallSegmentWidthRight = (width - entranceWidth) / 2 - entranceOffset;
@@ -107,7 +115,7 @@ export function createCollegeBuilding() {
               const groundFloorPlaneGeom = new THREE.PlaneGeometry(width, depth);
               const groundFloorPlane = new THREE.Mesh(groundFloorPlaneGeom, new THREE.MeshStandardMaterial({color: 0x888888, visible: false}));
               groundFloorPlane.rotation.x = -Math.PI / 2;
-              groundFloorPlane.position.y = yPos + 0.1; // Slightly above ground
+              groundFloorPlane.position.y = 0.1; // Slightly above ground
               walkableFloors.add(groundFloorPlane);
 
           } else {
@@ -188,8 +196,9 @@ export function createCollegeBuilding() {
             const floorPlaneGeom = new THREE.PlaneGeometry(width, depth);
             const floorPlane = new THREE.Mesh(floorPlaneGeom, new THREE.MeshStandardMaterial({color: 0x888888, visible: false}));
             floorPlane.rotation.x = -Math.PI / 2;
-            floorPlane.position.y = yPos;
-            walkableFloors.add(floorPlane);
+            floorPlane.position.y = 0.1;
+            floorGroup.add(floorPlane); // Add to floor group to be positioned correctly
+            walkableFloors.add(floorPlane.clone().copy(floorGroup.localToWorld(floorPlane.clone()).position));
           }
       }
 
@@ -262,7 +271,13 @@ export function createCollegeBuilding() {
   const lawn = new THREE.Mesh(lawnGeom, lawnMaterial);
   lawn.rotation.x = -Math.PI / 2;
   courtyard.add(lawn);
-  walkableFloors.add(lawn.clone());
+  
+  // Make lawn walkable
+  const walkableLawn = lawn.clone();
+  walkableLawn.material = new THREE.MeshStandardMaterial({color: 0x888888, visible: false});
+  walkableLawn.position.y = 0.1;
+  courtyard.add(walkableLawn);
+  walkableFloors.add(walkableLawn);
 
 
   // --- RAMP ---
