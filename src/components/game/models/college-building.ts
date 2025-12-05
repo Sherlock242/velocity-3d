@@ -15,9 +15,12 @@ export function createCollegeBuilding() {
   const redMaterial = new THREE.MeshStandardMaterial({ color: 0xcc0000, roughness: 0.8 });
   const yellowMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.7 });
   const darkGrayMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-  const walkableFloors = new THREE.Group();
-  walkableFloors.name = 'walkableFloors';
+  
+  const college = new THREE.Group();
+  college.name = 'collegeBuilding';
 
+  const walkableRampGroup = new THREE.Group();
+  walkableRampGroup.name = 'collegeRamp';
 
   function createLattice(width: number, height: number) {
     const latticeGroup = new THREE.Group();
@@ -117,8 +120,10 @@ export function createCollegeBuilding() {
               groundFloorPlane.rotation.x = -Math.PI / 2;
               groundFloorPlane.position.y = 0.1; // Slightly above ground
               floorGroup.add(groundFloorPlane);
-              walkableFloors.add(groundFloorPlane.clone());
-
+              
+              const walkablePlane = groundFloorPlane.clone();
+              walkablePlane.applyMatrix4(floorGroup.matrixWorld);
+              walkableRampGroup.add(walkablePlane);
 
           } else {
               // Upper floors: Create the full solid wall
@@ -200,7 +205,10 @@ export function createCollegeBuilding() {
             floorPlane.rotation.x = -Math.PI / 2;
             floorPlane.position.y = 0.1;
             floorGroup.add(floorPlane);
-            walkableFloors.add(floorPlane.clone());
+            
+            const walkablePlane = floorPlane.clone();
+            walkablePlane.applyMatrix4(floorGroup.matrixWorld);
+            walkableRampGroup.add(walkablePlane);
           }
       }
 
@@ -233,11 +241,6 @@ export function createCollegeBuilding() {
     return railingGroup;
 }
   
-  const college = new THREE.Group();
-  college.name = 'collegeBuilding';
-
-  const walkableRampGroup = new THREE.Group();
-  walkableRampGroup.name = 'collegeRamp';
 
   const backWing = createWing(longWingWidth, wingDepth, true, -110);
   backWing.position.z = -shortWingWidth / 2;
@@ -262,6 +265,8 @@ export function createCollegeBuilding() {
   rightWing.name = 'rightWing';
   college.add(rightWing);
 
+  college.updateMatrixWorld(true);
+
   // --- Courtyard Elements ---
   const courtyard = new THREE.Group();
   courtyard.position.y = 0.1;
@@ -278,8 +283,7 @@ export function createCollegeBuilding() {
   const walkableLawn = lawn.clone();
   walkableLawn.material = new THREE.MeshStandardMaterial({color: 0x888888, visible: false});
   walkableLawn.position.y = 0.1;
-  courtyard.add(walkableLawn);
-  walkableFloors.add(walkableLawn);
+  walkableRampGroup.add(walkableLawn);
 
 
   // --- RAMP ---
@@ -360,14 +364,11 @@ export function createCollegeBuilding() {
   
   walkableRampGroup.add(ramp1, platform1, ramp2, platform2, ramp3);
   
-  rampGroup.add(walkableRampGroup, ramp3Shed);
+  rampGroup.add(ramp3Shed);
   rampGroup.position.set(0, 0.2, 0); 
   courtyard.add(rampGroup);
 
-  // Add the invisible floors to the correct group for raycasting
-  walkableRampGroup.add(walkableFloors);
-  collegeGroup.add(college);
-
+  collegeGroup.add(college, walkableRampGroup);
 
   collegeGroup.rotation.y = Math.PI;
 
