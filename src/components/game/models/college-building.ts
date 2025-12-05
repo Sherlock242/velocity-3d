@@ -116,7 +116,9 @@ export function createCollegeBuilding() {
               const groundFloorPlane = new THREE.Mesh(groundFloorPlaneGeom, new THREE.MeshStandardMaterial({color: 0x888888, visible: false}));
               groundFloorPlane.rotation.x = -Math.PI / 2;
               groundFloorPlane.position.y = 0.1; // Slightly above ground
-              walkableFloors.add(groundFloorPlane);
+              floorGroup.add(groundFloorPlane);
+              walkableFloors.add(groundFloorPlane.clone());
+
 
           } else {
               // Upper floors: Create the full solid wall
@@ -198,6 +200,7 @@ export function createCollegeBuilding() {
             floorPlane.rotation.x = -Math.PI / 2;
             floorPlane.position.y = 0.1;
             floorGroup.add(floorPlane);
+            walkableFloors.add(floorPlane.clone());
           }
       }
 
@@ -361,7 +364,8 @@ export function createCollegeBuilding() {
   rampGroup.position.set(0, 0.2, 0); 
   courtyard.add(rampGroup);
 
-  college.add(walkableFloors);
+  // Add the invisible floors to the correct group for raycasting
+  walkableRampGroup.add(walkableFloors);
   collegeGroup.add(college);
 
 

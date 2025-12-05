@@ -163,12 +163,8 @@ export function createSector10({
   const collegeRampObject = collegeBuilding.getObjectByName('collegeRamp');
   if (collegeRampObject instanceof THREE.Group) {
       collegeRampMeshRef.current = collegeRampObject;
+      collegeRampObject.updateWorldMatrix(true, true);
   }
-  const walkableFloorsObject = collegeBuilding.getObjectByName('walkableFloors');
-  if (walkableFloorsObject instanceof THREE.Group && collegeRampMeshRef.current) {
-      collegeRampMeshRef.current.add(walkableFloorsObject);
-  }
-
 
   // --- Water Tank Structure ---
   const waterTankStructure = new THREE.Group();
