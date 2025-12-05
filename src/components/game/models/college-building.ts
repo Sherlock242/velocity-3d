@@ -217,7 +217,7 @@ export function createCollegeBuilding() {
 
   // --- RAMP ---
   const rampGroup = new THREE.Group();
-  const rampMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
+  const rampMaterial = new THREE.MeshStandardMaterial({ color: 0xfafad2, side: THREE.DoubleSide });
   
   const rampWidth = 40;
   const rampThickness = 2;
