@@ -62,7 +62,7 @@ export function createCollegeBuilding() {
     return latticeGroup;
   }
 
-  function createWing(width: number, depth: number, hasEntrance = false, entranceOffset = 0) {
+  function createWing(width: number, depth: number, hasEntrance = false, entranceOffset = 0, walkableFloors: THREE.Group) {
       const wing = new THREE.Group();
       wing.name = 'collegeWing';
 
@@ -172,6 +172,15 @@ export function createCollegeBuilding() {
             }
           }
           wing.add(floorGroup);
+
+          // Add walkable floor plane for upper floors
+          if (i > 0) {
+            const floorPlaneGeom = new THREE.PlaneGeometry(width, depth);
+            const floorPlane = new THREE.Mesh(floorPlaneGeom, new THREE.MeshStandardMaterial({color: 0x888888, visible: false}));
+            floorPlane.rotation.x = -Math.PI / 2;
+            floorPlane.position.y = yPos;
+            walkableFloors.add(floorPlane);
+          }
       }
 
       return wing;
@@ -181,7 +190,7 @@ export function createCollegeBuilding() {
     const railingGroup = new THREE.Group();
     const railingMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
     const railingHeight = 8;
-    const pillarHeight = 8;
+    const pillarHeight = 12;
     const pillarRadius = 0.25;
     const numPillars = Math.floor(length / 10) + 1;
 
@@ -207,24 +216,27 @@ export function createCollegeBuilding() {
   const college = new THREE.Group();
   college.name = 'collegeBuilding';
 
-  const backWing = createWing(longWingWidth, wingDepth, true, -110);
+  const walkableRampGroup = new THREE.Group();
+  walkableRampGroup.name = 'collegeRamp';
+
+  const backWing = createWing(longWingWidth, wingDepth, true, -110, walkableRampGroup);
   backWing.position.z = -shortWingWidth / 2;
   backWing.name = 'backWing';
   college.add(backWing);
   
-  const frontWing = createWing(longWingWidth, wingDepth, false);
+  const frontWing = createWing(longWingWidth, wingDepth, false, 0, walkableRampGroup);
   frontWing.position.z = shortWingWidth / 2;
   frontWing.rotation.y = Math.PI; // Flipped
   frontWing.name = 'frontWing';
   college.add(frontWing);
 
-  const leftWing = createWing(shortWingWidth, wingDepth);
+  const leftWing = createWing(shortWingWidth, wingDepth, false, 0, walkableRampGroup);
   leftWing.position.x = -longWingWidth / 2;
   leftWing.rotation.y = Math.PI / 2;
   leftWing.name = 'leftWing';
   college.add(leftWing);
   
-  const rightWing = createWing(shortWingWidth, wingDepth);
+  const rightWing = createWing(shortWingWidth, wingDepth, false, 0, walkableRampGroup);
   rightWing.position.x = longWingWidth / 2;
   rightWing.rotation.y = -Math.PI / 2;
   rightWing.name = 'rightWing';
@@ -317,9 +329,8 @@ export function createCollegeBuilding() {
   ramp3Shed.rotation.y = Math.PI; // Correct orientation
 
 
-  const walkableRampGroup = new THREE.Group();
+  
   walkableRampGroup.add(ramp1, platform1, ramp2, platform2, ramp3);
-  walkableRampGroup.name = 'collegeRamp';
   
   rampGroup.add(walkableRampGroup, ramp3Shed);
   rampGroup.position.set(0, 0.2, 0); 

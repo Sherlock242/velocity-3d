@@ -206,8 +206,11 @@ export function createAnimationLoop(
             if (rampObjects.length > 0) {
                 raycaster.set(player.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));
                 const intersects = raycaster.intersectObjects(rampObjects, true);
-                const closestIntersect = intersects.filter(i => i.point.y < player.position.y + 1).sort((a, b) => a.distance - b.distance)[0];
-                if (closestIntersect) {
+
+                // Find the highest valid ground beneath the player
+                const validIntersects = intersects.filter(i => i.point.y < player.position.y + 1);
+                if (validIntersects.length > 0) {
+                    const closestIntersect = validIntersects.sort((a, b) => b.point.y - a.point.y)[0];
                     const groundY = closestIntersect.point.y;
                     if (player.position.y < groundY + playerHeight + 0.5) {
                         player.position.y = groundY + playerHeight;
