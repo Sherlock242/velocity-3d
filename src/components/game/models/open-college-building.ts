@@ -11,7 +11,7 @@ export function createOpenCollegeBuilding() {
   const numFloors = 4;
   const floorHeight = 25;
 
-  const greenMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22, roughness: 0.7 });
+  const redMaterial = new THREE.MeshStandardMaterial({ color: 0x9a3e3e, roughness: 0.8 });
   const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
   const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
 
@@ -66,15 +66,15 @@ export function createOpenCollegeBuilding() {
         topLattice.position.set(0, floorHeight - latticeHeight / 2, zOffset + (isFront ? 1 : -1));
         sectionGroup.add(topLattice);
 
-        const greenPanel = new THREE.Mesh(
+        const redPanel = new THREE.Mesh(
             new THREE.BoxGeometry(sectionWidth - 4, panelHeight, 2),
-            greenMaterial
+            redMaterial
         );
-        greenPanel.position.set(0, floorHeight - latticeHeight - panelHeight / 2, zOffset);
-        sectionGroup.add(greenPanel);
+        redPanel.position.set(0, floorHeight - latticeHeight - panelHeight / 2, zOffset);
+        sectionGroup.add(redPanel);
         
-        const bottomLattice = createLattice(sectionWidth - 4, latticeHeight);
-        bottomLattice.position.set(0, floorHeight - latticeHeight * 2 - panelHeight - latticeHeight/2, zOffset + (isFront ? 1 : -1));
+        const bottomLattice = createLattice(sectionWidth - 4, latticeHeight * 2, zOffset + (isFront ? 1 : -1));
+        bottomLattice.position.set(0, floorHeight - latticeHeight - panelHeight - latticeHeight, zOffset + (isFront ? 1 : -1));
         sectionGroup.add(bottomLattice);
 
         facadeGroup.add(sectionGroup);
@@ -82,7 +82,7 @@ export function createOpenCollegeBuilding() {
     return facadeGroup;
   }
 
-  function createWing(width: number, depth: number) {
+  function createWing(width: number, depth: number, isBackWing = false) {
       const wing = new THREE.Group();
       wing.name = 'collegeWing';
 
@@ -117,6 +117,15 @@ export function createOpenCollegeBuilding() {
           const backFacade = createFacade(width, depth, numSections, false);
           floorGroup.add(backFacade);
 
+          if (isBackWing && i === 0) {
+            const muralGeom = new THREE.PlaneGeometry(80, 20);
+            const muralMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
+            const mural = new THREE.Mesh(muralGeom, muralMaterial);
+            mural.position.set(0, floorHeight / 2, -depth/2 - 0.2);
+            mural.rotation.y = Math.PI;
+            floorGroup.add(mural);
+          }
+
           wing.add(floorGroup);
       }
       return wing;
@@ -126,7 +135,7 @@ export function createOpenCollegeBuilding() {
   college.name = 'openCollegeBuilding';
 
   // Back Wing (long)
-  const backWing = createWing(longWingWidth, wingDepth);
+  const backWing = createWing(longWingWidth, wingDepth, true);
   backWing.position.z = -shortWingWidth / 2;
   backWing.name = 'backWing';
   college.add(backWing);
@@ -153,9 +162,7 @@ export function createOpenCollegeBuilding() {
   const stageGeom = new THREE.BoxGeometry(stageWidth, stageHeight, stageDepth);
   const stage = new THREE.Mesh(stageGeom, stageMaterial);
   stage.position.y = stageHeight / 2;
-  stage.position.x = 50;
-  stage.position.z = 180; // Center the stage in the courtyard
-  stage.rotation.y = Math.PI / 2;
+  stage.position.z = 0; // Center the stage in the courtyard
   stage.castShadow = true;
   stage.receiveShadow = true;
   college.add(stage);
