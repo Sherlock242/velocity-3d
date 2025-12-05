@@ -197,8 +197,7 @@ export function createCollegeBuilding() {
             const floorPlane = new THREE.Mesh(floorPlaneGeom, new THREE.MeshStandardMaterial({color: 0x888888, visible: false}));
             floorPlane.rotation.x = -Math.PI / 2;
             floorPlane.position.y = 0.1;
-            floorGroup.add(floorPlane); // Add to floor group to be positioned correctly
-            walkableFloors.add(floorPlane.clone().copy(floorGroup.localToWorld(floorPlane.clone()).position));
+            floorGroup.add(floorPlane);
           }
       }
 
@@ -362,9 +361,8 @@ export function createCollegeBuilding() {
   rampGroup.position.set(0, 0.2, 0); 
   courtyard.add(rampGroup);
 
-  walkableFloors.position.copy(college.position);
-  walkableFloors.quaternion.copy(college.quaternion);
-  collegeGroup.add(college, walkableFloors);
+  college.add(walkableFloors);
+  collegeGroup.add(college);
 
 
   collegeGroup.rotation.y = Math.PI;
