@@ -172,6 +172,40 @@ export function createSector10({
   campusContainer.add(scoutsBuilding);
   staticCollidersRef.current.push(scoutsBuilding);
 
+  // --- Water Tank Structure ---
+  const waterTankStructure = new THREE.Group();
+  waterTankStructure.name = 'waterTankStructure';
+
+  const brownBaseMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.8 }); // SaddleBrown
+  const blackTankMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.6 });
+
+  const baseRadius = 15;
+  const baseHeight = 10;
+  const baseGeom = new THREE.CylinderGeometry(baseRadius, baseRadius, baseHeight, 32);
+  const baseCylinder = new THREE.Mesh(baseGeom, brownBaseMaterial);
+  baseCylinder.position.y = baseHeight / 2;
+  baseCylinder.castShadow = true;
+  waterTankStructure.add(baseCylinder);
+
+  const tankRadius = 6;
+  const tankHeight = 8;
+  const tankGeom = new THREE.CylinderGeometry(tankRadius, tankRadius, tankHeight, 24);
+
+  const tank1 = new THREE.Mesh(tankGeom, blackTankMaterial);
+  tank1.position.set(-tankRadius * 0.8, baseHeight + tankHeight / 2, 0);
+  tank1.castShadow = true;
+  waterTankStructure.add(tank1);
+
+  const tank2 = new THREE.Mesh(tankGeom, blackTankMaterial);
+  tank2.position.set(tankRadius * 0.8, baseHeight + tankHeight / 2, 0);
+  tank2.castShadow = true;
+  waterTankStructure.add(tank2);
+
+  // Position it within the open college courtyard area
+  waterTankStructure.position.set(50, 0, 80);
+  campusContainer.add(waterTankStructure);
+  staticCollidersRef.current.push(waterTankStructure);
+
   // Find the ramp and pass its mesh reference up
   const collegeRampObject = college.getObjectByName('collegeRamp');
   if (collegeRampObject instanceof THREE.Group) {
