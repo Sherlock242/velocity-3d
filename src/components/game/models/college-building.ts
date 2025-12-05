@@ -256,7 +256,7 @@ export function createCollegeBuilding() {
   const newRampLength = (shortWingWidth / 2 - wingDepth / 2) - platform2.position.z;
   const ramp3Geom = new THREE.BoxGeometry(rampWidth, rampThickness, newRampLength);
   const ramp3 = new THREE.Mesh(ramp3Geom, rampMaterial);
-  ramp3.position.y = rampRise * 2.5;
+  ramp3.position.y = rampRise * 2.4;
   ramp3.position.x = platform2.position.x - 30;
   ramp3.position.z = platform2.position.z + newRampLength / 2;
   ramp3.rotation.x = -Math.atan(rampRise / newRampLength);
