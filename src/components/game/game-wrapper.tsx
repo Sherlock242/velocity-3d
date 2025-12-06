@@ -81,15 +81,15 @@ export default function GameWrapper() {
     gameState.audioListenerRef.current = audioListener;
 
     const onKeyDown = (e: KeyboardEvent) => {
-      initAudio(gameState);
+      initAudioOnInteraction(gameState);
       if (e.key === 'ArrowUp' || e.key === 'w') gameState.inputRef.current.forward = true;
       if (e.key === 'ArrowDown' || e.key === 's') gameState.inputRef.current.backward = true;
       if (e.key === 'ArrowLeft' || e.key === 'a') gameState.inputRef.current.left = true;
       if (e.key === 'ArrowRight' || e.key === 'd') gameState.inputRef.current.right = true;
-      if (e.key === 'e' || e.key === 'E') {
+      if ((e.key === 'e' || e.key === 'E') && !e.repeat) {
         handleToggleControlMode();
       }
-      if (e.key === 'f' || e.key === 'F') {
+      if ((e.key === 'f' || e.key === 'F') && !e.repeat) {
         handleGearChange();
       }
     };
