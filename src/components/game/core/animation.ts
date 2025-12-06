@@ -143,7 +143,7 @@ export function createAnimationLoop(
 
             // Apply conditional friction
             if (moveDirection === 0) {
-              velocityRef.current.multiplyScalar(0.95); // Higher friction when not accelerating
+              velocityRef.current.multiplyScalar(0.9); // Higher friction when not accelerating
             } else {
               velocityRef.current.multiplyScalar(0.99); // Lower friction when accelerating
             }
