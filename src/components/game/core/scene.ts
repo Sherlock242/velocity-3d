@@ -7,7 +7,7 @@ export function setupScene(mountNode: HTMLDivElement) {
         75,
         window.innerWidth / window.innerHeight,
         0.1,
-        5000
+        6000
     );
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
