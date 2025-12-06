@@ -107,7 +107,7 @@ export function createAnimationLoop(
             const maxSpeed = GEAR_MAX_SPEEDS[gearRef.current];
             const acceleration = 30;
             const baseTurnSpeed = 2.5; 
-            const friction = 0.97;
+            const friction = 0.99;
             const slideFactor = 0.05;
 
             let targetSteerDirection = 0;
