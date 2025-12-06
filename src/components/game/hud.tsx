@@ -72,10 +72,19 @@ export default function Hud({
           {controlMode === 'car' ? <Car /> : <ToyBrick />}
         </Button>
         {controlMode === 'car' && (
-          <Button onClick={onGearChange} variant="outline" size="icon" className='bg-card/50 backdrop-blur-sm border-accent/20 w-14 h-14'>
-            <div className='flex flex-col items-center'>
-                <Cog />
-                <span className='font-bold text-lg'>{gear}</span>
+          <Button
+            onMouseDown={onGearChange}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              onGearChange();
+            }}
+            variant="outline"
+            size="icon"
+            className="bg-card/50 backdrop-blur-sm border-accent/20 w-14 h-14 select-none"
+          >
+            <div className="flex flex-col items-center">
+              <Cog />
+              <span className="font-bold text-lg">{gear}</span>
             </div>
           </Button>
         )}
