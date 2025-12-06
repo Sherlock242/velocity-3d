@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 export function setupScene(mountNode: HTMLDivElement) {
@@ -17,7 +18,7 @@ export function setupScene(mountNode: HTMLDivElement) {
     camera.add(audioListener);
 
     // Skybox
-    const skyGeometry = new THREE.BoxGeometry(4900, 4900, 4900);
+    const skyGeometry = new THREE.BoxGeometry(5500, 5500, 5500);
     const vertexShader = `
       varying vec3 vWorldPosition;
       void main() {
