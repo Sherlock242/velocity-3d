@@ -1,11 +1,10 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, ChevronUp, Zap, ToyBrick, Car, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronUp, Zap, ToyBrick, Car, X, Cog } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import MiniMap from './mini-map';
 import { Button } from '../ui/button';
-
-type ControlMode = 'car' | 'person';
+import type { ControlMode, Gear } from '@/lib/types';
 
 type HudProps = {
   speed: number;
@@ -14,7 +13,9 @@ type HudProps = {
   gridSize: number;
   totalGridWidth: number;
   controlMode: ControlMode;
+  gear: Gear;
   onToggleControlMode: () => void;
+  onGearChange: () => void;
   onToggleLargeMap: () => void;
   onAcceleratorPress: () => void;
   onAcceleratorRelease: () => void;
@@ -33,7 +34,9 @@ export default function Hud({
   gridSize,
   totalGridWidth,
   controlMode,
+  gear,
   onToggleControlMode,
+  onGearChange,
   onToggleLargeMap,
   onAcceleratorPress,
   onAcceleratorRelease,
@@ -63,11 +66,19 @@ export default function Hud({
         </Card>
       </div>
 
-      {/* Control Mode */}
-      <div className="absolute bottom-28 left-4 pointer-events-auto">
+      {/* Control Mode & Gear */}
+      <div className="absolute bottom-28 left-4 flex gap-2 pointer-events-auto">
         <Button onClick={onToggleControlMode} variant="outline" size="icon" className='bg-card/50 backdrop-blur-sm border-accent/20 w-14 h-14'>
           {controlMode === 'car' ? <Car /> : <ToyBrick />}
         </Button>
+        {controlMode === 'car' && (
+          <Button onClick={onGearChange} variant="outline" size="icon" className='bg-card/50 backdrop-blur-sm border-accent/20 w-14 h-14'>
+            <div className='flex flex-col items-center'>
+                <Cog />
+                <span className='font-bold text-lg'>{gear}</span>
+            </div>
+          </Button>
+        )}
       </div>
 
       {isTopDownView && (

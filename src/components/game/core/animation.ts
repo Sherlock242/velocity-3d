@@ -7,6 +7,7 @@ import {
   GRID_SIZE,
   CELL_SIZE,
   ROAD_WIDTH,
+  GEAR_MAX_SPEEDS,
 } from '@/lib/game-constants';
 import type { GameState } from './state';
 
@@ -29,7 +30,7 @@ export function createAnimationLoop(
     renderer: THREE.WebGLRenderer,
     gameState: GameState,
     toast: (options: { title: string; description: string; variant: 'destructive' }) => void,
-    setGameData: React.Dispatch<React.SetStateAction<{ speed: number; time: number; carPosition: { x: number; z: number; }; carRotation: number; controlMode: 'car' | 'person'; }>>,
+    setGameData: React.Dispatch<React.SetStateAction<{ speed: number; time: number; carPosition: { x: number; z: number; }; carRotation: number; controlMode: 'car' | 'person'; gear: 1 | 2 | 3; }>>,
     topDownSector: number | null
 ) {
     const {
@@ -38,7 +39,7 @@ export function createAnimationLoop(
         walkingNpcsRef, inputRef, audioInitializedRef, engineSoundRef,
         skidSoundRef, engineOscillatorRef, tireMarksRef, rampMeshRef,
         collegeRampMeshRef, rampWallsRef, wasOffTrackRef, penaltyCheckCooldownRef,
-        staticCollidersRef, obstacleCarsRef, cameraOffsetRef
+        staticCollidersRef, obstacleCarsRef, cameraOffsetRef, gearRef
     } = gameState;
 
     const animate = () => {
@@ -103,7 +104,7 @@ export function createAnimationLoop(
         });
 
         if (player && controlModeRef.current === 'car' && !isTransformingRef.current) {
-            const maxSpeed = 70; // 252 km/h
+            const maxSpeed = GEAR_MAX_SPEEDS[gearRef.current];
             const acceleration = 30;
             const baseTurnSpeed = 2.5; 
             const friction = 0.985;
@@ -370,6 +371,7 @@ export function createAnimationLoop(
                 time: gameTimeRef.current,
                 carPosition: { x: player.position.x, z: player.position.z },
                 carRotation: player.rotation.y,
+                gear: gearRef.current,
             }));
         }
 

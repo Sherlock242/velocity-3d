@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { TrackTheme } from '@/lib/types';
+import type { TrackTheme, Gear } from '@/lib/types';
 
 export const TRACK_THEMES: Record<
   TrackTheme,
@@ -34,4 +34,8 @@ export const CELL_SIZE = 1000; // 1km per cell
 export const TOTAL_GRID_WIDTH = GRID_SIZE * CELL_SIZE;
 export const NUM_OBSTACLES = 50; // Increased for a larger area
 
-    
+export const GEAR_MAX_SPEEDS: Record<Gear, number> = {
+  1: 22.22, // 80 km/h
+  2: 61.11, // 220 km/h
+  3: 100, // 360 km/h
+};

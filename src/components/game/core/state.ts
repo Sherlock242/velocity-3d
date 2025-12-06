@@ -1,8 +1,7 @@
 
 import * as React from 'react';
 import * as THREE from 'three';
-
-export type ControlMode = 'car' | 'person';
+import type { ControlMode, Gear } from '@/lib/types';
 
 export type GameState = {
     mountRef: React.RefObject<HTMLDivElement>;
@@ -35,6 +34,7 @@ export type GameState = {
     skidSoundRef: React.MutableRefObject<THREE.Audio | undefined>;
     audioInitializedRef: React.MutableRefObject<boolean>;
     engineOscillatorRef: React.MutableRefObject<OscillatorNode | undefined>;
+    gearRef: React.MutableRefObject<Gear>;
 };
 
 export function useGameState(): GameState {
@@ -68,6 +68,7 @@ export function useGameState(): GameState {
     const skidSoundRef = React.useRef<THREE.Audio>();
     const audioInitializedRef = React.useRef(false);
     const engineOscillatorRef = React.useRef<OscillatorNode>();
+    const gearRef = React.useRef<Gear>(1);
 
     return {
         mountRef,
@@ -95,5 +96,6 @@ export function useGameState(): GameState {
         skidSoundRef,
         audioInitializedRef,
         engineOscillatorRef,
+        gearRef,
     };
 }

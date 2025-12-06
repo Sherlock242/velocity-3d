@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import type { TrackTheme } from '@/lib/types';
+import type { TrackTheme, Gear } from '@/lib/types';
 import Hud from './hud';
 import AiOpponentGenerator from './ai-opponent-generator';
 import LargeMap from './large-map';
@@ -40,6 +40,7 @@ export default function GameWrapper() {
     carPosition: { x: 0, z: 0 },
     carRotation: 0,
     controlMode: 'car' as 'car' | 'person',
+    gear: 1 as Gear,
   });
   const [isReady, setIsReady] = React.useState(false);
   const [isLargeMapOpen, setIsLargeMapOpen] = React.useState(false);
@@ -52,6 +53,13 @@ export default function GameWrapper() {
     gameState.isTransformingRef.current = true;
     gameState.controlModeRef.current = gameState.controlModeRef.current === 'car' ? 'person' : 'car';
     setGameData(prev => ({ ...prev, controlMode: gameState.controlModeRef.current }));
+  };
+
+  const handleGearChange = () => {
+    let newGear = (gameState.gearRef.current + 1) as Gear;
+    if (newGear > 3) newGear = 1;
+    gameState.gearRef.current = newGear;
+    setGameData(prev => ({ ...prev, gear: newGear }));
   };
 
   const handleSectorSelect = (sector: number) => {
@@ -80,6 +88,9 @@ export default function GameWrapper() {
       if (e.key === 'ArrowRight' || e.key === 'd') gameState.inputRef.current.right = true;
       if (e.key === 'e' || e.key === 'E') {
         handleToggleControlMode();
+      }
+      if (e.key === 'f' || e.key === 'F') {
+        handleGearChange();
       }
     };
     const onKeyUp = (e: KeyboardEvent) => {
@@ -201,7 +212,7 @@ export default function GameWrapper() {
         </SidebarContent>
         <SidebarFooter>
           <p className="text-xs text-muted-foreground">
-            Press E to transform.
+            Press E to transform. F to change gear.
           </p>
         </SidebarFooter>
       </Sidebar>
@@ -229,7 +240,9 @@ export default function GameWrapper() {
             gridSize={GRID_SIZE}
             totalGridWidth={TOTAL_GRID_WIDTH}
             controlMode={gameData.controlMode}
+            gear={gameData.gear}
             onToggleControlMode={handleToggleControlMode}
+            onGearChange={handleGearChange}
             onToggleLargeMap={() => setIsLargeMapOpen(prev => !prev)}
             onAcceleratorPress={() => {
               initAudioOnInteraction(gameState);
