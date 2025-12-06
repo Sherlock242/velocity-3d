@@ -107,7 +107,6 @@ export function createAnimationLoop(
             const maxSpeed = GEAR_MAX_SPEEDS[gearRef.current];
             const acceleration = 30;
             const baseTurnSpeed = 2.5; 
-            const friction = 0.99;
             const slideFactor = 0.05;
 
             let targetSteerDirection = 0;
@@ -131,15 +130,24 @@ export function createAnimationLoop(
             if (inputRef.current.forward) moveDirection = 1;
             if (inputRef.current.backward) moveDirection = -1;
 
-            if (moveDirection !== 0) {
+            if (moveDirection > 0) {
                 const accelerationVector = forward.clone().multiplyScalar(acceleration * moveDirection * delta);
+                velocityRef.current.add(accelerationVector);
+            } else if (moveDirection < 0) {
+                 const accelerationVector = forward.clone().multiplyScalar(acceleration * moveDirection * delta);
                 velocityRef.current.add(accelerationVector);
             }
             
             const desiredVelocity = forward.clone().multiplyScalar(velocityRef.current.length());
             velocityRef.current.lerp(desiredVelocity, slideFactor);
 
-            velocityRef.current.multiplyScalar(friction);
+            // Apply conditional friction
+            if (moveDirection === 0) {
+              velocityRef.current.multiplyScalar(0.95); // Higher friction when not accelerating
+            } else {
+              velocityRef.current.multiplyScalar(0.99); // Lower friction when accelerating
+            }
+            
             if (velocityRef.current.length() > maxSpeed) {
                 velocityRef.current.normalize().multiplyScalar(maxSpeed);
             }
