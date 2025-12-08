@@ -324,24 +324,22 @@ export function createAnimationLoop(
             });
 
             staticCollidersRef.current.forEach((collider) => {
-                if (collider.name === 'collegeRamp') return;
+                if (collider.name === 'compoundWall' || collider.name === 'collegeRamp') {
+                    return;
+                }
                 const colliderBox = new THREE.Box3().setFromObject(collider);
                 if (playerBox.intersectsBox(colliderBox)) {
                     const isSpecialBuilding = collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding';
                     
-                    if (collider.name === 'compoundWall') {
-                        // No force applied
-                    } else {
-                         let slowdown = 0.1;
-                        if (isSpecialBuilding) {
-                            if (controlModeRef.current === 'car') slowdown = 0.5;
-                        }
-                        velocityRef.current.multiplyScalar(slowdown);
+                    let slowdown = 0.1;
+                    if (isSpecialBuilding) {
+                        if (controlModeRef.current === 'car') slowdown = 0.5;
+                    }
+                    velocityRef.current.multiplyScalar(slowdown);
 
-                        if (!isSpecialBuilding) {
-                            const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
-                            player.position.add(knockback.multiplyScalar(delta * 60));
-                        }
+                    if (!isSpecialBuilding) {
+                        const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
+                        player.position.add(knockback.multiplyScalar(delta * 60));
                     }
                 }
             });
