@@ -328,10 +328,9 @@ export function createAnimationLoop(
                 const colliderBox = new THREE.Box3().setFromObject(collider);
                 if (playerBox.intersectsBox(colliderBox)) {
                     const isSpecialBuilding = collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding';
-                    const isCompoundWall = collider.name === 'compoundWall';
                     
-                    if (isCompoundWall) {
-                        velocityRef.current.multiplyScalar(0); // Stop movement completely
+                    if (collider.name === 'compoundWall') {
+                        // No force applied
                     } else {
                          let slowdown = 0.1;
                         if (isSpecialBuilding) {
