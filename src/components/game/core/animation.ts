@@ -331,23 +331,6 @@ export function createAnimationLoop(
                     const isCompoundWall = collider.name === 'compoundWall';
                     
                     if (isCompoundWall) {
-                        const intersection = new THREE.Box3();
-                        intersection.copy(playerBox).intersect(colliderBox);
-
-                        const depth = new THREE.Vector3();
-                        depth.subVectors(intersection.max, intersection.min);
-
-                        const direction = new THREE.Vector3();
-                        player.getWorldPosition(direction);
-                        collider.getWorldPosition(direction);
-                        direction.subVectors(player.position, collider.position).normalize();
-                        
-                        // Resolve collision by pushing player out
-                        if (depth.x < depth.z) {
-                            player.position.x += Math.sign(direction.x) * depth.x;
-                        } else {
-                            player.position.z += Math.sign(direction.z) * depth.z;
-                        }
                         velocityRef.current.multiplyScalar(0); // Stop movement completely
                     } else {
                          let slowdown = 0.1;
