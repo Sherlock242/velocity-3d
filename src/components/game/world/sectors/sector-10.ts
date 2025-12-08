@@ -86,7 +86,6 @@ export function createSector10({
   wallGroup.add(leftWall);
 
   campusContainer.add(wallGroup);
-  wallGroup.children.forEach(wall => staticCollidersRef.current.push(wall as THREE.Group));
 
   // --- Roads and Paths ---
   const darkRoadMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
