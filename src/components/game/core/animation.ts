@@ -337,8 +337,21 @@ export function createAnimationLoop(
                     velocityRef.current.multiplyScalar(slowdown);
                     
                     if (isCompoundWall) {
-                        const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(0);
-                        player.position.add(knockback.multiplyScalar(delta * 60));
+                        const intersection = new THREE.Box3();
+                        intersection.copy(playerBox).intersect(colliderBox);
+
+                        const depth = new THREE.Vector3();
+                        depth.subVectors(intersection.max, intersection.min);
+
+                        const direction = new THREE.Vector3();
+                        direction.subVectors(player.position, collider.position).normalize();
+
+                        if (depth.x < depth.z) {
+                            player.position.x += Math.sign(direction.x) * depth.x;
+                        } else {
+                            player.position.z += Math.sign(direction.z) * depth.z;
+                        }
+                        velocityRef.current.multiplyScalar(0);
                     } else if (!isSpecialBuilding) {
                         const knockback = player.position.clone().sub(collider.position).normalize().multiplyScalar(5);
                         player.position.add(knockback.multiplyScalar(delta * 60));
@@ -392,5 +405,3 @@ export function createAnimationLoop(
     };
     return animate;
 }
-
-    
