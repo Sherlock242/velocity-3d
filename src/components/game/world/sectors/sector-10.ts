@@ -106,8 +106,6 @@ export function createSector10({
   const innerWall = createWallSegment(wallThickness, innerWallLength);
   innerWall.position.set(gateXPosition + entranceRoadWidth / 2 + wallThickness / 2 + 15, 0, frontWallZ + innerWallLength / 2);
   campusContainer.add(innerWall);
-  staticCollidersRef.current.push(innerWall);
-
 
   // Walkable Path to College
   const pathWidth = 15;
