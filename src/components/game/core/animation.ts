@@ -324,7 +324,7 @@ export function createAnimationLoop(
             });
 
             staticCollidersRef.current.forEach((collider) => {
-                if (collider.name === 'compoundWall' || collider.name === 'collegeRamp') {
+                if (collider.parent?.name === 'compoundWall' || collider.name === 'collegeRamp') {
                     return;
                 }
                 const colliderBox = new THREE.Box3().setFromObject(collider);
