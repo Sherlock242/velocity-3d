@@ -11,6 +11,7 @@ import type { TrackTheme } from '@/lib/types';
 import type { MutableRefObject } from 'react';
 import { createSector10 } from './sectors/sector-10';
 import { createSector11 } from './sectors/sector-11';
+import { createSector13 } from './sectors/sector-13';
 import { createSector14 } from './sectors/sector-14';
 import { createSector15 } from './sectors/sector-15';
 import { createSector20 } from './sectors/sector-20';
@@ -119,6 +120,9 @@ export function createGridAndScenery(
           break;
         case 11:
           sectorGroup = createSector11({ cellCenterX, cellCenterZ, staticCollidersRef });
+          break;
+        case 13:
+          sectorGroup = createSector13({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 14:
           sectorGroup = createSector14({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef, rampWallsRef });
