@@ -91,7 +91,7 @@ export function createSector13({
   const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
   // Manually place and rotate the mouth
   const mouthPosition = new THREE.Vector3();
-  const lat = 0, lon = 0;
+  const lat = 15, lon = 0; // Raised the latitude from 0 to 15
   const phi = THREE.MathUtils.degToRad(90 - lat);
   const theta = THREE.MathUtils.degToRad(lon);
   mouthPosition.setFromSphericalCoords(sphereRadius, phi, theta);
