@@ -5,10 +5,10 @@ import { createObstacleCar } from '../models/obstacle-car';
 import { createGridAndScenery } from '../world/track';
 import { TOTAL_GRID_WIDTH, NUM_OBSTACLES, GRID_SIZE, CELL_SIZE, ROAD_WIDTH } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
-import type { GameState } from './state';
+import type { GameState } from '../core/state';
 
 export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: GameState) {
-    const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef, emojiFacePartsRef, expressionTimerRef } = gameState;
+    const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef } = gameState;
 
     // Player
     const transformer = createTransformer();
@@ -52,20 +52,13 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     }
 
     // Grid, Scenery, and Buildings
-    const gridGroup = createGridAndScenery(theme, gameState);
+    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef);
     scene.add(gridGroup);
 
     const waterJet = gridGroup.getObjectByName('fountainWaterJet');
     if (waterJet instanceof THREE.Mesh) {
         fountainWaterJetRef.current = waterJet;
     }
-
-    const leftEye = gridGroup.getObjectByName('leftEye');
-    const rightEye = gridGroup.getObjectByName('rightEye');
-    const leftEyebrow = gridGroup.getObjectByName('leftEyebrow');
-    const rightEyebrow = gridGroup.getObjectByName('rightEyebrow');
-    const mouth = gridGroup.getObjectByName('mouth');
-    if (leftEye && rightEye && leftEyebrow && rightEyebrow && mouth) {
-      emojiFacePartsRef.current = { leftEye, rightEye, leftEyebrow, rightEyebrow, mouth };
-    }
 }
+
+
