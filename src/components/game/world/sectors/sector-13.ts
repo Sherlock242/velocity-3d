@@ -41,45 +41,45 @@ export function createSector13({
   
   // Add a light to create a highlight
   const pointLight = new THREE.PointLight(0xffffff, 2, 300);
-  placeOnSphere(pointLight, 15, 0); // Position it like a "nose"
-  dome.add(pointLight);
-
-
+  
+  
   // Face elements will be added directly to the dome
   const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
   const pupilMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
   const eyebrowMaterial = new THREE.MeshStandardMaterial({ color: 0x3E2723 });
   const mouthMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
-
+  
   const eyeRadius = 20;
-
+  
   // Function to place an object on the sphere's surface
-  function placeOnSphere(object: THREE.Object3D, lat: number, lon: number) {
-    const phi = THREE.MathUtils.degToRad(90 - lat);
-    const theta = THREE.MathUtils.degToRad(lon);
-    const position = new THREE.Vector3().setFromSphericalCoords(sphereRadius, phi, theta);
-    object.position.copy(position);
-    object.lookAt(object.position.clone().multiplyScalar(1.1));
-    dome.add(object);
+  function placeOnSphere(object: THREE.Object3D, lat: number, lon: number, radiusOffset = 0) {
+      const phi = THREE.MathUtils.degToRad(90 - lat);
+      const theta = THREE.MathUtils.degToRad(lon);
+      const position = new THREE.Vector3().setFromSphericalCoords(sphereRadius + radiusOffset, phi, theta);
+      object.position.copy(position);
+      object.lookAt(object.position.clone().multiplyScalar(1.1));
+      dome.add(object);
   };
+  
+  placeOnSphere(pointLight, 15, 0); // Position it like a "nose"
 
   // Left Eye
   const leftEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
   leftEye.name = 'leftEye';
   const leftPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  leftPupil.position.z = 0.5; // Adjusted to prevent z-fighting
+  leftPupil.position.z = 1; 
   leftPupil.name = 'leftPupil';
   leftEye.add(leftPupil);
-  placeOnSphere(leftEye, 30, -15);
+  placeOnSphere(leftEye, 30, -15, 0.1);
 
   // Right Eye
   const rightEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
   rightEye.name = 'rightEye';
   const rightPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  rightPupil.position.z = 0.5; // Adjusted to prevent z-fighting
+  rightPupil.position.z = 1;
   rightPupil.name = 'rightPupil';
   rightEye.add(rightPupil);
-  placeOnSphere(rightEye, 30, 15);
+  placeOnSphere(rightEye, 30, 15, 0.1);
 
   // Eyebrows
   const eyebrowGeom = new THREE.BoxGeometry(45, 8, 2);
@@ -87,33 +87,23 @@ export function createSector13({
   const leftEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
   leftEyebrow.name = 'leftEyebrow';
   leftEyebrow.rotation.z = -Math.PI / 16;
-  placeOnSphere(leftEyebrow, 45, -16);
+  placeOnSphere(leftEyebrow, 45, -16, 1);
 
   const rightEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
   rightEyebrow.name = 'rightEyebrow';
   rightEyebrow.rotation.z = Math.PI / 16;
-  placeOnSphere(rightEyebrow, 45, 16);
+  placeOnSphere(rightEyebrow, 45, 16, 1);
 
   // Mouth
   const mouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-40, 0, 0),
-    new THREE.Vector3(-20, -10, 0),
-    new THREE.Vector3(0, -12, 0),
-    new THREE.Vector3(20, -10, 0),
-    new THREE.Vector3(40, 0, 0),
+    new THREE.Vector3(-30, 0, 0), new THREE.Vector3(-15, -8, 0),
+    new THREE.Vector3(0, -10, 0), new THREE.Vector3(15, -8, 0),
+    new THREE.Vector3(30, 0, 0),
   ]);
   const mouthGeometry = new THREE.TubeGeometry(mouthCurve, 20, 3, 8, false);
   const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
   mouth.name = 'mouth';
-  // Manually place and rotate the mouth
-  const mouthPosition = new THREE.Vector3();
-  const lat = 15, lon = 0;
-  const phi = THREE.MathUtils.degToRad(90 - lat);
-  const theta = THREE.MathUtils.degToRad(lon);
-  mouthPosition.setFromSphericalCoords(sphereRadius + 1, phi, theta);
-  mouth.position.copy(mouthPosition);
-  mouth.lookAt(mouth.position.clone().multiplyScalar(1.1));
-  dome.add(mouth);
+  placeOnSphere(mouth, 15, 0, 2);
 
   // Lighter spots
   const spotMaterial = new THREE.MeshStandardMaterial({ color: 0xFFF59D, emissive: 0x444400, emissiveIntensity: 0.2 });
@@ -142,6 +132,11 @@ export function createSector13({
     leftEyebrow: dome.getObjectByName('leftEyebrow') as THREE.Mesh,
     rightEyebrow: dome.getObjectByName('rightEyebrow') as THREE.Mesh,
     mouth: dome.getObjectByName('mouth') as THREE.Mesh,
+    originalPositions: {
+        leftEyebrow: leftEyebrow.position.clone(),
+        rightEyebrow: rightEyebrow.position.clone(),
+        mouth: mouth.position.clone(),
+    }
   };
 
 

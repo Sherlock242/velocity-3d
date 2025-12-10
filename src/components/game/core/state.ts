@@ -11,6 +11,11 @@ export type EmojiFace = {
     leftEyebrow?: THREE.Mesh;
     rightEyebrow?: THREE.Mesh;
     mouth?: THREE.Mesh;
+    originalPositions?: {
+        leftEyebrow: THREE.Vector3;
+        rightEyebrow: THREE.Vector3;
+        mouth: THREE.Vector3;
+    }
 };
 
 export type GameState = {
@@ -47,6 +52,8 @@ export type GameState = {
     gearRef: React.MutableRefObject<Gear>;
     expressionTimerRef: React.MutableRefObject<number>;
     emojiFaceRef: React.MutableRefObject<EmojiFace>;
+    eyeTargetRef: React.MutableRefObject<THREE.Vector2>;
+    currentEyeOffsetRef: React.MutableRefObject<THREE.Vector2>;
 };
 
 export function useGameState(): GameState {
@@ -83,6 +90,8 @@ export function useGameState(): GameState {
     const gearRef = React.useRef<Gear>(1);
     const expressionTimerRef = React.useRef(0);
     const emojiFaceRef = React.useRef<EmojiFace>({});
+    const eyeTargetRef = React.useRef(new THREE.Vector2(0, 0));
+    const currentEyeOffsetRef = React.useRef(new THREE.Vector2(0, 0));
 
 
     return {
@@ -114,5 +123,7 @@ export function useGameState(): GameState {
         gearRef,
         expressionTimerRef,
         emojiFaceRef,
+        eyeTargetRef,
+        currentEyeOffsetRef,
     };
 }

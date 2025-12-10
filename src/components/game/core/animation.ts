@@ -165,6 +165,32 @@ function updateWink(face: EmojiFace, delta: number) {
     }
 }
 
+function updateEyeMovement(face: EmojiFace, currentOffset: THREE.Vector2, targetOffset: THREE.Vector2, delta: number) {
+    if (!face.leftPupil || !face.rightPupil || !face.leftEyebrow || !face.rightEyebrow || !face.mouth || !face.originalPositions) return;
+
+    currentOffset.lerp(targetOffset, delta * 2); // Smoothly move towards the target
+
+    const pupilMovementRange = 5;
+    const featureMovementFactor = 0.05; // How much eyebrows and mouth move
+
+    // Update pupils
+    face.leftPupil.position.x = currentOffset.x * pupilMovementRange;
+    face.leftPupil.position.y = currentOffset.y * pupilMovementRange;
+    face.rightPupil.position.x = currentOffset.x * pupilMovementRange;
+    face.rightPupil.position.y = currentOffset.y * pupilMovementRange;
+
+    // Update eyebrows
+    face.leftEyebrow.position.x = face.originalPositions.leftEyebrow.x + currentOffset.x * pupilMovementRange * featureMovementFactor;
+    face.leftEyebrow.position.y = face.originalPositions.leftEyebrow.y + currentOffset.y * pupilMovementRange * featureMovementFactor;
+    face.rightEyebrow.position.x = face.originalPositions.rightEyebrow.x + currentOffset.x * pupilMovementRange * featureMovementFactor;
+    face.rightEyebrow.position.y = face.originalPositions.rightEyebrow.y + currentOffset.y * pupilMovementRange * featureMovementFactor;
+    
+    // Update mouth
+    face.mouth.position.x = face.originalPositions.mouth.x + currentOffset.x * pupilMovementRange * featureMovementFactor;
+    face.mouth.position.y = face.originalPositions.mouth.y + currentOffset.y * pupilMovementRange * featureMovementFactor;
+}
+
+
 // --- END EMOJI LOGIC ---
 
 
@@ -184,7 +210,7 @@ export function createAnimationLoop(
         skidSoundRef, engineOscillatorRef, tireMarksRef, rampMeshRef,
         collegeRampMeshRef, rampWallsRef, wasOffTrackRef, penaltyCheckCooldownRef,
         staticCollidersRef, obstacleCarsRef, cameraOffsetRef, gearRef,
-        expressionTimerRef, emojiFaceRef
+        expressionTimerRef, emojiFaceRef, eyeTargetRef, currentEyeOffsetRef
     } = gameState;
 
     const animate = () => {
@@ -199,12 +225,20 @@ export function createAnimationLoop(
         if (emojiFaceRef.current.mouth) {
             updateBlink(emojiFaceRef.current, delta);
             updateWink(emojiFaceRef.current, delta);
+            updateEyeMovement(emojiFaceRef.current, currentEyeOffsetRef.current, eyeTargetRef.current, delta);
+
 
             if (expressionTimerRef.current > EXPRESSION_INTERVAL) {
                 expressionTimerRef.current = 0;
                 const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral', 'wink'];
                 const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
                 
+                // Set a new random target for the eyes
+                eyeTargetRef.current.set(
+                    (Math.random() * 2 - 1), // -1 to 1 for x
+                    (Math.random() * 2 - 1)  // -1 to 1 for y
+                );
+
                 if (randomExpression !== currentExpression) {
                     switch (randomExpression) {
                         case 'happy':
