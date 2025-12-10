@@ -25,7 +25,7 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
 
     transformer.position.x = cellCenterX;
     transformer.position.z = cellCenterZ;
-    transformer.rotation.y = 0;
+    transformer.rotation.y = Math.PI / 2;
     
     scene.add(transformer);
     playerRef.current = transformer;
