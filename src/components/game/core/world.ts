@@ -3,9 +3,9 @@ import * as THREE from 'three';
 import { createTransformer } from '../models/transformer';
 import { createObstacleCar } from '../models/obstacle-car';
 import { createGridAndScenery } from '../world/track';
-import { TOTAL_GRID_WIDTH, NUM_OBSTACLES, GRID_SIZE, CELL_SIZE } from '@/lib/game-constants';
+import { TOTAL_GRID_WIDTH, NUM_OBSTACLES, GRID_SIZE, CELL_SIZE, ROAD_WIDTH } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
-import type { GameState } from '../core/state';
+import type { GameState } from './state';
 
 export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: GameState) {
     const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef } = gameState;
