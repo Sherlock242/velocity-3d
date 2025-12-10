@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 import { createTransformer } from '../models/transformer';
 import { createObstacleCar } from '../models/obstacle-car';
@@ -11,8 +12,17 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
 
     // Player
     const transformer = createTransformer();
-    transformer.position.x = 2000;
-    transformer.position.z = -1000;
+    
+    // Set starting position to Sector 13
+    const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
+    const sector13Index = 12; // Sector 13 is the 13th sector (index 12)
+    const i = sector13Index % GRID_SIZE; // col = 2
+    const j = Math.floor(sector13Index / GRID_SIZE); // row = 2
+    const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+    const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+    transformer.position.x = cellCenterX;
+    transformer.position.z = cellCenterZ;
+    
     scene.add(transformer);
     playerRef.current = transformer;
 
