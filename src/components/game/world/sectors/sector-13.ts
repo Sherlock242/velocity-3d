@@ -57,14 +57,14 @@ export function createSector13({
   // Left Eye
   const leftEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
   const leftPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  leftPupil.position.z = 0.1;
+  leftPupil.position.z = 0.2;
   leftEye.add(leftPupil);
   placeOnSphere(leftEye, 30, -15);
 
   // Right Eye
   const rightEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
   const rightPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  rightPupil.position.z = 0.1;
+  rightPupil.position.z = 0.2;
   rightEye.add(rightPupil);
   placeOnSphere(rightEye, 30, 15);
 
