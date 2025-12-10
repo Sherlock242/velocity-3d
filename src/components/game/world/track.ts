@@ -130,6 +130,9 @@ export function createGridAndScenery(
         case 15:
           sectorGroup = createSector15({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
+        case 18:
+          sectorGroup = new THREE.Group(); // Empty sector
+          break;
         case 20:
           sectorGroup = createSector20({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
