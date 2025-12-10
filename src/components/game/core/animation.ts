@@ -222,7 +222,7 @@ export function createAnimationLoop(
         faceRotationStepRef
     } = gameState;
 
-    const rotationSequence = [0, Math.PI / 2, Math.PI, Math.PI * 1.5]; // Front, Right, Back, Left
+    const rotationSequence = [0, Math.PI / 2, 0, -Math.PI / 2]; // Front, Right, Front, Left
 
     const animate = () => {
         animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -637,5 +637,3 @@ export function createAnimationLoop(
     };
     return animate;
 }
-
-    
