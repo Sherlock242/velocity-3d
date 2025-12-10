@@ -166,10 +166,10 @@ function updateWink(face: EmojiFace, delta: number) {
 }
 
 function updateFaceMovement(gameState: GameState, delta: number) {
-    const { emojiFaceRef, faceTargetPositionRef, currentFacePositionRef, faceTravelDirectionRef } = gameState;
+    const { emojiFaceRef, faceTargetPositionRef, currentFacePositionRef, faceTravelDirectionRef, domeRef } = gameState;
     const { faceGroup, leftPupil, rightPupil } = emojiFaceRef.current;
 
-    if (!faceGroup || !leftPupil || !rightPupil) return;
+    if (!faceGroup || !leftPupil || !rightPupil || !domeRef.current) return;
 
     // Smoothly interpolate the spherical coordinates
     const lerpFactor = delta * 0.5;
@@ -187,7 +187,8 @@ function updateFaceMovement(gameState: GameState, delta: number) {
     // Update face group position on the sphere
     const position = new THREE.Vector3().setFromSpherical(currentFacePositionRef.current);
     faceGroup.position.copy(position);
-    faceGroup.lookAt(faceGroup.position.clone().multiplyScalar(1.1));
+    faceGroup.lookAt(faceGroup.position.clone().multiplyScalar(1.1).add(domeRef.current.position));
+
 
     // Update pupils based on travel direction
     const pupilMovementRange = 5;

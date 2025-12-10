@@ -8,6 +8,7 @@ type Sector13Props = {
   cellCenterZ: number;
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
   emojiFaceRef: MutableRefObject<EmojiFace>;
+  domeRef: MutableRefObject<THREE.Mesh | undefined>;
 };
 
 export function createSector13({
@@ -15,6 +16,7 @@ export function createSector13({
   cellCenterZ,
   staticCollidersRef,
   emojiFaceRef,
+  domeRef,
 }: Sector13Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -38,12 +40,8 @@ export function createSector13({
   const dome = new THREE.Mesh(domeGeom, domeMaterial);
   dome.position.y = baseHeight;
   sphereGroup.add(dome);
+  domeRef.current = dome;
   
-  // Add a light to create a highlight
-  const pointLight = new THREE.PointLight(0xffffff, 2, 300);
-  pointLight.position.set(0, 50, sphereRadius);
-  dome.add(pointLight);
-
   // Group for all face elements
   const faceGroup = new THREE.Group();
   dome.add(faceGroup);
@@ -113,10 +111,12 @@ export function createSector13({
     const phi = Math.acos(Math.random()); // Even distribution on a hemisphere
     const theta = Math.random() * 2 * Math.PI;
 
-    spot.position.setFromSphericalCoords(sphereRadius + 0.1, phi, theta);
-    spot.position.y += baseHeight;
-    spot.lookAt(dome.position);
-    sphereGroup.add(spot);
+    const positionOnSphere = new THREE.Vector3().setFromSphericalCoords(sphereRadius + 0.1, phi, theta);
+    spot.position.copy(positionOnSphere);
+    spot.lookAt(new THREE.Vector3(0,0,0)); // Point towards the center of the sphere
+    
+    // Add spot to the dome itself so it's part of the same local space
+    dome.add(spot);
   }
 
   sectorGroup.add(sphereGroup);

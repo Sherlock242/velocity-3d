@@ -8,7 +8,6 @@ import {
   ROAD_WIDTH,
 } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
-import type { MutableRefObject } from 'react';
 import { createSector10 } from './sectors/sector-10';
 import { createSector11 } from './sectors/sector-11';
 import { createSector13 } from './sectors/sector-13';
@@ -22,7 +21,7 @@ export function createGridAndScenery(
   theme: TrackTheme,
   gameState: GameState
 ) {
-  const { walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef } = gameState;
+  const { walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef, domeRef } = gameState;
   
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
@@ -121,7 +120,7 @@ export function createGridAndScenery(
           sectorGroup = createSector11({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 13:
-          sectorGroup = createSector13({ cellCenterX, cellCenterZ, staticCollidersRef, emojiFaceRef });
+          sectorGroup = createSector13({ cellCenterX, cellCenterZ, staticCollidersRef, emojiFaceRef, domeRef });
           break;
         case 14:
           sectorGroup = createSector14({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef, rampWallsRef });
