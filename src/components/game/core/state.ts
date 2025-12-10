@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import * as THREE from 'three';
-import type { ControlMode, Gear } from '@/lib/types';
+import type { ControlMode, Gear, EmojiExpression } from '@/lib/types';
 
 export type GameState = {
     mountRef: React.RefObject<HTMLDivElement>;
@@ -35,6 +35,17 @@ export type GameState = {
     audioInitializedRef: React.MutableRefObject<boolean>;
     engineOscillatorRef: React.MutableRefObject<OscillatorNode | undefined>;
     gearRef: React.MutableRefObject<Gear>;
+    emojiFacePartsRef: React.MutableRefObject<{
+        leftEye: THREE.Mesh;
+        rightEye: THREE.Mesh;
+        leftEyebrow: THREE.Mesh;
+        rightEyebrow: THREE.Mesh;
+        mouthGroup: THREE.Group;
+    } | undefined>;
+    emojiStateRef: React.MutableRefObject<{
+        currentExpression: EmojiExpression;
+        expressionChangeTimer: number;
+    }>;
 };
 
 export function useGameState(): GameState {
@@ -69,6 +80,11 @@ export function useGameState(): GameState {
     const audioInitializedRef = React.useRef(false);
     const engineOscillatorRef = React.useRef<OscillatorNode>();
     const gearRef = React.useRef<Gear>(1);
+    const emojiFacePartsRef = React.useRef();
+    const emojiStateRef = React.useRef({
+        currentExpression: 'angry' as EmojiExpression,
+        expressionChangeTimer: 5, // Initial delay
+    });
 
     return {
         mountRef,
@@ -97,5 +113,7 @@ export function useGameState(): GameState {
         audioInitializedRef,
         engineOscillatorRef,
         gearRef,
+        emojiFacePartsRef,
+        emojiStateRef,
     };
 }

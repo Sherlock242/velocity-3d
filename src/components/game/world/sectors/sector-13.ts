@@ -6,12 +6,14 @@ type Sector13Props = {
   cellCenterX: number;
   cellCenterZ: number;
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
+  emojiFacePartsRef: MutableRefObject<any>;
 };
 
 export function createSector13({
   cellCenterX,
   cellCenterZ,
   staticCollidersRef,
+  emojiFacePartsRef,
 }: Sector13Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -51,6 +53,7 @@ export function createSector13({
 
   // Left Eye
   const leftEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
+  leftEye.name = 'leftEye';
   const leftPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
   leftPupil.position.z = 1;
   leftEye.add(leftPupil);
@@ -59,6 +62,7 @@ export function createSector13({
 
   // Right Eye
   const rightEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
+  rightEye.name = 'rightEye';
   const rightPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
   rightPupil.position.z = 1;
   rightEye.add(rightPupil);
@@ -71,18 +75,21 @@ export function createSector13({
 
   // Left Eyebrow
   const leftEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
+  leftEyebrow.name = 'leftEyebrow';
   leftEyebrow.position.set(-50, 50, sphereRadius - 1);
   leftEyebrow.rotation.z = Math.PI / 8;
   faceGroup.add(leftEyebrow);
 
   // Right Eyebrow
   const rightEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
+  rightEyebrow.name = 'rightEyebrow';
   rightEyebrow.position.set(50, 50, sphereRadius - 1);
   rightEyebrow.rotation.z = -Math.PI / 8;
   faceGroup.add(rightEyebrow);
 
   // Mouth and Fangs
   const mouthGroup = new THREE.Group();
+  mouthGroup.name = 'mouthGroup';
   mouthGroup.position.set(0, -30, sphereRadius - 1);
   faceGroup.add(mouthGroup);
   
@@ -128,6 +135,15 @@ export function createSector13({
 
   sectorGroup.add(sphereGroup);
   staticCollidersRef.current.push(sphereGroup);
+
+  // Store references to face parts for animation
+  emojiFacePartsRef.current = {
+    leftEye,
+    rightEye,
+    leftEyebrow,
+    rightEyebrow,
+    mouthGroup,
+  };
 
   return sectorGroup;
 }

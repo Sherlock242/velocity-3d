@@ -7,7 +7,7 @@ import type { TrackTheme } from '@/lib/types';
 import type { GameState } from './state';
 
 export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: GameState) {
-    const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef } = gameState;
+    const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef, emojiFacePartsRef } = gameState;
 
     // Player
     const transformer = createTransformer();
@@ -38,7 +38,7 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     }
 
     // Grid, Scenery, and Buildings
-    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef);
+    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFacePartsRef);
     scene.add(gridGroup);
 
     const waterJet = gridGroup.getObjectByName('fountainWaterJet');
