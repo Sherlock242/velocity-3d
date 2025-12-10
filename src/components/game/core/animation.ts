@@ -40,31 +40,31 @@ let winkState = {
 };
 
 const neutralMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-25, 5, 0), new THREE.Vector3(-12, -2, 0),
-    new THREE.Vector3(0, -3, 0), new THREE.Vector3(12, -2, 0),
-    new THREE.Vector3(25, 5, 0),
+    new THREE.Vector3(-15, 2, 0), new THREE.Vector3(-7, -1, 0),
+    new THREE.Vector3(0, -1.5, 0), new THREE.Vector3(7, -1, 0),
+    new THREE.Vector3(15, 2, 0),
 ]);
 
 const happyMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-28, -2, 0), new THREE.Vector3(-14, 10, 0),
-    new THREE.Vector3(0, 12, 0), new THREE.Vector3(14, 10, 0),
-    new THREE.Vector3(28, -2, 0),
+    new THREE.Vector3(-18, -1, 0), new THREE.Vector3(-9, 6, 0),
+    new THREE.Vector3(0, 7, 0), new THREE.Vector3(9, 6, 0),
+    new THREE.Vector3(18, -1, 0),
 ]);
 
 const sadMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-28, 8, 0), new THREE.Vector3(-14, -8, 0),
-    new THREE.Vector3(0, -10, 0), new THREE.Vector3(14, -8, 0),
-    new THREE.Vector3(28, 8, 0),
+    new THREE.Vector3(-18, 5, 0), new THREE.Vector3(-9, -5, 0),
+    new THREE.Vector3(0, -6, 0), new THREE.Vector3(9, -5, 0),
+    new THREE.Vector3(18, 5, 0),
 ]);
 
 const surprisedMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-10, -6, 0), new THREE.Vector3(0, 10, 0),
-    new THREE.Vector3(10, -6, 0), new THREE.Vector3(0, -12, 0),
-    new THREE.Vector3(-10, -6, 0)
+    new THREE.Vector3(-6, -4, 0), new THREE.Vector3(0, 6, 0),
+    new THREE.Vector3(6, -4, 0), new THREE.Vector3(0, -7, 0),
+    new THREE.Vector3(-6, -4, 0)
 ]);
 
 function setMouthCurve(mouth: THREE.Mesh, curve: THREE.CatmullRomCurve3) {
-    const mouthGeometry = new THREE.TubeGeometry(curve, 20, 2, 8, false);
+    const mouthGeometry = new THREE.TubeGeometry(curve, 20, 0.5, 8, false);
     mouth.geometry.dispose();
     mouth.geometry = mouthGeometry;
 }
@@ -242,7 +242,7 @@ export function createAnimationLoop(
                 const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
                 
                 // Set a new random target for the face to travel to
-                faceTargetPositionRef.current.phi = THREE.MathUtils.degToRad(Math.random() * 40 + 25); // lat 25-65
+                faceTargetPositionRef.current.phi = THREE.MathUtils.degToRad(Math.random() * 40 + 40); // lat 40-80 degrees, keeping it from the top
                 faceTargetPositionRef.current.theta = THREE.MathUtils.degToRad(Math.random() * 120 - 60); // lon -60 to 60
 
                 if (randomExpression !== currentExpression) {
