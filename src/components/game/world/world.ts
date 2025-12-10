@@ -3,9 +3,9 @@ import * as THREE from 'three';
 import { createTransformer } from '../models/transformer';
 import { createObstacleCar } from '../models/obstacle-car';
 import { createGridAndScenery } from '../world/track';
-import { TOTAL_GRID_WIDTH, NUM_OBSTACLES, GRID_SIZE, CELL_SIZE } from '@/lib/game-constants';
+import { TOTAL_GRID_WIDTH, NUM_OBSTACLES, GRID_SIZE, CELL_SIZE, ROAD_WIDTH } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
-import type { GameState } from './state';
+import type { GameState } from '../core/state';
 
 export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: GameState) {
     const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef } = gameState;
@@ -13,19 +13,19 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to Sector 13 road
+    // Set starting position to Sector 13 road, in front of the emoji
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
     const sector13Index = 12; // Sector 13 is the 13th sector (index 12)
     const i = sector13Index % GRID_SIZE; // col = 2
     const j = Math.floor(sector13Index / GRID_SIZE); // row = 2
     
-    // Calculate the road coordinate next to the cell
-    const roadX = (i * CELL_SIZE) - halfTotalWidth;
-    const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+    // Position on the road in front of the emoji face
+    const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+    const roadZ = (j * CELL_SIZE) - halfTotalWidth - (ROAD_WIDTH / 2);
 
-    transformer.position.x = roadX;
-    transformer.position.z = cellCenterZ;
-    transformer.rotation.y = Math.PI / 2;
+    transformer.position.x = cellCenterX;
+    transformer.position.z = roadZ;
+    transformer.rotation.y = 0; // Face towards the emoji
     
     scene.add(transformer);
     playerRef.current = transformer;
