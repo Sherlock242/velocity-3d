@@ -6,14 +6,12 @@ type Sector13Props = {
   cellCenterX: number;
   cellCenterZ: number;
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
-  emojiFacePartsRef: MutableRefObject<any>;
 };
 
 export function createSector13({
   cellCenterX,
   cellCenterZ,
   staticCollidersRef,
-  emojiFacePartsRef,
 }: Sector13Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -43,7 +41,6 @@ export function createSector13({
   const pupilMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
   const eyebrowMaterial = new THREE.MeshStandardMaterial({ color: 0x3E2723 });
   const mouthMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
-  const fangMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
 
   const eyeRadius = 20;
 
@@ -59,7 +56,6 @@ export function createSector13({
 
   // Left Eye
   const leftEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
-  leftEye.name = 'leftEye';
   const leftPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
   leftPupil.position.z = 0.1;
   leftEye.add(leftPupil);
@@ -67,7 +63,6 @@ export function createSector13({
 
   // Right Eye
   const rightEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
-  rightEye.name = 'rightEye';
   const rightPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
   rightPupil.position.z = 0.1;
   rightEye.add(rightPupil);
@@ -76,35 +71,20 @@ export function createSector13({
   // Eyebrows
   const eyebrowGeom = new THREE.BoxGeometry(45, 8, 2);
 
-  // Left Eyebrow
   const leftEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
-  leftEyebrow.name = 'leftEyebrow';
-  placeOnSphere(leftEyebrow, 45, -15);
+  leftEyebrow.rotation.z = -Math.PI / 16;
+  placeOnSphere(leftEyebrow, 45, -16);
 
-  // Right Eyebrow
   const rightEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
-  rightEyebrow.name = 'rightEyebrow';
-  placeOnSphere(rightEyebrow, 45, 15);
+  rightEyebrow.rotation.z = Math.PI / 16;
+  placeOnSphere(rightEyebrow, 45, 16);
 
   // Mouth
-  const mouthGroup = new THREE.Group();
-  mouthGroup.name = 'mouthGroup';
-  placeOnSphere(mouthGroup, -10, 0);
-
-  const mouthLine = new THREE.Mesh(new THREE.BoxGeometry(20, 3, 2), mouthMaterial);
-  mouthGroup.add(mouthLine);
-
-  const fangGeom = new THREE.ConeGeometry(4, 10, 8);
-
-  const leftFang = new THREE.Mesh(fangGeom, fangMaterial);
-  leftFang.position.set(-8, -5, 0);
-  leftFang.rotation.z = Math.PI;
-  mouthGroup.add(leftFang);
-
-  const rightFang = new THREE.Mesh(fangGeom, fangMaterial);
-  rightFang.position.set(8, -5, 0);
-  rightFang.rotation.z = Math.PI;
-  mouthGroup.add(rightFang);
+  const mouthCurve = new THREE.ArcCurve(0, -25, 40, Math.PI * 1.2, Math.PI * 1.8);
+  const mouthPoints = mouthCurve.getPoints(20);
+  const mouthGeometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(mouthPoints), 20, 3, 8, false);
+  const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+  placeOnSphere(mouth, 0, 0);
 
   // Lighter spots
   const spotMaterial = new THREE.MeshStandardMaterial({ color: 0xFFF59D, emissive: 0x444400, emissiveIntensity: 0.2 });
@@ -124,15 +104,6 @@ export function createSector13({
 
   sectorGroup.add(sphereGroup);
   staticCollidersRef.current.push(sphereGroup);
-
-  // Store references to face parts for animation
-  emojiFacePartsRef.current = {
-    leftEye,
-    rightEye,
-    leftEyebrow,
-    rightEyebrow,
-    mouthGroup,
-  };
 
   return sectorGroup;
 }

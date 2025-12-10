@@ -7,5 +7,3 @@ export type OpponentProfile = AiOpponentProfileOutput['profiles'][0];
 export type ControlMode = 'car' | 'person';
 
 export type Gear = 1 | 2 | 3;
-
-export type EmojiExpression = 'angry' | 'happy' | 'sad' | 'surprised';
