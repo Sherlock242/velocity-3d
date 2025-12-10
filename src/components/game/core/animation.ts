@@ -33,14 +33,13 @@ function updateEmojiFace(gameState: GameState, expression: EmojiExpression) {
 
     const { leftEye, rightEye, leftEyebrow, rightEyebrow, mouthGroup } = emojiFacePartsRef.current;
 
-    // Reset rotations and positions relative to their parent group (the dome)
+    // Reset rotations and positions
     leftEyebrow.rotation.z = 0;
     rightEyebrow.rotation.z = 0;
     mouthGroup.rotation.z = 0;
     mouthGroup.scale.y = 1;
-    mouthGroup.position.y = -30; // Reset mouth y-position
+    mouthGroup.position.y = 0;
     
-    // Eyebrows are positioned high on the face via placeOnSphere, so we adjust relative y for expression
     leftEyebrow.position.y = 0;
     rightEyebrow.position.y = 0;
 
@@ -52,20 +51,20 @@ function updateEmojiFace(gameState: GameState, expression: EmojiExpression) {
             leftEyebrow.rotation.z = -Math.PI / 12;
             rightEyebrow.rotation.z = Math.PI / 12;
             mouthGroup.rotation.z = Math.PI;
-            mouthGroup.position.y = -10;
+            mouthGroup.position.y = 20;
             break;
         case 'sad':
             leftEyebrow.position.y = -5;
             rightEyebrow.position.y = -5;
             leftEyebrow.rotation.z = Math.PI / 8;
             rightEyebrow.rotation.z = -Math.PI / 8;
-            mouthGroup.position.y = -20;
+            mouthGroup.position.y = -10;
             break;
         case 'surprised':
             leftEyebrow.position.y = 15;
             rightEyebrow.position.y = 15;
             mouthGroup.scale.y = 1.5;
-            mouthGroup.position.y = -10;
+            mouthGroup.position.y = -5;
             break;
         case 'angry':
         default:
@@ -74,9 +73,14 @@ function updateEmojiFace(gameState: GameState, expression: EmojiExpression) {
             rightEyebrow.position.y = 0;
             leftEyebrow.rotation.z = Math.PI / 8;
             rightEyebrow.rotation.z = -Math.PI / 8;
-            mouthGroup.position.y = -30;
+            mouthGroup.position.y = 0;
             break;
     }
+
+    // Apply the local transformations to the objects which are on the sphere surface
+    if (leftEyebrow.parent) leftEyebrow.parent.localToWorld(leftEyebrow.position);
+    if (rightEyebrow.parent) rightEyebrow.parent.localToWorld(rightEyebrow.position);
+    if (mouthGroup.parent) mouthGroup.parent.localToWorld(mouthGroup.position);
 }
 
 
@@ -399,13 +403,29 @@ export function createAnimationLoop(
             });
 
             staticCollidersRef.current.forEach((collider) => {
-                if (collider.parent?.name === 'compoundWall' || collider.name === 'collegeRamp') {
-                    return;
-                }
                 const colliderBox = new THREE.Box3().setFromObject(collider);
                 if (playerBox.intersectsBox(colliderBox)) {
                     const isSpecialBuilding = collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding';
                     
+                    if (collider.parent?.name === 'compoundWall' || collider.name === 'collegeRamp') {
+                        velocityRef.current.multiplyScalar(0);
+                        const intersection = new THREE.Box3();
+                        intersection.copy(playerBox).intersect(colliderBox);
+
+                        const penetration = new THREE.Vector3();
+                        penetration.subVectors(intersection.max, intersection.min);
+
+                        const moveDirection = new THREE.Vector3();
+                        if (penetration.x < penetration.z) {
+                            moveDirection.x = player.position.x > collider.position.x ? penetration.x : -penetration.x;
+                        } else {
+                            moveDirection.z = player.position.z > collider.position.z ? penetration.z : -penetration.z;
+                        }
+                        player.position.add(moveDirection);
+                        return;
+                    }
+
+
                     let slowdown = 0.1;
                     if (isSpecialBuilding) {
                         if (controlModeRef.current === 'car') slowdown = 0.5;

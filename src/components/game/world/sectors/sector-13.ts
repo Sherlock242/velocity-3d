@@ -51,7 +51,7 @@ export function createSector13({
   const placeOnSphere = (object: THREE.Object3D, lat: number, lon: number) => {
     const phi = THREE.MathUtils.degToRad(90 - lat);
     const theta = THREE.MathUtils.degToRad(lon);
-    const position = new THREE.Vector3().setFromSphericalCoords(sphereRadius + 0.5, phi, theta);
+    const position = new THREE.Vector3().setFromSphericalCoords(sphereRadius, phi, theta);
     object.position.copy(position);
     object.lookAt(object.position.clone().multiplyScalar(1.1));
     dome.add(object);
