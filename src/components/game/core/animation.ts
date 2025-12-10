@@ -218,8 +218,11 @@ export function createAnimationLoop(
         skidSoundRef, engineOscillatorRef, tireMarksRef, rampMeshRef,
         collegeRampMeshRef, rampWallsRef, wasOffTrackRef, penaltyCheckCooldownRef,
         staticCollidersRef, obstacleCarsRef, cameraOffsetRef, gearRef,
-        expressionTimerRef, emojiFaceRef, faceTargetPositionRef
+        expressionTimerRef, emojiFaceRef, faceTargetPositionRef,
+        faceRotationStepRef
     } = gameState;
+
+    const rotationSequence = [0, Math.PI / 2, Math.PI, Math.PI * 1.5]; // Front, Right, Back, Left
 
     const animate = () => {
         animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -241,9 +244,15 @@ export function createAnimationLoop(
                 const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral', 'wink'];
                 const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
                 
-                // Set a new random target for the face to travel to
-                faceTargetPositionRef.current.phi = THREE.MathUtils.degToRad(Math.random() * 40 + 40); // lat 40-80 degrees, keeping it from the top
-                faceTargetPositionRef.current.theta = Math.random() * Math.PI * 2; // Full 360 degree horizontal travel
+                // Set a new sequential target for the face to travel to
+                faceRotationStepRef.current = (faceRotationStepRef.current + 1) % rotationSequence.length;
+                faceTargetPositionRef.current.theta = rotationSequence[faceRotationStepRef.current];
+
+                // Add a little bit of vertical randomness
+                const verticalAngleCenter = THREE.MathUtils.degToRad(70);
+                const verticalAngleRange = THREE.MathUtils.degToRad(10);
+                faceTargetPositionRef.current.phi = verticalAngleCenter + (Math.random() - 0.5) * verticalAngleRange;
+
 
                 if (randomExpression !== currentExpression) {
                     switch (randomExpression) {
