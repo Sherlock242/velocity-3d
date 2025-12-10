@@ -243,11 +243,11 @@ export function createAnimationLoop(
                 const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
                 
                 // Set a new random target for the face to travel to
-                faceTargetPositionRef.current.theta = (Math.random() - 0.5) * Math.PI * 2; // Full 360-degree range
+                faceTargetPositionRef.current.theta = (Math.random() - 0.5) * Math.PI; // Front 180 degrees
                 
                 // Constrain vertical movement to avoid top/bottom poles
                 const verticalAngleCenter = THREE.MathUtils.degToRad(70);
-                const verticalAngleRange = THREE.MathUtils.degToRad(50); // Wider vertical range
+                const verticalAngleRange = THREE.MathUtils.degToRad(40);
                 faceTargetPositionRef.current.phi = verticalAngleCenter + (Math.random() - 0.5) * verticalAngleRange;
 
 
