@@ -80,13 +80,24 @@ export function createSector13({
   placeOnSphere(rightEyebrow, 45, 16);
 
   // Mouth
-  const mouthCurve = new THREE.ArcCurve(0, -25, 40, Math.PI * 1.2, Math.PI * 1.8);
-  const mouthPoints2D = mouthCurve.getPoints(20);
-  const mouthPoints3D = mouthPoints2D.map(p => new THREE.Vector3(p.x, p.y, 0));
-  const mouthCurve3D = new THREE.CatmullRomCurve3(mouthPoints3D);
-  const mouthGeometry = new THREE.TubeGeometry(mouthCurve3D, 20, 3, 8, false);
+  const mouthCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-40, 0, 0),
+    new THREE.Vector3(-20, -10, 0),
+    new THREE.Vector3(0, -12, 0),
+    new THREE.Vector3(20, -10, 0),
+    new THREE.Vector3(40, 0, 0),
+  ]);
+  const mouthGeometry = new THREE.TubeGeometry(mouthCurve, 20, 3, 8, false);
   const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
-  placeOnSphere(mouth, 0, 0);
+  // Manually place and rotate the mouth
+  const mouthPosition = new THREE.Vector3();
+  const lat = 0, lon = 0;
+  const phi = THREE.MathUtils.degToRad(90 - lat);
+  const theta = THREE.MathUtils.degToRad(lon);
+  mouthPosition.setFromSphericalCoords(sphereRadius, phi, theta);
+  mouth.position.copy(mouthPosition);
+  mouth.lookAt(mouth.position.clone().multiplyScalar(1.1));
+  dome.add(mouth);
 
   // Lighter spots
   const spotMaterial = new THREE.MeshStandardMaterial({ color: 0xFFF59D, emissive: 0x444400, emissiveIntensity: 0.2 });
