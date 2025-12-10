@@ -222,8 +222,6 @@ export function createAnimationLoop(
         faceRotationStepRef
     } = gameState;
 
-    const rotationSequence = [0, Math.PI / 2, 0, -Math.PI / 2]; // Front, Right, Front, Left
-
     const animate = () => {
         animationFrameIdRef.current = requestAnimationFrame(animate);
         const player = playerRef.current;
@@ -244,13 +242,12 @@ export function createAnimationLoop(
                 const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral', 'wink'];
                 const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
                 
-                // Set a new sequential target for the face to travel to
-                faceRotationStepRef.current = (faceRotationStepRef.current + 1) % rotationSequence.length;
-                faceTargetPositionRef.current.theta = rotationSequence[faceRotationStepRef.current];
-
-                // Add a little bit of vertical randomness
+                // Set a new random target for the face to travel to
+                faceTargetPositionRef.current.theta = (Math.random() - 0.5) * Math.PI * 2; // Full 360-degree range
+                
+                // Constrain vertical movement to avoid top/bottom poles
                 const verticalAngleCenter = THREE.MathUtils.degToRad(70);
-                const verticalAngleRange = THREE.MathUtils.degToRad(10);
+                const verticalAngleRange = THREE.MathUtils.degToRad(50); // Wider vertical range
                 faceTargetPositionRef.current.phi = verticalAngleCenter + (Math.random() - 0.5) * verticalAngleRange;
 
 
