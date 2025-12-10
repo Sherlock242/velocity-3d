@@ -8,24 +8,24 @@ import type { TrackTheme } from '@/lib/types';
 import type { GameState } from './state';
 
 export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: GameState) {
-    const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef } = gameState;
+    const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef, emojiFacePartsRef, expressionTimerRef } = gameState;
 
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to Sector 13 road, on the back of the emoji
+    // Set starting position to the middle of Sector 18
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    const sector13Index = 12; // Sector 13 is the 13th sector (index 12)
-    const i = sector13Index % GRID_SIZE; // col = 2
-    const j = Math.floor(sector13Index / GRID_SIZE); // row = 2
+    const sector18Index = 17; // Sector 18 is the 18th sector (index 17)
+    const i = sector18Index % GRID_SIZE; // col = 2
+    const j = Math.floor(sector18Index / GRID_SIZE); // row = 3
     
-    // Position on the road behind the emoji face
+    // Position in the middle of the cell
     const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-    const roadZ = ((j + 1) * CELL_SIZE) - halfTotalWidth + (ROAD_WIDTH / 2);
+    const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
 
     transformer.position.x = cellCenterX;
-    transformer.position.z = roadZ;
-    transformer.rotation.y = Math.PI; // Face away from the emoji
+    transformer.position.z = cellCenterZ;
+    transformer.rotation.y = 0;
     
     scene.add(transformer);
     playerRef.current = transformer;
@@ -52,11 +52,20 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     }
 
     // Grid, Scenery, and Buildings
-    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef);
+    const gridGroup = createGridAndScenery(theme, gameState);
     scene.add(gridGroup);
 
     const waterJet = gridGroup.getObjectByName('fountainWaterJet');
     if (waterJet instanceof THREE.Mesh) {
         fountainWaterJetRef.current = waterJet;
+    }
+
+    const leftEye = gridGroup.getObjectByName('leftEye');
+    const rightEye = gridGroup.getObjectByName('rightEye');
+    const leftEyebrow = gridGroup.getObjectByName('leftEyebrow');
+    const rightEyebrow = gridGroup.getObjectByName('rightEyebrow');
+    const mouth = gridGroup.getObjectByName('mouth');
+    if (leftEye && rightEye && leftEyebrow && rightEyebrow && mouth) {
+      emojiFacePartsRef.current = { leftEye, rightEye, leftEyebrow, rightEyebrow, mouth };
     }
 }
