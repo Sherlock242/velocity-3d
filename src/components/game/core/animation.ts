@@ -40,31 +40,31 @@ let winkState = {
 };
 
 const neutralMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-30, 0, 0), new THREE.Vector3(-15, -8, 0),
-    new THREE.Vector3(0, -10, 0), new THREE.Vector3(15, -8, 0),
-    new THREE.Vector3(30, 0, 0),
+    new THREE.Vector3(-25, 5, 0), new THREE.Vector3(-12, -2, 0),
+    new THREE.Vector3(0, -3, 0), new THREE.Vector3(12, -2, 0),
+    new THREE.Vector3(25, 5, 0),
 ]);
 
 const happyMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-35, -5, 0), new THREE.Vector3(-15, 12, 0),
-    new THREE.Vector3(0, 15, 0), new THREE.Vector3(15, 12, 0),
-    new THREE.Vector3(35, -5, 0),
+    new THREE.Vector3(-28, -2, 0), new THREE.Vector3(-14, 10, 0),
+    new THREE.Vector3(0, 12, 0), new THREE.Vector3(14, 10, 0),
+    new THREE.Vector3(28, -2, 0),
 ]);
 
 const sadMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-35, 10, 0), new THREE.Vector3(-15, -12, 0),
-    new THREE.Vector3(0, -15, 0), new THREE.Vector3(15, -12, 0),
-    new THREE.Vector3(35, 10, 0),
+    new THREE.Vector3(-28, 8, 0), new THREE.Vector3(-14, -8, 0),
+    new THREE.Vector3(0, -10, 0), new THREE.Vector3(14, -8, 0),
+    new THREE.Vector3(28, 8, 0),
 ]);
 
 const surprisedMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-12, -8, 0), new THREE.Vector3(0, 12, 0),
-    new THREE.Vector3(12, -8, 0), new THREE.Vector3(0, -15, 0),
-    new THREE.Vector3(-12, -8, 0)
+    new THREE.Vector3(-10, -6, 0), new THREE.Vector3(0, 10, 0),
+    new THREE.Vector3(10, -6, 0), new THREE.Vector3(0, -12, 0),
+    new THREE.Vector3(-10, -6, 0)
 ]);
 
 function setMouthCurve(mouth: THREE.Mesh, curve: THREE.CatmullRomCurve3) {
-    const mouthGeometry = new THREE.TubeGeometry(curve, 20, 3, 8, false);
+    const mouthGeometry = new THREE.TubeGeometry(curve, 20, 2, 8, false);
     mouth.geometry.dispose();
     mouth.geometry = mouthGeometry;
 }

@@ -59,7 +59,7 @@ export function createSector13({
   leftEye.name = 'leftEye';
   leftEye.position.x = -45;
   const leftPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  leftPupil.position.z = 1.1; 
+  leftPupil.position.z = 1.2; 
   leftPupil.name = 'leftPupil';
   leftEye.add(leftPupil);
   faceGroup.add(leftEye);
@@ -69,7 +69,7 @@ export function createSector13({
   rightEye.name = 'rightEye';
   rightEye.position.x = 45;
   const rightPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  rightPupil.position.z = 1.1;
+  rightPupil.position.z = 1.2;
   rightPupil.name = 'rightPupil';
   rightEye.add(rightPupil);
   faceGroup.add(rightEye);
@@ -91,11 +91,11 @@ export function createSector13({
 
   // Mouth
   const mouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-30, 0, 0), new THREE.Vector3(-15, -8, 0),
-    new THREE.Vector3(0, -10, 0), new THREE.Vector3(15, -8, 0),
-    new THREE.Vector3(30, 0, 0),
+    new THREE.Vector3(-25, 5, 0), new THREE.Vector3(-12, -2, 0),
+    new THREE.Vector3(0, -3, 0), new THREE.Vector3(12, -2, 0),
+    new THREE.Vector3(25, 5, 0),
   ]);
-  const mouthGeometry = new THREE.TubeGeometry(mouthCurve, 20, 3, 8, false);
+  const mouthGeometry = new THREE.TubeGeometry(mouthCurve, 20, 2, 8, false);
   const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
   mouth.name = 'mouth';
   mouth.position.set(0, -30, 2);
