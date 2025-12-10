@@ -33,41 +33,45 @@ function updateEmojiFace(gameState: GameState, expression: EmojiExpression) {
 
     const { leftEye, rightEye, leftEyebrow, rightEyebrow, mouthGroup } = emojiFacePartsRef.current;
 
-    // Reset rotations and positions
+    // Reset rotations and positions relative to their parent group (the dome)
     leftEyebrow.rotation.z = 0;
     rightEyebrow.rotation.z = 0;
     mouthGroup.rotation.z = 0;
     mouthGroup.scale.y = 1;
-    (mouthGroup.children[0] as THREE.Mesh).position.y = 0;
+    mouthGroup.position.y = -30; // Reset mouth y-position
+    
+    // Eyebrows are positioned high on the face via placeOnSphere, so we adjust relative y for expression
+    leftEyebrow.position.y = 0;
+    rightEyebrow.position.y = 0;
 
 
     switch (expression) {
         case 'happy':
-            leftEyebrow.position.y = 55;
-            rightEyebrow.position.y = 55;
+            leftEyebrow.position.y = 10;
+            rightEyebrow.position.y = 10;
             leftEyebrow.rotation.z = -Math.PI / 12;
             rightEyebrow.rotation.z = Math.PI / 12;
             mouthGroup.rotation.z = Math.PI;
-            mouthGroup.position.y = -40;
+            mouthGroup.position.y = -10;
             break;
         case 'sad':
-            leftEyebrow.position.y = 45;
-            rightEyebrow.position.y = 45;
+            leftEyebrow.position.y = -5;
+            rightEyebrow.position.y = -5;
             leftEyebrow.rotation.z = Math.PI / 8;
             rightEyebrow.rotation.z = -Math.PI / 8;
-            mouthGroup.position.y = -50;
+            mouthGroup.position.y = -20;
             break;
         case 'surprised':
-            leftEyebrow.position.y = 60;
-            rightEyebrow.position.y = 60;
+            leftEyebrow.position.y = 15;
+            rightEyebrow.position.y = 15;
             mouthGroup.scale.y = 1.5;
-            mouthGroup.position.y = -40;
-            (mouthGroup.children[0] as THREE.Mesh).position.y = 5;
+            mouthGroup.position.y = -10;
             break;
         case 'angry':
         default:
-            leftEyebrow.position.y = 50;
-            rightEyebrow.position.y = 50;
+            // Default is angry, set positions back to neutral for this look
+            leftEyebrow.position.y = 0;
+            rightEyebrow.position.y = 0;
             leftEyebrow.rotation.z = Math.PI / 8;
             rightEyebrow.rotation.z = -Math.PI / 8;
             mouthGroup.position.y = -30;
