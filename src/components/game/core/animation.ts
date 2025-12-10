@@ -9,7 +9,7 @@ import {
   ROAD_WIDTH,
   GEAR_MAX_SPEEDS,
 } from '@/lib/game-constants';
-import type { GameState } from './state';
+import type { GameState, EmojiFace } from './state';
 
 let currentSteerAngle = 0;
 let previousSector = -1;
@@ -23,6 +23,108 @@ const tireMarkMaterial = new THREE.MeshStandardMaterial({
 tireMarkMaterial.polygonOffset = true;
 tireMarkMaterial.polygonOffsetFactor = -1;
 const clock = new THREE.Clock();
+
+// --- EMOJI EXPRESSION LOGIC ---
+const EXPRESSION_INTERVAL = 3; // seconds
+let currentExpression = 'neutral';
+let blinkState = {
+    isBlinking: false,
+    progress: 0,
+    direction: 1,
+};
+
+const neutralMouthCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-40, 0, 0), new THREE.Vector3(-20, -10, 0),
+    new THREE.Vector3(0, -12, 0), new THREE.Vector3(20, -10, 0),
+    new THREE.Vector3(40, 0, 0),
+]);
+
+const happyMouthCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-40, -10, 0), new THREE.Vector3(-20, 10, 0),
+    new THREE.Vector3(0, 15, 0), new THREE.Vector3(20, 10, 0),
+    new THREE.Vector3(40, -10, 0),
+]);
+
+const sadMouthCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-40, 10, 0), new THREE.Vector3(-20, -15, 0),
+    new THREE.Vector3(0, -20, 0), new THREE.Vector3(20, -15, 0),
+    new THREE.Vector3(40, 10, 0),
+]);
+
+const surprisedMouthCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-15, -10, 0), new THREE.Vector3(0, 15, 0),
+    new THREE.Vector3(15, -10, 0), new THREE.Vector3(0, -20, 0),
+    new THREE.Vector3(-15, -10, 0)
+]);
+
+function setMouthCurve(mouth: THREE.Mesh, curve: THREE.CatmullRomCurve3) {
+    const mouthGeometry = new THREE.TubeGeometry(curve, 20, 3, 8, false);
+    mouth.geometry.dispose();
+    mouth.geometry = mouthGeometry;
+}
+
+function setHappyExpression(face: EmojiFace) {
+    if (!face.leftEyebrow || !face.rightEyebrow || !face.mouth) return;
+    face.leftEyebrow.rotation.z = -Math.PI / 8;
+    face.rightEyebrow.rotation.z = Math.PI / 8;
+    setMouthCurve(face.mouth, happyMouthCurve);
+    currentExpression = 'happy';
+}
+
+function setSadExpression(face: EmojiFace) {
+    if (!face.leftEyebrow || !face.rightEyebrow || !face.mouth) return;
+    face.leftEyebrow.rotation.z = Math.PI / 10;
+    face.rightEyebrow.rotation.z = -Math.PI / 10;
+    setMouthCurve(face.mouth, sadMouthCurve);
+    currentExpression = 'sad';
+}
+
+function setSurprisedExpression(face: EmojiFace) {
+    if (!face.leftEyebrow || !face.rightEyebrow || !face.mouth) return;
+    face.leftEyebrow.rotation.z = -Math.PI / 6;
+    face.rightEyebrow.rotation.z = Math.PI / 6;
+    setMouthCurve(face.mouth, surprisedMouthCurve);
+    currentExpression = 'surprised';
+}
+
+function setNeutralExpression(face: EmojiFace) {
+    if (!face.leftEyebrow || !face.rightEyebrow || !face.mouth) return;
+    face.leftEyebrow.rotation.z = -Math.PI / 16;
+    face.rightEyebrow.rotation.z = Math.PI / 16;
+    setMouthCurve(face.mouth, neutralMouthCurve);
+    currentExpression = 'neutral';
+}
+
+function triggerBlink(face: EmojiFace) {
+    if (!blinkState.isBlinking) {
+        blinkState.isBlinking = true;
+        blinkState.progress = 0;
+        blinkState.direction = 1;
+    }
+}
+
+function updateBlink(face: EmojiFace, delta: number) {
+    if (!blinkState.isBlinking || !face.leftEye || !face.rightEye) return;
+
+    const blinkSpeed = 10;
+    blinkState.progress += blinkSpeed * delta * blinkState.direction;
+
+    if (blinkState.progress >= 1) {
+        blinkState.progress = 1;
+        blinkState.direction = -1; // Start opening
+    }
+
+    if (blinkState.progress <= 0 && blinkState.direction === -1) {
+        blinkState.progress = 0;
+        blinkState.isBlinking = false; // Blink finished
+    }
+
+    const scaleY = 1 - blinkState.progress;
+    face.leftEye.scale.y = scaleY;
+    face.rightEye.scale.y = scaleY;
+}
+// --- END EMOJI LOGIC ---
+
 
 export function createAnimationLoop(
     scene: THREE.Scene,
@@ -39,7 +141,8 @@ export function createAnimationLoop(
         walkingNpcsRef, inputRef, audioInitializedRef, engineSoundRef,
         skidSoundRef, engineOscillatorRef, tireMarksRef, rampMeshRef,
         collegeRampMeshRef, rampWallsRef, wasOffTrackRef, penaltyCheckCooldownRef,
-        staticCollidersRef, obstacleCarsRef, cameraOffsetRef, gearRef
+        staticCollidersRef, obstacleCarsRef, cameraOffsetRef, gearRef,
+        expressionTimerRef, emojiFaceRef
     } = gameState;
 
     const animate = () => {
@@ -48,6 +151,39 @@ export function createAnimationLoop(
         const delta = clock.getDelta();
         const now = clock.getElapsedTime();
         gameTimeRef.current += delta;
+        expressionTimerRef.current += delta;
+
+        // --- EMOJI ANIMATION ---
+        if (emojiFaceRef.current.mouth) {
+            updateBlink(emojiFaceRef.current, delta);
+
+            if (expressionTimerRef.current > EXPRESSION_INTERVAL) {
+                expressionTimerRef.current = 0;
+                const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral'];
+                const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
+                
+                if (randomExpression !== currentExpression) {
+                    switch (randomExpression) {
+                        case 'happy':
+                            setHappyExpression(emojiFaceRef.current);
+                            break;
+                        case 'sad':
+                            setSadExpression(emojiFaceRef.current);
+                            break;
+                        case 'surprised':
+                            setSurprisedExpression(emojiFaceRef.current);
+                            break;
+                        case 'blink':
+                            triggerBlink(emojiFaceRef.current);
+                            break;
+                        default:
+                            setNeutralExpression(emojiFaceRef.current);
+                            break;
+                    }
+                }
+            }
+        }
+        // --- END EMOJI ANIMATION ---
 
         // Fountain animation
         if (fountainWaterJetRef.current) {

@@ -1,17 +1,20 @@
 
 import * as THREE from 'three';
 import type { MutableRefObject } from 'react';
+import type { EmojiFace } from '../../core/state';
 
 type Sector13Props = {
   cellCenterX: number;
   cellCenterZ: number;
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
+  emojiFaceRef: MutableRefObject<EmojiFace>;
 };
 
 export function createSector13({
   cellCenterX,
   cellCenterZ,
   staticCollidersRef,
+  emojiFaceRef,
 }: Sector13Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -31,10 +34,16 @@ export function createSector13({
 
   // Yellow Dome
   const domeGeom = new THREE.SphereGeometry(sphereRadius, 64, 32, 0, Math.PI * 2, 0, Math.PI / 2);
-  const domeMaterial = new THREE.MeshStandardMaterial({ color: 0xFFEB3B, emissive: 0x888800, emissiveIntensity: 0.3 });
+  const domeMaterial = new THREE.MeshStandardMaterial({ color: 0xFFEB3B, metalness: 0, roughness: 0.2 });
   const dome = new THREE.Mesh(domeGeom, domeMaterial);
   dome.position.y = baseHeight;
   sphereGroup.add(dome);
+  
+  // Add a light to create a highlight
+  const pointLight = new THREE.PointLight(0xffffff, 2, 300);
+  placeOnSphere(pointLight, 15, 0); // Position it like a "nose"
+  dome.add(pointLight);
+
 
   // Face elements will be added directly to the dome
   const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
@@ -45,7 +54,7 @@ export function createSector13({
   const eyeRadius = 20;
 
   // Function to place an object on the sphere's surface
-  const placeOnSphere = (object: THREE.Object3D, lat: number, lon: number) => {
+  function placeOnSphere(object: THREE.Object3D, lat: number, lon: number) {
     const phi = THREE.MathUtils.degToRad(90 - lat);
     const theta = THREE.MathUtils.degToRad(lon);
     const position = new THREE.Vector3().setFromSphericalCoords(sphereRadius, phi, theta);
@@ -56,15 +65,19 @@ export function createSector13({
 
   // Left Eye
   const leftEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
+  leftEye.name = 'leftEye';
   const leftPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  leftPupil.position.z = 0.2;
+  leftPupil.position.z = 0.5; // Adjusted to prevent z-fighting
+  leftPupil.name = 'leftPupil';
   leftEye.add(leftPupil);
   placeOnSphere(leftEye, 30, -15);
 
   // Right Eye
   const rightEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
+  rightEye.name = 'rightEye';
   const rightPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  rightPupil.position.z = 0.2;
+  rightPupil.position.z = 0.5; // Adjusted to prevent z-fighting
+  rightPupil.name = 'rightPupil';
   rightEye.add(rightPupil);
   placeOnSphere(rightEye, 30, 15);
 
@@ -72,10 +85,12 @@ export function createSector13({
   const eyebrowGeom = new THREE.BoxGeometry(45, 8, 2);
 
   const leftEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
+  leftEyebrow.name = 'leftEyebrow';
   leftEyebrow.rotation.z = -Math.PI / 16;
   placeOnSphere(leftEyebrow, 45, -16);
 
   const rightEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
+  rightEyebrow.name = 'rightEyebrow';
   rightEyebrow.rotation.z = Math.PI / 16;
   placeOnSphere(rightEyebrow, 45, 16);
 
@@ -89,12 +104,13 @@ export function createSector13({
   ]);
   const mouthGeometry = new THREE.TubeGeometry(mouthCurve, 20, 3, 8, false);
   const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+  mouth.name = 'mouth';
   // Manually place and rotate the mouth
   const mouthPosition = new THREE.Vector3();
-  const lat = 15, lon = 0; // Raised the latitude from 0 to 15
+  const lat = 15, lon = 0;
   const phi = THREE.MathUtils.degToRad(90 - lat);
   const theta = THREE.MathUtils.degToRad(lon);
-  mouthPosition.setFromSphericalCoords(sphereRadius, phi, theta);
+  mouthPosition.setFromSphericalCoords(sphereRadius + 1, phi, theta);
   mouth.position.copy(mouthPosition);
   mouth.lookAt(mouth.position.clone().multiplyScalar(1.1));
   dome.add(mouth);
@@ -117,6 +133,17 @@ export function createSector13({
 
   sectorGroup.add(sphereGroup);
   staticCollidersRef.current.push(sphereGroup);
+
+  emojiFaceRef.current = {
+    leftEye: dome.getObjectByName('leftEye') as THREE.Mesh,
+    rightEye: dome.getObjectByName('rightEye') as THREE.Mesh,
+    leftPupil: dome.getObjectByName('leftPupil') as THREE.Mesh,
+    rightPupil: dome.getObjectByName('rightPupil') as THREE.Mesh,
+    leftEyebrow: dome.getObjectByName('leftEyebrow') as THREE.Mesh,
+    rightEyebrow: dome.getObjectByName('rightEyebrow') as THREE.Mesh,
+    mouth: dome.getObjectByName('mouth') as THREE.Mesh,
+  };
+
 
   return sectorGroup;
 }

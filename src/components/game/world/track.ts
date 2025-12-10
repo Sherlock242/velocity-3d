@@ -16,15 +16,14 @@ import { createSector14 } from './sectors/sector-14';
 import { createSector15 } from './sectors/sector-15';
 import { createSector20 } from './sectors/sector-20';
 import { createGenericSector } from './sectors/generic-sector';
+import type { GameState } from '../core/state';
 
 export function createGridAndScenery(
   theme: TrackTheme,
-  walkingNpcsRef: MutableRefObject<THREE.Group[]>,
-  staticCollidersRef: MutableRefObject<THREE.Group[]>,
-  rampMeshRef: MutableRefObject<THREE.Mesh | undefined>,
-  rampWallsRef: MutableRefObject<THREE.Group | undefined>,
-  collegeRampMeshRef: MutableRefObject<THREE.Group | undefined>
+  gameState: GameState
 ) {
+  const { walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef } = gameState;
+  
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
 
@@ -122,7 +121,7 @@ export function createGridAndScenery(
           sectorGroup = createSector11({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 13:
-          sectorGroup = createSector13({ cellCenterX, cellCenterZ, staticCollidersRef });
+          sectorGroup = createSector13({ cellCenterX, cellCenterZ, staticCollidersRef, emojiFaceRef });
           break;
         case 14:
           sectorGroup = createSector14({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef, rampWallsRef });

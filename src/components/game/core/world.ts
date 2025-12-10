@@ -52,7 +52,7 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     }
 
     // Grid, Scenery, and Buildings
-    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef);
+    const gridGroup = createGridAndScenery(theme, gameState);
     scene.add(gridGroup);
 
     const waterJet = gridGroup.getObjectByName('fountainWaterJet');
@@ -60,5 +60,3 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
         fountainWaterJetRef.current = waterJet;
     }
 }
-
-

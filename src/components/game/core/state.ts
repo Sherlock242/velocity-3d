@@ -3,6 +3,16 @@ import * as React from 'react';
 import * as THREE from 'three';
 import type { ControlMode, Gear } from '@/lib/types';
 
+export type EmojiFace = {
+    leftEye?: THREE.Mesh;
+    rightEye?: THREE.Mesh;
+    leftPupil?: THREE.Mesh;
+    rightPupil?: THREE.Mesh;
+    leftEyebrow?: THREE.Mesh;
+    rightEyebrow?: THREE.Mesh;
+    mouth?: THREE.Mesh;
+};
+
 export type GameState = {
     mountRef: React.RefObject<HTMLDivElement>;
     gameTimeRef: React.MutableRefObject<number>;
@@ -35,6 +45,8 @@ export type GameState = {
     audioInitializedRef: React.MutableRefObject<boolean>;
     engineOscillatorRef: React.MutableRefObject<OscillatorNode | undefined>;
     gearRef: React.MutableRefObject<Gear>;
+    expressionTimerRef: React.MutableRefObject<number>;
+    emojiFaceRef: React.MutableRefObject<EmojiFace>;
 };
 
 export function useGameState(): GameState {
@@ -69,6 +81,9 @@ export function useGameState(): GameState {
     const audioInitializedRef = React.useRef(false);
     const engineOscillatorRef = React.useRef<OscillatorNode>();
     const gearRef = React.useRef<Gear>(1);
+    const expressionTimerRef = React.useRef(0);
+    const emojiFaceRef = React.useRef<EmojiFace>({});
+
 
     return {
         mountRef,
@@ -97,5 +112,7 @@ export function useGameState(): GameState {
         audioInitializedRef,
         engineOscillatorRef,
         gearRef,
+        expressionTimerRef,
+        emojiFaceRef,
     };
 }
