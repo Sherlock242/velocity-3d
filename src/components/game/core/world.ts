@@ -5,27 +5,26 @@ import { createObstacleCar } from '../models/obstacle-car';
 import { createGridAndScenery } from '../world/track';
 import { TOTAL_GRID_WIDTH, NUM_OBSTACLES, GRID_SIZE, CELL_SIZE } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
-import type { GameState } from './state';
+import type { GameState } from '../core/state';
 
 export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: GameState) {
-    const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef, emojiFacePartsRef } = gameState;
+    const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef } = gameState;
 
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to Sector 13 road
+    // Set starting position to Sector 14 road
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    const sector13Index = 12; // Sector 13 is the 13th sector (index 12)
-    const i = sector13Index % GRID_SIZE; // col = 2
-    const j = Math.floor(sector13Index / GRID_SIZE); // row = 2
+    const sectorIndex = 13; // Sector 14 is index 13
+    const i = sectorIndex % GRID_SIZE; 
+    const j = Math.floor(sectorIndex / GRID_SIZE);
     
-    // Calculate the road coordinate next to the cell
-    const roadX = (i * CELL_SIZE) - halfTotalWidth;
+    const roadX = (i * CELL_SIZE) - halfTotalWidth + CELL_SIZE + (ROAD_WIDTH / 2);
     const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
 
     transformer.position.x = roadX;
     transformer.position.z = cellCenterZ;
-    transformer.rotation.y = Math.PI / 2;
+    transformer.rotation.y = -Math.PI / 2;
     
     scene.add(transformer);
     playerRef.current = transformer;
@@ -52,7 +51,7 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     }
 
     // Grid, Scenery, and Buildings
-    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFacePartsRef);
+    const gridGroup = createGridAndScenery(theme, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef);
     scene.add(gridGroup);
 
     const waterJet = gridGroup.getObjectByName('fountainWaterJet');
