@@ -243,7 +243,7 @@ export function createAnimationLoop(
                 
                 // Set a new random target for the face to travel to
                 faceTargetPositionRef.current.phi = THREE.MathUtils.degToRad(Math.random() * 40 + 40); // lat 40-80 degrees, keeping it from the top
-                faceTargetPositionRef.current.theta = THREE.MathUtils.degToRad(Math.random() * 120 - 60); // lon -60 to 60
+                faceTargetPositionRef.current.theta = Math.random() * Math.PI * 2; // Full 360 degree horizontal travel
 
                 if (randomExpression !== currentExpression) {
                     switch (randomExpression) {
