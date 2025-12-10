@@ -32,29 +32,35 @@ let blinkState = {
     progress: 0,
     direction: 1,
 };
+let winkState = {
+    isWinking: false,
+    progress: 0,
+    direction: 1,
+    eye: 'left' as 'left' | 'right',
+};
 
 const neutralMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-40, 0, 0), new THREE.Vector3(-20, -10, 0),
-    new THREE.Vector3(0, -12, 0), new THREE.Vector3(20, -10, 0),
-    new THREE.Vector3(40, 0, 0),
+    new THREE.Vector3(-30, 0, 0), new THREE.Vector3(-15, -8, 0),
+    new THREE.Vector3(0, -10, 0), new THREE.Vector3(15, -8, 0),
+    new THREE.Vector3(30, 0, 0),
 ]);
 
 const happyMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-40, -10, 0), new THREE.Vector3(-20, 10, 0),
-    new THREE.Vector3(0, 15, 0), new THREE.Vector3(20, 10, 0),
-    new THREE.Vector3(40, -10, 0),
+    new THREE.Vector3(-35, -5, 0), new THREE.Vector3(-15, 12, 0),
+    new THREE.Vector3(0, 15, 0), new THREE.Vector3(15, 12, 0),
+    new THREE.Vector3(35, -5, 0),
 ]);
 
 const sadMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-40, 10, 0), new THREE.Vector3(-20, -15, 0),
-    new THREE.Vector3(0, -20, 0), new THREE.Vector3(20, -15, 0),
-    new THREE.Vector3(40, 10, 0),
+    new THREE.Vector3(-35, 10, 0), new THREE.Vector3(-15, -12, 0),
+    new THREE.Vector3(0, -15, 0), new THREE.Vector3(15, -12, 0),
+    new THREE.Vector3(35, 10, 0),
 ]);
 
 const surprisedMouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-15, -10, 0), new THREE.Vector3(0, 15, 0),
-    new THREE.Vector3(15, -10, 0), new THREE.Vector3(0, -20, 0),
-    new THREE.Vector3(-15, -10, 0)
+    new THREE.Vector3(-12, -8, 0), new THREE.Vector3(0, 12, 0),
+    new THREE.Vector3(12, -8, 0), new THREE.Vector3(0, -15, 0),
+    new THREE.Vector3(-12, -8, 0)
 ]);
 
 function setMouthCurve(mouth: THREE.Mesh, curve: THREE.CatmullRomCurve3) {
@@ -103,6 +109,15 @@ function triggerBlink(face: EmojiFace) {
     }
 }
 
+function triggerWink(face: EmojiFace) {
+    if (!winkState.isWinking) {
+        winkState.isWinking = true;
+        winkState.progress = 0;
+        winkState.direction = 1;
+        winkState.eye = Math.random() > 0.5 ? 'left' : 'right';
+    }
+}
+
 function updateBlink(face: EmojiFace, delta: number) {
     if (!blinkState.isBlinking || !face.leftEye || !face.rightEye) return;
 
@@ -123,6 +138,33 @@ function updateBlink(face: EmojiFace, delta: number) {
     face.leftEye.scale.y = scaleY;
     face.rightEye.scale.y = scaleY;
 }
+
+function updateWink(face: EmojiFace, delta: number) {
+    if (!winkState.isWinking || !face.leftEye || !face.rightEye) return;
+    
+    const winkSpeed = 8;
+    winkState.progress += winkSpeed * delta * winkState.direction;
+
+    if (winkState.progress >= 1) {
+        winkState.progress = 1;
+        winkState.direction = -1;
+    }
+
+    if (winkState.progress <= 0 && winkState.direction === -1) {
+        winkState.progress = 0;
+        winkState.isWinking = false;
+        if(winkState.eye === 'left' && face.leftEye) face.leftEye.scale.y = 1;
+        if(winkState.eye === 'right' && face.rightEye) face.rightEye.scale.y = 1;
+        return;
+    }
+
+    const scaleY = 1 - winkState.progress;
+    const eyeToAnimate = winkState.eye === 'left' ? face.leftEye : face.rightEye;
+    if (eyeToAnimate) {
+        eyeToAnimate.scale.y = scaleY;
+    }
+}
+
 // --- END EMOJI LOGIC ---
 
 
@@ -156,10 +198,11 @@ export function createAnimationLoop(
         // --- EMOJI ANIMATION ---
         if (emojiFaceRef.current.mouth) {
             updateBlink(emojiFaceRef.current, delta);
+            updateWink(emojiFaceRef.current, delta);
 
             if (expressionTimerRef.current > EXPRESSION_INTERVAL) {
                 expressionTimerRef.current = 0;
-                const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral'];
+                const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral', 'wink'];
                 const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
                 
                 if (randomExpression !== currentExpression) {
@@ -175,6 +218,9 @@ export function createAnimationLoop(
                             break;
                         case 'blink':
                             triggerBlink(emojiFaceRef.current);
+                            break;
+                        case 'wink':
+                            triggerWink(emojiFaceRef.current);
                             break;
                         default:
                             setNeutralExpression(emojiFaceRef.current);
