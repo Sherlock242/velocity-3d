@@ -13,19 +13,19 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to Sector 13 road, in front of the emoji
+    // Set starting position to Sector 13 road, on the back of the emoji
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
     const sector13Index = 12; // Sector 13 is the 13th sector (index 12)
     const i = sector13Index % GRID_SIZE; // col = 2
     const j = Math.floor(sector13Index / GRID_SIZE); // row = 2
     
-    // Position on the road in front of the emoji face
+    // Position on the road behind the emoji face
     const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-    const roadZ = (j * CELL_SIZE) - halfTotalWidth - (ROAD_WIDTH / 2);
+    const roadZ = ((j + 1) * CELL_SIZE) - halfTotalWidth + (ROAD_WIDTH / 2);
 
     transformer.position.x = cellCenterX;
     transformer.position.z = roadZ;
-    transformer.rotation.y = 0; // Face towards the emoji
+    transformer.rotation.y = Math.PI; // Face away from the emoji
     
     scene.add(transformer);
     playerRef.current = transformer;
