@@ -41,9 +41,14 @@ export function createSector13({
   
   // Add a light to create a highlight
   const pointLight = new THREE.PointLight(0xffffff, 2, 300);
+  pointLight.position.set(0, 50, sphereRadius);
+  dome.add(pointLight);
+
+  // Group for all face elements
+  const faceGroup = new THREE.Group();
+  dome.add(faceGroup);
   
-  
-  // Face elements will be added directly to the dome
+  // Face elements
   const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
   const pupilMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
   const eyebrowMaterial = new THREE.MeshStandardMaterial({ color: 0x3E2723 });
@@ -51,35 +56,25 @@ export function createSector13({
   
   const eyeRadius = 20;
   
-  // Function to place an object on the sphere's surface
-  function placeOnSphere(object: THREE.Object3D, lat: number, lon: number, radiusOffset = 0) {
-      const phi = THREE.MathUtils.degToRad(90 - lat);
-      const theta = THREE.MathUtils.degToRad(lon);
-      const position = new THREE.Vector3().setFromSphericalCoords(sphereRadius + radiusOffset, phi, theta);
-      object.position.copy(position);
-      object.lookAt(object.position.clone().multiplyScalar(1.1));
-      dome.add(object);
-  };
-  
-  placeOnSphere(pointLight, 15, 0); // Position it like a "nose"
-
   // Left Eye
   const leftEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
   leftEye.name = 'leftEye';
+  leftEye.position.x = -45;
   const leftPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  leftPupil.position.z = 1; 
+  leftPupil.position.z = 1.1; 
   leftPupil.name = 'leftPupil';
   leftEye.add(leftPupil);
-  placeOnSphere(leftEye, 30, -15, 0.1);
+  faceGroup.add(leftEye);
 
   // Right Eye
   const rightEye = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius, 32), eyeMaterial);
   rightEye.name = 'rightEye';
+  rightEye.position.x = 45;
   const rightPupil = new THREE.Mesh(new THREE.CircleGeometry(eyeRadius * 0.5, 32), pupilMaterial);
-  rightPupil.position.z = 1;
+  rightPupil.position.z = 1.1;
   rightPupil.name = 'rightPupil';
   rightEye.add(rightPupil);
-  placeOnSphere(rightEye, 30, 15, 0.1);
+  faceGroup.add(rightEye);
 
   // Eyebrows
   const eyebrowGeom = new THREE.BoxGeometry(45, 8, 2);
@@ -87,12 +82,14 @@ export function createSector13({
   const leftEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
   leftEyebrow.name = 'leftEyebrow';
   leftEyebrow.rotation.z = -Math.PI / 16;
-  placeOnSphere(leftEyebrow, 45, -16, 1);
+  leftEyebrow.position.set(-45, 35, 1);
+  faceGroup.add(leftEyebrow);
 
   const rightEyebrow = new THREE.Mesh(eyebrowGeom, eyebrowMaterial);
   rightEyebrow.name = 'rightEyebrow';
   rightEyebrow.rotation.z = Math.PI / 16;
-  placeOnSphere(rightEyebrow, 45, 16, 1);
+  rightEyebrow.position.set(45, 35, 1);
+  faceGroup.add(rightEyebrow);
 
   // Mouth
   const mouthCurve = new THREE.CatmullRomCurve3([
@@ -103,7 +100,8 @@ export function createSector13({
   const mouthGeometry = new THREE.TubeGeometry(mouthCurve, 20, 3, 8, false);
   const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
   mouth.name = 'mouth';
-  placeOnSphere(mouth, 15, 0, 2);
+  mouth.position.set(0, -30, 2);
+  faceGroup.add(mouth);
 
   // Lighter spots
   const spotMaterial = new THREE.MeshStandardMaterial({ color: 0xFFF59D, emissive: 0x444400, emissiveIntensity: 0.2 });
@@ -125,18 +123,14 @@ export function createSector13({
   staticCollidersRef.current.push(sphereGroup);
 
   emojiFaceRef.current = {
-    leftEye: dome.getObjectByName('leftEye') as THREE.Mesh,
-    rightEye: dome.getObjectByName('rightEye') as THREE.Mesh,
-    leftPupil: dome.getObjectByName('leftPupil') as THREE.Mesh,
-    rightPupil: dome.getObjectByName('rightPupil') as THREE.Mesh,
-    leftEyebrow: dome.getObjectByName('leftEyebrow') as THREE.Mesh,
-    rightEyebrow: dome.getObjectByName('rightEyebrow') as THREE.Mesh,
-    mouth: dome.getObjectByName('mouth') as THREE.Mesh,
-    originalPositions: {
-        leftEyebrow: leftEyebrow.position.clone(),
-        rightEyebrow: rightEyebrow.position.clone(),
-        mouth: mouth.position.clone(),
-    }
+    faceGroup: faceGroup,
+    leftEye: leftEye,
+    rightEye: rightEye,
+    leftPupil: leftPupil,
+    rightPupil: rightPupil,
+    leftEyebrow: leftEyebrow,
+    rightEyebrow: rightEyebrow,
+    mouth: mouth,
   };
 
 
