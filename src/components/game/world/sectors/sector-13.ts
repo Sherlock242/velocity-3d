@@ -81,8 +81,10 @@ export function createSector13({
 
   // Mouth
   const mouthCurve = new THREE.ArcCurve(0, -25, 40, Math.PI * 1.2, Math.PI * 1.8);
-  const mouthPoints = mouthCurve.getPoints(20);
-  const mouthGeometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(mouthPoints), 20, 3, 8, false);
+  const mouthPoints2D = mouthCurve.getPoints(20);
+  const mouthPoints3D = mouthPoints2D.map(p => new THREE.Vector3(p.x, p.y, 0));
+  const mouthCurve3D = new THREE.CatmullRomCurve3(mouthPoints3D);
+  const mouthGeometry = new THREE.TubeGeometry(mouthCurve3D, 20, 3, 8, false);
   const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
   placeOnSphere(mouth, 0, 0);
 
