@@ -7,6 +7,8 @@ export type EmojiFace = {
     faceGroup?: THREE.Group;
     leftEye?: THREE.Mesh;
     rightEye?: THREE.Mesh;
+    leftHeart?: THREE.Mesh;
+    rightHeart?: THREE.Mesh;
     leftPupil?: THREE.Mesh;
     rightPupil?: THREE.Mesh;
     leftEyebrow?: THREE.Mesh;

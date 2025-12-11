@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import type { MutableRefObject } from 'react';
 import type { EmojiFace } from '../../core/state';
+import { createHeartShape } from '../../models/shapes';
 
 type Sector13Props = {
   cellCenterX: number;
@@ -51,6 +52,7 @@ export function createSector13({
   const pupilMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
   const eyebrowMaterial = new THREE.MeshStandardMaterial({ color: 0x3E2723 });
   const mouthMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+  const heartMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0x660000 });
   
   const eyeRadius = 20;
   
@@ -91,15 +93,32 @@ export function createSector13({
 
   // Mouth
   const mouthCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-25, 5, 0), new THREE.Vector3(-12, -2, 0),
-    new THREE.Vector3(0, -3, 0), new THREE.Vector3(12, -2, 0),
-    new THREE.Vector3(25, 5, 0),
+    new THREE.Vector3(-15, 2, 0), new THREE.Vector3(-7, -1, 0),
+    new THREE.Vector3(0, -1.5, 0), new THREE.Vector3(7, -1, 0),
+    new THREE.Vector3(15, 2, 0),
   ]);
-  const mouthGeometry = new THREE.TubeGeometry(mouthCurve, 20, 2, 8, false);
+  const mouthGeometry = new THREE.TubeGeometry(mouthCurve, 20, 0.5, 8, false);
   const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
   mouth.name = 'mouth';
   mouth.position.set(0, -30, 2);
   faceGroup.add(mouth);
+
+  // Heart Eyes (initially hidden)
+  const heartShape = createHeartShape();
+  const heartGeom = new THREE.ExtrudeGeometry(heartShape, { depth: 2, bevelEnabled: false });
+  heartGeom.scale(2.5, 2.5, 1);
+  heartGeom.center();
+
+  const leftHeart = new THREE.Mesh(heartGeom, heartMaterial);
+  leftHeart.position.x = -45;
+  leftHeart.visible = false;
+  faceGroup.add(leftHeart);
+
+  const rightHeart = new THREE.Mesh(heartGeom.clone(), heartMaterial);
+  rightHeart.position.x = 45;
+  rightHeart.visible = false;
+  faceGroup.add(rightHeart);
+
 
   // Lighter spots
   const spotMaterial = new THREE.MeshStandardMaterial({ color: 0xFFF59D, emissive: 0x444400, emissiveIntensity: 0.2 });
@@ -126,6 +145,8 @@ export function createSector13({
     faceGroup: faceGroup,
     leftEye: leftEye,
     rightEye: rightEye,
+    leftHeart: leftHeart,
+    rightHeart: rightHeart,
     leftPupil: leftPupil,
     rightPupil: rightPupil,
     leftEyebrow: leftEyebrow,

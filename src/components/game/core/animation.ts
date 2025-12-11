@@ -69,8 +69,20 @@ function setMouthCurve(mouth: THREE.Mesh, curve: THREE.CatmullRomCurve3) {
     mouth.geometry = mouthGeometry;
 }
 
+function setEyesVisibility(face: EmojiFace, visible: boolean) {
+    if (face.leftEye) face.leftEye.visible = visible;
+    if (face.rightEye) face.rightEye.visible = visible;
+}
+
+function setHeartsVisibility(face: EmojiFace, visible: boolean) {
+    if (face.leftHeart) face.leftHeart.visible = visible;
+    if (face.rightHeart) face.rightHeart.visible = visible;
+}
+
 function setHappyExpression(face: EmojiFace) {
     if (!face.leftEyebrow || !face.rightEyebrow || !face.mouth) return;
+    setEyesVisibility(face, true);
+    setHeartsVisibility(face, false);
     face.leftEyebrow.rotation.z = -Math.PI / 8;
     face.rightEyebrow.rotation.z = Math.PI / 8;
     setMouthCurve(face.mouth, happyMouthCurve);
@@ -79,6 +91,8 @@ function setHappyExpression(face: EmojiFace) {
 
 function setSadExpression(face: EmojiFace) {
     if (!face.leftEyebrow || !face.rightEyebrow || !face.mouth) return;
+    setEyesVisibility(face, true);
+    setHeartsVisibility(face, false);
     face.leftEyebrow.rotation.z = Math.PI / 10;
     face.rightEyebrow.rotation.z = -Math.PI / 10;
     setMouthCurve(face.mouth, sadMouthCurve);
@@ -87,6 +101,8 @@ function setSadExpression(face: EmojiFace) {
 
 function setSurprisedExpression(face: EmojiFace) {
     if (!face.leftEyebrow || !face.rightEyebrow || !face.mouth) return;
+    setEyesVisibility(face, true);
+    setHeartsVisibility(face, false);
     face.leftEyebrow.rotation.z = -Math.PI / 6;
     face.rightEyebrow.rotation.z = Math.PI / 6;
     setMouthCurve(face.mouth, surprisedMouthCurve);
@@ -95,10 +111,24 @@ function setSurprisedExpression(face: EmojiFace) {
 
 function setNeutralExpression(face: EmojiFace) {
     if (!face.leftEyebrow || !face.rightEyebrow || !face.mouth) return;
+    setEyesVisibility(face, true);
+    setHeartsVisibility(face, false);
     face.leftEyebrow.rotation.z = -Math.PI / 16;
     face.rightEyebrow.rotation.z = Math.PI / 16;
     setMouthCurve(face.mouth, neutralMouthCurve);
     currentExpression = 'neutral';
+}
+
+function setLoveStruckExpression(face: EmojiFace) {
+    if (!face.leftEyebrow || !face.rightEyebrow || !face.mouth) return;
+    setEyesVisibility(face, false);
+    setHeartsVisibility(face, true);
+    // Eyebrows raised in adoration
+    face.leftEyebrow.rotation.z = -Math.PI / 8;
+    face.rightEyebrow.rotation.z = Math.PI / 8;
+    // Slightly open mouth
+    setMouthCurve(face.mouth, surprisedMouthCurve);
+    currentExpression = 'loveStruck';
 }
 
 function triggerBlink(face: EmojiFace) {
@@ -239,7 +269,7 @@ export function createAnimationLoop(
 
             if (expressionTimerRef.current > EXPRESSION_INTERVAL) {
                 expressionTimerRef.current = 0;
-                const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral', 'wink'];
+                const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral', 'wink', 'loveStruck'];
                 const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
                 
                 // Set a new random target for the face to travel to
@@ -261,6 +291,9 @@ export function createAnimationLoop(
                             break;
                         case 'surprised':
                             setSurprisedExpression(emojiFaceRef.current);
+                            break;
+                        case 'loveStruck':
+                            setLoveStruckExpression(emojiFaceRef.current);
                             break;
                         case 'blink':
                             triggerBlink(emojiFaceRef.current);
@@ -494,7 +527,7 @@ export function createAnimationLoop(
 
             const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
             const playerGridX = Math.floor((player.position.x + halfTotalWidth) / CELL_SIZE);
-            const playerGridZ = Math.floor((player.position.z + halfTotalWidth) / CELL_SIZE);
+            const playerGridZ = Math.floor((player.position.z + halfTotalWidth) / GRID_SIZE);
             const currentSector = playerGridZ * GRID_SIZE + playerGridX + 1;
 
             if (currentSector !== previousSector) {
