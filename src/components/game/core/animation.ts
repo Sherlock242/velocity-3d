@@ -213,21 +213,23 @@ function updateFaceMovement(gameState: GameState, delta: number) {
     faceGroup.lookAt(faceGroup.position.clone().multiplyScalar(1.1).add(domeRef.current.position));
 
 
-    // Update pupils based on face's current spherical coordinates
+    // Correct Pupil Tracking Logic
     const pupilMovementRange = 5;
-    const verticalCenter = THREE.MathUtils.degToRad(70);
-    const verticalRange = THREE.MathUtils.degToRad(40);
     
-    // Normalize phi from its range to -1 to 1
-    const normalizedPhi = ((currentFacePositionRef.current.phi - verticalCenter) / (verticalRange / 2));
-    
-    // Normalize theta from -PI to PI, to -1 to 1
-    const normalizedTheta = currentFacePositionRef.current.theta / Math.PI;
+    // 1. Get world position of the target
+    const targetWorldPosition = new THREE.Vector3().setFromSpherical(faceTargetPositionRef.current);
 
-    leftPupil.position.x = -normalizedTheta * pupilMovementRange;
-    leftPupil.position.y = -normalizedPhi * pupilMovementRange;
-    rightPupil.position.x = -normalizedTheta * pupilMovementRange;
-    rightPupil.position.y = -normalizedPhi * pupilMovementRange;
+    // 2. Transform the world target position into the local space of the face group
+    const localTargetPosition = faceGroup.worldToLocal(targetWorldPosition);
+
+    // 3. Normalize the local position to get a direction vector
+    const direction = localTargetPosition.normalize();
+
+    // 4. Map the direction to pupil movement, ensuring Y is correctly oriented
+    leftPupil.position.x = direction.x * pupilMovementRange;
+    leftPupil.position.y = direction.y * pupilMovementRange;
+    rightPupil.position.x = direction.x * pupilMovementRange;
+    rightPupil.position.y = direction.y * pupilMovementRange;
 }
 
 
@@ -673,3 +675,4 @@ export function createAnimationLoop(
     
 
     
+
