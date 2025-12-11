@@ -107,6 +107,7 @@ export function createSector13({
   const heartShape = createHeartShape();
   const heartGeom = new THREE.ExtrudeGeometry(heartShape, { depth: 2, bevelEnabled: false });
   heartGeom.scale(2.5, 2.5, 1);
+  heartGeom.rotateZ(Math.PI);
   heartGeom.center();
 
   const leftHeart = new THREE.Mesh(heartGeom, heartMaterial);
