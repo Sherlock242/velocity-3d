@@ -128,7 +128,7 @@ export function createSector13({
     const spotGeom = new THREE.CircleGeometry(spotRadius, 16);
     const spot = new THREE.Mesh(spotGeom, spotMaterial);
 
-    const phi = Math.acos(Math.random()); // Even distribution on a hemisphere
+    const phi = Math.acos(1 - Math.random() * 0.5); // Range from 0 to approx 60 degrees
     const theta = Math.random() * 2 * Math.PI;
 
     const positionOnSphere = new THREE.Vector3().setFromSphericalCoords(sphereRadius + 0.1, phi, theta);
