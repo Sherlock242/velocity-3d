@@ -196,7 +196,7 @@ function updateWink(face: EmojiFace, delta: number) {
 }
 
 function updateFaceMovement(gameState: GameState, delta: number) {
-    const { emojiFaceRef, faceTargetPositionRef, currentFacePositionRef, faceTravelDirectionRef, domeRef } = gameState;
+    const { emojiFaceRef, faceTargetPositionRef, currentFacePositionRef, domeRef } = gameState;
     const { faceGroup, leftPupil, rightPupil } = emojiFaceRef.current;
 
     if (!faceGroup || !leftPupil || !rightPupil || !domeRef.current) return;
@@ -206,13 +206,6 @@ function updateFaceMovement(gameState: GameState, delta: number) {
     currentFacePositionRef.current.phi = THREE.MathUtils.lerp(currentFacePositionRef.current.phi, faceTargetPositionRef.current.phi, lerpFactor);
     currentFacePositionRef.current.theta = THREE.MathUtils.lerp(currentFacePositionRef.current.theta, faceTargetPositionRef.current.theta, lerpFactor);
 
-    // Calculate face direction
-    const travelDirection = new THREE.Vector2(
-        faceTargetPositionRef.current.theta - currentFacePositionRef.current.theta,
-        faceTargetPositionRef.current.phi - currentFacePositionRef.current.phi
-    ).normalize();
-    faceTravelDirectionRef.current.lerp(travelDirection, lerpFactor * 5); // Make pupil movement snappier
-
 
     // Update face group position on the sphere
     const position = new THREE.Vector3().setFromSpherical(currentFacePositionRef.current);
@@ -220,12 +213,21 @@ function updateFaceMovement(gameState: GameState, delta: number) {
     faceGroup.lookAt(faceGroup.position.clone().multiplyScalar(1.1).add(domeRef.current.position));
 
 
-    // Update pupils based on travel direction
+    // Update pupils based on face's current spherical coordinates
     const pupilMovementRange = 5;
-    leftPupil.position.x = faceTravelDirectionRef.current.x * pupilMovementRange;
-    leftPupil.position.y = -faceTravelDirectionRef.current.y * pupilMovementRange;
-    rightPupil.position.x = faceTravelDirectionRef.current.x * pupilMovementRange;
-    rightPupil.position.y = -faceTravelDirectionRef.current.y * pupilMovementRange;
+    const verticalCenter = THREE.MathUtils.degToRad(70);
+    const verticalRange = THREE.MathUtils.degToRad(40);
+    
+    // Normalize phi from its range to -1 to 1
+    const normalizedPhi = ((currentFacePositionRef.current.phi - verticalCenter) / (verticalRange / 2));
+    
+    // Normalize theta from -PI to PI, to -1 to 1
+    const normalizedTheta = currentFacePositionRef.current.theta / Math.PI;
+
+    leftPupil.position.x = -normalizedTheta * pupilMovementRange;
+    leftPupil.position.y = -normalizedPhi * pupilMovementRange;
+    rightPupil.position.x = -normalizedTheta * pupilMovementRange;
+    rightPupil.position.y = -normalizedPhi * pupilMovementRange;
 }
 
 

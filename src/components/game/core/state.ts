@@ -52,7 +52,6 @@ export type GameState = {
     emojiFaceRef: React.MutableRefObject<EmojiFace>;
     faceTargetPositionRef: React.MutableRefObject<THREE.Spherical>;
     currentFacePositionRef: React.MutableRefObject<THREE.Spherical>;
-    faceTravelDirectionRef: React.MutableRefObject<THREE.Vector2>;
     domeRef: React.MutableRefObject<THREE.Mesh | undefined>;
     faceRotationStepRef: React.MutableRefObject<number>;
 };
@@ -93,7 +92,6 @@ export function useGameState(): GameState {
     const emojiFaceRef = React.useRef<EmojiFace>({});
     const faceTargetPositionRef = React.useRef(new THREE.Spherical(200, THREE.MathUtils.degToRad(45), 0));
     const currentFacePositionRef = React.useRef(new THREE.Spherical(200, THREE.MathUtils.degToRad(45), 0));
-    const faceTravelDirectionRef = React.useRef(new THREE.Vector2(0, 0));
     const domeRef = React.useRef<THREE.Mesh>();
     const faceRotationStepRef = React.useRef(0);
 
@@ -129,7 +127,6 @@ export function useGameState(): GameState {
         emojiFaceRef,
         faceTargetPositionRef,
         currentFacePositionRef,
-        faceTravelDirectionRef,
         domeRef,
         faceRotationStepRef,
     };
