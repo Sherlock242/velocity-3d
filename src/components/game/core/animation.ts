@@ -269,8 +269,6 @@ export function createAnimationLoop(
 
             if (expressionTimerRef.current > EXPRESSION_INTERVAL) {
                 expressionTimerRef.current = 0;
-                const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral', 'wink', 'loveStruck'];
-                const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
                 
                 // Set a new random target for the face to travel to
                 faceTargetPositionRef.current.theta = (Math.random() - 0.5) * Math.PI; // Front 180 degrees
@@ -280,6 +278,8 @@ export function createAnimationLoop(
                 const verticalAngleRange = THREE.MathUtils.degToRad(40);
                 faceTargetPositionRef.current.phi = verticalAngleCenter + (Math.random() - 0.5) * verticalAngleRange;
 
+                const expressions = ['happy', 'sad', 'surprised', 'blink', 'neutral', 'wink', 'loveStruck'];
+                const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
 
                 if (randomExpression !== currentExpression) {
                     switch (randomExpression) {
@@ -667,5 +667,7 @@ export function createAnimationLoop(
     };
     return animate;
 }
+
+    
 
     
