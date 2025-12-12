@@ -96,7 +96,6 @@ export function createCollegeBuilding() {
           walkableFloorPlane.position.y = 0.1;
           
           floorGroup.add(walkableFloorPlane); // Add to floor group to get correct position
-          walkableRampGroup.add(walkableFloorPlane); // Add to the actual walkable group
           
           if(i === 0) {
               const wallSegmentWidthLeft = (width - entranceWidth) / 2 + entranceOffset;
@@ -199,6 +198,9 @@ export function createCollegeBuilding() {
           wing.add(floorGroup);
           
           floorGroup.updateMatrixWorld(true);
+          const worldPlane = walkableFloorPlane.clone();
+          worldPlane.applyMatrix4(floorGroup.matrixWorld);
+          walkableRampGroup.add(worldPlane);
 
       }
 
@@ -256,7 +258,6 @@ export function createCollegeBuilding() {
   college.add(rightWing);
 
   college.updateMatrixWorld(true);
-  walkableRampGroup.applyMatrix4(college.matrixWorld);
 
   // --- Courtyard Elements ---
   const courtyard = new THREE.Group();
