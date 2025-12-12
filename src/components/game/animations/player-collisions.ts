@@ -39,6 +39,11 @@ export function handleCollisions(gameState: GameState, delta: number) {
     staticCollidersRef.current.forEach((collider) => {
         const colliderBox = new THREE.Box3().setFromObject(collider);
         if (playerBox.intersectsBox(colliderBox)) {
+            if (collider.name === 'collegeRamp') {
+                 // Don't slow down on the ramp, physics will handle it.
+                return;
+            }
+
             const isSpecialBuilding = collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding';
             
             if (collider.parent?.name === 'compoundWall') {
@@ -54,11 +59,6 @@ export function handleCollisions(gameState: GameState, delta: number) {
                     moveDirection.z = playerRef.current!.position.z > collider.position.z ? penetration.z : -penetration.z;
                 }
                 playerRef.current!.position.add(moveDirection);
-                return;
-            }
-
-            if (collider.name === 'collegeRamp') {
-                 // Don't slow down on the ramp, physics will handle it.
                 return;
             }
 
