@@ -38,6 +38,7 @@ export type GameState = {
     rampMeshRef: React.MutableRefObject<THREE.Mesh | undefined>;
     rampWallsRef: React.MutableRefObject<THREE.Group | undefined>;
     collegeRampMeshRef: React.MutableRefObject<THREE.Group | undefined>;
+    universityRamp: React.MutableRefObject<THREE.Mesh | undefined>;
     controlModeRef: React.MutableRefObject<ControlMode>;
     isTransformingRef: React.MutableRefObject<boolean>;
     transformProgressRef: React.MutableRefObject<number>;
@@ -78,6 +79,7 @@ export function useGameState(): GameState {
     const rampMeshRef = React.useRef<THREE.Mesh>();
     const rampWallsRef = React.useRef<THREE.Group>();
     const collegeRampMeshRef = React.useRef<THREE.Group>();
+    const universityRamp = React.useRef<THREE.Mesh>();
     const controlModeRef = React.useRef<ControlMode>('car');
     const isTransformingRef = React.useRef(false);
     const transformProgressRef = React.useRef(0);
@@ -113,6 +115,7 @@ export function useGameState(): GameState {
         rampMeshRef,
         rampWallsRef,
         collegeRampMeshRef,
+        universityRamp,
         controlModeRef,
         isTransformingRef,
         transformProgressRef,
@@ -131,5 +134,3 @@ export function useGameState(): GameState {
         faceRotationStepRef,
     };
 }
-
-    

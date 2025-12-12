@@ -10,7 +10,9 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     const playerHeight = controlModeRef.current === 'car' ? 0.6 : 2.0;
     let onRamp = false;
     const raycaster = new THREE.Raycaster();
-    const rampObjects = [rampMeshRef.current, collegeRampMeshRef.current].filter(Boolean) as (THREE.Mesh | THREE.Group)[];
+    
+    // The university ramp was missing from this check, causing gravity to be incorrectly applied.
+    const rampObjects = [rampMeshRef.current, collegeRampMeshRef.current, (gameState as any).universityRamp].filter(Boolean) as (THREE.Mesh | THREE.Group)[];
 
     if (rampObjects.length > 0) {
         raycaster.set(playerRef.current.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));

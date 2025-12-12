@@ -11,6 +11,7 @@ type Sector14Props = {
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
   rampMeshRef: MutableRefObject<THREE.Mesh | undefined>;
   rampWallsRef: MutableRefObject<THREE.Group | undefined>;
+  universityRamp: MutableRefObject<THREE.Mesh | undefined>;
 };
 
 export function createSector14({
@@ -19,6 +20,7 @@ export function createSector14({
   staticCollidersRef,
   rampMeshRef,
   rampWallsRef,
+  universityRamp,
 }: Sector14Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -39,7 +41,7 @@ export function createSector14({
   
   const rampMesh = walkableGroup.getObjectByName('universityRamp') as THREE.Mesh;
   if (rampMesh) {
-    rampMeshRef.current = rampMesh;
+    universityRamp.current = rampMesh;
   }
   
   // --- Department Connecting Roads ---
