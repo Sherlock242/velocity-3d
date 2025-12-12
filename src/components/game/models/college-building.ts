@@ -86,6 +86,17 @@ export function createCollegeBuilding() {
           visibleFloorPlane.rotation.x = -Math.PI / 2;
           visibleFloorPlane.position.y = 0.15; // Slightly above ground/floor level
           floorGroup.add(visibleFloorPlane);
+
+          // Add invisible walkable floor plane
+          const walkableFloorPlane = new THREE.Mesh(
+            visibleFloorPlaneGeom.clone(),
+            new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide })
+          );
+          walkableFloorPlane.rotation.x = -Math.PI / 2;
+          walkableFloorPlane.position.y = 0.1;
+          
+          floorGroup.add(walkableFloorPlane); // Add to floor group to get correct position
+          walkableRampGroup.add(walkableFloorPlane); // Add to the actual walkable group
           
           if(i === 0) {
               const wallSegmentWidthLeft = (width - entranceWidth) / 2 + entranceOffset;
@@ -188,14 +199,6 @@ export function createCollegeBuilding() {
           wing.add(floorGroup);
           
           floorGroup.updateMatrixWorld(true);
-          const floorPlane = new THREE.Mesh(
-            new THREE.PlaneGeometry(width, depth),
-            new THREE.MeshBasicMaterial({ visible: false })
-          );
-          floorPlane.rotation.x = -Math.PI / 2;
-          floorPlane.position.y = 0.1;
-          floorPlane.applyMatrix4(floorGroup.matrixWorld);
-          walkableRampGroup.add(floorPlane);
 
       }
 
@@ -253,6 +256,7 @@ export function createCollegeBuilding() {
   college.add(rightWing);
 
   college.updateMatrixWorld(true);
+  walkableRampGroup.applyMatrix4(college.matrixWorld);
 
   // --- Courtyard Elements ---
   const courtyard = new THREE.Group();
