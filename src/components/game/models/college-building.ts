@@ -80,8 +80,9 @@ export function createCollegeBuilding() {
           const floorGroup = new THREE.Group();
           floorGroup.position.y = yPos;
 
-          // Add visible dark gray floor plane
           const visibleFloorPlaneGeom = new THREE.PlaneGeometry(width, depth);
+
+          // Add visible dark gray floor plane
           const visibleFloorPlane = new THREE.Mesh(visibleFloorPlaneGeom, darkGrayMaterial);
           visibleFloorPlane.rotation.x = -Math.PI / 2;
           visibleFloorPlane.position.y = 0.15; // Slightly above ground/floor level
@@ -94,8 +95,6 @@ export function createCollegeBuilding() {
           );
           walkableFloorPlane.rotation.x = -Math.PI / 2;
           walkableFloorPlane.position.y = 0.1;
-          
-          floorGroup.add(walkableFloorPlane);
           
           if(i === 0) {
               const wallSegmentWidthLeft = (width - entranceWidth) / 2 + entranceOffset;
@@ -200,7 +199,8 @@ export function createCollegeBuilding() {
           // Use the same logic as ramps: clone, apply matrix, and add to the walkable group.
           wing.updateMatrixWorld(true); // Ensure wing's matrix is up-to-date
           const worldPlane = walkableFloorPlane.clone();
-          worldPlane.applyMatrix4(floorGroup.matrixWorld).applyMatrix4(wing.matrixWorld);
+          worldPlane.applyMatrix4(floorGroup.matrixWorld);
+          worldPlane.applyMatrix4(wing.matrixWorld);
           walkableRampGroup.add(worldPlane);
       }
 
