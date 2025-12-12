@@ -41,7 +41,7 @@ export function handleCollisions(gameState: GameState, delta: number) {
         if (playerBox.intersectsBox(colliderBox)) {
             const isSpecialBuilding = collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding';
             
-            if (collider.parent?.name === 'compoundWall' || collider.name === 'collegeRamp') {
+            if (collider.parent?.name === 'compoundWall') {
                 velocityRef.current.multiplyScalar(0);
                 const intersection = new THREE.Box3();
                 intersection.copy(playerBox).intersect(colliderBox);
@@ -57,6 +57,11 @@ export function handleCollisions(gameState: GameState, delta: number) {
                 return;
             }
 
+            if (collider.name === 'collegeRamp') {
+                 // Don't slow down on the ramp, physics will handle it.
+                return;
+            }
+
             let slowdown = 0.1;
             if (isSpecialBuilding && controlModeRef.current === 'car') {
                 slowdown = 0.5;
@@ -64,8 +69,17 @@ export function handleCollisions(gameState: GameState, delta: number) {
             velocityRef.current.multiplyScalar(slowdown);
 
             if (!isSpecialBuilding) {
-                const knockback = playerRef.current!.position.clone().sub(collider.position).normalize().multiplyScalar(5);
-                playerRef.current!.position.add(knockback.multiplyScalar(delta * 60));
+                const intersection = new THREE.Box3();
+                intersection.copy(playerBox).intersect(colliderBox);
+                const penetration = new THREE.Vector3();
+                penetration.subVectors(intersection.max, intersection.min);
+                const moveDirection = new THREE.Vector3();
+                if (penetration.x < penetration.z) {
+                    moveDirection.x = playerRef.current!.position.x > collider.position.x ? penetration.x : -penetration.x;
+                } else {
+                    moveDirection.z = playerRef.current!.position.z > collider.position.z ? penetration.z : -penetration.z;
+                }
+                playerRef.current!.position.add(moveDirection);
             }
         }
     });
