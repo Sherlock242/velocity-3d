@@ -95,7 +95,7 @@ export function createCollegeBuilding() {
           walkableFloorPlane.rotation.x = -Math.PI / 2;
           walkableFloorPlane.position.y = 0.1;
           
-          floorGroup.add(walkableFloorPlane); // Add to floor group to get correct position
+          floorGroup.add(walkableFloorPlane);
           
           if(i === 0) {
               const wallSegmentWidthLeft = (width - entranceWidth) / 2 + entranceOffset;
@@ -197,11 +197,11 @@ export function createCollegeBuilding() {
           }
           wing.add(floorGroup);
           
-          floorGroup.updateMatrixWorld(true);
+          // Use the same logic as ramps: clone, apply matrix, and add to the walkable group.
+          wing.updateMatrixWorld(true); // Ensure wing's matrix is up-to-date
           const worldPlane = walkableFloorPlane.clone();
-          worldPlane.applyMatrix4(floorGroup.matrixWorld);
+          worldPlane.applyMatrix4(floorGroup.matrixWorld).applyMatrix4(wing.matrixWorld);
           walkableRampGroup.add(worldPlane);
-
       }
 
       return wing;
