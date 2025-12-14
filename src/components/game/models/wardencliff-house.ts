@@ -181,7 +181,7 @@ export function createWardencliffHouse() {
     
     // --- Dormer (Mini House) on Roof ---
     const dormerY = roofY + roofHeight;
-    const dormerWidth = 20;
+    const dormerWidth = 40;
     const dormerHeight = 10;
     const dormerDepth = 12;
 
@@ -194,7 +194,7 @@ export function createWardencliffHouse() {
 
     for (let i = 0; i < 3; i++) {
         const dormerWindow = createSquareWindow(4, 4, new THREE.Vector3(
-            -8 + i * 8,
+            -15 + i * 15,
             dormerY - dormerHeight / 2,
             dormerDepth / 2 + 0.1
         ));
