@@ -51,13 +51,6 @@ export function createWardencliffHouse() {
     pavilion.position.set(0, 2 + buildingHeight / 2, buildingDepth / 2 + pavilionDepth / 2);
     house.add(pavilion);
 
-    // Add smaller square windows next to the door
-    const smallWindowY = 15;
-    const smallWindowX = 18;
-    const smallWindowZ = buildingDepth / 2 + pavilionDepth + 0.1;
-    house.add(createSquareWindow(6, 6, new THREE.Vector3(smallWindowX, smallWindowY, smallWindowZ)));
-    house.add(createSquareWindow(6, 6, new THREE.Vector3(-smallWindowX, smallWindowY, smallWindowZ)));
-
     
     // --- Entrance Doors ---
     const doorHeight = 18;
@@ -130,20 +123,20 @@ export function createWardencliffHouse() {
         new THREE.BoxGeometry(dormerWidth, dormerHeight, dormerDepth),
         brickMaterial
     );
-    dormerWall.position.set(0, dormerY - dormerHeight / 2, 0);
+    dormerWall.position.set(0, dormerY - dormerHeight / 2, 10);
     house.add(dormerWall);
 
     for (let i = 0; i < 3; i++) {
         const dormerWindow = createSquareWindow(4, 4, new THREE.Vector3(
             -15 + i * 15,
             dormerY - dormerHeight / 2,
-            dormerDepth / 2 + 0.1
+            dormerDepth / 2 + 0.1 + 10
         ));
         house.add(dormerWindow);
     }
     
     const dormerRoof = createHippedRoof(dormerWidth + 2, dormerDepth + 2, 6);
-    dormerRoof.position.set(0, dormerY, 0);
+    dormerRoof.position.set(0, dormerY, 10);
     house.add(dormerRoof);
 
     // --- Roof Vents ---
@@ -169,7 +162,7 @@ export function createWardencliffHouse() {
     const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
     
     // Position on top of the dormer roof
-    chimney.position.set(0, dormerY + 6 + chimneyHeight / 2, 0); 
+    chimney.position.set(0, dormerY + 6 + chimneyHeight / 2, 10); 
     house.add(chimney);
     
     const chimneyTopGeom = new THREE.BoxGeometry(chimneyWidth + 2, 3, chimneyDepth + 2);
@@ -179,7 +172,7 @@ export function createWardencliffHouse() {
     
     const roofLineGeom = new THREE.BoxGeometry(buildingWidth + 2, 1, 1);
     const roofLine = new THREE.Mesh(roofLineGeom, roofMaterial);
-    roofLine.position.set(0, dormerY - dormerHeight - 1, (dormerDepth / 2) + 1);
+    roofLine.position.set(0, dormerY - dormerHeight - 1, (dormerDepth / 2) + 1 + 10);
     house.add(roofLine);
 
     house.castShadow = true;
