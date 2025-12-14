@@ -90,13 +90,12 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, 0, Math.PI, true);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
     const archFrame = new THREE.Mesh(archGeom, frameMaterial);
     archFrame.position.y = frameHeight / 2;
-    archFrame.rotation.z = Math.PI;
     windowGroup.add(archFrame);
 
     // Arch glass
@@ -104,7 +103,6 @@ function createArchedWindow() {
     const archGlass = new THREE.Mesh(archGlassGeom, glassMaterial);
     archGlass.position.y = frameHeight / 2;
     archGlass.position.z = 0.5;
-    archGlass.rotation.z = Math.PI;
     windowGroup.add(archGlass);
 
     // --- Arch Panes ---
@@ -194,15 +192,14 @@ export function createWardencliffHouse() {
     entranceGroup.add(rightDoor);
 
     // Arched window above door
-    const transomRadius = (doorWidth * 2) / 2;
+    const transomRadius = (doorWidth * 2) * 0.7;
     const transomShape = new THREE.Shape();
     transomShape.moveTo(-transomRadius, 0);
-    transomShape.absarc(0, 0, transomRadius, 0, Math.PI, true);
+    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.9});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
     transomGlass.position.set(0, 2 + doorHeight + 2, doorZ + 0.5);
-    transomGlass.rotation.z = Math.PI;
     entranceGroup.add(transomGlass);
     
     // Transom Panes
@@ -212,10 +209,10 @@ export function createWardencliffHouse() {
         const paneLength = transomRadius;
         const paneGeom = new THREE.BoxGeometry(0.2, paneLength, 0.2);
         const pane = new THREE.Mesh(paneGeom, doorFrameMaterial);
-        pane.position.set(0, 2 + doorHeight + 2 + transomRadius, doorZ + 0.6);
+        pane.position.set(0, 2 + doorHeight + 2, doorZ + 0.6);
         pane.rotation.z = Math.PI / 2 - angle;
         pane.position.x += Math.cos(angle) * (paneLength / 2);
-        pane.position.y -= Math.sin(angle) * (paneLength / 2);
+        pane.position.y += Math.sin(angle) * (paneLength / 2);
         entranceGroup.add(pane);
     }
 
