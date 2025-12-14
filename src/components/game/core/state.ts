@@ -83,7 +83,7 @@ export function useGameState(): GameState {
     const controlModeRef = React.useRef<ControlMode>('car');
     const isTransformingRef = React.useRef(false);
     const transformProgressRef = React.useRef(0);
-    const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 3, -6));
+    const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 2, -6));
     const audioListenerRef = React.useRef<THREE.AudioListener>();
     const engineSoundRef = React.useRef<THREE.Audio>();
     const skidSoundRef = React.useRef<THREE.Audio>();
