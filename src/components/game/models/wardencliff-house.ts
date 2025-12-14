@@ -12,7 +12,7 @@ function createBrickTexture() {
         return null;
     }
 
-    const brickColors = ['#9a3e3e', '#A0522D', '#654321']; // Mason Red, Light Brown, Dark Brown
+    const brickColors = ['#A0522D', '#654321']; // Light Brown, Dark Brown
     const mortarColor = '#cccccc'; // Light grey
     const brickHeight = 32;
     const brickWidth = 64;
@@ -90,7 +90,8 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
+    // Corrected arc direction
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, false); 
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
