@@ -104,7 +104,7 @@ export function updatePlayerMovement(gameState: GameState, delta: number, scene:
     } else if (controlModeRef.current === 'person') {
         const personMoveSpeed = 50;
         const personTurnSpeed = 3;
-        const maxPersonSpeed = 50 / 3.6;
+        const maxPersonSpeed = 50 / 3.6; // 50 km/h
 
         velocityRef.current.set(0, 0, 0);
 
