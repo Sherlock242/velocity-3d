@@ -15,8 +15,8 @@ function createWardencliffTower() {
 
 
     const towerHeight = 180;
-    const baseRadius = 80;
-    const topRadius = 40;
+    const baseRadius = 30;
+    const topRadius = 10;
     const numLegs = 8;
     const numLevels = 8;
 
@@ -26,7 +26,7 @@ function createWardencliffTower() {
         const nextLevelY = ((i + 1) / numLevels) * towerHeight;
         const levelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, i / numLevels);
         const nextLevelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, (i + 1) / numLevels);
-        const legThickness = 1.5;
+        const legThickness = 1;
 
         for (let j = 0; j < numLegs; j++) {
             const angle = (j / numLegs) * Math.PI * 2;
@@ -60,18 +60,17 @@ function createWardencliffTower() {
             dBrace2.lookAt(dBrace2End);
             towerGroup.add(dBrace2);
         }
-        
     }
     
     // Top platform
-    const platformRadius = 60;
+    const platformRadius = 22;
     const platformGeom = new THREE.CylinderGeometry(platformRadius, platformRadius, 4, 32);
     const platform = new THREE.Mesh(platformGeom, metalMaterial);
     platform.position.y = towerHeight + 2;
     towerGroup.add(platform);
 
     // Dome
-    const domeRadius = 55;
+    const domeRadius = 20;
     const domeGeom = new THREE.SphereGeometry(domeRadius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
     const domeWireframe = new THREE.Mesh(domeGeom, wireframeMaterial);
     domeWireframe.position.y = towerHeight + 4;
@@ -104,7 +103,7 @@ export function createWardencliffHouse() {
         color: 0xaaaaaa,
     });
 
-    const buildingWidth = 250;
+    const buildingWidth = 200;
     const buildingHeight = 35;
     const buildingDepth = 50;
 
