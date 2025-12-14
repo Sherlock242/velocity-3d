@@ -150,9 +150,9 @@ export function createWardencliffHouse() {
     
     // --- Dormer (Mini House) on Roof ---
     const dormerY = roofY + roofHeight;
-    const dormerWidth = 20; // smaller
-    const dormerHeight = 10; // smaller
-    const dormerDepth = 12; // smaller
+    const dormerWidth = 18; // smaller
+    const dormerHeight = 9; // smaller
+    const dormerDepth = 11; // smaller
     const dormerZ = 0;
 
     const dormerWall = new THREE.Mesh(
@@ -162,16 +162,23 @@ export function createWardencliffHouse() {
     dormerWall.position.set(0, dormerY - roofHeight + dormerHeight / 2, dormerZ);
     house.add(dormerWall);
 
+    // Decorative line below dormer
+    const dormerBaseLineGeom = new THREE.BoxGeometry(dormerWidth + 2, 1, dormerDepth + 2);
+    const dormerBaseLine = new THREE.Mesh(dormerBaseLineGeom, roofMaterial);
+    dormerBaseLine.position.set(0, dormerY - roofHeight, dormerZ);
+    house.add(dormerBaseLine);
+
+
     for (let i = 0; i < 3; i++) {
         const dormerWindow = createSquareWindow(4, 4, new THREE.Vector3(
-            -8 + i * 8,
+            -7 + i * 7,
             dormerY - roofHeight + dormerHeight / 2,
             dormerZ + dormerDepth / 2 + 0.1
         ));
         house.add(dormerWindow);
     }
     
-    const dormerRoof = createHippedRoof(dormerWidth + 2, dormerDepth + 2, 8);
+    const dormerRoof = createHippedRoof(dormerWidth + 2, dormerDepth + 2, 6);
     dormerRoof.position.set(0, dormerY - roofHeight + dormerHeight, dormerZ);
     house.add(dormerRoof);
 
@@ -182,7 +189,7 @@ export function createWardencliffHouse() {
     const chimneyGeom = new THREE.BoxGeometry(chimneyWidth, chimneyHeight, chimneyDepth);
     const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
     
-    const dormerRoofY = dormerY - roofHeight + dormerHeight + 8;
+    const dormerRoofY = dormerY - roofHeight + dormerHeight + 6;
     chimney.position.set(0, dormerRoofY - 4 + chimneyHeight / 2, dormerZ + 15); 
     house.add(chimney);
     
@@ -193,7 +200,7 @@ export function createWardencliffHouse() {
     
     // --- Tower ---
     const tower = createWardencliffTower();
-    tower.position.set(0, dormerRoofY - 8, dormerZ - 20);
+    tower.position.set(0, dormerRoofY - 8, dormerZ - 25);
     house.add(tower);
 
     house.castShadow = true;
