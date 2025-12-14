@@ -116,7 +116,7 @@ export function createGridAndScenery(
 
       switch (sectorNumber) {
         case 1:
-          sectorGroup = createSector1({ cellCenterX, cellCenterZ, staticCollidersRef });
+          sectorGroup = createSector1({ cellCenterX, cellCenterZ, staticCollidersRef, walkingNpcsRef });
           break;
         case 10:
           sectorGroup = createSector10({ cellCenterX, cellCenterZ, staticCollidersRef, collegeRampMeshRef });
