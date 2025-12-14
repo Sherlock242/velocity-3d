@@ -54,7 +54,6 @@ export function createWardencliffHouse() {
             glass.add(vPane);
         }
         
-        windowGroup.rotation.z = Math.PI;
         return windowGroup;
     }
     
@@ -121,10 +120,12 @@ export function createWardencliffHouse() {
     
     const leftDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
     leftDoor.position.set(-doorWidth / 2 - 0.5, doorY, doorZ);
+    leftDoor.rotation.z = Math.PI;
     house.add(leftDoor);
 
     const rightDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
     rightDoor.position.set(doorWidth / 2 + 0.5, doorY, doorZ);
+    rightDoor.rotation.z = Math.PI;
     house.add(rightDoor);
 
     // Fanlight above doors
