@@ -151,7 +151,7 @@ export function createWardencliffHouse() {
     
     // --- Tower ---
     const tower = createWardencliffTower();
-    tower.position.set(0, dormerY - 10, -55); // Position behind the chimney
+    tower.position.set(0, dormerY - 10, -85); // Position behind the chimney
     house.add(tower);
 
     // --- Chimney ---
@@ -170,11 +170,6 @@ export function createWardencliffHouse() {
     chimneyTop.position.y = chimneyHeight / 2 + 1.5;
     chimney.add(chimneyTop);
     
-    const roofLineGeom = new THREE.BoxGeometry(buildingWidth + 2, 1, 1);
-    const roofLine = new THREE.Mesh(roofLineGeom, roofMaterial);
-    roofLine.position.set(0, dormerY - dormerHeight - 1, (dormerDepth / 2) + 1 + 10);
-    house.add(roofLine);
-
     house.castShadow = true;
     house.receiveShadow = true;
     return house;
