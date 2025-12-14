@@ -73,7 +73,7 @@ function createArchedWindow() {
         const hPaneGeom = new THREE.BoxGeometry(frameWidth - 1, paneThickness, paneThickness);
         const hPane = new THREE.Mesh(hPaneGeom, frameMaterial);
         hPane.position.y = - (frameHeight / 2) + (i * (frameHeight / numHorizontal)) + 0.5;
-        hPane.position.z = 0.5;
+        hPane.position.z = 0.6;
         windowGroup.add(hPane);
     }
     
@@ -82,7 +82,7 @@ function createArchedWindow() {
         const vPaneGeom = new THREE.BoxGeometry(paneThickness, frameHeight - 1, paneThickness);
         const vPane = new THREE.Mesh(vPaneGeom, frameMaterial);
         vPane.position.x = - (frameWidth / 2) + (i * (frameWidth / numVertical)) + 0.5;
-        vPane.position.z = 0.5;
+        vPane.position.z = 0.6;
         windowGroup.add(vPane);
     }
 
@@ -90,7 +90,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -109,7 +109,7 @@ function createArchedWindow() {
     const centerPaneGeom = new THREE.BoxGeometry(paneThickness, archRadius, paneThickness);
     const centerPane = new THREE.Mesh(centerPaneGeom, frameMaterial);
     centerPane.position.y = frameHeight / 2 + archRadius / 2;
-    centerPane.position.z = 0.5;
+    centerPane.position.z = 0.6;
     windowGroup.add(centerPane);
 
     const numArchPanes = 3;
@@ -119,7 +119,7 @@ function createArchedWindow() {
         const paneGeom = new THREE.BoxGeometry(paneThickness, paneLength, paneThickness);
         const pane = new THREE.Mesh(paneGeom, frameMaterial);
         pane.position.y = frameHeight / 2;
-        pane.position.z = 0.5;
+        pane.position.z = 0.6;
         pane.rotation.z = Math.PI / 2 - angle;
         pane.position.x += Math.cos(angle) * (paneLength / 2);
         pane.position.y += Math.sin(angle) * (paneLength / 2);
@@ -195,7 +195,7 @@ export function createWardencliffHouse() {
     const transomRadius = (doorWidth * 2) * 0.7;
     const transomShape = new THREE.Shape();
     transomShape.moveTo(-transomRadius, 0);
-    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
+    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, true);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.9});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
