@@ -14,6 +14,62 @@ type Sector25Props = {
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
 };
 
+// Helper function to create a procedural brick texture
+function createBrickTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 256;
+  const context = canvas.getContext('2d');
+
+  if (!context) {
+    return null;
+  }
+
+  const brickColor = '#9a3e3e';
+  const mortarColor = '#888888';
+  const brickHeight = 30;
+  const brickWidth = 60;
+  const mortarThickness = 4;
+
+  // Fill background with mortar color
+  context.fillStyle = mortarColor;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  context.fillStyle = brickColor;
+
+  for (let y = 0; y < canvas.height; y += brickHeight) {
+    for (let x = 0; x < canvas.width; x += brickWidth) {
+      let offsetX = 0;
+      if (Math.floor(y / brickHeight) % 2 === 1) {
+        offsetX = -brickWidth / 2;
+      }
+      context.fillRect(
+        x + offsetX,
+        y,
+        brickWidth - mortarThickness,
+        brickHeight - mortarThickness
+      );
+      // Also draw the wrapped around brick piece
+      if (offsetX !== 0 && x === 0) {
+        context.fillRect(
+            x + offsetX + canvas.width,
+            y,
+            brickWidth - mortarThickness,
+            brickHeight - mortarThickness
+          );
+      }
+    }
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(10, 5); // Adjust repeat to control brick size on the wall
+  
+  return texture;
+}
+
+
 export function createSector25({
   cellCenterX,
   cellCenterZ,
@@ -33,7 +89,12 @@ export function createSector25({
 
   function createBrokenBrickWallSegment(width: number, depth: number) {
     const segment = new THREE.Group();
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x9a3e3e }); // Red brick color
+    const brickTexture = createBrickTexture();
+    const wallMaterial = new THREE.MeshStandardMaterial({
+        map: brickTexture,
+        color: 0xffffff, // Use white to not tint the texture
+      }); 
+
     const mainWallGeom = new THREE.BoxGeometry(width, wallSegmentHeight, depth);
     const mainWall = new THREE.Mesh(mainWallGeom, wallMaterial);
     mainWall.position.y = wallSegmentHeight / 2;
@@ -56,12 +117,21 @@ export function createSector25({
     }
     return segment;
   }
+  
+  // Add a gray ground plane for the whole sector to cover the default green grass
+  const sectorGroundGeom = new THREE.PlaneGeometry(CELL_SIZE, CELL_SIZE);
+  const sectorGroundMat = new THREE.MeshStandardMaterial({ color: 0x404040 }); // Dark gray
+  const sectorGround = new THREE.Mesh(sectorGroundGeom, sectorGroundMat);
+  sectorGround.rotation.x = -Math.PI / 2;
+  sectorGround.position.set(cellCenterX, 0.05, cellCenterZ); // Slightly above default ground
+  sectorGround.receiveShadow = true;
+  sectorGroup.add(sectorGround);
 
-  const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 }); // Gray road
 
   // --- Roads ---
   // Vertical Road (North-South)
   const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, plotDepth);
+  const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 }); // Gray road
   const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
   verticalRoad.rotation.x = -Math.PI / 2;
   verticalRoad.position.set(cellCenterX, 0.1, cellCenterZ);
