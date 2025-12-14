@@ -20,7 +20,7 @@ export function updatePersonMovement(gameState: GameState, delta: number, camera
 
     if (inputRef.current.forward) {
         targetVelocity = forward.clone().multiplyScalar(maxPersonSpeed);
-    } else if (input.current.backward) {
+    } else if (inputRef.current.backward) {
         targetVelocity = forward.clone().multiplyScalar(-maxPersonSpeed * 0.5);
     } else {
         targetVelocity.set(0, 0, 0);
