@@ -8,6 +8,7 @@ import {
   ROAD_WIDTH,
 } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
+import { createSector1 } from './sectors/sector-1';
 import { createSector10 } from './sectors/sector-10';
 import { createSector11 } from './sectors/sector-11';
 import { createSector13 } from './sectors/sector-13';
@@ -114,6 +115,9 @@ export function createGridAndScenery(
       let sectorGroup: THREE.Group;
 
       switch (sectorNumber) {
+        case 1:
+          sectorGroup = createSector1({ cellCenterX, cellCenterZ, staticCollidersRef });
+          break;
         case 10:
           sectorGroup = createSector10({ cellCenterX, cellCenterZ, staticCollidersRef, collegeRampMeshRef });
           break;
