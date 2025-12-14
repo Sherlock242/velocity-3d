@@ -46,6 +46,7 @@ export function createGridAndScenery(
   const lineGap = 10;
   const lineWidth = 0.5;
   const lineGeom = new THREE.PlaneGeometry(lineWidth, lineLength);
+  const roadYPosition = 0.2; // Elevated road position
 
   for (let i = 0; i <= GRID_SIZE; i++) {
     const roadOffset = i * CELL_SIZE - halfTotalWidth;
@@ -57,7 +58,7 @@ export function createGridAndScenery(
     );
     const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
     verticalRoad.rotation.x = -Math.PI / 2;
-    verticalRoad.position.y = 0.11;
+    verticalRoad.position.y = roadYPosition;
     verticalRoad.position.x = roadOffset;
     verticalRoad.receiveShadow = true;
     gridGroup.add(verticalRoad);
@@ -69,7 +70,7 @@ export function createGridAndScenery(
       j += lineLength + lineGap
     ) {
       const line = new THREE.Mesh(lineGeom, lineMaterial);
-      line.position.set(roadOffset, 0.12, j + lineLength / 2);
+      line.position.set(roadOffset, roadYPosition + 0.01, j + lineLength / 2);
       line.rotation.x = -Math.PI / 2;
       gridGroup.add(line);
     }
@@ -84,7 +85,7 @@ export function createGridAndScenery(
       roadMaterial
     );
     horizontalRoad.rotation.x = -Math.PI / 2;
-    horizontalRoad.position.y = 0.11;
+    horizontalRoad.position.y = roadYPosition;
     horizontalRoad.position.z = roadOffset;
     horizontalRoad.receiveShadow = true;
     gridGroup.add(horizontalRoad);
@@ -96,7 +97,7 @@ export function createGridAndScenery(
       j += lineLength + lineGap
     ) {
       const line = new THREE.Mesh(lineGeom, lineMaterial);
-      line.position.set(j + lineLength / 2, 0.12, roadOffset);
+      line.position.set(j + lineLength / 2, roadYPosition + 0.01, roadOffset);
       line.rotation.x = -Math.PI / 2;
       line.rotation.z = Math.PI / 2;
       gridGroup.add(line);
