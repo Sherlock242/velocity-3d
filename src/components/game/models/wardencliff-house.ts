@@ -15,48 +15,6 @@ export function createWardencliffHouse() {
     const buildingHeight = 35;
     const buildingDepth = 50;
 
-    // --- Helper function for Arched Windows ---
-    function createArchedWindow(width: number, height: number, position: THREE.Vector3) {
-        const windowGroup = new THREE.Group();
-        windowGroup.position.copy(position);
-
-        const archShape = new THREE.Shape();
-        const archRadius = width / 2;
-        archShape.moveTo(-archRadius, 0);
-        archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
-        archShape.lineTo(archRadius, -height);
-        archShape.lineTo(-archRadius, -height);
-        archShape.closePath();
-
-        const frameGeom = new THREE.ExtrudeGeometry(archShape, { depth: 1, bevelEnabled: false });
-        const frame = new THREE.Mesh(frameGeom, windowFrameMaterial);
-        frame.position.y = height;
-        windowGroup.add(frame);
-        
-        const glassGeom = new THREE.ShapeGeometry(archShape);
-        const glass = new THREE.Mesh(glassGeom, glassMaterial);
-        glass.position.set(0, height, 0.5);
-        windowGroup.add(glass);
-
-        // Add window panes (mullions)
-        const numHorizontal = 5;
-        const numVertical = 3;
-        for (let i = 1; i < numHorizontal; i++) {
-            const hPaneGeom = new THREE.BoxGeometry(width, 0.2, 0.6);
-            const hPane = new THREE.Mesh(hPaneGeom, windowFrameMaterial);
-            hPane.position.set(0, i * (height / numHorizontal), 0.5);
-            glass.add(hPane);
-        }
-        for (let i = 1; i < numVertical; i++) {
-            const vPaneGeom = new THREE.BoxGeometry(0.2, height, 0.6);
-            const vPane = new THREE.Mesh(vPaneGeom, windowFrameMaterial);
-            vPane.position.set(-width/2 + i * (width/numVertical), -height/2, 0.5);
-            glass.add(vPane);
-        }
-        
-        return windowGroup;
-    }
-    
     // --- Helper for Square Windows ---
     function createSquareWindow(width: number, height: number, position: THREE.Vector3) {
         const windowGroup = new THREE.Group();
@@ -93,17 +51,6 @@ export function createWardencliffHouse() {
     pavilion.position.set(0, 2 + buildingHeight / 2, buildingDepth / 2 + pavilionDepth / 2);
     house.add(pavilion);
 
-    // --- Windows ---
-    const windowY = 2 + buildingHeight * 0.4;
-    const windowZ = buildingDepth / 2 + 0.1;
-    for (let i = 0; i < 5; i++) {
-        const rightWindow = createArchedWindow(12, 12, new THREE.Vector3(20 + i * 16, windowY, windowZ));
-        house.add(rightWindow);
-
-        const leftWindow = createArchedWindow(12, 12, new THREE.Vector3(-20 - i * 16, windowY, windowZ));
-        house.add(leftWindow);
-    }
-
     // Add smaller square windows next to the door
     const smallWindowY = 15;
     const smallWindowX = 18;
@@ -125,11 +72,6 @@ export function createWardencliffHouse() {
     const rightDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
     rightDoor.position.set(doorWidth / 2 + 0.5, doorY, doorZ);
     house.add(rightDoor);
-
-    // Fanlight above doors
-    const fanlight = createArchedWindow(doorWidth * 2 + 1, 6, new THREE.Vector3(0, doorY + doorHeight/2, doorZ));
-    house.add(fanlight);
-
 
     // --- Hipped Roof ---
     function createHippedRoof(width: number, depth: number, height: number) {
@@ -235,6 +177,10 @@ export function createWardencliffHouse() {
     chimneyTop.position.y = chimneyHeight / 2 + 1.5;
     chimney.add(chimneyTop);
     
+    const roofLineGeom = new THREE.BoxGeometry(buildingWidth + 2, 1, 1);
+    const roofLine = new THREE.Mesh(roofLineGeom, roofMaterial);
+    roofLine.position.set(0, dormerY - dormerHeight - 1, (dormerDepth / 2) + 1);
+    house.add(roofLine);
 
     house.castShadow = true;
     house.receiveShadow = true;
@@ -352,5 +298,3 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
-
-    
