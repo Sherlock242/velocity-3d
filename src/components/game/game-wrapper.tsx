@@ -90,7 +90,9 @@ export default function GameWrapper() {
         handleToggleControlMode();
       }
       if ((e.key === 'f' || e.key === 'F') && !e.repeat) {
-        handleGearChange();
+        if (gameState.controlModeRef.current === 'car') {
+          handleGearChange();
+        }
       }
     };
     const onKeyUp = (e: KeyboardEvent) => {
