@@ -106,6 +106,17 @@ export function createSector10({
   const innerWall = createWallSegment(wallThickness, innerWallLength);
   innerWall.position.set(gateXPosition + entranceRoadWidth / 2 + wallThickness / 2 + 15, 0, frontWallZ + innerWallLength / 2);
   campusContainer.add(innerWall);
+  
+  // Green Lawn
+  const lawnWidth = plotWidth - (gateXPosition + entranceRoadWidth / 2 + wallThickness + 15) - (plotWidth / 2) - wallThickness;
+  const lawnDepth = plotDepth - wallThickness;
+  const lawnGeom = new THREE.PlaneGeometry(lawnWidth, lawnDepth);
+  const lawnMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
+  const lawn = new THREE.Mesh(lawnGeom, lawnMaterial);
+  lawn.rotation.x = -Math.PI/2;
+  lawn.position.set(gateXPosition + entranceRoadWidth/2 + wallThickness + 15 + lawnWidth/2, 0.13, 0);
+  campusContainer.add(lawn);
+
 
   // Walkable Path to College
   const pathWidth = 15;
