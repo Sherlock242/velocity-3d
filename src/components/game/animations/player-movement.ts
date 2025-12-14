@@ -105,7 +105,8 @@ export function updatePlayerMovement(gameState: GameState, delta: number, scene:
         const personMoveSpeed = 50;
         const personTurnSpeed = 3;
         const maxPersonSpeed = 50 / 3.6;
-        velocityRef.current.multiplyScalar(0.95);
+
+        velocityRef.current.set(0, 0, 0);
 
         const forward = new THREE.Vector3();
         playerRef.current.getWorldDirection(forward);
