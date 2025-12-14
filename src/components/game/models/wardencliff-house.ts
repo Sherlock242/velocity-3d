@@ -57,7 +57,7 @@ export function createWardencliffHouse() {
     // --- Windows ---
     const windowY = 2 + buildingHeight * 0.4;
     const windowZ = buildingDepth / 2 + 0.1;
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
         const rightWindow = createArchedWindow(12, 10, new THREE.Vector3(30 + i * 25, windowY, windowZ));
         house.add(rightWindow);
 
@@ -88,8 +88,8 @@ export function createWardencliffHouse() {
     function createHippedRoof(width: number, depth: number, height: number) {
         const roofGeometry = new THREE.BufferGeometry();
         
-        const topWidth = width - height;
-        const topDepth = depth - height;
+        const topWidth = Math.max(0, width - 2 * height);
+        const topDepth = Math.max(0, depth - 2 * height);
 
         const vertices = new Float32Array([
             // Bottom rectangle vertices
