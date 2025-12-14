@@ -8,24 +8,23 @@ import type { TrackTheme } from '@/lib/types';
 import type { GameState } from '../core/state';
 
 export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: GameState) {
-    const { playerRef, obstacleCarsRef, walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, fountainWaterJetRef } = gameState;
+    const { playerRef, obstacleCarsRef } = gameState;
 
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to the middle of Sector 18
+    // Set starting position to Sector 1 main road
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    const sector18Index = 17; // Sector 18 is the 18th sector (index 17)
-    const i = sector18Index % GRID_SIZE; // col = 2
-    const j = Math.floor(sector18Index / GRID_SIZE); // row = 3
+    const sector1Index = 0; // Sector 1
+    const i = sector1Index % GRID_SIZE; // col = 0
+    const j = Math.floor(sector1Index / GRID_SIZE); // row = 0
     
-    // Position in the middle of the cell
     const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-    const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+    const roadZ = j * CELL_SIZE - halfTotalWidth - (ROAD_WIDTH / 2) - 20;
 
     transformer.position.x = cellCenterX;
-    transformer.position.z = cellCenterZ;
-    transformer.rotation.y = Math.PI;
+    transformer.position.z = roadZ;
+    transformer.rotation.y = 0; 
     
     scene.add(transformer);
     playerRef.current = transformer;
@@ -57,6 +56,6 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
 
     const waterJet = gridGroup.getObjectByName('fountainWaterJet');
     if (waterJet instanceof THREE.Mesh) {
-        fountainWaterJetRef.current = waterJet;
+        gameState.fountainWaterJetRef.current = waterJet;
     }
 }
