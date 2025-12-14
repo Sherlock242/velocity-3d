@@ -4,18 +4,18 @@ import * as THREE from 'three';
 // Helper to create a procedural brick texture
 function createBrickTexture() {
     const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
+    canvas.width = 256;
+    canvas.height = 128;
     const context = canvas.getContext('2d');
 
     if (!context) {
         return null;
     }
 
-    const brickColors = ['#8a3324'];
-    const mortarColor = '#cccccc'; // Light grey
-    const brickHeight = 64;
-    const brickWidth = 128;
+    const brickColors = ['#8a3324', '#654321']; // Reddish-brown and dark brown
+    const mortarColor = '#8c8c8c';
+    const brickHeight = 32;
+    const brickWidth = 64;
     const mortarThickness = 4;
 
     context.fillStyle = mortarColor;
@@ -41,7 +41,7 @@ function createBrickTexture() {
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(8, 4); // Repeat texture for smaller bricks
+    texture.repeat.set(16, 8);
     return texture;
 }
 
@@ -90,7 +90,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, 0, Math.PI, false);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -167,18 +167,54 @@ export function createWardencliffHouse() {
 
     
     // --- Entrance Doors ---
+    const entranceGroup = new THREE.Group();
+    house.add(entranceGroup);
+    
+    const doorFrameWidth = 18;
+    const doorFrameHeight = 22;
+    const doorFrameGeom = new THREE.BoxGeometry(doorFrameWidth, doorFrameHeight, 2);
+    const doorFrameMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const doorFrame = new THREE.Mesh(doorFrameGeom, doorFrameMaterial);
+    doorFrame.position.set(0, 2 + doorFrameHeight / 2, buildingDepth / 2 + pavilionDepth + 1);
+    entranceGroup.add(doorFrame);
+
     const doorHeight = 18;
     const doorWidth = 7;
-    const doorY = 2 + doorHeight / 2;
-    const doorZ = buildingDepth / 2 + pavilionDepth + 0.1;
-    
+    const doorY = 2 + doorFrameHeight / 2 - (doorFrameHeight - doorHeight) / 2;
+    const doorZ = buildingDepth / 2 + pavilionDepth + 2;
+
     const leftDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
-    leftDoor.position.set(-doorWidth / 2 - 0.5, doorY, doorZ);
-    house.add(leftDoor);
+    leftDoor.position.set(-doorWidth / 2, doorY, doorZ);
+    entranceGroup.add(leftDoor);
 
     const rightDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
-    rightDoor.position.set(doorWidth / 2 + 0.5, doorY, doorZ);
-    house.add(rightDoor);
+    rightDoor.position.set(doorWidth / 2, doorY, doorZ);
+    entranceGroup.add(rightDoor);
+
+    // Arched window above door
+    const transomRadius = (doorWidth * 2) / 2;
+    const transomShape = new THREE.Shape();
+    transomShape.absarc(0, 0, transomRadius, 0, Math.PI, false);
+    const transomGeom = new THREE.ShapeGeometry(transomShape);
+    const transomGlassMaterial = new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.9});
+    const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
+    transomGlass.position.set(0, 2 + doorHeight + 2, doorZ + 0.5);
+    entranceGroup.add(transomGlass);
+    
+    // Transom Panes
+    const numTransomPanes = 5;
+    for (let i = 0; i < numTransomPanes; i++) {
+        const angle = (Math.PI / (numTransomPanes + 1)) * (i + 1);
+        const paneLength = transomRadius;
+        const paneGeom = new THREE.BoxGeometry(0.2, paneLength, 0.2);
+        const pane = new THREE.Mesh(paneGeom, doorFrameMaterial);
+        pane.position.set(0, 2 + doorHeight + 2, doorZ + 0.6);
+        pane.rotation.z = Math.PI / 2 - angle;
+        pane.position.x += Math.cos(angle) * (paneLength / 2);
+        pane.position.y += Math.sin(angle) * (paneLength / 2);
+        entranceGroup.add(pane);
+    }
+
 
     // --- Hipped Roof ---
     function createHippedRoof(width: number, depth: number, height: number) {
@@ -278,7 +314,7 @@ export function createWardencliffHouse() {
     house.add(tower);
     
     // --- Parking Area for Tower ---
-    const parkingRadius = 40;
+    const parkingRadius = 90;
     const parkingGeom = new THREE.CylinderGeometry(parkingRadius, parkingRadius, 1, 32);
     const parkingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
     const parkingArea = new THREE.Mesh(parkingGeom, parkingMaterial);
@@ -316,8 +352,8 @@ function createWardencliffTower() {
     });
     
     const towerHeight = 187;
-    const baseRadius = 30;
-    const topRadius = 10;
+    const baseRadius = 80;
+    const topRadius = 25;
     const numLegs = 8;
     const numLevels = 10;
     const legThickness = 1.5;
@@ -360,8 +396,8 @@ function createWardencliffTower() {
         }
     }
 
-    const domeRadius = 20;
-    const platformRadius = 22;
+    const domeRadius = 50;
+    const platformRadius = 55;
     const platformHeight = 4;
 
     const platformGeom = new THREE.CylinderGeometry(platformRadius, platformRadius, platformHeight, 32);
