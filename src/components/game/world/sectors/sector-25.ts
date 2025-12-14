@@ -2,6 +2,11 @@
 import * as THREE from 'three';
 import { CELL_SIZE, ROAD_WIDTH } from '@/lib/game-constants';
 import type { MutableRefObject } from 'react';
+import { createGraveyard } from '../../models/graveyard';
+import { createSimpleHouse } from '../../models/simple-house';
+import { createIndustrialBuilding } from '../../models/industrial-building';
+import { createSchoolBuilding } from '../../models/school-building';
+import { createHospitalBuilding } from '../../models/hospital-building';
 
 type Sector25Props = {
   cellCenterX: number;
@@ -140,6 +145,65 @@ export function createSector25({
   
   sectorGroup.add(statueGroup);
   staticCollidersRef.current.push(statueGroup);
+
+  // --- Quadrant Content ---
+  const quadrantSize = (CELL_SIZE - ROAD_WIDTH) / 2;
+  const quadrantOffset = quadrantSize / 2 + ROAD_WIDTH / 2;
+
+  // Quadrant 1: Top-Left (Graveyard)
+  const graveyard = createGraveyard();
+  graveyard.position.set(cellCenterX - quadrantOffset, 0, cellCenterZ - quadrantOffset);
+  sectorGroup.add(graveyard);
+  staticCollidersRef.current.push(graveyard);
+
+  // Quadrant 2: Top-Right (Residential)
+  const residentialArea = new THREE.Group();
+  residentialArea.position.set(cellCenterX + quadrantOffset, 0, cellCenterZ - quadrantOffset);
+  for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < 5; j++) {
+          const house = createSimpleHouse();
+          const x = (i - 2) * 80;
+          const z = (j - 2) * 80;
+          house.position.set(x, 0, z);
+          house.rotation.y = (Math.random() - 0.5) * Math.PI;
+          residentialArea.add(house);
+          staticCollidersRef.current.push(house);
+      }
+  }
+  sectorGroup.add(residentialArea);
+  
+  // Quadrant 3: Bottom-Left (Industrial)
+  const industrialArea = new THREE.Group();
+  industrialArea.position.set(cellCenterX - quadrantOffset, 0, cellCenterZ + quadrantOffset);
+  for (let i = 0; i < 2; i++) {
+    for (let j = 0; j < 2; j++) {
+        const building = createIndustrialBuilding();
+        const x = (i - 0.5) * 200;
+        const z = (j - 0.5) * 200;
+        building.position.set(x, 0, z);
+        building.rotation.y = Math.random() * Math.PI * 2;
+        industrialArea.add(building);
+        staticCollidersRef.current.push(building);
+    }
+  }
+  sectorGroup.add(industrialArea);
+
+  // Quadrant 4: Bottom-Right (School & Hospital)
+  const publicServicesArea = new THREE.Group();
+  publicServicesArea.position.set(cellCenterX + quadrantOffset, 0, cellCenterZ + quadrantOffset);
+  
+  const school = createSchoolBuilding();
+  school.position.set(-100, 0, 0);
+  publicServicesArea.add(school);
+  staticCollidersRef.current.push(school);
+  
+  const hospital = createHospitalBuilding();
+  hospital.position.set(100, 0, 0);
+  publicServicesArea.add(hospital);
+  staticCollidersRef.current.push(hospital);
+
+  sectorGroup.add(publicServicesArea);
+
 
   return sectorGroup;
 }
