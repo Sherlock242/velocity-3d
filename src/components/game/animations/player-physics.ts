@@ -7,7 +7,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp } = gameState;
     if (!playerRef.current) return;
 
-    const playerHeight = controlModeRef.current === 'car' ? 0.6 : 2.0;
+    const playerHeight = controlModeRef.current === 'car' ? 1.0 : 2.0;
     let onRamp = false;
     const raycaster = new THREE.Raycaster();
     
