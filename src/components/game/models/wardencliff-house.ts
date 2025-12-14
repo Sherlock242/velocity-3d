@@ -90,7 +90,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -290,7 +290,7 @@ export function createWardencliffHouse() {
     });
 
     // --- Place new windows on the main facade ---
-    const facadeWindowPositions = [-70, -40, 40, 70];
+    const facadeWindowPositions = [-85, -55, 55, 85];
     facadeWindowPositions.forEach(xPos => {
         const window = createArchedWindow();
         window.position.set(xPos, 18, buildingDepth / 2 + 1);
@@ -302,10 +302,10 @@ export function createWardencliffHouse() {
     const ventGeom = new THREE.BoxGeometry(8, 4, 10);
     const ventMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
     const vent1 = new THREE.Mesh(ventGeom, ventMaterial);
-    vent1.position.set(40, dormerY - 2, 0);
+    vent1.position.set(60, dormerY - 2, 0);
     house.add(vent1);
     const vent2 = new THREE.Mesh(ventGeom, ventMaterial);
-    vent2.position.set(-40, dormerY - 2, 0);
+    vent2.position.set(-60, dormerY - 2, 0);
     house.add(vent2);
     
     // --- Tower ---
