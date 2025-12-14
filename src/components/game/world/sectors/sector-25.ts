@@ -25,11 +25,11 @@ function createBrickTexture() {
     return null;
   }
 
-  const brickColor = '#9a3e3e';
-  const mortarColor = '#888888';
-  const brickHeight = 32;
+  const brickColor = '#cb4154'; // A mason red color
+  const mortarColor = '#333333'; // Dark grey mortar
+  const brickHeight = 30;
   const brickWidth = 64;
-  const mortarThickness = 4;
+  const mortarThickness = 2;
 
   // Fill background with mortar color
   context.fillStyle = mortarColor;
@@ -37,27 +37,19 @@ function createBrickTexture() {
 
   context.fillStyle = brickColor;
 
-  for (let row = 0; row * brickHeight < canvas.height; row++) {
-    for (let col = 0; col * brickWidth < canvas.width; col++) {
+  for (let row = 0; (row * brickHeight) < canvas.height; row++) {
+    const isStaggered = row % 2 === 1;
+    for (let col = 0; col * brickWidth < canvas.width + (isStaggered ? brickWidth / 2 : 0) ; col++) {
       let offsetX = 0;
-      if (row % 2 === 1) {
+      if (isStaggered) {
         offsetX = -brickWidth / 2;
       }
       context.fillRect(
-        (col * brickWidth) + offsetX,
+        col * brickWidth + offsetX,
         row * brickHeight,
         brickWidth - mortarThickness,
         brickHeight - mortarThickness
       );
-    }
-    // Draw wrapped-around brick for staggered rows
-    if (row % 2 === 1) {
-        context.fillRect(
-            canvas.width - (brickWidth/2),
-            row * brickHeight,
-            brickWidth - mortarThickness,
-            brickHeight - mortarThickness
-        );
     }
   }
 
@@ -91,10 +83,9 @@ export function createSector25({
   function createBrokenBrickWallSegment(width: number, depth: number) {
     const segment = new THREE.Group();
     const brickTexture = createBrickTexture();
-    const wallMaterial = new THREE.MeshStandardMaterial({
-        map: brickTexture,
-        color: 0xffffff, // Use white to not tint the texture
-      }); 
+    const wallMaterial = brickTexture 
+        ? new THREE.MeshStandardMaterial({ map: brickTexture })
+        : new THREE.MeshStandardMaterial({ color: 0x9a3e3e }); // Fallback color
 
     const mainWallGeom = new THREE.BoxGeometry(width, wallSegmentHeight, depth);
     const mainWall = new THREE.Mesh(mainWallGeom, wallMaterial);
