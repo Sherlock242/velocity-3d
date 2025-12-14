@@ -27,6 +27,7 @@ function createWardencliffTower() {
         const levelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, i / numLevels);
         const nextLevelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, (i + 1) / numLevels);
         const segmentHeight = nextLevelY - levelY;
+        const legThickness = 1.5;
 
         for (let j = 0; j < numLegs; j++) {
             const angle = (j / numLegs) * Math.PI * 2;
@@ -36,11 +37,9 @@ function createWardencliffTower() {
             const startPos = new THREE.Vector3(Math.cos(angle) * levelRadius, levelY, Math.sin(angle) * levelRadius);
             const endPos = new THREE.Vector3(Math.cos(angle) * nextLevelRadius, nextLevelY, Math.sin(angle) * nextLevelRadius);
             
-            const legGeom = new THREE.CylinderGeometry(1.5, 1.2, segmentHeight, 6);
+            const legPath = new THREE.Line3(startPos, endPos);
+            const legGeom = new THREE.TubeGeometry(legPath, 1, legThickness, 6, false);
             const leg = new THREE.Mesh(legGeom, metalMaterial);
-            leg.position.lerpVectors(startPos, endPos, 0.5);
-            leg.lookAt(endPos);
-            leg.rotateX(Math.PI / 2);
             towerGroup.add(leg);
 
             // Diagonal Braces
@@ -64,7 +63,8 @@ function createWardencliffTower() {
         }
         
         // Horizontal Ring Brace for the next level
-        const ringGeom = new THREE.TorusGeometry(nextLevelRadius, 1, 8, numLegs * 2);
+        const ringRadius = THREE.MathUtils.lerp(baseRadius, topRadius, (i + 1) / numLevels) - legThickness;
+        const ringGeom = new THREE.TorusGeometry(ringRadius, 1, 8, numLegs * 2);
         const ring = new THREE.Mesh(ringGeom, metalMaterial);
         ring.position.y = nextLevelY;
         ring.rotation.x = Math.PI / 2;
