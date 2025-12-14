@@ -18,7 +18,7 @@ type Sector25Props = {
 function createBrickTexture() {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
-  canvas.height = 256;
+  canvas.height = 128;
   const context = canvas.getContext('2d');
 
   if (!context) {
@@ -27,8 +27,8 @@ function createBrickTexture() {
 
   const brickColor = '#9a3e3e';
   const mortarColor = '#888888';
-  const brickHeight = 30;
-  const brickWidth = 60;
+  const brickHeight = 32;
+  const brickWidth = 64;
   const mortarThickness = 4;
 
   // Fill background with mortar color
@@ -37,29 +37,30 @@ function createBrickTexture() {
 
   context.fillStyle = brickColor;
 
-  for (let y = 0; y < canvas.height; y += brickHeight) {
-    for (let x = 0; x < canvas.width; x += brickWidth) {
+  for (let row = 0; row * brickHeight < canvas.height; row++) {
+    for (let col = 0; col * brickWidth < canvas.width; col++) {
       let offsetX = 0;
-      if (Math.floor(y / brickHeight) % 2 === 1) {
+      if (row % 2 === 1) {
         offsetX = -brickWidth / 2;
       }
       context.fillRect(
-        x + offsetX,
-        y,
+        (col * brickWidth) + offsetX,
+        row * brickHeight,
         brickWidth - mortarThickness,
         brickHeight - mortarThickness
       );
-      // Also draw the wrapped around brick piece
-      if (offsetX !== 0 && x === 0) {
+    }
+    // Draw wrapped-around brick for staggered rows
+    if (row % 2 === 1) {
         context.fillRect(
-            x + offsetX + canvas.width,
-            y,
+            canvas.width - (brickWidth/2),
+            row * brickHeight,
             brickWidth - mortarThickness,
             brickHeight - mortarThickness
-          );
-      }
+        );
     }
   }
+
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
