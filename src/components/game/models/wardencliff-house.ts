@@ -121,7 +121,7 @@ function createArchedWindow() {
         pane.position.y = frameHeight / 2;
         pane.position.z = 0.5;
         pane.rotation.z = Math.PI / 2 - angle;
-        pane.position.x = Math.cos(angle) * (paneLength / 2);
+        pane.position.x += Math.cos(angle) * (paneLength / 2);
         pane.position.y += Math.sin(angle) * (paneLength / 2);
         windowGroup.add(pane);
     }
@@ -194,6 +194,7 @@ export function createWardencliffHouse() {
     // Arched window above door
     const transomRadius = (doorWidth * 2) / 2;
     const transomShape = new THREE.Shape();
+    transomShape.moveTo(-transomRadius, 0);
     transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.9});
