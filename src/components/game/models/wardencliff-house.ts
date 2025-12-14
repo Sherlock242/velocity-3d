@@ -40,20 +40,18 @@ export function createWardencliffHouse() {
     mainBuilding.castShadow = true;
     house.add(mainBuilding);
 
-    // Roof
-    const roofCurve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-buildingWidth / 2, 0, 0),
-        new THREE.Vector3(-buildingWidth * 0.4, 15, 0),
-        new THREE.Vector3(0, 20, 0),
-        new THREE.Vector3(buildingWidth * 0.4, 15, 0),
-        new THREE.Vector3(buildingWidth / 2, 0, 0),
-    ]);
-    const roofShape = new THREE.Shape(roofCurve.getPoints(20));
-    const extrudeSettings = { depth: buildingDepth, bevelEnabled: false };
-    const roofGeom = new THREE.ExtrudeGeometry(roofShape, extrudeSettings);
-    const roof = new THREE.Mesh(roofGeom, roofMaterial);
-    roof.position.set(0, buildingHeight + 3, -buildingDepth / 2);
-    house.add(roof);
+    // --- Roof ---
+    const mainRoofGeom = new THREE.BoxGeometry(buildingWidth, 4, buildingDepth);
+    const mainRoof = new THREE.Mesh(mainRoofGeom, roofMaterial);
+    mainRoof.position.y = buildingHeight + 3;
+    house.add(mainRoof);
+    
+    const centralRoofWidth = 80;
+    const centralRoofHeight = 10;
+    const centralRoofGeom = new THREE.BoxGeometry(centralRoofWidth, centralRoofHeight, buildingDepth * 0.8);
+    const centralRoof = new THREE.Mesh(centralRoofGeom, roofMaterial);
+    centralRoof.position.y = buildingHeight + 3 + centralRoofHeight/2;
+    house.add(centralRoof);
 
     // Function to create an arched window
     function createArchedWindow(width: number, height: number, segments: number) {
@@ -125,16 +123,16 @@ export function createWardencliffHouse() {
     const numDormers = 4;
     for (let i = 0; i < numDormers; i++) {
         const dormer = createDormerWindow();
-        const xPos = -buildingWidth / 2 + 40 + i * 40;
-        dormer.position.set(xPos, buildingHeight + 15, 0);
+        const xPos = -centralRoofWidth / 2 + 15 + i * 20;
+        dormer.position.set(xPos, buildingHeight + 3 + centralRoofHeight + 4, 0);
         house.add(dormer);
     }
 
     // Chimney
-    const chimneyHeight = 30;
+    const chimneyHeight = 20;
     const chimneyGeom = new THREE.BoxGeometry(10, chimneyHeight, 8);
     const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
-    chimney.position.set(0, buildingHeight + 3 + 15, -buildingDepth / 2 + 10);
+    chimney.position.set(0, buildingHeight + 3 + centralRoofHeight + chimneyHeight/2, -buildingDepth / 4);
     house.add(chimney);
 
     return house;
