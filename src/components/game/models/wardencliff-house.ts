@@ -12,7 +12,7 @@ function createBrickTexture() {
         return null;
     }
 
-    const brickColors = ['#A0522D', '#654321']; // Light Brown, Dark Brown
+    const brickColors = ['#6F4E37', '#654321']; // Slightly darker Brown, Dark Brown
     const mortarColor = '#cccccc'; // Light grey
     const brickHeight = 32;
     const brickWidth = 64;
@@ -50,7 +50,7 @@ function createArchedWindow() {
     const windowGroup = new THREE.Group();
 
     const frameMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.1 });
+    const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
     const frameWidth = 10;
     const frameHeight = 15;
     const frameDepth = 1;
@@ -409,3 +409,5 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
+    
