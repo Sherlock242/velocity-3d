@@ -117,19 +117,19 @@ export function createWardencliffHouse() {
 
     // --- A-Frame Roof ---
     const roofHeight = 20;
-    const roofAngle = Math.atan(roofHeight / (buildingDepth / 2));
     const roofPanelLength = Math.sqrt(Math.pow(roofHeight, 2) + Math.pow(buildingDepth / 2, 2));
-
+    const roofAngle = Math.atan(roofHeight / (buildingDepth / 2));
+    
     const roofPanelGeom = new THREE.BoxGeometry(buildingWidth, roofPanelLength, 4);
 
     const leftRoofPanel = new THREE.Mesh(roofPanelGeom, roofMaterial);
-    leftRoofPanel.position.set(0, buildingHeight + 3 + roofHeight / 2, -buildingDepth / 4);
-    leftRoofPanel.rotation.x = roofAngle;
+    leftRoofPanel.position.set(0, buildingHeight + 3 + roofHeight / 2, buildingDepth / 4);
+    leftRoofPanel.rotation.x = -roofAngle;
     house.add(leftRoofPanel);
 
     const rightRoofPanel = new THREE.Mesh(roofPanelGeom, roofMaterial);
-    rightRoofPanel.position.set(0, buildingHeight + 3 + roofHeight / 2, buildingDepth / 4);
-    rightRoofPanel.rotation.x = -roofAngle;
+    rightRoofPanel.position.set(0, buildingHeight + 3 + roofHeight / 2, -buildingDepth / 4);
+    rightRoofPanel.rotation.x = roofAngle;
     house.add(rightRoofPanel);
     
     // --- Gable Ends ---
@@ -142,13 +142,13 @@ export function createWardencliffHouse() {
     const gableGeom = new THREE.ShapeGeometry(gableShape);
     
     const frontGable = new THREE.Mesh(gableGeom, brickMaterial);
-    frontGable.position.set(-buildingWidth / 2, buildingHeight + 3, 0);
-    frontGable.rotation.y = Math.PI / 2;
+    frontGable.position.set(buildingWidth / 2, buildingHeight + 3, 0);
+    frontGable.rotation.y = -Math.PI / 2;
     house.add(frontGable);
 
     const backGable = new THREE.Mesh(gableGeom, brickMaterial);
-    backGable.position.set(buildingWidth / 2, buildingHeight + 3, 0);
-    backGable.rotation.y = -Math.PI / 2;
+    backGable.position.set(-buildingWidth / 2, buildingHeight + 3, 0);
+    backGable.rotation.y = Math.PI / 2;
     house.add(backGable);
 
 
@@ -212,16 +212,14 @@ export function createWardencliffHouse() {
     const chimneyHeight = 20;
     const chimneyGeom = new THREE.BoxGeometry(10, chimneyHeight, 8);
     const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
-    chimney.position.set(0, buildingHeight + 3 + roofHeight + chimneyHeight/2 - 10, -buildingDepth / 4);
+    chimney.position.set(0, buildingHeight + 3 + roofHeight / 2 + chimneyHeight / 2 - 5, -buildingDepth / 4);
     house.add(chimney);
 
     // Add the tower
     const tower = createWardencliffTower();
-    const towerYOffset = buildingHeight + 3 + roofHeight;
+    const towerYOffset = buildingHeight + 3 + roofHeight - 5;
     tower.position.y = towerYOffset; // Position it on the roof peak
     house.add(tower);
 
     return house;
 }
-
-    
