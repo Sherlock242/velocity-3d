@@ -8,12 +8,7 @@ function createWardencliffTower() {
         metalness: 0.8,
         roughness: 0.5,
     });
-    const wireframeMaterial = new THREE.MeshBasicMaterial({
-        color: 0x222222,
-        wireframe: true,
-    });
-
-
+    
     const towerHeight = 180;
     const baseRadius = 30;
     const topRadius = 10;
@@ -40,25 +35,25 @@ function createWardencliffTower() {
             const legGeom = new THREE.TubeGeometry(legPath, 1, legThickness, 6, false);
             const leg = new THREE.Mesh(legGeom, metalMaterial);
             towerGroup.add(leg);
-
-            // Diagonal Braces
-            const dBraceStart = startPos;
-            const dBraceEnd = new THREE.Vector3(Math.cos(nextAngle) * nextLevelRadius, nextLevelY, Math.sin(nextAngle) * nextLevelRadius);
-            const dBraceDist = dBraceStart.distanceTo(dBraceEnd);
-            const dBraceGeom = new THREE.BoxGeometry(dBraceDist, 0.8, 0.8);
-            const dBrace = new THREE.Mesh(dBraceGeom, metalMaterial);
-            dBrace.position.lerpVectors(dBraceStart, dBraceEnd, 0.5);
-            dBrace.lookAt(dBraceEnd);
-            towerGroup.add(dBrace);
             
+            // Diagonal Braces (Cross pattern)
+            const dBrace1Start = startPos.clone();
+            const dBrace1End = new THREE.Vector3(Math.cos(nextAngle) * nextLevelRadius, nextLevelY, Math.sin(nextAngle) * nextLevelRadius);
+
             const dBrace2Start = new THREE.Vector3(Math.cos(nextAngle) * levelRadius, levelY, Math.sin(nextAngle) * levelRadius);
-            const dBrace2End = endPos;
-            const dBrace2Dist = dBrace2Start.distanceTo(dBrace2End);
-            const dBrace2Geom = new THREE.BoxGeometry(dBrace2Dist, 0.8, 0.8);
-            const dBrace2 = new THREE.Mesh(dBrace2Geom, metalMaterial);
-            dBrace2.position.lerpVectors(dBrace2Start, dBrace2End, 0.5);
-            dBrace2.lookAt(dBrace2End);
-            towerGroup.add(dBrace2);
+            const dBrace2End = endPos.clone();
+            
+            const braces = [
+                { start: dBrace1Start, end: dBrace1End },
+                { start: dBrace2Start, end: dBrace2End },
+            ]
+
+            braces.forEach(braceInfo => {
+                const bracePath = new THREE.LineCurve3(braceInfo.start, braceInfo.end);
+                const braceGeom = new THREE.TubeGeometry(bracePath, 1, legThickness / 2, 4, false);
+                const brace = new THREE.Mesh(braceGeom, metalMaterial);
+                towerGroup.add(brace);
+            });
         }
     }
     
@@ -72,9 +67,9 @@ function createWardencliffTower() {
     // Dome
     const domeRadius = 20;
     const domeGeom = new THREE.SphereGeometry(domeRadius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-    const domeWireframe = new THREE.Mesh(domeGeom, wireframeMaterial);
-    domeWireframe.position.y = towerHeight + 4;
-    towerGroup.add(domeWireframe);
+    const dome = new THREE.Mesh(domeGeom, metalMaterial);
+    dome.position.y = towerHeight + 4;
+    towerGroup.add(dome);
 
 
     return towerGroup;
@@ -136,6 +131,25 @@ export function createWardencliffHouse() {
     rightRoofPanel.position.set(0, buildingHeight + 3 + roofHeight / 2, buildingDepth / 4);
     rightRoofPanel.rotation.x = -roofAngle;
     house.add(rightRoofPanel);
+    
+    // --- Gable Ends ---
+    const gableShape = new THREE.Shape();
+    gableShape.moveTo(-buildingDepth / 2, 0);
+    gableShape.lineTo(buildingDepth / 2, 0);
+    gableShape.lineTo(0, roofHeight);
+    gableShape.closePath();
+
+    const gableGeom = new THREE.ShapeGeometry(gableShape);
+    
+    const frontGable = new THREE.Mesh(gableGeom, brickMaterial);
+    frontGable.position.set(-buildingWidth / 2, buildingHeight + 3, 0);
+    frontGable.rotation.y = Math.PI / 2;
+    house.add(frontGable);
+
+    const backGable = new THREE.Mesh(gableGeom, brickMaterial);
+    backGable.position.set(buildingWidth / 2, buildingHeight + 3, 0);
+    backGable.rotation.y = -Math.PI / 2;
+    house.add(backGable);
 
 
     // Function to create an arched window
@@ -203,8 +217,11 @@ export function createWardencliffHouse() {
 
     // Add the tower
     const tower = createWardencliffTower();
-    tower.position.y = buildingHeight + 3 + roofHeight; // Position it on the roof peak
+    const towerYOffset = buildingHeight + 3 + roofHeight;
+    tower.position.y = towerYOffset; // Position it on the roof peak
     house.add(tower);
 
     return house;
 }
+
+    
