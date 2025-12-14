@@ -18,7 +18,7 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
     } else {
         const offset = cameraOffsetRef.current.clone();
         if (controlModeRef.current === 'person') offset.set(0, 4, -8);
-        else offset.set(0, 4, -8);
+        
         offset.applyQuaternion(playerRef.current.quaternion).add(playerRef.current.position);
         camera.position.copy(offset);
         camera.lookAt(playerRef.current.position);
