@@ -45,6 +45,90 @@ function createBrickTexture() {
     return texture;
 }
 
+// Function to create the detailed arched window from the image
+function createArchedWindow() {
+    const windowGroup = new THREE.Group();
+
+    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.1 });
+    const frameWidth = 10;
+    const frameHeight = 15;
+    const frameDepth = 1;
+    const paneThickness = 0.2;
+
+    // --- Main Rectangular Frame ---
+    const mainFrameGeom = new THREE.BoxGeometry(frameWidth, frameHeight, frameDepth);
+    const mainFrame = new THREE.Mesh(mainFrameGeom, frameMaterial);
+    windowGroup.add(mainFrame);
+
+    // Main window glass
+    const mainGlassGeom = new THREE.BoxGeometry(frameWidth - 1, frameHeight - 1, frameDepth * 0.5);
+    const mainGlass = new THREE.Mesh(mainGlassGeom, glassMaterial);
+    mainGlass.position.z = 0.3;
+    windowGroup.add(mainGlass);
+
+    // --- Rectangular Panes (Mullions) ---
+    const numHorizontal = 5;
+    for (let i = 1; i < numHorizontal; i++) {
+        const hPaneGeom = new THREE.BoxGeometry(frameWidth - 1, paneThickness, paneThickness);
+        const hPane = new THREE.Mesh(hPaneGeom, frameMaterial);
+        hPane.position.y = - (frameHeight / 2) + (i * (frameHeight / numHorizontal)) + 0.5;
+        hPane.position.z = 0.5;
+        windowGroup.add(hPane);
+    }
+    
+    const numVertical = 3;
+    for (let i = 1; i < numVertical; i++) {
+        const vPaneGeom = new THREE.BoxGeometry(paneThickness, frameHeight - 1, paneThickness);
+        const vPane = new THREE.Mesh(vPaneGeom, frameMaterial);
+        vPane.position.x = - (frameWidth / 2) + (i * (frameWidth / numVertical)) + 0.5;
+        vPane.position.z = 0.5;
+        windowGroup.add(vPane);
+    }
+
+    // --- Arched Top ---
+    const archRadius = frameWidth / 2;
+    const archShape = new THREE.Shape();
+    archShape.moveTo(-archRadius, 0);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
+    
+    const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
+    const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
+    const archFrame = new THREE.Mesh(archGeom, frameMaterial);
+    archFrame.position.y = frameHeight / 2;
+    windowGroup.add(archFrame);
+
+    // Arch glass
+    const archGlassGeom = new THREE.ShapeGeometry(archShape);
+    const archGlass = new THREE.Mesh(archGlassGeom, glassMaterial);
+    archGlass.position.y = frameHeight / 2;
+    archGlass.position.z = 0.5;
+    windowGroup.add(archGlass);
+
+    // --- Arch Panes ---
+    const centerPaneGeom = new THREE.BoxGeometry(paneThickness, archRadius, paneThickness);
+    const centerPane = new THREE.Mesh(centerPaneGeom, frameMaterial);
+    centerPane.position.y = frameHeight / 2 + archRadius / 2;
+    centerPane.position.z = 0.5;
+    windowGroup.add(centerPane);
+
+    const numArchPanes = 3;
+    for (let i = 0; i < numArchPanes; i++) {
+        const angle = (Math.PI / (numArchPanes + 1)) * (i + 1);
+        const paneLength = archRadius;
+        const paneGeom = new THREE.BoxGeometry(paneThickness, paneLength, paneThickness);
+        const pane = new THREE.Mesh(paneGeom, frameMaterial);
+        pane.position.y = frameHeight / 2;
+        pane.position.z = 0.5;
+        pane.rotation.z = Math.PI / 2 - angle;
+        pane.position.x = Math.cos(angle) * (paneLength / 2);
+        pane.position.y += Math.sin(angle) * (paneLength / 2);
+        windowGroup.add(pane);
+    }
+
+    return windowGroup;
+}
+
 
 export function createWardencliffHouse() {
     const house = new THREE.Group();
@@ -168,6 +252,15 @@ export function createWardencliffHouse() {
         window.position.set(xPos, dormerY - dormerHeight / 2, 10 + dormerDepth / 2 + 0.1);
         house.add(window);
     });
+
+    // --- Place new windows on the main facade ---
+    const facadeWindowPositions = [-70, -40, 40, 70];
+    facadeWindowPositions.forEach(xPos => {
+        const window = createArchedWindow();
+        window.position.set(xPos, 18, buildingDepth / 2 + 1);
+        house.add(window);
+    });
+
 
     // --- Roof Vents ---
     const ventGeom = new THREE.BoxGeometry(8, 4, 10);
