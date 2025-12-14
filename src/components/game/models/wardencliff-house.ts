@@ -274,8 +274,17 @@ export function createWardencliffHouse() {
     
     // --- Tower ---
     const tower = createWardencliffTower();
-    tower.position.set(0, dormerY - 10, -100); 
+    tower.position.set(0, 0, -100); 
     house.add(tower);
+    
+    // --- Parking Area for Tower ---
+    const parkingRadius = 40;
+    const parkingGeom = new THREE.CylinderGeometry(parkingRadius, parkingRadius, 1, 32);
+    const parkingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
+    const parkingArea = new THREE.Mesh(parkingGeom, parkingMaterial);
+    parkingArea.position.set(0, 0.5, -100);
+    house.add(parkingArea);
+
 
     // --- Chimney ---
     const chimneyWidth = 10;
