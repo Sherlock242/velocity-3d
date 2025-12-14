@@ -4,16 +4,17 @@ import * as THREE from 'three';
 function createWardencliffTower() {
     const towerGroup = new THREE.Group();
     const metalMaterial = new THREE.MeshStandardMaterial({
-        color: 0x666666,
-        metalness: 0.8,
-        roughness: 0.5,
+        color: 0x333333, // Darker metal
+        metalness: 0.9,
+        roughness: 0.4,
     });
     
-    const towerHeight = 180;
-    const baseRadius = 30;
-    const topRadius = 10;
+    const towerHeight = 187;
+    const baseRadius = 40;
+    const topRadius = 8;
     const numLegs = 8;
-    const numLevels = 8;
+    const numLevels = 10;
+    const legThickness = 1.5;
 
     // Create main tapered legs and diagonal braces
     for (let i = 0; i < numLevels; i++) {
@@ -21,7 +22,6 @@ function createWardencliffTower() {
         const nextLevelY = ((i + 1) / numLevels) * towerHeight;
         const levelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, i / numLevels);
         const nextLevelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, (i + 1) / numLevels);
-        const legThickness = 1;
 
         for (let j = 0; j < numLegs; j++) {
             const angle = (j / numLegs) * Math.PI * 2;
@@ -32,7 +32,7 @@ function createWardencliffTower() {
             const endPos = new THREE.Vector3(Math.cos(angle) * nextLevelRadius, nextLevelY, Math.sin(angle) * nextLevelRadius);
             
             const legPath = new THREE.LineCurve3(startPos, endPos);
-            const legGeom = new THREE.TubeGeometry(legPath, 1, legThickness, 6, false);
+            const legGeom = new THREE.TubeGeometry(legPath, 1, legThickness, 4, false);
             const leg = new THREE.Mesh(legGeom, metalMaterial);
             towerGroup.add(leg);
             
@@ -57,21 +57,6 @@ function createWardencliffTower() {
         }
     }
     
-    // Top platform
-    const platformRadius = 22;
-    const platformGeom = new THREE.CylinderGeometry(platformRadius, platformRadius, 4, 32);
-    const platform = new THREE.Mesh(platformGeom, metalMaterial);
-    platform.position.y = towerHeight + 2;
-    towerGroup.add(platform);
-
-    // Dome
-    const domeRadius = 20;
-    const domeGeom = new THREE.SphereGeometry(domeRadius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-    const dome = new THREE.Mesh(domeGeom, metalMaterial);
-    dome.position.y = towerHeight + 4;
-    towerGroup.add(dome);
-
-
     return towerGroup;
 }
 
@@ -80,146 +65,58 @@ export function createWardencliffHouse() {
     const house = new THREE.Group();
 
     const brickMaterial = new THREE.MeshStandardMaterial({
-        color: 0x944C3C, // A reddish-brown brick color
+        color: 0x9a3e3e, 
         roughness: 0.9,
     });
     const roofMaterial = new THREE.MeshStandardMaterial({
         color: 0x333333,
     });
-    const woodMaterial = new THREE.MeshStandardMaterial({
-        color: 0x66402A,
-    });
-    const glassMaterial = new THREE.MeshStandardMaterial({
-        color: 0x111111,
-        metalness: 0.1,
-        roughness: 0.2,
-    });
-    const concreteMaterial = new THREE.MeshStandardMaterial({
-        color: 0xaaaaaa,
-    });
-
+    
     const buildingWidth = 200;
-    const buildingHeight = 35;
-    const buildingDepth = 50;
-
-    // Base concrete slab
-    const baseGeom = new THREE.BoxGeometry(buildingWidth + 4, 3, buildingDepth + 4);
-    const base = new THREE.Mesh(baseGeom, concreteMaterial);
-    base.position.y = 1.5;
-    house.add(base);
+    const buildingHeight = 60;
+    const buildingDepth = 150;
 
     // Main brick building
     const mainBuildingGeom = new THREE.BoxGeometry(buildingWidth, buildingHeight, buildingDepth);
     const mainBuilding = new THREE.Mesh(mainBuildingGeom, brickMaterial);
-    mainBuilding.position.y = buildingHeight / 2 + 3;
+    mainBuilding.position.y = buildingHeight / 2;
     mainBuilding.castShadow = true;
     house.add(mainBuilding);
 
-    // --- A-Frame Roof ---
-    const roofHeight = 20;
-    const roofPanelLength = Math.sqrt(Math.pow(roofHeight, 2) + Math.pow(buildingDepth / 2, 2));
-    const roofAngle = Math.atan(roofHeight / (buildingDepth / 2));
-    
-    const roofPanelGeom = new THREE.BoxGeometry(buildingWidth, roofPanelLength, 4);
+    // Flat dark roof
+    const roofGeom = new THREE.BoxGeometry(buildingWidth, 4, buildingDepth);
+    const roof = new THREE.Mesh(roofGeom, roofMaterial);
+    roof.position.y = buildingHeight + 2;
+    house.add(roof);
 
-    const leftRoofPanel = new THREE.Mesh(roofPanelGeom, roofMaterial);
-    leftRoofPanel.position.set(0, buildingHeight + 3 + roofHeight / 2, buildingDepth / 4);
-    leftRoofPanel.rotation.x = -roofAngle;
-    house.add(leftRoofPanel);
-
-    const rightRoofPanel = new THREE.Mesh(roofPanelGeom, roofMaterial);
-    rightRoofPanel.position.set(0, buildingHeight + 3 + roofHeight / 2, -buildingDepth / 4);
-    rightRoofPanel.rotation.x = roofAngle;
-    house.add(rightRoofPanel);
-    
-    // --- Gable Ends ---
-    const gableShape = new THREE.Shape();
-    gableShape.moveTo(-buildingDepth / 2, 0);
-    gableShape.lineTo(buildingDepth / 2, 0);
-    gableShape.lineTo(0, roofHeight);
-    gableShape.closePath();
-
-    const gableGeom = new THREE.ShapeGeometry(gableShape);
-    
-    const frontGable = new THREE.Mesh(gableGeom, brickMaterial);
-    frontGable.position.set(buildingWidth / 2, buildingHeight + 3, 0);
-    frontGable.rotation.y = -Math.PI / 2;
-    house.add(frontGable);
-
-    const backGable = new THREE.Mesh(gableGeom, brickMaterial);
-    backGable.position.set(-buildingWidth / 2, buildingHeight + 3, 0);
-    backGable.rotation.y = Math.PI / 2;
-    house.add(backGable);
-
-
-    // Function to create an arched window
-    function createArchedWindow(width: number, height: number, segments: number) {
-        const windowGroup = new THREE.Group();
-        const archRadius = width / 2;
-
-        // Glass
-        const windowShape = new THREE.Shape();
-        windowShape.moveTo(-width / 2, 0);
-        windowShape.absarc(0, height - archRadius, archRadius, Math.PI, 0, false);
-        windowShape.lineTo(width / 2, 0);
-        windowShape.closePath();
-
-        const windowGeom = new THREE.ShapeGeometry(windowShape);
-        const windowPane = new THREE.Mesh(windowGeom, glassMaterial);
-        windowGroup.add(windowPane);
-
-        // Vertical Bars
-        for (let i = 1; i < segments; i++) {
-            const barGeom = new THREE.BoxGeometry(0.2, height, 0.1);
-            const bar = new THREE.Mesh(barGeom, woodMaterial);
-            bar.position.x = -width / 2 + i * (width / segments);
-            windowGroup.add(bar);
-        }
-        
-        // Horizontal Bars
-        const numHBars = 4;
-        for (let i = 1; i <= numHBars; i++) {
-            const barGeom = new THREE.BoxGeometry(width, 0.2, 0.1);
-            const bar = new THREE.Mesh(barGeom, woodMaterial);
-            bar.position.y = i * (height / (numHBars + 1));
-            windowGroup.add(bar);
-        }
-
-        return windowGroup;
-    }
-
-    // Windows
-    const numWindows = 8;
-    const windowHeight = 20;
-    const windowWidth = 12;
-    const windowSpacing = (buildingWidth - 40) / numWindows;
-
-    for (let i = 0; i < numWindows; i++) {
-        const window = createArchedWindow(windowWidth, windowHeight, 4);
-        const xPos = -buildingWidth / 2 + 20 + i * windowSpacing + windowWidth / 2;
-        window.position.set(xPos, 5, buildingDepth / 2 + 0.1);
-        house.add(window);
-    }
-    
-    // Central Door
-    const doorWidth = 20;
-    const doorHeight = 25;
-    const door = createArchedWindow(doorWidth, doorHeight, 6);
-    door.position.set(0, 5, buildingDepth / 2 + 0.1);
-    house.add(door);
-
-    // Chimney
-    const chimneyHeight = 20;
-    const chimneyGeom = new THREE.BoxGeometry(10, chimneyHeight, 8);
-    const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
-    chimney.position.set(0, buildingHeight + 3 + roofHeight / 2 + chimneyHeight / 2 - 5, -buildingDepth / 4);
-    house.add(chimney);
-
-    // Add the tower
+    // Add the tower on top of the roof
     const tower = createWardencliffTower();
-    const towerYOffset = buildingHeight + 3 + roofHeight - 5;
-    tower.position.y = towerYOffset; // Position it on the roof peak
+    tower.position.y = buildingHeight + 4; // Position it on the roof
     house.add(tower);
+
+    // Add front face details
+    const detailMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
+    const details = [
+        { s: [2, 4], p: [-80, 15] },
+        { s: [2, 4], p: [-65, 15] },
+        { s: [2, 4], p: [-50, 15] },
+        { s: [8, 3], p: [-30, 15], r: 0.5 },
+        { s: [6, 4], p: [-10, 15], r: -0.2 },
+        { s: [2, 4], p: [10, 15] },
+        { s: [2, 4], p: [25, 15] },
+        { s: [2, 4], p: [40, 15] },
+    ];
+
+    details.forEach(d => {
+        const detailGeom = new THREE.PlaneGeometry(d.s[0], d.s[1]);
+        const detailMesh = new THREE.Mesh(detailGeom, detailMaterial);
+        detailMesh.position.set(d.p[0], d.p[1], buildingDepth / 2 + 0.1);
+        if (d.r) {
+            detailMesh.rotation.z = d.r;
+        }
+        house.add(detailMesh);
+    });
+
 
     return house;
 }
