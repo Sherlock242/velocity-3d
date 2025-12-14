@@ -11,6 +11,7 @@ export function createGraveyard() {
     const groundGeom = new THREE.PlaneGeometry(400, 400);
     const ground = new THREE.Mesh(groundGeom, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0.11;
     ground.receiveShadow = true;
     graveyard.add(ground);
 

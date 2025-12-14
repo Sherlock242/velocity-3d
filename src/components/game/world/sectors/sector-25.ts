@@ -126,7 +126,7 @@ export function createSector25({
   const sectorGroundMat = new THREE.MeshStandardMaterial({ color: 0x404040 }); // Dark gray
   const sectorGround = new THREE.Mesh(sectorGroundGeom, sectorGroundMat);
   sectorGround.rotation.x = -Math.PI / 2;
-  sectorGround.position.set(cellCenterX, 0.05, cellCenterZ); // Slightly above default ground
+  sectorGround.position.set(cellCenterX, 0.1, cellCenterZ); // Slightly above default ground
   sectorGround.receiveShadow = true;
   sectorGroup.add(sectorGround);
 
@@ -137,14 +137,14 @@ export function createSector25({
   const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 }); // Gray road
   const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
   verticalRoad.rotation.x = -Math.PI / 2;
-  verticalRoad.position.set(cellCenterX, 0.1, cellCenterZ);
+  verticalRoad.position.set(cellCenterX, 0.12, cellCenterZ);
   sectorGroup.add(verticalRoad);
 
   // Horizontal Road (East-West)
   const horizontalRoadGeom = new THREE.PlaneGeometry(plotWidth, ROAD_WIDTH);
   const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
   horizontalRoad.rotation.x = -Math.PI / 2;
-  horizontalRoad.position.set(cellCenterX, 0.1, cellCenterZ);
+  horizontalRoad.position.set(cellCenterX, 0.12, cellCenterZ);
   sectorGroup.add(horizontalRoad);
 
 
