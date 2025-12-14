@@ -4,15 +4,15 @@ import * as THREE from 'three';
 // Helper to create a procedural brick texture
 function createBrickTexture() {
     const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 256;
+    canvas.width = 512;
+    canvas.height = 512;
     const context = canvas.getContext('2d');
 
     if (!context) {
         return null;
     }
 
-    const brickColor = '#944C3C'; // Classic reddish-brown
+    const brickColors = ['#944C3C', '#8B4513', '#A0522D', '#7E4333'];
     const mortarColor = '#cccccc'; // Light grey
     const brickHeight = 32;
     const brickWidth = 64;
@@ -21,10 +21,10 @@ function createBrickTexture() {
     context.fillStyle = mortarColor;
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    context.fillStyle = brickColor;
     for (let row = 0; row * brickHeight < canvas.height; row++) {
         const isStaggered = row % 2 === 1;
         for (let col = 0; col * brickWidth < canvas.width + (isStaggered ? brickWidth / 2 : 0); col++) {
+            context.fillStyle = brickColors[Math.floor(Math.random() * brickColors.length)];
             let offsetX = 0;
             if (isStaggered) {
                 offsetX = -brickWidth / 2;
@@ -41,7 +41,7 @@ function createBrickTexture() {
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(16, 4); // Repeat texture for smaller bricks
+    texture.repeat.set(16, 8); // Repeat texture for smaller bricks
     return texture;
 }
 
