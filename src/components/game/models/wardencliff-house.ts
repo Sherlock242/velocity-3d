@@ -10,8 +10,8 @@ function createWardencliffTower() {
     });
     
     const towerHeight = 187;
-    const baseRadius = 40;
-    const topRadius = 8;
+    const baseRadius = 30;
+    const topRadius = 10;
     const numLegs = 8;
     const numLevels = 10;
     const legThickness = 1.5;
@@ -58,8 +58,8 @@ function createWardencliffTower() {
     }
 
     // --- Tower Top Dome ---
-    const domeRadius = 30;
-    const platformRadius = domeRadius * 0.9;
+    const domeRadius = 20;
+    const platformRadius = 22;
     const platformHeight = 4;
 
     // Supporting platform
@@ -67,13 +67,51 @@ function createWardencliffTower() {
     const platform = new THREE.Mesh(platformGeom, metalMaterial);
     platform.position.y = towerHeight;
     towerGroup.add(platform);
+    
+    // --- Create a lattice dome ---
+    const domeGroup = new THREE.Group();
+    domeGroup.position.y = towerHeight + platformHeight / 2;
 
-    // Hemispherical dome
-    const domeGeom = new THREE.SphereGeometry(domeRadius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-    const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x333333, wireframe: true });
-    const dome = new THREE.Mesh(domeGeom, wireframeMaterial);
-    dome.position.y = towerHeight + platformHeight / 2;
-    towerGroup.add(dome);
+    const braceRadius = 0.5;
+    const verticalSegments = 12;
+    const horizontalSegments = 8;
+
+    // Vertical Ribs
+    for (let i = 0; i < verticalSegments; i++) {
+        const angle = (i / verticalSegments) * Math.PI * 2;
+        
+        const curvePoints = [];
+        for (let j = 0; j <= horizontalSegments; j++) {
+            const phi = (j / horizontalSegments) * (Math.PI / 2); // 0 to 90 degrees
+            const x = Math.cos(phi) * domeRadius * Math.cos(angle);
+            const y = Math.sin(phi) * domeRadius;
+            const z = Math.cos(phi) * domeRadius * Math.sin(angle);
+            curvePoints.push(new THREE.Vector3(x, y, z));
+        }
+
+        const curve = new THREE.CatmullRomCurve3(curvePoints);
+        const tubeGeom = new THREE.TubeGeometry(curve, 16, braceRadius, 5, false);
+        const rib = new THREE.Mesh(tubeGeom, metalMaterial);
+        domeGroup.add(rib);
+    }
+    
+    // Horizontal Rings
+    for (let i = 1; i <= horizontalSegments; i++) {
+        const phi = (i / horizontalSegments) * (Math.PI / 2);
+        const ringRadius = Math.cos(phi) * domeRadius;
+        const ringY = Math.sin(phi) * domeRadius;
+
+        if (ringRadius > 0) {
+            const ringGeom = new THREE.TorusGeometry(ringRadius, braceRadius, 8, 32);
+            const ring = new THREE.Mesh(ringGeom, metalMaterial);
+            ring.position.y = ringY;
+            ring.rotation.x = Math.PI / 2;
+            domeGroup.add(ring);
+        }
+    }
+    
+    towerGroup.add(domeGroup);
+
 
     // Small sphere on top
     const topSphereGeom = new THREE.SphereGeometry(2, 16, 8);
@@ -107,15 +145,47 @@ export function createWardencliffHouse() {
     mainBuilding.castShadow = true;
     house.add(mainBuilding);
 
-    // Flat dark roof
-    const roofGeom = new THREE.BoxGeometry(buildingWidth, 4, buildingDepth);
-    const roof = new THREE.Mesh(roofGeom, roofMaterial);
-    roof.position.y = buildingHeight + 2;
-    house.add(roof);
+    // --- A-Frame Roof ---
+    const roofAngle = Math.PI / 6; 
+    const roofLength = buildingDepth;
+    const roofPanelWidth = (buildingWidth / 2) / Math.cos(roofAngle);
+    const roofPanelGeom = new THREE.BoxGeometry(roofPanelWidth, 4, roofLength);
+
+    const roofPeakY = buildingHeight + Math.sin(roofAngle) * (buildingWidth / 2);
+
+    const leftRoofPanel = new THREE.Mesh(roofPanelGeom, roofMaterial);
+    leftRoofPanel.rotation.z = roofAngle;
+    leftRoofPanel.position.set(-buildingWidth / 4, roofPeakY - roofPanelWidth * Math.sin(roofAngle) / 2, 0);
+    house.add(leftRoofPanel);
+
+    const rightRoofPanel = new THREE.Mesh(roofPanelGeom, roofMaterial);
+    rightRoofPanel.rotation.z = -roofAngle;
+    rightRoofPanel.position.set(buildingWidth / 4, roofPeakY - roofPanelWidth * Math.sin(roofAngle) / 2, 0);
+    house.add(rightRoofPanel);
+
+    // --- Gable Ends ---
+    const gableShape = new THREE.Shape();
+    gableShape.moveTo(-buildingWidth / 2, buildingHeight);
+    gableShape.lineTo(buildingWidth / 2, buildingHeight);
+    gableShape.lineTo(0, roofPeakY + 2);
+    gableShape.closePath();
+
+    const extrudeSettings = { depth: 2, bevelEnabled: false };
+    const gableGeom = new THREE.ExtrudeGeometry(gableShape, extrudeSettings);
+    
+    const frontGable = new THREE.Mesh(gableGeom, roofMaterial);
+    frontGable.position.z = buildingDepth / 2 - 1;
+    house.add(frontGable);
+    
+    const backGable = new THREE.Mesh(gableGeom, roofMaterial);
+    backGable.position.z = -buildingDepth / 2 - 1;
+    house.add(backGable);
+
 
     // Add the tower on top of the roof
+    const towerYOffset = roofPeakY + 4;
     const tower = createWardencliffTower();
-    tower.position.y = buildingHeight + 4; // Position it on the roof
+    tower.position.y = towerYOffset;
     house.add(tower);
 
     // Add front face details
