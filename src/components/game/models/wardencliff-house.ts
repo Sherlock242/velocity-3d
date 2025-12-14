@@ -252,15 +252,15 @@ export function createWardencliffHouse() {
     gableShape.lineTo(0, roofRise);
     gableShape.lineTo(-buildingDepth / 2, 0);
     
-    const gableGeom = new THREE.ShapeGeometry(gableShape);
+    const gableGeom = new THREE.ExtrudeGeometry(gableShape, { depth: 4, bevelEnabled: false });
     
     const frontGable = new THREE.Mesh(gableGeom, brickMaterial);
-    frontGable.position.set(buildingWidth/2, roofY, 0);
+    frontGable.position.set(buildingWidth/2 -2, roofY, 0);
     frontGable.rotation.y = Math.PI / 2;
     house.add(frontGable);
 
     const backGable = new THREE.Mesh(gableGeom, brickMaterial);
-    backGable.position.set(-buildingWidth/2, roofY, 0);
+    backGable.position.set(-buildingWidth/2 + 2, roofY, 0);
     backGable.rotation.y = -Math.PI / 2;
     house.add(backGable);
 
