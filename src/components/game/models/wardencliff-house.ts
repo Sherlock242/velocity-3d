@@ -103,6 +103,14 @@ export function createWardencliffHouse() {
         const leftWindow = createArchedWindow(12, 12, new THREE.Vector3(-20 - i * 16, windowY, windowZ));
         house.add(leftWindow);
     }
+
+    // Add smaller square windows next to the door
+    const smallWindowY = 15;
+    const smallWindowX = 18;
+    const smallWindowZ = buildingDepth / 2 + pavilionDepth + 0.1;
+    house.add(createSquareWindow(6, 6, new THREE.Vector3(smallWindowX, smallWindowY, smallWindowZ)));
+    house.add(createSquareWindow(6, 6, new THREE.Vector3(-smallWindowX, smallWindowY, smallWindowZ)));
+
     
     // --- Entrance Doors ---
     const doorHeight = 18;
@@ -196,6 +204,21 @@ export function createWardencliffHouse() {
     dormerRoof.position.set(0, dormerY, 0);
     house.add(dormerRoof);
 
+    // --- Roof Vents ---
+    const ventGeom = new THREE.BoxGeometry(8, 4, 10);
+    const ventMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
+    const vent1 = new THREE.Mesh(ventGeom, ventMaterial);
+    vent1.position.set(40, dormerY - 2, 0);
+    house.add(vent1);
+    const vent2 = new THREE.Mesh(ventGeom, ventMaterial);
+    vent2.position.set(-40, dormerY - 2, 0);
+    house.add(vent2);
+    
+    // --- Tower ---
+    const tower = createWardencliffTower();
+    tower.position.set(0, dormerY - 10, -50); // Position behind the chimney
+    house.add(tower);
+
     // --- Chimney ---
     const chimneyWidth = 10;
     const chimneyHeight = 35;
@@ -203,7 +226,8 @@ export function createWardencliffHouse() {
     const chimneyGeom = new THREE.BoxGeometry(chimneyWidth, chimneyHeight, chimneyDepth);
     const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
     
-    chimney.position.set(0, dormerY + 8 + chimneyHeight / 2, 0);
+    // Position on top of the dormer roof
+    chimney.position.set(0, dormerY + 8 + chimneyHeight / 2, 0); 
     house.add(chimney);
     
     const chimneyTopGeom = new THREE.BoxGeometry(chimneyWidth + 2, 3, chimneyDepth + 2);
@@ -211,10 +235,6 @@ export function createWardencliffHouse() {
     chimneyTop.position.y = chimneyHeight / 2 + 1.5;
     chimney.add(chimneyTop);
     
-    // --- Tower ---
-    const tower = createWardencliffTower();
-    tower.position.set(0, roofY, 0);
-    house.add(tower);
 
     house.castShadow = true;
     house.receiveShadow = true;
