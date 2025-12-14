@@ -102,22 +102,25 @@ export function updatePlayerMovement(gameState: GameState, delta: number, scene:
         }
 
     } else if (controlModeRef.current === 'person') {
-        const personMoveSpeed = 50;
         const personTurnSpeed = 3;
-        const maxPersonSpeed = 50 / 3.6; // 50 km/h
-
-        velocityRef.current.set(0, 0, 0);
+        const maxPersonSpeed = 13.89; // 50 km/h in m/s
 
         const forward = new THREE.Vector3();
         playerRef.current.getWorldDirection(forward);
-        if (inputRef.current.forward) velocityRef.current.add(forward.multiplyScalar(personMoveSpeed * delta));
-        if (inputRef.current.backward) velocityRef.current.add(forward.multiplyScalar(-personMoveSpeed * delta * 0.5));
+        
+        let targetVelocity = new THREE.Vector3();
+
+        if (inputRef.current.forward) {
+            targetVelocity = forward.clone().multiplyScalar(maxPersonSpeed);
+        } else if (inputRef.current.backward) {
+            targetVelocity = forward.clone().multiplyScalar(-maxPersonSpeed * 0.5);
+        }
+        
+        velocityRef.current.lerp(targetVelocity, 0.1);
+
         if (inputRef.current.left) playerRef.current.rotation.y += personTurnSpeed * delta;
         if (inputRef.current.right) playerRef.current.rotation.y -= personTurnSpeed * delta;
 
-        if (velocityRef.current.length() > maxPersonSpeed) {
-            velocityRef.current.normalize().multiplyScalar(maxPersonSpeed);
-        }
         playerRef.current.position.add(velocityRef.current.clone().multiplyScalar(delta));
 
         if (audioInitializedRef.current && engineSoundRef.current && skidSoundRef.current) {
