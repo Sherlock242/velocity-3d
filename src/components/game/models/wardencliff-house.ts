@@ -12,7 +12,7 @@ function createBrickTexture() {
         return null;
     }
 
-    const brickColors = ['#944C3C', '#8B4513', '#A0522D', '#7E4333'];
+    const brickColors = ['#9a3e3e', '#A0522D', '#654321']; // Mason Red, Light Brown, Dark Brown
     const mortarColor = '#cccccc'; // Light grey
     const brickHeight = 32;
     const brickWidth = 64;
@@ -50,10 +50,9 @@ export function createWardencliffHouse() {
     const house = new THREE.Group();
 
     const brickTexture = createBrickTexture();
-    const brickMaterial = new THREE.MeshStandardMaterial({ 
-        map: brickTexture,
-        roughness: 0.9 
-    });
+    const brickMaterial = brickTexture 
+        ? new THREE.MeshStandardMaterial({ map: brickTexture, roughness: 0.9 })
+        : new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.9 }); // Fallback color
 
     const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
@@ -160,6 +159,15 @@ export function createWardencliffHouse() {
     const dormerRoof = createHippedRoof(dormerWidth + 2, dormerDepth + 2, 6);
     dormerRoof.position.set(0, dormerY, 10);
     house.add(dormerRoof);
+    
+    const dormerWindows = [-15, 0, 15];
+    dormerWindows.forEach(xPos => {
+        const windowGeom = new THREE.BoxGeometry(4, 4, 1);
+        const windowMaterial = new THREE.MeshStandardMaterial({color: 0x222222});
+        const window = new THREE.Mesh(windowGeom, windowMaterial);
+        window.position.set(xPos, dormerY - dormerHeight / 2, 10 + dormerDepth / 2 + 0.1);
+        house.add(window);
+    });
 
     // --- Roof Vents ---
     const ventGeom = new THREE.BoxGeometry(8, 4, 10);
