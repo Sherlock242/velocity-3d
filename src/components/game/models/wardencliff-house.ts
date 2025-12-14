@@ -1,36 +1,67 @@
 
 import * as THREE from 'three';
 
+// Helper to create a procedural brick texture
+function createBrickTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+        return null;
+    }
+
+    const brickColor = '#9a3e3e';
+    const mortarColor = '#888888';
+    const brickHeight = 32;
+    const brickWidth = 64;
+    const mortarThickness = 4;
+
+    context.fillStyle = mortarColor;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.fillStyle = brickColor;
+    for (let row = 0; row * brickHeight < canvas.height; row++) {
+        const isStaggered = row % 2 === 1;
+        for (let col = 0; col * brickWidth < canvas.width + (isStaggered ? brickWidth / 2 : 0); col++) {
+            let offsetX = 0;
+            if (isStaggered) {
+                offsetX = -brickWidth / 2;
+            }
+            context.fillRect(
+                col * brickWidth + offsetX,
+                row * brickHeight,
+                brickWidth - mortarThickness,
+                brickHeight - mortarThickness
+            );
+        }
+    }
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(16, 4); // Repeat texture for smaller bricks
+    return texture;
+}
+
+
 export function createWardencliffHouse() {
     const house = new THREE.Group();
 
-    const brickMaterial = new THREE.MeshStandardMaterial({ color: 0x9a3e3e, roughness: 0.9 });
+    const brickTexture = createBrickTexture();
+    const brickMaterial = new THREE.MeshStandardMaterial({ 
+        map: brickTexture,
+        roughness: 0.9 
+    });
+
     const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
     const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
-    const windowFrameMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, transparent: true, opacity: 0.8 });
 
     const buildingWidth = 200;
     const buildingHeight = 35;
     const buildingDepth = 50;
-
-    // --- Helper for Square Windows ---
-    function createSquareWindow(width: number, height: number, position: THREE.Vector3) {
-        const windowGroup = new THREE.Group();
-        windowGroup.position.copy(position);
-        
-        const frameGeom = new THREE.BoxGeometry(width + 0.5, height + 0.5, 1);
-        const frame = new THREE.Mesh(frameGeom, windowFrameMaterial);
-        windowGroup.add(frame);
-
-        const glassGeom = new THREE.BoxGeometry(width, height, 1);
-        const glass = new THREE.Mesh(glassGeom, glassMaterial);
-        glass.position.z = 0.5;
-        windowGroup.add(glass);
-
-        return windowGroup;
-    }
 
     // --- Main Building ---
     const baseGeom = new THREE.BoxGeometry(buildingWidth, 2, buildingDepth + 4);
@@ -125,15 +156,6 @@ export function createWardencliffHouse() {
     );
     dormerWall.position.set(0, dormerY - dormerHeight / 2, 10);
     house.add(dormerWall);
-
-    for (let i = 0; i < 3; i++) {
-        const dormerWindow = createSquareWindow(4, 4, new THREE.Vector3(
-            -15 + i * 15,
-            dormerY - dormerHeight / 2,
-            dormerDepth / 2 + 0.1 + 10
-        ));
-        house.add(dormerWindow);
-    }
     
     const dormerRoof = createHippedRoof(dormerWidth + 2, dormerDepth + 2, 6);
     dormerRoof.position.set(0, dormerY, 10);
@@ -151,7 +173,7 @@ export function createWardencliffHouse() {
     
     // --- Tower ---
     const tower = createWardencliffTower();
-    tower.position.set(0, dormerY - 10, -85); // Position behind the chimney
+    tower.position.set(0, dormerY - 10, -100); 
     house.add(tower);
 
     // --- Chimney ---
@@ -161,7 +183,6 @@ export function createWardencliffHouse() {
     const chimneyGeom = new THREE.BoxGeometry(chimneyWidth, chimneyHeight, chimneyDepth);
     const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
     
-    // Position on top of the dormer roof
     chimney.position.set(0, dormerY + 6 + chimneyHeight / 2, 10); 
     house.add(chimney);
     
