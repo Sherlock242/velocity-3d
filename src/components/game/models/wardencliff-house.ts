@@ -194,7 +194,7 @@ export function createWardencliffHouse() {
     // Arched window above door
     const transomRadius = (doorWidth * 2) / 2;
     const transomShape = new THREE.Shape();
-    transomShape.absarc(0, 0, transomRadius, 0, Math.PI, false);
+    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.9});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
@@ -453,6 +453,3 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
-
-
-
