@@ -70,7 +70,7 @@ function createWardencliffTower() {
 
     // Hemispherical dome
     const domeGeom = new THREE.SphereGeometry(domeRadius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-    const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, wireframe: true });
+    const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x333333, wireframe: true });
     const dome = new THREE.Mesh(domeGeom, wireframeMaterial);
     dome.position.y = towerHeight + platformHeight / 2;
     towerGroup.add(dome);
