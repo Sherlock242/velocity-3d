@@ -8,6 +8,12 @@ import { createIndustrialBuilding } from '../../models/industrial-building';
 import { createSchoolBuilding } from '../../models/school-building';
 import { createHospitalBuilding } from '../../models/hospital-building';
 
+type Sector25Props = {
+    cellCenterX: number;
+    cellCenterZ: number;
+    staticCollidersRef: MutableRefObject<THREE.Group[]>;
+};
+
 // Helper function to create a procedural brick texture
 function createBrickTexture() {
   const canvas = document.createElement('canvas');
@@ -19,10 +25,10 @@ function createBrickTexture() {
     return null;
   }
 
-  const brickColor = '#9a3e3e'; // Mason red color
+  const brickColor = '#c0392b'; // A brighter, more prominent red
   const mortarColor = '#333333'; // Dark grey mortar
-  const brickHeight = 60; // Increased brick size
-  const brickWidth = 128; // Increased brick size
+  const brickHeight = 60;
+  const brickWidth = 128;
   const mortarThickness = 4;
 
   // Fill background with mortar color
@@ -47,11 +53,10 @@ function createBrickTexture() {
     }
   }
 
-
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(5, 2.5); // Adjust repeat to control brick size on the wall
+  texture.repeat.set(5, 2.5);
   
   return texture;
 }
@@ -79,7 +84,7 @@ export function createSector25({
     const brickTexture = createBrickTexture();
     const wallMaterial = brickTexture 
         ? new THREE.MeshStandardMaterial({ map: brickTexture })
-        : new THREE.MeshStandardMaterial({ color: '#9a3e3e' }); // Fallback color
+        : new THREE.MeshStandardMaterial({ color: '#c0392b' }); // Fallback color
 
     const mainWallGeom = new THREE.BoxGeometry(width, wallSegmentHeight, depth);
     const mainWall = new THREE.Mesh(mainWallGeom, wallMaterial);
@@ -87,26 +92,21 @@ export function createSector25({
     segment.add(mainWall);
 
     // Add more vertical cuts
-    const numCuts = Math.floor(width / 50); // Add a cut every 50 units
+    const numCuts = Math.floor(width / 50);
     for(let i=0; i < numCuts; i++) {
-        if (Math.random() > 0.4) continue; // Randomly skip some cuts
+        if (Math.random() > 0.4) continue;
         const cutWidth = 5 + Math.random() * 10;
         const cutHeight = wallSegmentHeight * (0.3 + Math.random() * 0.5);
         const cutGeom = new THREE.BoxGeometry(cutWidth, cutHeight, depth + 1);
         const cutMesh = new THREE.Mesh(cutGeom, new THREE.MeshBasicMaterial({visible: false}));
         cutMesh.position.set(-width/2 + 20 + i * 50, cutHeight/2, 0);
-        
-        // This is a simplified CSG-like operation. For real CSG, a library is needed.
-        // For this demo, we can just "hide" parts of the wall, but here we just add invisible boxes
-        // that a proper CSG library would use to subtract from the main wall.
-        // Since we don't have one, this is more for show in the code structure.
     }
 
 
     // Add "broken" top bricks
     const numBricks = Math.floor(width / 10);
     for (let i = 0; i < numBricks; i++) {
-        if(Math.random() < 0.3) continue; // Skip some bricks for a more broken look
+        if(Math.random() < 0.3) continue;
         const brickHeight = wallHeight - wallSegmentHeight;
         const brickGeom = new THREE.BoxGeometry(10, brickHeight, depth);
         const brick = new THREE.Mesh(brickGeom, wallMaterial);
@@ -195,7 +195,7 @@ export function createSector25({
   wallGroup.add(rightWallBottom);
 
   sectorGroup.add(wallGroup);
-  staticCollidersRef.current.push(wallGroup);
+  // staticCollidersRef.current.push(wallGroup);
 
   // --- Statue ---
   const statueGroup = new THREE.Group();
@@ -217,7 +217,7 @@ export function createSector25({
   statueGroup.add(statue);
   
   sectorGroup.add(statueGroup);
-  staticCollidersRef.current.push(statueGroup);
+  // staticCollidersRef.current.push(statueGroup);
 
   // --- Quadrant Content ---
   const quadrantSize = (CELL_SIZE - ROAD_WIDTH) / 2;
@@ -227,7 +227,7 @@ export function createSector25({
   const graveyard = createGraveyard();
   graveyard.position.set(cellCenterX - quadrantOffset, 0, cellCenterZ - quadrantOffset);
   sectorGroup.add(graveyard);
-  staticCollidersRef.current.push(graveyard);
+  // staticCollidersRef.current.push(graveyard);
 
   // Quadrant 2: Top-Right (Residential)
   const residentialArea = new THREE.Group();
@@ -240,7 +240,7 @@ export function createSector25({
           house.position.set(x, 0, z);
           house.rotation.y = (Math.random() - 0.5) * Math.PI;
           residentialArea.add(house);
-          staticCollidersRef.current.push(house);
+        //   staticCollidersRef.current.push(house);
       }
   }
   sectorGroup.add(residentialArea);
@@ -256,7 +256,7 @@ export function createSector25({
         building.position.set(x, 0, z);
         building.rotation.y = Math.random() * Math.PI * 2;
         industrialArea.add(building);
-        staticCollidersRef.current.push(building);
+        // staticCollidersRef.current.push(building);
     }
   }
   sectorGroup.add(industrialArea);
@@ -268,12 +268,12 @@ export function createSector25({
   const school = createSchoolBuilding();
   school.position.set(-100, 0, 0);
   publicServicesArea.add(school);
-  staticCollidersRef.current.push(school);
+//   staticCollidersRef.current.push(school);
   
   const hospital = createHospitalBuilding();
   hospital.position.set(100, 0, 0);
   publicServicesArea.add(hospital);
-  staticCollidersRef.current.push(hospital);
+//   staticCollidersRef.current.push(hospital);
 
   sectorGroup.add(publicServicesArea);
 
