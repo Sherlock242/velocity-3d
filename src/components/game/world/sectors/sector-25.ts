@@ -54,6 +54,23 @@ export function createSector25({
 
   const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 }); // Gray road
 
+  // --- Roads ---
+  // Vertical Road (North-South)
+  const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, plotDepth);
+  const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
+  verticalRoad.rotation.x = -Math.PI / 2;
+  verticalRoad.position.set(cellCenterX, 0.1, cellCenterZ);
+  sectorGroup.add(verticalRoad);
+
+  // Horizontal Road (East-West)
+  const horizontalRoadGeom = new THREE.PlaneGeometry(plotWidth, ROAD_WIDTH);
+  const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
+  horizontalRoad.rotation.x = -Math.PI / 2;
+  horizontalRoad.position.set(cellCenterX, 0.1, cellCenterZ);
+  sectorGroup.add(horizontalRoad);
+
+
+  // --- Walls ---
   // Front Wall (+Z)
   const frontWallSegmentWidth = (plotWidth - gateWidth) / 2;
   const frontWallZ = cellCenterZ + plotDepth / 2 - wallThickness / 2;
@@ -65,13 +82,6 @@ export function createSector25({
   const frontWallRight = createBrokenBrickWallSegment(frontWallSegmentWidth, wallThickness);
   frontWallRight.position.set(cellCenterX + gateWidth / 2 + frontWallSegmentWidth / 2, 0, frontWallZ);
   wallGroup.add(frontWallRight);
-  
-  const frontRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, ROAD_WIDTH);
-  const frontRoad = new THREE.Mesh(frontRoadGeom, roadMaterial);
-  frontRoad.rotation.x = -Math.PI / 2;
-  frontRoad.position.set(cellCenterX, 0.1, cellCenterZ + plotDepth / 2 - ROAD_WIDTH / 2);
-  sectorGroup.add(frontRoad);
-
 
   // Back Wall (-Z)
   const backWallZ = cellCenterZ - plotDepth / 2 + wallThickness / 2;
@@ -82,12 +92,6 @@ export function createSector25({
   const backWallRight = createBrokenBrickWallSegment(frontWallSegmentWidth, wallThickness);
   backWallRight.position.set(cellCenterX + gateWidth / 2 + frontWallSegmentWidth / 2, 0, backWallZ);
   wallGroup.add(backWallRight);
-  
-  const backRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, ROAD_WIDTH);
-  const backRoad = new THREE.Mesh(backRoadGeom, roadMaterial);
-  backRoad.rotation.x = -Math.PI / 2;
-  backRoad.position.set(cellCenterX, 0.1, cellCenterZ - plotDepth / 2 + ROAD_WIDTH / 2);
-  sectorGroup.add(backRoad);
 
   // Left Wall (-X)
   const leftWallSegmentHeight = (plotDepth - gateWidth) / 2;
@@ -101,13 +105,6 @@ export function createSector25({
   leftWallBottom.position.set(leftWallX, 0, cellCenterZ - gateWidth / 2 - leftWallSegmentHeight / 2);
   wallGroup.add(leftWallBottom);
 
-  const leftRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, ROAD_WIDTH);
-  const leftRoad = new THREE.Mesh(leftRoadGeom, roadMaterial);
-  leftRoad.rotation.x = -Math.PI / 2;
-  leftRoad.position.set(cellCenterX - plotWidth / 2 + ROAD_WIDTH/2, 0.1, cellCenterZ);
-  sectorGroup.add(leftRoad);
-
-
   // Right Wall (+X)
   const rightWallX = cellCenterX + plotWidth / 2 - wallThickness / 2;
 
@@ -119,16 +116,30 @@ export function createSector25({
   rightWallBottom.position.set(rightWallX, 0, cellCenterZ - gateWidth / 2 - leftWallSegmentHeight / 2);
   wallGroup.add(rightWallBottom);
 
-  const rightRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, ROAD_WIDTH);
-  const rightRoad = new THREE.Mesh(rightRoadGeom, roadMaterial);
-  rightRoad.rotation.x = -Math.PI / 2;
-  rightRoad.position.set(cellCenterX + plotWidth / 2 - ROAD_WIDTH / 2, 0.1, cellCenterZ);
-  sectorGroup.add(rightRoad);
-
-
   sectorGroup.add(wallGroup);
   staticCollidersRef.current.push(wallGroup);
 
+  // --- Statue ---
+  const statueGroup = new THREE.Group();
+  statueGroup.position.set(cellCenterX, 0, cellCenterZ);
+
+  // Pedestal
+  const pedestalHeight = 5;
+  const pedestalGeom = new THREE.CylinderGeometry(15, 18, pedestalHeight, 16);
+  const pedestalMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
+  const pedestal = new THREE.Mesh(pedestalGeom, pedestalMaterial);
+  pedestal.position.y = pedestalHeight / 2;
+  statueGroup.add(pedestal);
+
+  // Statue Object
+  const statueGeom = new THREE.SphereGeometry(10, 32, 16);
+  const statueMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.3 });
+  const statue = new THREE.Mesh(statueGeom, statueMaterial);
+  statue.position.y = pedestalHeight + 10;
+  statueGroup.add(statue);
+  
+  sectorGroup.add(statueGroup);
+  staticCollidersRef.current.push(statueGroup);
 
   return sectorGroup;
 }
