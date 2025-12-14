@@ -139,7 +139,7 @@ export function createWardencliffHouse() {
         : new THREE.MeshStandardMaterial({ color: '#8B4513', roughness: 0.9 }); // Fallback color
 
     const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-    const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
+    const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321, roughness: 0.9 });
     const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
 
     const buildingWidth = 300;
@@ -453,5 +453,6 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
 
 
