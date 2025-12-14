@@ -1,6 +1,101 @@
 
 import * as THREE from 'three';
 
+function createWardencliffTower() {
+    const towerGroup = new THREE.Group();
+    const metalMaterial = new THREE.MeshStandardMaterial({
+        color: 0x666666,
+        metalness: 0.8,
+        roughness: 0.5,
+    });
+    const wireframeMaterial = new THREE.MeshBasicMaterial({
+        color: 0x222222,
+        wireframe: true,
+    });
+
+
+    const towerHeight = 180;
+    const baseRadius = 40;
+    const topRadius = 15;
+    const numLegs = 8;
+    const numLevels = 8;
+
+    const mainLegs: THREE.Mesh[] = [];
+
+    // Create main tapered legs
+    for (let i = 0; i < numLevels; i++) {
+        const levelY = (i / numLevels) * towerHeight;
+        const nextLevelY = ((i + 1) / numLevels) * towerHeight;
+        const levelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, i / numLevels);
+        const nextLevelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, (i + 1) / numLevels);
+        const segmentHeight = nextLevelY - levelY;
+
+        for (let j = 0; j < numLegs; j++) {
+            const angle = (j / numLegs) * Math.PI * 2;
+            const nextAngle = ((j + 1) / numLegs) * Math.PI * 2;
+
+            // Leg Segment
+            const startPos = new THREE.Vector3(Math.cos(angle) * levelRadius, levelY, Math.sin(angle) * levelRadius);
+            const endPos = new THREE.Vector3(Math.cos(angle) * nextLevelRadius, nextLevelY, Math.sin(angle) * nextLevelRadius);
+            
+            const legGeom = new THREE.CylinderGeometry(1.5, 1.2, segmentHeight, 6);
+            const leg = new THREE.Mesh(legGeom, metalMaterial);
+            leg.position.lerpVectors(startPos, endPos, 0.5);
+            leg.lookAt(endPos);
+            leg.rotateX(Math.PI / 2);
+            towerGroup.add(leg);
+
+            // Horizontal Braces
+            const hBraceStart = endPos;
+            const hBraceEnd = new THREE.Vector3(Math.cos(nextAngle) * nextLevelRadius, nextLevelY, Math.sin(nextAngle) * nextLevelRadius);
+            const hBraceDist = hBraceStart.distanceTo(hBraceEnd);
+            const hBraceGeom = new THREE.BoxGeometry(hBraceDist, 1, 1);
+            const hBrace = new THREE.Mesh(hBraceGeom, metalMaterial);
+            hBrace.position.lerpVectors(hBraceStart, hBraceEnd, 0.5);
+            hBrace.lookAt(hBraceEnd);
+            towerGroup.add(hBrace);
+
+
+            // Diagonal Braces
+            const dBraceStart = startPos;
+            const dBraceEnd = new THREE.Vector3(Math.cos(nextAngle) * nextLevelRadius, nextLevelY, Math.sin(nextAngle) * nextLevelRadius);
+            const dBraceDist = dBraceStart.distanceTo(dBraceEnd);
+            const dBraceGeom = new THREE.BoxGeometry(dBraceDist, 0.8, 0.8);
+            const dBrace = new THREE.Mesh(dBraceGeom, metalMaterial);
+            dBrace.position.lerpVectors(dBraceStart, dBraceEnd, 0.5);
+            dBrace.lookAt(dBraceEnd);
+            towerGroup.add(dBrace);
+            
+            const dBrace2Start = new THREE.Vector3(Math.cos(nextAngle) * levelRadius, levelY, Math.sin(nextAngle) * levelRadius);
+            const dBrace2End = endPos;
+            const dBrace2Dist = dBrace2Start.distanceTo(dBrace2End);
+            const dBrace2Geom = new THREE.BoxGeometry(dBrace2Dist, 0.8, 0.8);
+            const dBrace2 = new THREE.Mesh(dBrace2Geom, metalMaterial);
+            dBrace2.position.lerpVectors(dBrace2Start, dBrace2End, 0.5);
+            dBrace2.lookAt(dBrace2End);
+            towerGroup.add(dBrace2);
+        }
+    }
+    
+    // Top platform
+    const platformRadius = 30;
+    const platformGeom = new THREE.CylinderGeometry(platformRadius, platformRadius, 4, 32);
+    const platform = new THREE.Mesh(platformGeom, metalMaterial);
+    platform.position.y = towerHeight + 2;
+    towerGroup.add(platform);
+
+    // Dome
+    const domeRadius = 28;
+    const domeGeom = new THREE.SphereGeometry(domeRadius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+    const domeWireframe = new THREE.Mesh(domeGeom, wireframeMaterial);
+    domeWireframe.position.y = towerHeight + 4;
+    towerGroup.add(domeWireframe);
+
+
+    return towerGroup;
+}
+
+
 export function createWardencliffHouse() {
     const house = new THREE.Group();
 
@@ -43,7 +138,7 @@ export function createWardencliffHouse() {
     // --- Roof ---
     const mainRoofGeom = new THREE.BoxGeometry(buildingWidth, 4, buildingDepth);
     const mainRoof = new THREE.Mesh(mainRoofGeom, roofMaterial);
-    mainRoof.position.y = buildingHeight + 3;
+    mainRoof.position.y = buildingHeight + 3 + 2;
     house.add(mainRoof);
     
     const centralRoofWidth = 80;
@@ -134,6 +229,11 @@ export function createWardencliffHouse() {
     const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
     chimney.position.set(0, buildingHeight + 3 + centralRoofHeight + chimneyHeight/2, -buildingDepth / 4);
     house.add(chimney);
+
+    // Add the tower
+    const tower = createWardencliffTower();
+    tower.position.y = buildingHeight + 3; // Position it on the roof
+    house.add(tower);
 
     return house;
 }
