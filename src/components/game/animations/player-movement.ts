@@ -103,7 +103,7 @@ export function updatePlayerMovement(gameState: GameState, delta: number, scene:
 
     } else if (controlModeRef.current === 'person') {
         const personTurnSpeed = 3;
-        const maxPersonSpeed = 13.89; // 50 km/h in m/s
+        const maxPersonSpeed = 19.44; // 70 km/h in m/s
 
         const forward = new THREE.Vector3();
         playerRef.current.getWorldDirection(forward);
