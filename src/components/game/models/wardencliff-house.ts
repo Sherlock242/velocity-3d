@@ -290,7 +290,7 @@ export function createWardencliffHouse() {
     });
 
     // --- Place new windows on the main facade ---
-    const facadeWindowPositions = [-120, -80, 80, 120];
+    const facadeWindowPositions = [-120, -80, -40, 40, 80, 120];
     facadeWindowPositions.forEach(xPos => {
         const window = createArchedWindow();
         window.position.set(xPos, 18, buildingDepth / 2 + 1);
@@ -453,4 +453,5 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
 
