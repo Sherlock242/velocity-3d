@@ -194,7 +194,6 @@ export function createWardencliffHouse() {
     
     // --- Tower ---
     const tower = createWardencliffTower();
-    // Place it on top of the dormer, just behind the chimney
     tower.position.set(0, dormerRoofY, dormerZ);
     house.add(tower);
 
