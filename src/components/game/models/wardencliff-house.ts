@@ -20,7 +20,7 @@ export function createWardencliffHouse() {
         const windowGroup = new THREE.Group();
         windowGroup.position.copy(position);
 
-        // Main Arch
+        // Main Arch Frame
         const archShape = new THREE.Shape();
         const archRadius = width / 2;
         archShape.moveTo(-archRadius, 0);
