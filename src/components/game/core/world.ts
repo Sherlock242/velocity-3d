@@ -13,17 +13,17 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to Sector 24 main road
+    // Set starting position to the center of Sector 23
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    const sectorIndex = 23; // Sector 24
+    const sectorIndex = 22; // Sector 23 is index 22
     const i = sectorIndex % GRID_SIZE;
     const j = Math.floor(sectorIndex / GRID_SIZE);
     
     const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-    const roadZ = j * CELL_SIZE - halfTotalWidth - (ROAD_WIDTH / 2) - 20;
+    const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
 
     transformer.position.x = cellCenterX;
-    transformer.position.z = roadZ;
+    transformer.position.z = cellCenterZ;
     transformer.rotation.y = 0; 
     
     scene.add(transformer);
