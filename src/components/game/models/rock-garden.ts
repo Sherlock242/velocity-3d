@@ -31,18 +31,18 @@ export function createRockGarden() {
 
     // Main back wall
     const backWall = createRockWall(300, 100, 20);
-    backWall.position.set(0, 50, -150);
+    backWall.position.set(0, 0, -150);
     garden.add(backWall);
 
     // Side wall
     const sideWall = createRockWall(200, 80, 20);
-    sideWall.position.set(150, 40, -50);
+    sideWall.position.set(150, 0, -50);
     sideWall.rotation.y = -Math.PI / 2;
     garden.add(sideWall);
 
     // --- Pavilion ---
     const pavilion = new THREE.Group();
-    pavilion.position.set(0, 80, -140);
+    pavilion.position.set(0, 30, -140);
     const pavillionFloor = new THREE.Mesh(new THREE.BoxGeometry(200, 5, 50), concreteMaterial);
     pavilion.add(pavillionFloor);
 
