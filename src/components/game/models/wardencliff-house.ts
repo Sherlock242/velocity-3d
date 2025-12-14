@@ -12,10 +12,10 @@ function createBrickTexture() {
         return null;
     }
 
-    const brickColors = ['#6F4E37', '#654321']; // Darker Brown, Dark Brown
+    const brickColors = ['#8a3324'];
     const mortarColor = '#cccccc'; // Light grey
-    const brickHeight = 32;
-    const brickWidth = 64;
+    const brickHeight = 64;
+    const brickWidth = 128;
     const mortarThickness = 4;
 
     context.fillStyle = mortarColor;
@@ -41,7 +41,7 @@ function createBrickTexture() {
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(16, 8); // Repeat texture for smaller bricks
+    texture.repeat.set(8, 4); // Repeat texture for smaller bricks
     return texture;
 }
 
@@ -90,7 +90,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
+    archShape.absarc(0, 0, archRadius, 0, Math.PI, false);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -136,7 +136,7 @@ export function createWardencliffHouse() {
     const brickTexture = createBrickTexture();
     const brickMaterial = brickTexture 
         ? new THREE.MeshStandardMaterial({ map: brickTexture, roughness: 0.9 })
-        : new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.9 }); // Fallback color
+        : new THREE.MeshStandardMaterial({ color: '#8B4513', roughness: 0.9 }); // Fallback color
 
     const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
