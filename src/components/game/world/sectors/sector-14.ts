@@ -58,25 +58,25 @@ export function createSector14({
   // Top Road
   const topRoad = new THREE.Mesh(horizontalRoadGeom, innerRoadMaterial);
   topRoad.rotation.x = -Math.PI / 2;
-  topRoad.position.set(cellCenterX, 0.1, cellCenterZ + ringRoadOffset);
+  topRoad.position.set(cellCenterX, 0.11, cellCenterZ + ringRoadOffset);
   innerRoadGroup.add(topRoad);
 
   // Bottom Road
   const bottomRoad = new THREE.Mesh(horizontalRoadGeom, innerRoadMaterial);
   bottomRoad.rotation.x = -Math.PI / 2;
-  bottomRoad.position.set(cellCenterX, 0.1, cellCenterZ - ringRoadOffset);
+  bottomRoad.position.set(cellCenterX, 0.11, cellCenterZ - ringRoadOffset);
   innerRoadGroup.add(bottomRoad);
 
   // Left Road
   const leftRoad = new THREE.Mesh(verticalRoadGeom, innerRoadMaterial);
   leftRoad.rotation.x = -Math.PI / 2;
-  leftRoad.position.set(cellCenterX - ringRoadOffset, 0.1, cellCenterZ);
+  leftRoad.position.set(cellCenterX - ringRoadOffset, 0.11, cellCenterZ);
   innerRoadGroup.add(leftRoad);
 
   // Right Road
   const rightRoad = new THREE.Mesh(verticalRoadGeom, innerRoadMaterial);
   rightRoad.rotation.x = -Math.PI / 2;
-  rightRoad.position.set(cellCenterX + ringRoadOffset, 0.1, cellCenterZ);
+  rightRoad.position.set(cellCenterX + ringRoadOffset, 0.11, cellCenterZ);
   innerRoadGroup.add(rightRoad);
   
   // Road Corners
@@ -90,7 +90,7 @@ export function createSector14({
   cornerPositions.forEach(pos => {
       const corner = new THREE.Mesh(cornerGeom, innerRoadMaterial);
       corner.rotation.x = -Math.PI / 2;
-      corner.position.set(pos.x, 0.1, pos.z);
+      corner.position.set(pos.x, 0.11, pos.z);
       innerRoadGroup.add(corner);
   });
 
@@ -227,7 +227,7 @@ export function createSector14({
       const connRoad = new THREE.Mesh(connRoadGeom, innerRoadMaterial);
       connRoad.rotation.x = -Math.PI / 2;
       connRoad.rotation.z = pos.rot;
-      connRoad.position.set(pos.x, 0.1, pos.z);
+      connRoad.position.set(pos.x, 0.13, pos.z);
       sectorGroup.add(connRoad);
   });
 
