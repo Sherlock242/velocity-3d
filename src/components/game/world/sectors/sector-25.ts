@@ -121,15 +121,6 @@ export function createSector25({
     return segment;
   }
   
-  // Add a gray ground plane for the whole sector to cover the default green grass
-  const sectorGroundGeom = new THREE.PlaneGeometry(CELL_SIZE, CELL_SIZE);
-  const sectorGroundMat = new THREE.MeshStandardMaterial({ color: 0x404040 }); // Dark gray
-  const sectorGround = new THREE.Mesh(sectorGroundGeom, sectorGroundMat);
-  sectorGround.rotation.x = -Math.PI / 2;
-  sectorGround.position.set(cellCenterX, 0.1, cellCenterZ); // Slightly above default ground
-  sectorGround.receiveShadow = true;
-  sectorGroup.add(sectorGround);
-
 
   // --- Roads ---
   // Vertical Road (North-South)
