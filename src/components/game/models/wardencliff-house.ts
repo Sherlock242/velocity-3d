@@ -56,6 +56,30 @@ function createWardencliffTower() {
             });
         }
     }
+
+    // --- Tower Top Dome ---
+    const domeRadius = 30;
+    const platformRadius = domeRadius * 0.9;
+    const platformHeight = 4;
+
+    // Supporting platform
+    const platformGeom = new THREE.CylinderGeometry(platformRadius, platformRadius, platformHeight, 32);
+    const platform = new THREE.Mesh(platformGeom, metalMaterial);
+    platform.position.y = towerHeight;
+    towerGroup.add(platform);
+
+    // Hemispherical dome
+    const domeGeom = new THREE.SphereGeometry(domeRadius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+    const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xcccccc, wireframe: true });
+    const dome = new THREE.Mesh(domeGeom, wireframeMaterial);
+    dome.position.y = towerHeight + platformHeight / 2;
+    towerGroup.add(dome);
+
+    // Small sphere on top
+    const topSphereGeom = new THREE.SphereGeometry(2, 16, 8);
+    const topSphere = new THREE.Mesh(topSphereGeom, metalMaterial);
+    topSphere.position.y = towerHeight + platformHeight / 2 + domeRadius;
+    towerGroup.add(topSphere);
     
     return towerGroup;
 }
