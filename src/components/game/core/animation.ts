@@ -32,7 +32,7 @@ export function createAnimationLoop(
         updateSceneElements(gameState, delta, now, scene);
 
         if (playerRef.current) {
-            updatePlayerMovement(gameState, delta, scene, now);
+            updatePlayerMovement(gameState, delta, scene, camera, now);
             applyPhysicsAndBoundaries(gameState, delta);
             handleCollisions(gameState, delta);
             updateCameraPosition(gameState, camera, topDownSector);
