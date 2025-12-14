@@ -13,9 +13,9 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to Sector 6 main road
+    // Set starting position to Sector 24 main road
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    const sectorIndex = 5; // Sector 6
+    const sectorIndex = 23; // Sector 24
     const i = sectorIndex % GRID_SIZE;
     const j = Math.floor(sectorIndex / GRID_SIZE);
     
