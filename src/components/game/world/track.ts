@@ -15,6 +15,7 @@ import { createSector13 } from './sectors/sector-13';
 import { createSector14 } from './sectors/sector-14';
 import { createSector15 } from './sectors/sector-15';
 import { createSector20 } from './sectors/sector-20';
+import { createSector25 } from './sectors/sector-25';
 import { createGenericSector } from './sectors/generic-sector';
 import type { GameState } from '../core/state';
 
@@ -138,6 +139,9 @@ export function createGridAndScenery(
           break;
         case 20:
           sectorGroup = createSector20({ cellCenterX, cellCenterZ, staticCollidersRef });
+          break;
+        case 25:
+          sectorGroup = createSector25({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         default:
           sectorGroup = createGenericSector({
