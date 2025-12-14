@@ -89,42 +89,59 @@ export function createWardencliffTower() {
   const topRadius = 25;
 
   const numLegs = 8;
-  const legGeom = new THREE.CylinderGeometry(2, 1, towerHeight, 8);
+  const legPositions: THREE.Vector3[] = [];
 
   for (let i = 0; i < numLegs; i++) {
-    const angle = (i / numLegs) * Math.PI * 2;
-    const leg = new THREE.Mesh(legGeom, metalMaterial);
-    leg.position.set(
-      Math.cos(angle) * bottomRadius,
-      towerHeight / 2,
-      Math.sin(angle) * bottomRadius
-    );
-    leg.lookAt(0, towerHeight / 2, 0);
-    leg.rotation.x += Math.PI / 2; // Orient cylinder vertically
-    tower.add(leg);
+      const angle = (i / numLegs) * Math.PI * 2;
+      const legStart = new THREE.Vector3(Math.cos(angle) * bottomRadius, 0, Math.sin(angle) * bottomRadius);
+      const legEnd = new THREE.Vector3(Math.cos(angle) * topRadius, towerHeight, Math.sin(angle) * topRadius);
+      legPositions.push(legStart, legEnd);
+
+      const legLine = new THREE.Line3(legStart, legEnd);
+      const legLength = legLine.distance();
+      const legGeom = new THREE.CylinderGeometry(2, 1, legLength, 8);
+      const leg = new THREE.Mesh(legGeom, metalMaterial);
+      
+      leg.position.copy(legLine.getCenter(new THREE.Vector3()));
+      leg.lookAt(legEnd);
+      leg.rotation.x += Math.PI / 2;
+      tower.add(leg);
   }
 
-  // Lattice work (simplified)
+  // Lattice work
   const numRings = 10;
   for (let i = 0; i < numRings; i++) {
-    const ringY = (i / numRings) * towerHeight;
-    const ringRadius = THREE.MathUtils.lerp(bottomRadius, topRadius, i / numRings);
-    const ringGeom = new THREE.TorusGeometry(ringRadius, 1, 8, 32);
-    const ring = new THREE.Mesh(ringGeom, metalMaterial);
-    ring.position.y = ringY;
-    ring.rotation.x = Math.PI / 2;
-    tower.add(ring);
+      const ringY = (i / numRings) * towerHeight;
+      const ringRadius = THREE.MathUtils.lerp(bottomRadius, topRadius, i / numRings);
+      const ringGeom = new THREE.TorusGeometry(ringRadius, 1, 8, 32);
+      const ring = new THREE.Mesh(ringGeom, metalMaterial);
+      ring.position.y = ringY;
+      ring.rotation.x = Math.PI / 2;
+      tower.add(ring);
 
-    // Cross-braces
-    const braceGeom = new THREE.CylinderGeometry(1, 1, ringRadius * 1.5, 8);
-    for (let j = 0; j < numLegs; j++) {
-        const angle = (j / numLegs) * Math.PI * 2 + (i % 2 === 0 ? 0 : Math.PI / numLegs);
-        const brace = new THREE.Mesh(braceGeom, metalMaterial);
-        brace.position.y = ringY;
-        brace.rotation.y = angle;
-        brace.rotation.z = (Math.random() - 0.5) * Math.PI;
-        tower.add(brace);
-    }
+      // Cross-braces
+      for (let j = 0; j < numLegs; j++) {
+          const angle1 = (j / numLegs) * Math.PI * 2;
+          const angle2 = ((j + 1) / numLegs) * Math.PI * 2;
+          
+          const nextRingY = ((i + 1) / numRings) * towerHeight;
+          const nextRingRadius = THREE.MathUtils.lerp(bottomRadius, topRadius, (i + 1) / numRings);
+
+          if (i < numRings -1) {
+            const p1 = new THREE.Vector3(Math.cos(angle1) * ringRadius, ringY, Math.sin(angle1) * ringRadius);
+            const p2 = new THREE.Vector3(Math.cos(angle2) * nextRingRadius, nextRingY, Math.sin(angle2) * nextRingRadius);
+
+            const braceLine = new THREE.Line3(p1, p2);
+            const braceLength = braceLine.distance();
+            const braceGeom = new THREE.BoxGeometry(2, braceLength, 2);
+            const brace = new THREE.Mesh(braceGeom, metalMaterial);
+            
+            brace.position.copy(braceLine.getCenter(new THREE.Vector3()));
+            brace.lookAt(p2);
+            brace.rotation.x += Math.PI / 2;
+            tower.add(brace);
+          }
+      }
   }
 
 
