@@ -10,7 +10,7 @@ export function updatePersonMovement(gameState: GameState, delta: number, camera
 
     if (!playerRef.current) return;
 
-    const personTurnSpeed = 7;
+    const personTurnSpeed = 2.5;
     const maxPersonSpeed = 19.44; // 70 km/h in m/s
 
     const forward = new THREE.Vector3();
@@ -20,7 +20,7 @@ export function updatePersonMovement(gameState: GameState, delta: number, camera
 
     if (inputRef.current.forward) {
         targetVelocity = forward.clone().multiplyScalar(maxPersonSpeed);
-    } else if (inputRef.current.backward) {
+    } else if (input.current.backward) {
         targetVelocity = forward.clone().multiplyScalar(-maxPersonSpeed * 0.5);
     } else {
         targetVelocity.set(0, 0, 0);
