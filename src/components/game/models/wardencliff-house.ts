@@ -142,7 +142,7 @@ export function createWardencliffHouse() {
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
     const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
 
-    const buildingWidth = 200;
+    const buildingWidth = 300;
     const buildingHeight = 35;
     const buildingDepth = 50;
 
@@ -290,7 +290,7 @@ export function createWardencliffHouse() {
     });
 
     // --- Place new windows on the main facade ---
-    const facadeWindowPositions = [-85, -55, 55, 85];
+    const facadeWindowPositions = [-120, -80, 80, 120];
     facadeWindowPositions.forEach(xPos => {
         const window = createArchedWindow();
         window.position.set(xPos, 18, buildingDepth / 2 + 1);
@@ -302,10 +302,10 @@ export function createWardencliffHouse() {
     const ventGeom = new THREE.BoxGeometry(8, 4, 10);
     const ventMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
     const vent1 = new THREE.Mesh(ventGeom, ventMaterial);
-    vent1.position.set(60, dormerY - 2, 0);
+    vent1.position.set(100, dormerY - 2, 0);
     house.add(vent1);
     const vent2 = new THREE.Mesh(ventGeom, ventMaterial);
-    vent2.position.set(-60, dormerY - 2, 0);
+    vent2.position.set(-100, dormerY - 2, 0);
     house.add(vent2);
     
     // --- Tower ---
@@ -453,3 +453,4 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
