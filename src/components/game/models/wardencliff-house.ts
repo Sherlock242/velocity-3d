@@ -128,50 +128,11 @@ export function createWardencliffHouse() {
     const brickMaterial = new THREE.MeshStandardMaterial({ color: 0x9a3e3e, roughness: 0.9 });
     const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
-    const windowFrameMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
     const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
 
     const buildingWidth = 200;
     const buildingHeight = 35;
     const buildingDepth = 50;
-
-    // Helper to create an arched window
-    function createArchedWindow(width: number, height: number, depth: number) {
-        const windowGroup = new THREE.Group();
-        const frameWidth = 0.5;
-        const windowPaneMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.2, roughness: 0.1 });
-
-        // Main rectangular part of the window
-        const mainHeight = height * 0.7;
-        const mainFrame = new THREE.Mesh(new THREE.BoxGeometry(width, mainHeight, depth), windowFrameMaterial);
-        windowGroup.add(mainFrame);
-
-        // Arched top part
-        const archShape = new THREE.Shape();
-        archShape.moveTo(-width/2, 0);
-        archShape.absarc(0, 0, width/2, Math.PI, 0, false);
-        const archGeom = new THREE.ExtrudeGeometry(archShape, { depth: depth, bevelEnabled: false });
-        const archFrame = new THREE.Mesh(archGeom, windowFrameMaterial);
-        archFrame.position.y = mainHeight / 2;
-        windowGroup.add(archFrame);
-
-        // Glass Pane (slightly smaller and inset)
-        const paneWidth = width - frameWidth * 2;
-        const paneMainHeight = mainHeight - frameWidth * 2;
-        const mainPane = new THREE.Mesh(new THREE.BoxGeometry(paneWidth, paneMainHeight, depth * 0.5), windowPaneMaterial);
-        mainPane.position.y = -frameWidth;
-        windowGroup.add(mainPane);
-        
-        const archPaneShape = new THREE.Shape();
-        archPaneShape.moveTo(-paneWidth/2, 0);
-        archPaneShape.absarc(0, 0, paneWidth/2, Math.PI, 0, false);
-        const archPaneGeom = new THREE.ExtrudeGeometry(archPaneShape, { depth: depth * 0.5, bevelEnabled: false });
-        const archPane = new THREE.Mesh(archPaneGeom, windowPaneMaterial);
-        archPane.position.y = paneMainHeight / 2;
-        windowGroup.add(archPane);
-
-        return windowGroup;
-    }
 
     // --- Main Building ---
     const baseGeom = new THREE.BoxGeometry(buildingWidth, 2, buildingDepth + 4);
@@ -183,49 +144,36 @@ export function createWardencliffHouse() {
     const mainWall = new THREE.Mesh(mainWallGeom, brickMaterial);
     mainWall.position.y = 2 + buildingHeight / 2;
     house.add(mainWall);
-
-    // --- Windows ---
-    const windowWidth = 12;
-    const windowHeight = 20;
-    const windowY = 2 + windowHeight / 2 + 2;
-    const windowZ = buildingDepth / 2;
     
-    // 4 windows on each side of the entrance
-    for(let i = 0; i < 4; i++) {
-        const rightWindow = createArchedWindow(windowWidth, windowHeight, 2);
-        rightWindow.position.set(25 + i * (windowWidth + 8), windowY, windowZ);
+    // --- Windows ---
+    const windowMaterial = new THREE.MeshStandardMaterial({color: 0x111111});
+    const windowWidth = 12;
+    const windowHeight = 10;
+    const windowY = 2 + buildingHeight * 0.4;
+    const windowZ = buildingDepth / 2 + 0.1;
+    
+    for(let i = 0; i < 5; i++) {
+        const rightWindow = new THREE.Mesh(new THREE.BoxGeometry(windowWidth, windowHeight, 1), windowMaterial);
+        rightWindow.position.set(25 + i * (windowWidth + 12), windowY, windowZ);
         house.add(rightWindow);
 
-        const leftWindow = createArchedWindow(windowWidth, windowHeight, 2);
-        leftWindow.position.set(-25 - i * (windowWidth + 8), windowY, windowZ);
+        const leftWindow = new THREE.Mesh(new THREE.BoxGeometry(windowWidth, windowHeight, 1), windowMaterial);
+        leftWindow.position.set(-25 - i * (windowWidth + 12), windowY, windowZ);
         house.add(leftWindow);
     }
     
-    // --- Entrance Pavilion ---
-    const pavilionWidth = 20;
-    const pavilionHeight = buildingHeight;
-    const pavilionDepth = 8;
-    
-    const pavilionGeom = new THREE.BoxGeometry(pavilionWidth, pavilionHeight, pavilionDepth);
-    const pavilion = new THREE.Mesh(pavilionGeom, brickMaterial);
-    pavilion.position.set(0, 2 + pavilionHeight/2, windowZ + pavilionDepth / 2);
-    house.add(pavilion);
-
-    // Entrance Doors
+    // --- Entrance Doors ---
     const doorHeight = 18;
     const doorWidth = 7;
+    const doorY = 2 + doorHeight / 2;
+    const doorZ = buildingDepth/2 + 0.1;
     const leftDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
-    leftDoor.position.set(-doorWidth / 2 - 0.5, 2 + doorHeight / 2, windowZ + pavilionDepth - 0.5);
+    leftDoor.position.set(-doorWidth / 2 - 0.5, doorY, doorZ);
     house.add(leftDoor);
 
     const rightDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
-    rightDoor.position.set(doorWidth / 2 + 0.5, 2 + doorHeight / 2, windowZ + pavilionDepth - 0.5);
+    rightDoor.position.set(doorWidth / 2 + 0.5, doorY, doorZ);
     house.add(rightDoor);
-    
-    // Fanlight window above door
-    const fanlight = createArchedWindow(doorWidth * 2, 8, 2);
-    fanlight.position.set(0, 2 + doorHeight + 4, windowZ + pavilionDepth - 1);
-    house.add(fanlight);
 
     // --- A-Frame Roof ---
     const roofY = 2 + buildingHeight;
@@ -250,12 +198,12 @@ export function createWardencliffHouse() {
     gableShape.moveTo(-buildingDepth / 2, 0);
     gableShape.lineTo(buildingDepth / 2, 0);
     gableShape.lineTo(0, roofRise);
-    gableShape.lineTo(-buildingDepth / 2, 0);
+    gableShape.closePath();
     
     const gableGeom = new THREE.ExtrudeGeometry(gableShape, { depth: 4, bevelEnabled: false });
     
     const frontGable = new THREE.Mesh(gableGeom, brickMaterial);
-    frontGable.position.set(buildingWidth/2 -2, roofY, 0);
+    frontGable.position.set(buildingWidth/2 - 2, roofY, 0);
     frontGable.rotation.y = Math.PI / 2;
     house.add(frontGable);
 
@@ -263,40 +211,6 @@ export function createWardencliffHouse() {
     backGable.position.set(-buildingWidth/2 + 2, roofY, 0);
     backGable.rotation.y = -Math.PI / 2;
     house.add(backGable);
-
-
-    // Pavilion Roof
-    const pavRoofRise = 10;
-    const pavRoofAngle = Math.atan(pavRoofRise / (pavilionDepth/2));
-    const pavRoofPanelLength = Math.sqrt(Math.pow(pavRoofRise, 2) + Math.pow(pavilionDepth / 2, 2));
-    const pavRoofPanelGeom = new THREE.BoxGeometry(pavilionWidth, 2, pavRoofPanelLength);
-    
-    const pavLeftRoof = new THREE.Mesh(pavRoofPanelGeom, roofMaterial);
-    pavLeftRoof.position.set(0, roofY + pavRoofRise / 2, windowZ + pavilionDepth / 2 - pavilionDepth / 4);
-    pavLeftRoof.rotation.x = pavRoofAngle;
-    house.add(pavLeftRoof);
-    
-    const pavRightRoof = new THREE.Mesh(pavRoofPanelGeom, roofMaterial);
-    pavRightRoof.position.set(0, roofY + pavRoofRise / 2, windowZ + pavilionDepth / 2 + pavilionDepth / 4);
-    pavRightRoof.rotation.x = -pavRoofAngle;
-    house.add(pavRightRoof);
-    
-    const pavGableShape = new THREE.Shape();
-    pavGableShape.moveTo(-pavilionDepth/2, 0);
-    pavGableShape.lineTo(pavilionDepth/2, 0);
-    pavGableShape.lineTo(0, pavRoofRise);
-    pavGableShape.lineTo(-pavilionDepth/2, 0);
-    
-    const pavGableGeom = new THREE.ShapeGeometry(pavGableShape);
-    const pavFrontGable = new THREE.Mesh(pavGableGeom, brickMaterial);
-    pavFrontGable.position.set(pavilionWidth / 2, roofY, windowZ + pavilionDepth/2);
-    pavFrontGable.rotation.y = Math.PI / 2;
-    house.add(pavFrontGable);
-    
-    const pavBackGable = new THREE.Mesh(pavGableGeom, brickMaterial);
-    pavBackGable.position.set(-pavilionWidth / 2, roofY, windowZ + pavilionDepth/2);
-    pavBackGable.rotation.y = -Math.PI/2;
-    house.add(pavBackGable);
     
     // --- Chimney ---
     const chimneyWidth = 12;
