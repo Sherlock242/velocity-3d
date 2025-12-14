@@ -122,7 +122,7 @@ export function createSector25({
   wallGroup.add(rightWallBottom);
 
   sectorGroup.add(wallGroup);
-  staticCollidersRef.current.push(wallGroup);
+  // staticCollidersRef.current.push(wallGroup);
 
   // --- Statue ---
   const statueGroup = new THREE.Group();
@@ -144,7 +144,7 @@ export function createSector25({
   statueGroup.add(statue);
   
   sectorGroup.add(statueGroup);
-  staticCollidersRef.current.push(statueGroup);
+  // staticCollidersRef.current.push(statueGroup);
 
   // --- Quadrant Content ---
   const quadrantSize = (CELL_SIZE - ROAD_WIDTH) / 2;
@@ -154,7 +154,7 @@ export function createSector25({
   const graveyard = createGraveyard();
   graveyard.position.set(cellCenterX - quadrantOffset, 0, cellCenterZ - quadrantOffset);
   sectorGroup.add(graveyard);
-  staticCollidersRef.current.push(graveyard);
+  // staticCollidersRef.current.push(graveyard);
 
   // Quadrant 2: Top-Right (Residential)
   const residentialArea = new THREE.Group();
@@ -167,7 +167,7 @@ export function createSector25({
           house.position.set(x, 0, z);
           house.rotation.y = (Math.random() - 0.5) * Math.PI;
           residentialArea.add(house);
-          staticCollidersRef.current.push(house);
+          // staticCollidersRef.current.push(house);
       }
   }
   sectorGroup.add(residentialArea);
@@ -183,7 +183,7 @@ export function createSector25({
         building.position.set(x, 0, z);
         building.rotation.y = Math.random() * Math.PI * 2;
         industrialArea.add(building);
-        staticCollidersRef.current.push(building);
+        // staticCollidersRef.current.push(building);
     }
   }
   sectorGroup.add(industrialArea);
@@ -195,12 +195,12 @@ export function createSector25({
   const school = createSchoolBuilding();
   school.position.set(-100, 0, 0);
   publicServicesArea.add(school);
-  staticCollidersRef.current.push(school);
+  // staticCollidersRef.current.push(school);
   
   const hospital = createHospitalBuilding();
   hospital.position.set(100, 0, 0);
   publicServicesArea.add(hospital);
-  staticCollidersRef.current.push(hospital);
+  // staticCollidersRef.current.push(hospital);
 
   sectorGroup.add(publicServicesArea);
 
