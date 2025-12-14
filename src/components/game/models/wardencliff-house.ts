@@ -74,11 +74,11 @@ export function createWardencliffHouse() {
     // --- Windows ---
     const windowY = 2 + buildingHeight * 0.4;
     const windowZ = buildingDepth / 2 + 0.1;
-    for (let i = 0; i < 3; i++) {
-        const rightWindow = createArchedWindow(12, 10, new THREE.Vector3(30 + i * 25, windowY, windowZ));
+    for (let i = 0; i < 5; i++) {
+        const rightWindow = createArchedWindow(12, 10, new THREE.Vector3(20 + i * 16, windowY, windowZ));
         house.add(rightWindow);
 
-        const leftWindow = createArchedWindow(12, 10, new THREE.Vector3(-30 - i * 25, windowY, windowZ));
+        const leftWindow = createArchedWindow(12, 10, new THREE.Vector3(-20 - i * 16, windowY, windowZ));
         house.add(leftWindow);
     }
     
@@ -153,26 +153,26 @@ export function createWardencliffHouse() {
     const dormerWidth = 40;
     const dormerHeight = 15;
     const dormerDepth = 20;
-    const dormerZ = 5;
+    const dormerZ = -5; // Centered on the flat top of the roof
 
     const dormerWall = new THREE.Mesh(
         new THREE.BoxGeometry(dormerWidth, dormerHeight, dormerDepth),
         brickMaterial
     );
-    dormerWall.position.set(0, dormerY + dormerHeight / 2, dormerZ);
+    dormerWall.position.set(0, dormerY - roofHeight + dormerHeight / 2, dormerZ);
     house.add(dormerWall);
 
     for (let i = 0; i < 3; i++) {
         const dormerWindow = createSquareWindow(8, 8, new THREE.Vector3(
             -13 + i * 13,
-            dormerY + dormerHeight / 2,
+            dormerY - roofHeight + dormerHeight / 2,
             dormerZ + dormerDepth / 2 + 0.1
         ));
         house.add(dormerWindow);
     }
     
     const dormerRoof = createHippedRoof(dormerWidth + 2, dormerDepth + 2, 10);
-    dormerRoof.position.set(0, dormerY + dormerHeight, dormerZ);
+    dormerRoof.position.set(0, dormerY - roofHeight + dormerHeight, dormerZ);
     house.add(dormerRoof);
 
     // --- Chimney ---
@@ -181,8 +181,10 @@ export function createWardencliffHouse() {
     const chimneyDepth = 10;
     const chimneyGeom = new THREE.BoxGeometry(chimneyWidth, chimneyHeight, chimneyDepth);
     const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
-    // Position it on top of the dormer's roof
-    chimney.position.set(0, dormerY + dormerHeight + 10, dormerZ); 
+    
+    // Position it on top of the dormer's roof ridge
+    const dormerRoofY = dormerY - roofHeight + dormerHeight + 10;
+    chimney.position.set(0, dormerRoofY + chimneyHeight / 2, dormerZ); 
     house.add(chimney);
     
     const chimneyTopGeom = new THREE.BoxGeometry(chimneyWidth + 2, 3, chimneyDepth + 2);
@@ -192,7 +194,8 @@ export function createWardencliffHouse() {
     
     // --- Tower ---
     const tower = createWardencliffTower();
-    tower.position.set(0, dormerY + dormerHeight, dormerZ); // Place it on top of the dormer
+    // Place it on top of the dormer, just behind the chimney
+    tower.position.set(0, dormerRoofY, dormerZ);
     house.add(tower);
 
     house.castShadow = true;
