@@ -92,7 +92,7 @@ export function createSector25({
     segment.add(mainWall);
 
     // Add more vertical cuts
-    const numCuts = Math.floor(width / 50);
+    const numCuts = Math.floor(width / 25);
     for(let i=0; i < numCuts; i++) {
         if (Math.random() > 0.4) continue;
         const cutWidth = 5 + Math.random() * 10;
