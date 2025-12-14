@@ -20,9 +20,7 @@ function createWardencliffTower() {
     const numLegs = 8;
     const numLevels = 8;
 
-    const mainLegs: THREE.Mesh[] = [];
-
-    // Create main tapered legs
+    // Create main tapered legs and diagonal braces
     for (let i = 0; i < numLevels; i++) {
         const levelY = (i / numLevels) * towerHeight;
         const nextLevelY = ((i + 1) / numLevels) * towerHeight;
@@ -45,17 +43,6 @@ function createWardencliffTower() {
             leg.rotateX(Math.PI / 2);
             towerGroup.add(leg);
 
-            // Horizontal Braces
-            const hBraceStart = endPos;
-            const hBraceEnd = new THREE.Vector3(Math.cos(nextAngle) * nextLevelRadius, nextLevelY, Math.sin(nextAngle) * nextLevelRadius);
-            const hBraceDist = hBraceStart.distanceTo(hBraceEnd);
-            const hBraceGeom = new THREE.BoxGeometry(hBraceDist, 1, 1);
-            const hBrace = new THREE.Mesh(hBraceGeom, metalMaterial);
-            hBrace.position.lerpVectors(hBraceStart, hBraceEnd, 0.5);
-            hBrace.lookAt(hBraceEnd);
-            towerGroup.add(hBrace);
-
-
             // Diagonal Braces
             const dBraceStart = startPos;
             const dBraceEnd = new THREE.Vector3(Math.cos(nextAngle) * nextLevelRadius, nextLevelY, Math.sin(nextAngle) * nextLevelRadius);
@@ -75,6 +62,13 @@ function createWardencliffTower() {
             dBrace2.lookAt(dBrace2End);
             towerGroup.add(dBrace2);
         }
+        
+        // Horizontal Ring Brace for the next level
+        const ringGeom = new THREE.TorusGeometry(nextLevelRadius, 1, 8, numLegs * 2);
+        const ring = new THREE.Mesh(ringGeom, metalMaterial);
+        ring.position.y = nextLevelY;
+        ring.rotation.x = Math.PI / 2;
+        towerGroup.add(ring);
     }
     
     // Top platform
