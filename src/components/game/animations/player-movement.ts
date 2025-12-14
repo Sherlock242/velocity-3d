@@ -102,7 +102,7 @@ export function updatePlayerMovement(gameState: GameState, delta: number, scene:
         }
 
     } else if (controlModeRef.current === 'person') {
-        const personTurnSpeed = 3;
+        const personTurnSpeed = 7;
         const maxPersonSpeed = 19.44; // 70 km/h in m/s
 
         const forward = new THREE.Vector3();
@@ -114,9 +114,11 @@ export function updatePlayerMovement(gameState: GameState, delta: number, scene:
             targetVelocity = forward.clone().multiplyScalar(maxPersonSpeed);
         } else if (inputRef.current.backward) {
             targetVelocity = forward.clone().multiplyScalar(-maxPersonSpeed * 0.5);
+        } else {
+            targetVelocity.set(0, 0, 0);
         }
         
-        velocityRef.current.lerp(targetVelocity, 0.1);
+        velocityRef.current.copy(targetVelocity);
 
         if (inputRef.current.left) playerRef.current.rotation.y += personTurnSpeed * delta;
         if (inputRef.current.right) playerRef.current.rotation.y -= personTurnSpeed * delta;
