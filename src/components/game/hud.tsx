@@ -145,7 +145,6 @@ export default function Hud({
           className="w-20 h-28 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex flex-col justify-center items-center text-accent active:bg-accent/20 transition-colors"
         >
           <ChevronUp className="w-10 h-10" />
-          <span className="font-bold text-sm">GAS</span>
         </button>
       </div>
     </div>
