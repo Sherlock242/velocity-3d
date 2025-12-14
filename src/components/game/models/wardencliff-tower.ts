@@ -25,7 +25,7 @@ export function createWardencliffTower() {
   mainBuilding.castShadow = true;
   building.add(mainBuilding);
 
-  const mainRoofGeom = new THREE.CylinderGeometry(buildingDepth / 2, buildingDepth / 2, buildingWidth, 8);
+  const mainRoofGeom = new THREE.CylinderGeometry(buildingDepth / 2, buildingDepth / 2, buildingWidth, 8, 1, false, 0, Math.PI);
   const mainRoof = new THREE.Mesh(mainRoofGeom, roofMaterial);
   mainRoof.scale.y = 0.5;
   mainRoof.rotation.x = Math.PI / 2;
@@ -138,7 +138,7 @@ export function createWardencliffTower() {
             
             brace.position.copy(braceLine.getCenter(new THREE.Vector3()));
             brace.lookAt(p2);
-            brace.rotation.x += Math.PI / 2;
+            brace.rotation.x += Math.PI / 2; // Align the box with the line
             tower.add(brace);
           }
       }
