@@ -26,7 +26,6 @@ function createWardencliffTower() {
         const nextLevelY = ((i + 1) / numLevels) * towerHeight;
         const levelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, i / numLevels);
         const nextLevelRadius = THREE.MathUtils.lerp(baseRadius, topRadius, (i + 1) / numLevels);
-        const segmentHeight = nextLevelY - levelY;
         const legThickness = 1.5;
 
         for (let j = 0; j < numLegs; j++) {
@@ -62,13 +61,6 @@ function createWardencliffTower() {
             towerGroup.add(dBrace2);
         }
         
-        // Horizontal Ring Brace for the next level
-        const ringRadius = THREE.MathUtils.lerp(baseRadius, topRadius, (i + 1) / numLevels) - legThickness;
-        const ringGeom = new THREE.TorusGeometry(ringRadius, 1, 8, numLegs * 2);
-        const ring = new THREE.Mesh(ringGeom, metalMaterial);
-        ring.position.y = nextLevelY;
-        ring.rotation.x = Math.PI / 2;
-        towerGroup.add(ring);
     }
     
     // Top platform
@@ -129,18 +121,23 @@ export function createWardencliffHouse() {
     mainBuilding.castShadow = true;
     house.add(mainBuilding);
 
-    // --- Roof ---
-    const mainRoofGeom = new THREE.BoxGeometry(buildingWidth, 4, buildingDepth);
-    const mainRoof = new THREE.Mesh(mainRoofGeom, roofMaterial);
-    mainRoof.position.y = buildingHeight + 3 + 2;
-    house.add(mainRoof);
-    
-    const centralRoofWidth = 80;
-    const centralRoofHeight = 10;
-    const centralRoofGeom = new THREE.BoxGeometry(centralRoofWidth, centralRoofHeight, buildingDepth * 0.8);
-    const centralRoof = new THREE.Mesh(centralRoofGeom, roofMaterial);
-    centralRoof.position.y = buildingHeight + 3 + centralRoofHeight/2;
-    house.add(centralRoof);
+    // --- A-Frame Roof ---
+    const roofHeight = 20;
+    const roofAngle = Math.atan(roofHeight / (buildingDepth / 2));
+    const roofPanelLength = Math.sqrt(Math.pow(roofHeight, 2) + Math.pow(buildingDepth / 2, 2));
+
+    const roofPanelGeom = new THREE.BoxGeometry(buildingWidth, roofPanelLength, 4);
+
+    const leftRoofPanel = new THREE.Mesh(roofPanelGeom, roofMaterial);
+    leftRoofPanel.position.set(0, buildingHeight + 3 + roofHeight / 2, -buildingDepth / 4);
+    leftRoofPanel.rotation.x = roofAngle;
+    house.add(leftRoofPanel);
+
+    const rightRoofPanel = new THREE.Mesh(roofPanelGeom, roofMaterial);
+    rightRoofPanel.position.set(0, buildingHeight + 3 + roofHeight / 2, buildingDepth / 4);
+    rightRoofPanel.rotation.x = -roofAngle;
+    house.add(rightRoofPanel);
+
 
     // Function to create an arched window
     function createArchedWindow(width: number, height: number, segments: number) {
@@ -198,35 +195,16 @@ export function createWardencliffHouse() {
     door.position.set(0, 5, buildingDepth / 2 + 0.1);
     house.add(door);
 
-    // Roof dormer windows
-    function createDormerWindow() {
-        const dormer = new THREE.Group();
-        const dormerBody = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 6), roofMaterial);
-        dormer.add(dormerBody);
-
-        const dormerWindow = new THREE.Mesh(new THREE.BoxGeometry(5, 5, 0.2), glassMaterial);
-        dormerWindow.position.z = 3.1;
-        dormerBody.add(dormerWindow);
-        return dormer;
-    }
-    const numDormers = 4;
-    for (let i = 0; i < numDormers; i++) {
-        const dormer = createDormerWindow();
-        const xPos = -centralRoofWidth / 2 + 15 + i * 20;
-        dormer.position.set(xPos, buildingHeight + 3 + centralRoofHeight + 4, 0);
-        house.add(dormer);
-    }
-
     // Chimney
     const chimneyHeight = 20;
     const chimneyGeom = new THREE.BoxGeometry(10, chimneyHeight, 8);
     const chimney = new THREE.Mesh(chimneyGeom, brickMaterial);
-    chimney.position.set(0, buildingHeight + 3 + centralRoofHeight + chimneyHeight/2, -buildingDepth / 4);
+    chimney.position.set(0, buildingHeight + 3 + roofHeight + chimneyHeight/2 - 10, -buildingDepth / 4);
     house.add(chimney);
 
     // Add the tower
     const tower = createWardencliffTower();
-    tower.position.y = buildingHeight + 3; // Position it on the roof
+    tower.position.y = buildingHeight + 3 + roofHeight; // Position it on the roof peak
     house.add(tower);
 
     return house;
