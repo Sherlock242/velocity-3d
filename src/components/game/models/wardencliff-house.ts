@@ -12,8 +12,8 @@ function createBrickTexture() {
         return null;
     }
 
-    const brickColor = '#9a3e3e';
-    const mortarColor = '#888888';
+    const brickColor = '#8B4513'; // Brown
+    const mortarColor = '#800000'; // "Meson Red" (Maroon)
     const brickHeight = 32;
     const brickWidth = 64;
     const mortarThickness = 4;
