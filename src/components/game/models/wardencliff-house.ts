@@ -92,7 +92,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -141,7 +141,7 @@ export function createWardencliffHouse() {
         : new THREE.MeshStandardMaterial({ color: '#8B4513', roughness: 0.9 }); // Fallback color
 
     const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-    const woodMaterial = new THREE.MeshLambertMaterial({ color: 0x654321 });
+    const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
     const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
 
     const buildingWidth = 300;
