@@ -264,7 +264,7 @@ export function createGridAndScenery(
 
       const gate = createToriiGate();
       gate.scale.set(0.5, 0.5, 0.5);
-      gate.position.set(gateX, yOffset, gateZ);
+      gate.position.set(gateX, yOffset + roadYPosition, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
   }
@@ -283,7 +283,7 @@ export function createGridAndScenery(
   const pathPositions = pathMesh.geometry.attributes.position;
   for (let i = 0; i < pathPositions.count; i++) {
     const localPos = new THREE.Vector3().fromBufferAttribute(pathPositions, i);
-    const worldPos = pathMesh.localToWorld(localPos);
+    const worldPos = pathMesh.localToWorld(localPos.clone());
     
     let nx = (worldPos.x - domeCenterX) / halfDomeWidth;
     const nz = (worldPos.z - domeCenterZ) / halfDomeDepth;
@@ -295,7 +295,7 @@ export function createGridAndScenery(
     const yOffset = domeHeight * heightXComponent * heightZComponent;
     
     // Set the Z attribute of the vertex in its local space to create height
-    pathPositions.setZ(i, yOffset + 0.5); // a bit of offset to prevent z-fighting
+    pathPositions.setZ(i, yOffset + roadYPosition + 0.5); // a bit of offset to prevent z-fighting
   }
   pathPositions.needsUpdate = true;
   pathMesh.geometry.computeVertexNormals();
