@@ -92,7 +92,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -197,7 +197,7 @@ export function createWardencliffHouse() {
     const transomRadius = (doorWidth * 2) * 0.7;
     const transomShape = new THREE.Shape();
     transomShape.moveTo(-transomRadius, 0);
-    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, true);
+    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshLambertMaterial({color: 0x000000});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
@@ -317,7 +317,7 @@ export function createWardencliffHouse() {
     
     // --- Tower ---
     const tower = createWardencliffTower();
-    tower.position.set(0, 0, -100); 
+    tower.position.set(0, 0, -150); 
     house.add(tower);
     
     // --- Parking Area for Tower ---
@@ -325,7 +325,7 @@ export function createWardencliffHouse() {
     const parkingGeom = new THREE.CylinderGeometry(parkingRadius, parkingRadius, 1, 32);
     const parkingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
     const parkingArea = new THREE.Mesh(parkingGeom, parkingMaterial);
-    parkingArea.position.set(0, 0.5, -100);
+    parkingArea.position.set(0, 0.5, -150);
     house.add(parkingArea);
 
 
@@ -353,7 +353,7 @@ export function createWardencliffHouse() {
 function createWardencliffTower() {
     const towerGroup = new THREE.Group();
     const metalMaterial = new THREE.MeshStandardMaterial({
-        color: 0x333333,
+        color: 0x888888,
         metalness: 0.9,
         roughness: 0.4,
     });
@@ -404,9 +404,9 @@ function createWardencliffTower() {
     }
 
     const domeRadius = 50;
-    const platformRadius = 45; // Platform is smaller than the dome
+    const platformRadius = 40; // Platform is smaller than the dome
     const platformHeight = 4;
-    const platformMaterial = new THREE.MeshStandardMaterial({color: 0xcccccc, metalness: 0.8, roughness: 0.3});
+    const platformMaterial = new THREE.MeshStandardMaterial({color: 0x111111, metalness: 0.8, roughness: 0.3});
 
     const platformGeom = new THREE.CylinderGeometry(platformRadius, platformRadius, platformHeight, 32);
     const platform = new THREE.Mesh(platformGeom, platformMaterial);
@@ -465,5 +465,6 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
 
 
