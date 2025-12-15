@@ -23,6 +23,81 @@ import { createGenericSector } from './sectors/generic-sector';
 import type { GameState } from '../core/state';
 import { createToriiGate } from '../models/torii-gate';
 
+// Function to create the tile texture
+function createTileMaterial() {
+  const textureSize = 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = textureSize;
+  canvas.height = textureSize;
+  const context = canvas.getContext('2d');
+
+  if (!context) return new THREE.MeshStandardMaterial({ color: 0xcccccc });
+
+  // Base color
+  context.fillStyle = '#EAE8E1'; // Light sandy color
+  context.fillRect(0, 0, textureSize, textureSize);
+
+  // Add subtle color variations
+  for (let i = 0; i < 5000; i++) {
+    const x = Math.random() * textureSize;
+    const y = Math.random() * textureSize;
+    const radius = Math.random() * 2;
+    const color = Math.random() > 0.5 ? '#F0EEE6' : '#DCDAD0';
+    context.fillStyle = color;
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fill();
+  }
+  
+  const colorTexture = new THREE.CanvasTexture(canvas);
+  colorTexture.wrapS = THREE.RepeatWrapping;
+  colorTexture.wrapT = THREE.RepeatWrapping;
+  colorTexture.repeat.set(20, 20);
+
+  // Normal map for dimples
+  const normalCanvas = document.createElement('canvas');
+  normalCanvas.width = textureSize;
+  normalCanvas.height = textureSize;
+  const normalContext = normalCanvas.getContext('2d');
+  
+  if (!normalContext) return new THREE.MeshStandardMaterial({ map: colorTexture });
+  
+  normalContext.fillStyle = 'rgb(128, 128, 255)'; // Neutral normal color
+  normalContext.fillRect(0, 0, textureSize, textureSize);
+  
+  for (let i = 0; i < 4000; i++) {
+      const x = Math.random() * textureSize;
+      const y = Math.random() * textureSize;
+      const radius = Math.random() * 3 + 1;
+      
+      const angle = Math.random() * Math.PI * 2;
+      const nx = Math.cos(angle) * 127 + 128;
+      const ny = Math.sin(angle) * 127 + 128;
+
+      const grad = normalContext.createRadialGradient(x, y, 0, x, y, radius);
+      grad.addColorStop(0, `rgb(${nx}, ${ny}, 255)`);
+      grad.addColorStop(1, 'rgb(128, 128, 255)');
+      
+      normalContext.fillStyle = grad;
+      normalContext.beginPath();
+      normalContext.arc(x, y, radius, 0, Math.PI * 2);
+      normalContext.fill();
+  }
+
+  const normalTexture = new THREE.CanvasTexture(normalCanvas);
+  normalTexture.wrapS = THREE.RepeatWrapping;
+  normalTexture.wrapT = THREE.RepeatWrapping;
+  normalTexture.repeat.set(20, 20);
+
+  return new THREE.MeshStandardMaterial({
+    map: colorTexture,
+    normalMap: normalTexture,
+    roughness: 0.8,
+    metalness: 0.1,
+  });
+}
+
+
 export function createGridAndScenery(
   theme: TrackTheme,
   gameState: GameState
@@ -160,6 +235,22 @@ export function createGridAndScenery(
   dome.position.y = roadYPosition + (domeHeight / 2) + 0.01;
   gridGroup.add(dome);
   rampMeshRef.current = dome; // Make it collidable
+
+  // --- Tiled Platform on Dome ---
+  const flatTopWidth = ((peakNormalizedX - -1) * halfDomeWidth) / 2; // Width of the flat area
+  const tilePlaneGeom = new THREE.PlaneGeometry(flatTopWidth, domeDepth);
+  const tileMaterial = createTileMaterial();
+  const tilePlane = new THREE.Mesh(tilePlaneGeom, tileMaterial);
+  tilePlane.rotation.x = -Math.PI/2;
+
+  // Calculate position for the tiled plane
+  const tilePlaneX = domeCenterX - halfDomeWidth + flatTopWidth / 2;
+  const tilePlaneY = roadYPosition + domeHeight + 0.1;
+  const tilePlaneZ = domeCenterZ;
+  
+  tilePlane.position.set(tilePlaneX, tilePlaneY, tilePlaneZ);
+  gridGroup.add(tilePlane);
+
 
   // Add scenery
   for (let i = 0; i < GRID_SIZE; i++) {
@@ -316,7 +407,7 @@ export function createGridAndScenery(
         yOffset = domeHeight * heightXComponent * heightZComponent;
     }
     
-    const height = yOffset + roadYPosition + 0.4; // Increased offset
+    const height = yOffset + roadYPosition + 0.1;
 
     // Add vertices for the left and right side of the road segment
     vertices.push(roadX, height, roadZ - halfRoadWidth); // right vertex
