@@ -295,7 +295,7 @@ export function createGridAndScenery(
     const yOffset = domeHeight * heightXComponent * heightZComponent;
     
     // Set the Z attribute of the vertex in its local space to create height
-    pathPositions.setZ(i, yOffset + 0.3); // a bit of offset to prevent z-fighting
+    pathPositions.setZ(i, yOffset + 0.5); // a bit of offset to prevent z-fighting
   }
   pathPositions.needsUpdate = true;
   pathMesh.geometry.computeVertexNormals();
