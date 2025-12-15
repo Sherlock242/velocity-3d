@@ -248,7 +248,7 @@ export function createGridAndScenery(
   const numGates = Math.floor(tunnelLength / gateSpacing);
 
 
-  for (let i = 0; i < numGates; i++) {
+  for (let i = 15; i < numGates - 15; i++) {
       const tunnelProgress = i / (numGates - 1);
       const gateX = THREE.MathUtils.lerp(startSector25X, endSector22X, tunnelProgress);
       const gateZ = domeCenterZ; // Center them on the dome's depth
@@ -263,7 +263,7 @@ export function createGridAndScenery(
       const yOffset = domeHeight * heightXComponent * heightZComponent;
 
       const gate = createToriiGate();
-      gate.position.set(gateX, yOffset + roadYPosition, gateZ);
+      gate.position.set(gateX, yOffset + 25, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
   }
