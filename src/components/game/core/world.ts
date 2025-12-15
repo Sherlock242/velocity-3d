@@ -13,18 +13,19 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to the center of Sector 16
+    // Set starting position to Sector 20's main road
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    const sectorIndex = 15; // Sector 16 is index 15
-    const i = sectorIndex % GRID_SIZE;
-    const j = Math.floor(sectorIndex / GRID_SIZE);
-    
+    const sectorIndex = 19; // Sector 20 is index 19
+    const i = sectorIndex % GRID_SIZE; // col = 4
+    const j = Math.floor(sectorIndex / GRID_SIZE); // row = 3
+
     const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-    const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+    // Position on the road in front of the sector
+    const roadZ = (j * CELL_SIZE) - halfTotalWidth - (ROAD_WIDTH / 2);
 
     transformer.position.x = cellCenterX;
-    transformer.position.z = cellCenterZ;
-    transformer.rotation.y = -Math.PI / 2;
+    transformer.position.z = roadZ;
+    transformer.rotation.y = Math.PI; // Face towards the dome
     
     scene.add(transformer);
     playerRef.current = transformer;
