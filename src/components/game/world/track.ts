@@ -238,11 +238,10 @@ export function createGridAndScenery(
 
   // --- Tiled Platform on Dome ---
   const flatTopWidth = ((peakNormalizedX - -1) * halfDomeWidth); 
-  const tilePlaneGeom = new THREE.PlaneGeometry(domeDepth, flatTopWidth);
+  const tilePlaneGeom = new THREE.PlaneGeometry(flatTopWidth, domeDepth);
   const tileMaterial = createTileMaterial();
   const tilePlane = new THREE.Mesh(tilePlaneGeom, tileMaterial);
   tilePlane.rotation.x = -Math.PI / 2;
-  tilePlane.rotation.z = Math.PI / 2;
 
   // Calculate position for the tiled plane
   const tilePlaneX = domeCenterX - halfDomeWidth + flatTopWidth / 2;
