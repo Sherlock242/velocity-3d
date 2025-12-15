@@ -224,40 +224,39 @@ export function createWardencliffHouse() {
     function createHippedRoof(width: number, depth: number, height: number) {
         const roofGeometry = new THREE.BufferGeometry();
         
-        const topWidth = Math.max(0, width - 2 * height);
-        const topDepth = Math.max(0, depth - 2 * height);
+        // A hipped roof has a rectangular base and a ridge line at the top.
+        // The length of the ridge is the width of the roof minus twice the run (which is based on height and pitch, here simplified).
+        const ridgeLength = width - depth; // Assuming 45 degree pitch for simplicity
+        const halfW = width / 2;
+        const halfD = depth / 2;
+        const halfRidge = ridgeLength / 2;
 
         const vertices = new Float32Array([
-            // Bottom rectangle vertices
-            -width / 2, 0, -depth / 2,  // 0
-             width / 2, 0, -depth / 2,  // 1
-             width / 2, 0,  depth / 2,  // 2
-            -width / 2, 0,  depth / 2,  // 3
+            // Base vertices (bottom of the roof)
+            -halfW, 0, -halfD,  // 0: back-left
+             halfW, 0, -halfD,  // 1: back-right
+             halfW, 0,  halfD,  // 2: front-right
+            -halfW, 0,  halfD,  // 3: front-left
 
-            // Top rectangle vertices
-            -topWidth / 2, height, -topDepth / 2, // 4
-             topWidth / 2, height, -topDepth / 2, // 5
-             topWidth / 2, height,  topDepth / 2, // 6
-            -topWidth / 2, height,  topDepth / 2  // 7
+            // Ridge vertices (top of the roof)
+            -halfRidge, height, 0,  // 4: left-top
+             halfRidge, height, 0   // 5: right-top
         ]);
 
         const indices = [
-            // Side faces (trapezoids)
-            0, 1, 5,  0, 5, 4, // Back face
-            1, 2, 6,  1, 6, 5, // Right face
-            2, 3, 7,  2, 7, 6, // Front face
-            3, 0, 4,  3, 4, 7, // Left face
-
-            // Top face (rectangle)
-            4, 5, 6,  4, 6, 7,
-            
-            // Bottom face
-            3, 2, 1,  3, 1, 0,
-        ]);
+            // Back face (trapezoid)
+            0, 1, 5,   0, 5, 4,
+            // Front face (trapezoid)
+            3, 5, 2,   3, 4, 5,
+            // Left end (triangle)
+            0, 4, 3,
+            // Right end (triangle)
+            1, 2, 5,
+        ];
 
         roofGeometry.setIndex(indices);
         roofGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-        roofGeometry.computeVertexNormals();
+        roofGeometry.computeVertexNormals(); // Important for correct lighting
 
         const roofMesh = new THREE.Mesh(roofGeometry, roofMaterial);
         return roofMesh;
@@ -465,6 +464,7 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
 
 
 
