@@ -251,6 +251,33 @@ export function createGridAndScenery(
   tilePlane.position.set(tilePlaneX, tilePlaneY, tilePlaneZ);
   gridGroup.add(tilePlane);
   tilePlaneRef.current = tilePlane;
+  
+    // --- Orange Borders for Tiled Area ---
+    const borderMaterial = new THREE.MeshStandardMaterial({ color: 0xff4500 });
+    const borderThickness = 2;
+    const borderHeight = 1;
+
+    // Top Border
+    const topBorderGeom = new THREE.BoxGeometry(flatTopWidth, borderHeight, borderThickness);
+    const topBorder = new THREE.Mesh(topBorderGeom, borderMaterial);
+    topBorder.position.set(tilePlaneX, tilePlaneY, tilePlaneZ + domeDepth / 2 - borderThickness / 2);
+    gridGroup.add(topBorder);
+
+    // Bottom Border
+    const bottomBorder = topBorder.clone();
+    bottomBorder.position.set(tilePlaneX, tilePlaneY, tilePlaneZ - domeDepth / 2 + borderThickness / 2);
+    gridGroup.add(bottomBorder);
+
+    // Left Border
+    const leftBorderGeom = new THREE.BoxGeometry(borderThickness, borderHeight, domeDepth);
+    const leftBorder = new THREE.Mesh(leftBorderGeom, borderMaterial);
+    leftBorder.position.set(tilePlaneX - flatTopWidth / 2 + borderThickness / 2, tilePlaneY, tilePlaneZ);
+    gridGroup.add(leftBorder);
+
+    // Right Border
+    const rightBorder = leftBorder.clone();
+    rightBorder.position.set(tilePlaneX + flatTopWidth / 2 - borderThickness / 2, tilePlaneY, tilePlaneZ);
+    gridGroup.add(rightBorder);
 
 
   // Add scenery
