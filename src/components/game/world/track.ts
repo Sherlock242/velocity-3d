@@ -197,10 +197,17 @@ export function createGridAndScenery(
           break;
         case 21:
         case 22:
-        case 23:
-        case 24:
-        case 25:
           // These sectors are on the dome, so we don't add buildings or gates.
+          sectorGroup = new THREE.Group();
+          break;
+        case 23:
+          sectorGroup = createSector23({ cellCenterX, cellCenterZ, staticCollidersRef });
+          break;
+        case 24:
+          sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
+          break;
+        case 25:
+          // Sector 25 is also on the dome. Its gate is handled in the tunnel loop.
           sectorGroup = new THREE.Group();
           break;
         default:
@@ -241,29 +248,21 @@ export function createGridAndScenery(
   }
 
   // --- Torii Gate Tunnel ---
-  const startSector25X = (4 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2) - 100;
+  const startSector25X = (4 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2);
   const endSector22X = (1 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2);
   const tunnelLength = startSector25X - endSector22X;
-  const gateSpacing = 5;
+  const gateSpacing = 40;
   const numGates = Math.floor(tunnelLength / gateSpacing);
 
 
-  for (let i = 15; i < numGates - 15; i++) {
+  for (let i = 0; i < numGates; i++) {
       const tunnelProgress = i / (numGates - 1);
       const gateX = THREE.MathUtils.lerp(startSector25X, endSector22X, tunnelProgress);
       const gateZ = domeCenterZ; // Center them on the dome's depth
 
-      let nx = (gateX - domeCenterX) / halfDomeWidth;
-      const nz = (gateZ - domeCenterZ) / halfDomeDepth;
-      if (nx <= peakNormalizedX) {
-        nx = peakNormalizedX;
-      }
-      const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-      const heightZComponent = Math.cos(nz * Math.PI / 2);
-      const yOffset = domeHeight * heightXComponent * heightZComponent;
-
       const gate = createToriiGate();
-      gate.position.set(gateX, yOffset + 25, gateZ);
+      // Set a constant, elevated Y position for a straight bridge
+      gate.position.set(gateX, 150, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
   }
@@ -294,7 +293,7 @@ export function createGridAndScenery(
     const yOffset = domeHeight * heightXComponent * heightZComponent;
     
     // Set the Z attribute of the vertex in its local space to create height
-    pathPositions.setZ(i, yOffset + roadYPosition + 0.5); // a bit of offset to prevent z-fighting
+    pathPositions.setZ(i, yOffset + roadYPosition + 0.3); // a bit of offset to prevent z-fighting
   }
   pathPositions.needsUpdate = true;
   pathMesh.geometry.computeVertexNormals();

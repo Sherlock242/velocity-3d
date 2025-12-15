@@ -18,13 +18,8 @@ export function createSector25({
 }: Sector25Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
-  // The gate for the start/finish line
-  const gate = createToriiGate();
-  gate.position.set(cellCenterX, 50, cellCenterZ); // Added y-offset to elevate the gate
-  gate.rotation.y = Math.PI / 2;
-  sectorGroup.add(gate);
-  // Not adding to colliders so player can pass through
-  // staticCollidersRef.current.push(gate);
+  // The main tunnel of gates is now handled in track.ts to ensure correct positioning.
+  // This file can be used for any other specific scenery in Sector 25.
 
 
   return sectorGroup;
