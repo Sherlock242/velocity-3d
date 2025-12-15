@@ -118,6 +118,7 @@ export function createGridAndScenery(
   const halfDomeDepth = domeDepth / 2;
   const baseHeight = dome.position.y - domeHeight / 2;
   const peakOffsetX = -0.2 * domeWidth; // Shift peak to Sector 22 (20% to the left of center)
+  const peakNormalizedX = (peakOffsetX) / halfDomeWidth;
 
 
   for (let i = 0; i < positions.count; i++) {
@@ -128,11 +129,19 @@ export function createGridAndScenery(
       const z = positions.getZ(i);
 
       // Calculate normalized distances from the center of the dome plane
-      const nx = (x - peakOffsetX) / halfDomeWidth;
+      let nx = (x) / halfDomeWidth;
       const nz = z / halfDomeDepth;
 
+      // If x is to the left of the peak (in sectors 21, 22), clamp it to the peak's x.
+      if (nx <= peakNormalizedX) {
+        nx = peakNormalizedX;
+      }
+      
+      const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+      const heightZComponent = Math.cos(nz * Math.PI / 2);
+
       // Use a cosine-based curve for a smooth dome shape
-      const heightOffset = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(nz * Math.PI / 2);
+      const heightOffset = domeHeight * heightXComponent * heightZComponent;
       
       // Apply the height offset to the Y attribute of the vertex
       positions.setY(i, baseHeight + heightOffset);
@@ -216,9 +225,18 @@ export function createGridAndScenery(
           if (child instanceof THREE.Group || child instanceof THREE.Mesh) {
             const childX = child.position.x;
             const childZ = child.position.z;
-            const nx = (childX - domeCenterX - peakOffsetX) / halfDomeWidth;
+            
+            let nx = (childX - domeCenterX) / halfDomeWidth;
             const nz = (childZ - domeCenterZ) / halfDomeDepth;
-            const yOffset = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(nz * Math.PI / 2);
+
+            if (nx <= peakNormalizedX) {
+              nx = peakNormalizedX;
+            }
+
+            const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+            const heightZComponent = Math.cos(nz * Math.PI / 2);
+            const yOffset = domeHeight * heightXComponent * heightZComponent;
+            
             child.position.y += yOffset;
           }
         });
