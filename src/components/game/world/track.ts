@@ -52,7 +52,7 @@ export function createGridAndScenery(
   const lineGap = 10;
   const lineWidth = 0.5;
   const lineGeom = new THREE.PlaneGeometry(lineWidth, lineLength);
-  const roadYPosition = 0.2; // Elevated road position
+  const roadYPosition = 0.4; // Elevated road position
 
   for (let j = 0; j < GRID_SIZE; j++) {
     for (let i = 0; i <= GRID_SIZE; i++) {
@@ -259,16 +259,23 @@ export function createGridAndScenery(
       const tunnelProgress = i / (numGates - 1);
       const gateX = THREE.MathUtils.lerp(startSector25X, endSector22X, tunnelProgress);
       const gateZ = domeCenterZ; // Center them on the dome's depth
+      
+      let yOffset: number;
 
-      // Calculate height based on dome geometry
-      let nx = (gateX - domeCenterX) / halfDomeWidth;
-      const nz = (gateZ - domeCenterZ) / halfDomeDepth;
-      if (nx <= peakNormalizedX) {
-          nx = peakNormalizedX;
+      if (i >= numGates - 10) {
+        // Elevate the last 10 gates in a straight line
+        yOffset = 25;
+      } else {
+        // Calculate height based on dome geometry for other gates
+        let nx = (gateX - domeCenterX) / halfDomeWidth;
+        const nz = (gateZ - domeCenterZ) / halfDomeDepth;
+        if (nx <= peakNormalizedX) {
+            nx = peakNormalizedX;
+        }
+        const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+        const heightZComponent = Math.cos(nz * Math.PI / 2);
+        yOffset = domeHeight * heightXComponent * heightZComponent;
       }
-      const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-      const heightZComponent = Math.cos(nz * Math.PI / 2);
-      const yOffset = domeHeight * heightXComponent * heightZComponent;
 
       const gate = createToriiGate();
       gate.position.set(gateX, yOffset, gateZ);
