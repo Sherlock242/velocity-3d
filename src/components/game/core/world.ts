@@ -13,19 +13,39 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to Sector 20's main road
+    // Set starting position to Sector 25
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    const sectorIndex = 19; // Sector 20 is index 19
-    const i = sectorIndex % GRID_SIZE; // col = 4
-    const j = Math.floor(sectorIndex / GRID_SIZE); // row = 3
+    const sectorIndex = 24; // Sector 25 is index 24
+    const i = sectorIndex % GRID_SIZE;
+    const j = Math.floor(sectorIndex / GRID_SIZE);
 
     const cellCenterX = i * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-    // Position on the road in front of the sector
-    const roadZ = (j * CELL_SIZE) - halfTotalWidth - (ROAD_WIDTH / 2);
+    const cellCenterZ = j * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+    
+    // Calculate Y position on the dome for the player
+    const domeHeight = 150;
+    const domeWidth = TOTAL_GRID_WIDTH;
+    const domeDepth = CELL_SIZE;
+    const domeCenterZ = (4 * CELL_SIZE - halfTotalWidth) + domeDepth / 2;
+    
+    let nx = (cellCenterX) / (domeWidth / 2);
+    const nz = (cellCenterZ - domeCenterZ) / (domeDepth / 2);
+
+    const peakOffsetX = -0.2 * domeWidth;
+    const peakNormalizedX = peakOffsetX / (domeWidth / 2);
+
+    if (nx <= peakNormalizedX) {
+      nx = peakNormalizedX;
+    }
+
+    const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+    const heightZComponent = Math.cos(nz * Math.PI / 2);
+    const yOffset = domeHeight * heightXComponent * heightZComponent;
 
     transformer.position.x = cellCenterX;
-    transformer.position.z = roadZ;
-    transformer.rotation.y = Math.PI; // Face towards the dome
+    transformer.position.z = cellCenterZ;
+    transformer.position.y = yOffset;
+    transformer.rotation.y = Math.PI / 2; // Face towards the peak
     
     scene.add(transformer);
     playerRef.current = transformer;
