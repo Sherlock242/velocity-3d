@@ -288,38 +288,39 @@ export function createGridAndScenery(
       gridGroup.add(gate);
   }
 
-  // --- Walkable Path under Tunnel ---
-  const pathGeom = new THREE.PlaneGeometry(tunnelLength, 90, 10, 10);
-  const pathMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
-  const pathMesh = new THREE.Mesh(pathGeom, pathMat);
-  pathMesh.position.set(
-    endSector22X + tunnelLength / 2,
-    0, // Will be adjusted per-vertex
-    domeCenterZ
+  // --- Road under Tunnel ---
+  const roadUnderTunnelGeom = new THREE.PlaneGeometry(tunnelLength, ROAD_WIDTH, 10, 1);
+  const roadUnderTunnelMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+  const roadUnderTunnelMesh = new THREE.Mesh(roadUnderTunnelGeom, roadUnderTunnelMat);
+  roadUnderTunnelMesh.position.set(
+      endSector22X + tunnelLength / 2,
+      0, // Will be adjusted per-vertex
+      domeCenterZ
   );
-  pathMesh.rotation.x = -Math.PI / 2;
-  
-  const pathPositions = pathMesh.geometry.attributes.position;
-  for (let i = 0; i < pathPositions.count; i++) {
-    const localPos = new THREE.Vector3().fromBufferAttribute(pathPositions, i);
-    const worldPos = pathMesh.localToWorld(localPos.clone());
-    
-    let nx = (worldPos.x - domeCenterX) / halfDomeWidth;
-    const nz = (worldPos.z - domeCenterZ) / halfDomeDepth;
-    if (nx <= peakNormalizedX) {
-      nx = peakNormalizedX;
-    }
-    const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-    const heightZComponent = Math.cos(nz * Math.PI / 2);
-    const yOffset = domeHeight * heightXComponent * heightZComponent;
-    
-    // Set the Z attribute of the vertex in its local space to create height
-    pathPositions.setZ(i, yOffset + roadYPosition + 0.3); // a bit of offset to prevent z-fighting
-  }
-  pathPositions.needsUpdate = true;
-  pathMesh.geometry.computeVertexNormals();
+  roadUnderTunnelMesh.rotation.x = -Math.PI / 2;
 
-  gridGroup.add(pathMesh);
+  const roadPositions = roadUnderTunnelMesh.geometry.attributes.position;
+  for (let i = 0; i < roadPositions.count; i++) {
+      const localPos = new THREE.Vector3().fromBufferAttribute(roadPositions, i);
+      const worldPos = roadUnderTunnelMesh.localToWorld(localPos.clone());
+      
+      let nx = (worldPos.x - domeCenterX) / halfDomeWidth;
+      const nz = (worldPos.z - domeCenterZ) / halfDomeDepth;
+      if (nx <= peakNormalizedX) {
+          nx = peakNormalizedX;
+      }
+      const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+      const heightZComponent = Math.cos(nz * Math.PI / 2);
+      const yOffset = domeHeight * heightXComponent * heightZComponent;
+      
+      // Set the Z attribute of the vertex in its local space to create height
+      // This is because the plane is rotated. Y in world is Z in local.
+      roadPositions.setZ(i, yOffset + roadYPosition + 0.1); // a bit of offset to prevent z-fighting
+  }
+  roadPositions.needsUpdate = true;
+  roadUnderTunnelMesh.geometry.computeVertexNormals();
+  
+  gridGroup.add(roadUnderTunnelMesh);
 
 
   return gridGroup;
