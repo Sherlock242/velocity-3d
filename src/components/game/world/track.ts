@@ -85,7 +85,7 @@ export function createGridAndScenery(
         }
 
         // Horizontal roads - Don't render road for the last row (dome area)
-        if (j < GRID_SIZE -1) {
+        if (i < GRID_SIZE -1) {
           const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
           const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
           horizontalRoad.rotation.x = -Math.PI / 2;
