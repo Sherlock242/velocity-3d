@@ -54,28 +54,33 @@ export function createGridAndScenery(
   const lineGeom = new THREE.PlaneGeometry(lineWidth, lineLength);
   const roadYPosition = 0.2; // Elevated road position
 
-  for (let i = 0; i <= GRID_SIZE; i++) {
-    const roadOffset = i * CELL_SIZE - halfTotalWidth;
+  for (let j = 0; j < GRID_SIZE; j++) {
+    for (let i = 0; i <= GRID_SIZE; i++) {
+        const roadOffset = i * CELL_SIZE - halfTotalWidth;
 
-    // Vertical roads
-    const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
-    const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
-    verticalRoad.rotation.x = -Math.PI / 2;
-    verticalRoad.position.y = roadYPosition;
-    verticalRoad.position.x = roadOffset;
-    verticalRoad.receiveShadow = true;
-    gridGroup.add(verticalRoad);
+        if (j === 0) { // Only render vertical roads once
+            // Vertical roads
+            const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
+            const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
+            verticalRoad.rotation.x = -Math.PI / 2;
+            verticalRoad.position.y = roadYPosition;
+            verticalRoad.position.x = roadOffset;
+            verticalRoad.receiveShadow = true;
+            gridGroup.add(verticalRoad);
 
-    // Vertical lane markings
-    for (let j = -halfTotalWidth; j < halfTotalWidth; j += lineLength + lineGap) {
-        const line = new THREE.Mesh(lineGeom, lineMaterial);
-        line.position.set(roadOffset, roadYPosition + 0.01, j + lineLength / 2);
-        line.rotation.x = -Math.PI / 2;
-        gridGroup.add(line);
+            // Vertical lane markings
+            for (let k = -halfTotalWidth; k < halfTotalWidth; k += lineLength + lineGap) {
+                const line = new THREE.Mesh(lineGeom, lineMaterial);
+                line.position.set(roadOffset, roadYPosition + 0.01, k + lineLength / 2);
+                line.rotation.x = -Math.PI / 2;
+                gridGroup.add(line);
+            }
+        }
     }
     
     // Horizontal roads - Don't render road for the last row (dome area)
-    if (i < GRID_SIZE - 1) {
+    if (j < GRID_SIZE - 1) {
+        const roadOffset = j * CELL_SIZE - halfTotalWidth;
         const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
         const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
         horizontalRoad.rotation.x = -Math.PI / 2;
@@ -85,15 +90,16 @@ export function createGridAndScenery(
         gridGroup.add(horizontalRoad);
 
         // Horizontal lane markings
-        for (let j = -halfTotalWidth; j < halfTotalWidth; j += lineLength + lineGap) {
-        const line = new THREE.Mesh(lineGeom, lineMaterial);
-        line.position.set(j + lineLength / 2, roadYPosition + 0.01, roadOffset);
-        line.rotation.x = -Math.PI / 2;
-        line.rotation.z = Math.PI / 2;
-        gridGroup.add(line);
+        for (let k = -halfTotalWidth; k < halfTotalWidth; k += lineLength + lineGap) {
+          const line = new THREE.Mesh(lineGeom, lineMaterial);
+          line.position.set(k + lineLength / 2, roadYPosition + 0.01, roadOffset);
+          line.rotation.x = -Math.PI / 2;
+          line.rotation.z = Math.PI / 2;
+          gridGroup.add(line);
         }
     }
   }
+
 
   // --- Upland Dome ---
   const domeWidth = DOME_WIDTH;
@@ -235,10 +241,12 @@ export function createGridAndScenery(
   }
 
   // --- Torii Gate Tunnel ---
-  const numGates = 10;
-  const gateSpacing = 200;
   const startSector25X = (4 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2) - 100;
   const endSector22X = (1 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2);
+  const tunnelLength = startSector25X - endSector22X;
+  const gateSpacing = 5;
+  const numGates = Math.floor(tunnelLength / gateSpacing);
+
 
   for (let i = 0; i < numGates; i++) {
       const tunnelProgress = i / (numGates - 1);
@@ -256,7 +264,7 @@ export function createGridAndScenery(
 
       const gate = createToriiGate();
       gate.scale.set(0.5, 0.5, 0.5);
-      gate.position.set(gateX, yOffset, gateZ);
+      gate.position.set(gateX, yOffset + roadYPosition, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
   }
@@ -264,3 +272,5 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
+
+    
