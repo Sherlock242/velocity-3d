@@ -23,7 +23,7 @@ function createTextTexture(
   context.fillRect(0, 0, width, height);
 
   // Set text properties
-  const fontSize = width * 0.6;
+  const fontSize = width * 0.1;
   context.font = `bold ${fontSize}px sans-serif`;
   context.fillStyle = textColor;
   context.textAlign = 'center';
