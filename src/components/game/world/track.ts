@@ -97,7 +97,7 @@ export function createGridAndScenery(
   // --- Upland Dome ---
   const domeWidth = TOTAL_GRID_WIDTH; // Span all 5 cells
   const domeDepth = CELL_SIZE; // Span 1 cell deep
-  const domeHeight = 250;
+  const domeHeight = 150;
   const segments = 100;
 
   const domeGeometry = new THREE.BoxGeometry(domeWidth, domeHeight, domeDepth, segments, 1, segments);
