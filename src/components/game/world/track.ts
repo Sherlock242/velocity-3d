@@ -290,7 +290,7 @@ export function createGridAndScenery(
 
   // --- Walkable Path under Tunnel ---
   const pathGeom = new THREE.PlaneGeometry(tunnelLength, 90, 100, 1);
-  const pathMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
+  const pathMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
   const pathMesh = new THREE.Mesh(pathGeom, pathMat);
   pathMesh.position.set(
     endSector22X + tunnelLength / 2,
