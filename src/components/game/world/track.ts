@@ -56,103 +56,98 @@ export function createGridAndScenery(
   for (let i = 0; i <= GRID_SIZE; i++) {
     const roadOffset = i * CELL_SIZE - halfTotalWidth;
 
-    // Vertical roads
-    const verticalRoadGeom = new THREE.PlaneGeometry(
-      ROAD_WIDTH,
-      TOTAL_GRID_WIDTH
-    );
-    const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
-    verticalRoad.rotation.x = -Math.PI / 2;
-    verticalRoad.position.y = roadYPosition;
-    verticalRoad.position.x = roadOffset;
-    verticalRoad.receiveShadow = true;
-    gridGroup.add(verticalRoad);
+    // Do not render the last horizontal road (between row 4 and 5)
+    if (i === GRID_SIZE) {
+        // Vertical roads still need to be full length
+        const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
+        const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
+        verticalRoad.rotation.x = -Math.PI / 2;
+        verticalRoad.position.y = roadYPosition;
+        verticalRoad.position.x = roadOffset;
+        verticalRoad.receiveShadow = true;
+        gridGroup.add(verticalRoad);
+    } else {
+        // Vertical roads
+        const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
+        const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
+        verticalRoad.rotation.x = -Math.PI / 2;
+        verticalRoad.position.y = roadYPosition;
+        verticalRoad.position.x = roadOffset;
+        verticalRoad.receiveShadow = true;
+        gridGroup.add(verticalRoad);
 
-    // Vertical lane markings
-    for (
-      let j = -halfTotalWidth;
-      j < halfTotalWidth;
-      j += lineLength + lineGap
-    ) {
-      const line = new THREE.Mesh(lineGeom, lineMaterial);
-      line.position.set(roadOffset, roadYPosition + 0.01, j + lineLength / 2);
-      line.rotation.x = -Math.PI / 2;
-      gridGroup.add(line);
-    }
+        // Vertical lane markings
+        for (let j = -halfTotalWidth; j < halfTotalWidth; j += lineLength + lineGap) {
+          const line = new THREE.Mesh(lineGeom, lineMaterial);
+          line.position.set(roadOffset, roadYPosition + 0.01, j + lineLength / 2);
+          line.rotation.x = -Math.PI / 2;
+          gridGroup.add(line);
+        }
 
-    // Horizontal roads
-    const horizontalRoadGeom = new THREE.PlaneGeometry(
-      TOTAL_GRID_WIDTH,
-      ROAD_WIDTH
-    );
-    const horizontalRoad = new THREE.Mesh(
-      horizontalRoadGeom,
-      roadMaterial
-    );
-    horizontalRoad.rotation.x = -Math.PI / 2;
-    horizontalRoad.position.y = roadYPosition;
-    horizontalRoad.position.z = roadOffset;
-    horizontalRoad.receiveShadow = true;
-    gridGroup.add(horizontalRoad);
+        // Horizontal roads
+        const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
+        const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
+        horizontalRoad.rotation.x = -Math.PI / 2;
+        horizontalRoad.position.y = roadYPosition;
+        horizontalRoad.position.z = roadOffset;
+        horizontalRoad.receiveShadow = true;
+        gridGroup.add(horizontalRoad);
 
-    // Horizontal lane markings
-    for (
-      let j = -halfTotalWidth;
-      j < halfTotalWidth;
-      j += lineLength + lineGap
-    ) {
-      const line = new THREE.Mesh(lineGeom, lineMaterial);
-      line.position.set(j + lineLength / 2, roadYPosition + 0.01, roadOffset);
-      line.rotation.x = -Math.PI / 2;
-      line.rotation.z = Math.PI / 2;
-      gridGroup.add(line);
+        // Horizontal lane markings
+        for (let j = -halfTotalWidth; j < halfTotalWidth; j += lineLength + lineGap) {
+          const line = new THREE.Mesh(lineGeom, lineMaterial);
+          line.position.set(j + lineLength / 2, roadYPosition + 0.01, roadOffset);
+          line.rotation.x = -Math.PI / 2;
+          line.rotation.z = Math.PI / 2;
+          gridGroup.add(line);
+        }
     }
   }
 
-  // --- Upland Ramp ---
-  const rampWidth = CELL_SIZE * 2; // Span two cells wide
-  const rampLength = CELL_SIZE * 2; // Span two cells long
-  const rampHeight = 100;
-  const rampGeometry = new THREE.PlaneGeometry(rampLength, rampWidth, 20, 20); // Swapped width and length for rotation
+  // --- Upland Dome ---
+  const domeWidth = TOTAL_GRID_WIDTH; // Span all 5 cells
+  const domeDepth = CELL_SIZE; // Span 1 cell deep
+  const domeHeight = 150;
+  const segments = 100;
+
+  const domeGeometry = new THREE.PlaneGeometry(domeWidth, domeDepth, segments, segments);
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: TRACK_THEMES[theme].ground,
     side: THREE.DoubleSide,
   });
-  const ramp = new THREE.Mesh(rampGeometry, rampMaterial);
+  const dome = new THREE.Mesh(domeGeometry, rampMaterial);
 
-  // Position ramp over sectors 21-24 equivalent area, but rotated
   const startRow = 4; // row for 21-25
-  const startCol = 0; // col for 21
-  const rampCenterX = (startCol * CELL_SIZE - halfTotalWidth) + rampLength / 2;
-  const rampCenterZ = (startRow * CELL_SIZE - halfTotalWidth) + rampWidth / 2;
-  ramp.position.x = rampCenterX;
-  ramp.position.z = rampCenterZ;
-
-
-  // Create the ramp incline along the X-axis of the plane
-  const positions = ramp.geometry.attributes.position;
-  const rampStart = -rampLength / 2;
-  const rampEndFlat = rampStart + CELL_SIZE; // Ramp up over one cell length
-  const rampSectionLength = CELL_SIZE;
+  const domeCenterX = 0; // Centered on the grid's X-axis
+  const domeCenterZ = (startRow * CELL_SIZE - halfTotalWidth) + domeDepth / 2;
+  
+  dome.position.set(domeCenterX, 0, domeCenterZ);
+  
+  const positions = dome.geometry.attributes.position;
+  const halfDomeWidth = domeWidth / 2;
+  const halfDomeDepth = domeDepth / 2;
 
   for (let i = 0; i < positions.count; i++) {
-    const x = positions.getX(i); // Check position along the length (X-axis of Plane)
-    let newY = 0;
-    if (x > rampEndFlat) { // Flipped condition: The flat part is now at the "end" of the x-axis
-      newY = rampHeight;
-    } else if (x > rampStart) {
-      const progress = (x - rampStart) / rampSectionLength;
-      newY = progress * rampHeight;
-    }
-    positions.setZ(i, positions.getZ(i) + newY); // Apply height offset to the Z attribute of the vertex
+    const x = positions.getX(i);
+    const y = positions.getY(i); // This corresponds to depth (Z) in world space before rotation
+
+    // Calculate normalized distances from the center of the dome plane
+    const nx = x / halfDomeWidth;
+    const ny = y / halfDomeDepth;
+
+    // Use a cosine-based curve for a smooth dome shape
+    const height = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(ny * Math.PI / 2);
+    
+    // Apply the height offset to the Z attribute of the vertex (which becomes Y in world space)
+    positions.setZ(i, positions.getZ(i) + height);
   }
   positions.needsUpdate = true;
-  ramp.geometry.computeVertexNormals();
+  dome.geometry.computeVertexNormals();
 
-  ramp.rotation.x = -Math.PI / 2;
-  ramp.position.y = roadYPosition + 0.01;
-  gridGroup.add(ramp);
-  rampMeshRef.current = ramp; // Make it collidable
+  dome.rotation.x = -Math.PI / 2;
+  dome.position.y = roadYPosition + 0.01;
+  gridGroup.add(dome);
+  rampMeshRef.current = dome; // Make it collidable
 
   // Add scenery
   for (let i = 0; i < GRID_SIZE; i++) {
@@ -164,15 +159,11 @@ export function createGridAndScenery(
       let sectorGroup: THREE.Group;
       let sectorYOffset = 0;
 
-      // Check if the sector is part of the upland area after rotation
-      if (j === 4 && (i === 0 || i === 1 || i === 2 || i === 3)) { // Sectors 21, 22, 23, 24 are in row 4
-          const relativeX = cellCenterX - rampCenterX + rampLength / 2;
-          if (relativeX > rampEndFlat) {
-              sectorYOffset = rampHeight;
-          } else if (relativeX > rampStart) {
-              const progress = (relativeX - rampStart) / rampSectionLength;
-              sectorYOffset = progress * rampHeight;
-          }
+      // Check if the sector is part of the dome area
+      if (j === 4) { // Sectors 21, 22, 23, 24, 25 are in row 4
+          const nx = (cellCenterX - domeCenterX) / halfDomeWidth;
+          const ny = (cellCenterZ - domeCenterZ) / halfDomeDepth;
+          sectorYOffset = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(ny * Math.PI / 2);
       }
 
       switch (sectorNumber) {
@@ -200,16 +191,16 @@ export function createGridAndScenery(
         case 20:
           sectorGroup = createSector20({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
-        case 23: // Now part of the ramp incline
+        case 23: // Now part of the dome
           sectorGroup = new THREE.Group();
           const toriiGate = createToriiGate();
           toriiGate.position.set(cellCenterX, sectorYOffset, cellCenterZ);
           toriiGate.scale.set(2, 1.8, 2);
-          toriiGate.rotation.y = Math.PI / 2; // Re-orient for the new ramp direction
+          toriiGate.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate);
           staticCollidersRef.current.push(toriiGate);
           break;
-        case 24: // Now the start of the ramp
+        case 24:
            sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
            break;
         case 25:
