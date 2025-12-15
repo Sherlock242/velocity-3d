@@ -85,7 +85,7 @@ export function createGridAndScenery(
         }
 
         // Horizontal roads - Don't render road for the last row (dome area)
-        if (i < GRID_SIZE -1) {
+        if (j < GRID_SIZE -1) {
           const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
           const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
           horizontalRoad.rotation.x = -Math.PI / 2;
@@ -112,7 +112,7 @@ export function createGridAndScenery(
   const domeHeight = 150;
   const segments = 100;
 
-  const domeGeometry = new THREE.PlaneGeometry(domeWidth, domeDepth, segments, segments);
+  const domeGeometry = new THREE.BoxGeometry(domeWidth, domeHeight, domeDepth, segments, 1, segments);
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: TRACK_THEMES[theme].ground,
     side: THREE.DoubleSide,
@@ -128,26 +128,30 @@ export function createGridAndScenery(
   const positions = dome.geometry.attributes.position;
   const halfDomeWidth = domeWidth / 2;
   const halfDomeDepth = domeDepth / 2;
+  const baseHeight = dome.position.y - domeHeight / 2;
 
   for (let i = 0; i < positions.count; i++) {
-    const x = positions.getX(i);
-    const y = positions.getY(i); // This corresponds to depth (Z) in world space before rotation
+    const y = positions.getY(i);
+    // Only affect top vertices
+    if (y > baseHeight) {
+      const x = positions.getX(i);
+      const z = positions.getZ(i);
 
-    // Calculate normalized distances from the center of the dome plane
-    const nx = x / halfDomeWidth;
-    const ny = y / halfDomeDepth;
+      // Calculate normalized distances from the center of the dome plane
+      const nx = x / halfDomeWidth;
+      const nz = z / halfDomeDepth;
 
-    // Use a cosine-based curve for a smooth dome shape
-    const height = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(ny * Math.PI / 2);
-    
-    // Apply the height offset to the Z attribute of the vertex (which becomes Y in world space)
-    positions.setZ(i, positions.getZ(i) + height);
+      // Use a cosine-based curve for a smooth dome shape
+      const heightOffset = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(nz * Math.PI / 2);
+      
+      // Apply the height offset to the Y attribute of the vertex
+      positions.setY(i, baseHeight + heightOffset);
+    }
   }
   positions.needsUpdate = true;
   dome.geometry.computeVertexNormals();
 
-  dome.rotation.x = -Math.PI / 2;
-  dome.position.y = roadYPosition + 0.01;
+  dome.position.y = roadYPosition + (domeHeight / 2) + 0.01;
   gridGroup.add(dome);
   rampMeshRef.current = dome; // Make it collidable
 
@@ -159,6 +163,7 @@ export function createGridAndScenery(
       const sectorNumber = j * GRID_SIZE + i + 1;
 
       let sectorGroup: THREE.Group;
+      
       let sectorYOffset = 0;
 
       // Check if the sector is part of the dome area
@@ -167,7 +172,7 @@ export function createGridAndScenery(
           const ny = (cellCenterZ - domeCenterZ) / halfDomeDepth;
           sectorYOffset = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(ny * Math.PI / 2);
       }
-
+      
       switch (sectorNumber) {
         case 1:
           sectorGroup = createSector1({ cellCenterX, cellCenterZ, staticCollidersRef, walkingNpcsRef });
@@ -196,7 +201,7 @@ export function createGridAndScenery(
         case 23: // Now part of the dome
           sectorGroup = new THREE.Group();
           const toriiGate = createToriiGate();
-          toriiGate.position.set(cellCenterX, sectorYOffset, cellCenterZ);
+          toriiGate.position.set(cellCenterX, 0, cellCenterZ);
           toriiGate.scale.set(2, 1.8, 2);
           toriiGate.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate);
@@ -217,9 +222,11 @@ export function createGridAndScenery(
           });
           break;
       }
+      
       if (j === 4) { // If the sector is on the dome
         sectorGroup.position.y = sectorYOffset; // Apply the calculated Y-offset to the whole group
       }
+
       gridGroup.add(sectorGroup);
     }
   }
