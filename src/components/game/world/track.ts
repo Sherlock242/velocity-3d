@@ -269,7 +269,7 @@ export function createGridAndScenery(
       
       // Check if the gate is within Sector 24
       if (gateX >= sector24StartX && gateX < sector24EndX) {
-          yOffset = 35; // Elevate straight forward
+          yOffset = 1;
       } else {
         // Calculate height based on dome geometry for other gates
         let nx = (gateX - domeCenterX) / halfDomeWidth;
