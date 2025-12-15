@@ -237,8 +237,8 @@ export function createGridAndScenery(
   rampMeshRef.current = dome; // Make it collidable
 
   // --- Tiled Platform on Dome ---
-  const flatTopWidth = ((peakNormalizedX - -1) * halfDomeWidth) / 2; // Width of the flat area
-  const tilePlaneGeom = new THREE.PlaneGeometry(flatTopWidth, domeDepth);
+  const flatTopWidth = ((peakNormalizedX - -1) * halfDomeWidth); 
+  const tilePlaneGeom = new THREE.PlaneGeometry(domeDepth, flatTopWidth);
   const tileMaterial = createTileMaterial();
   const tilePlane = new THREE.Mesh(tilePlaneGeom, tileMaterial);
   tilePlane.rotation.x = -Math.PI/2;
