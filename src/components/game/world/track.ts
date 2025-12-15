@@ -74,7 +74,7 @@ export function createGridAndScenery(
     }
     
     // Horizontal roads - Don't render road for the last row (dome area)
-    if (i < GRID_SIZE -1) {
+    if (i < GRID_SIZE) {
         const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
         const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
         horizontalRoad.rotation.x = -Math.PI / 2;
@@ -177,17 +177,19 @@ export function createGridAndScenery(
         case 20:
           sectorGroup = createSector20({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
+        case 21:
+        case 22:
+        case 25:
+          sectorGroup = new THREE.Group(); // Empty sectors on the dome
+          break;
         case 23: // Now part of the dome
           sectorGroup = new THREE.Group();
           const toriiGate = createToriiGate();
           
           const gateX = cellCenterX;
           const gateZ = cellCenterZ;
-          const nxGate = (gateX - domeCenterX) / halfDomeWidth;
-          const nzGate = (gateZ - domeCenterZ) / halfDomeDepth;
-          const gateY = domeHeight * Math.cos(nxGate * Math.PI / 2) * Math.cos(nzGate * Math.PI / 2);
-
-          toriiGate.position.set(gateX, gateY, gateZ);
+          
+          toriiGate.position.set(gateX, 0, gateZ);
           toriiGate.scale.set(2, 1.8, 2);
           toriiGate.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate);
@@ -196,9 +198,6 @@ export function createGridAndScenery(
         case 24:
            sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
            break;
-        case 25:
-          sectorGroup = createSector25({ cellCenterX, cellCenterZ, staticCollidersRef });
-          break;
         default:
           sectorGroup = createGenericSector({
             theme,

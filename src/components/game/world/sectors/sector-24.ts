@@ -19,13 +19,12 @@ export function createSector24({
   // This sector is now the start of the ramp.
   // Add a torii gate as the entrance to the ramp.
   const toriiGate = createToriiGate();
-  toriiGate.position.set(cellCenterX + 200, 0, cellCenterZ);
+  toriiGate.position.set(cellCenterX, 0, cellCenterZ - 200);
   toriiGate.scale.set(2, 1.8, 2);
-  toriiGate.rotation.y = Math.PI;
+  toriiGate.rotation.y = Math.PI/2;
   sectorGroup.add(toriiGate);
   staticCollidersRef.current.push(toriiGate);
 
+
   return sectorGroup;
 }
-
-    
