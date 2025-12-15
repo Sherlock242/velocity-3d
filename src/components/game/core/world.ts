@@ -45,7 +45,7 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     transformer.position.x = cellCenterX;
     transformer.position.z = cellCenterZ;
     transformer.position.y = yOffset;
-    transformer.rotation.y = Math.PI / 2; // Face towards the peak
+    transformer.rotation.y = -Math.PI / 2;
     
     scene.add(transformer);
     playerRef.current = transformer;
