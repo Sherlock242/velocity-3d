@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import type { MutableRefObject } from 'react';
 import { createJapaneseTemple } from '../../models/japanese-temple';
 import { createToriiGate } from '../../models/torii-gate';
+import { CELL_SIZE } from '@/lib/game-constants';
 
 type Sector21Props = {
   cellCenterX: number;
@@ -25,11 +26,11 @@ export function createSector21({
   sectorGroup.add(temple);
   staticCollidersRef.current.push(temple);
 
-  // Add the entrance gate
+  // Add the entrance gate to the right side
   const entranceGate = createToriiGate();
   entranceGate.scale.set(1.2, 1.2, 1.2);
-  entranceGate.position.set(cellCenterX, 1, cellCenterZ + 200);
-  entranceGate.rotation.y = 0;
+  entranceGate.position.set(cellCenterX + CELL_SIZE / 2 - 100, 1, cellCenterZ);
+  entranceGate.rotation.y = -Math.PI / 2;
   sectorGroup.add(entranceGate);
   staticCollidersRef.current.push(entranceGate);
 
