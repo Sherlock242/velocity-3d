@@ -216,7 +216,7 @@ export function createGridAndScenery(
           const gateHeightZComponent23 = Math.cos(gateNz23 * Math.PI / 2);
           const gateYOffset23 = domeHeight * gateHeightXComponent23 * gateHeightZComponent23;
 
-          toriiGate23.position.set(gateX23, roadYPosition + gateYOffset23, gateZ23);
+          toriiGate23.position.set(gateX23, gateYOffset23, gateZ23);
           toriiGate23.scale.set(2, 1.8, 2);
           toriiGate23.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate23);
@@ -240,7 +240,7 @@ export function createGridAndScenery(
            const gateHeightZComponent24 = Math.cos(gateNz24 * Math.PI / 2);
            const gateYOffset24 = domeHeight * gateHeightXComponent24 * gateHeightZComponent24;
  
-           toriiGate24.position.set(gateX24, roadYPosition + gateYOffset24, gateZ24);
+           toriiGate24.position.set(gateX24, gateYOffset24, gateZ24);
            toriiGate24.scale.set(2, 1.8, 2);
            toriiGate24.rotation.y = Math.PI / 2;
            sectorGroup.add(toriiGate24);
@@ -264,7 +264,7 @@ export function createGridAndScenery(
           const gateHeightZComponent25 = Math.cos(gateNz25 * Math.PI / 2);
           const gateYOffset25 = domeHeight * gateHeightXComponent25 * gateHeightZComponent25;
 
-          toriiGate25.position.set(gateX25, roadYPosition + gateYOffset25, gateZ25);
+          toriiGate25.position.set(gateX25, gateYOffset25, gateZ25);
           toriiGate25.scale.set(2, 1.8, 2);
           toriiGate25.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate25);
