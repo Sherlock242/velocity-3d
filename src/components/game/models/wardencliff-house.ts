@@ -92,7 +92,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -197,7 +197,7 @@ export function createWardencliffHouse() {
     const transomRadius = (doorWidth * 2) * 0.7;
     const transomShape = new THREE.Shape();
     transomShape.moveTo(-transomRadius, 0);
-    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
+    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, true);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshLambertMaterial({color: 0x000000});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
@@ -465,6 +465,7 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
 
 
 
