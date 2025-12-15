@@ -56,52 +56,40 @@ export function createGridAndScenery(
   for (let i = 0; i <= GRID_SIZE; i++) {
     const roadOffset = i * CELL_SIZE - halfTotalWidth;
 
-    // Do not render the last horizontal road (between row 4 and 5)
-    if (i === GRID_SIZE) {
-        // Vertical roads still need to be full length
-        const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
-        const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
-        verticalRoad.rotation.x = -Math.PI / 2;
-        verticalRoad.position.y = roadYPosition;
-        verticalRoad.position.x = roadOffset;
-        verticalRoad.receiveShadow = true;
-        gridGroup.add(verticalRoad);
-    } else {
-        // Vertical roads
-        const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
-        const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
-        verticalRoad.rotation.x = -Math.PI / 2;
-        verticalRoad.position.y = roadYPosition;
-        verticalRoad.position.x = roadOffset;
-        verticalRoad.receiveShadow = true;
-        gridGroup.add(verticalRoad);
+    // Vertical roads
+    const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
+    const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
+    verticalRoad.rotation.x = -Math.PI / 2;
+    verticalRoad.position.y = roadYPosition;
+    verticalRoad.position.x = roadOffset;
+    verticalRoad.receiveShadow = true;
+    gridGroup.add(verticalRoad);
 
-        // Vertical lane markings
+    // Vertical lane markings
+    for (let j = -halfTotalWidth; j < halfTotalWidth; j += lineLength + lineGap) {
+        const line = new THREE.Mesh(lineGeom, lineMaterial);
+        line.position.set(roadOffset, roadYPosition + 0.01, j + lineLength / 2);
+        line.rotation.x = -Math.PI / 2;
+        gridGroup.add(line);
+    }
+    
+    // Horizontal roads - Don't render road for the last row (dome area)
+    if (i < GRID_SIZE -1) {
+        const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
+        const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
+        horizontalRoad.rotation.x = -Math.PI / 2;
+        horizontalRoad.position.y = roadYPosition;
+        horizontalRoad.position.z = roadOffset;
+        horizontalRoad.receiveShadow = true;
+        gridGroup.add(horizontalRoad);
+
+        // Horizontal lane markings
         for (let j = -halfTotalWidth; j < halfTotalWidth; j += lineLength + lineGap) {
-          const line = new THREE.Mesh(lineGeom, lineMaterial);
-          line.position.set(roadOffset, roadYPosition + 0.01, j + lineLength / 2);
-          line.rotation.x = -Math.PI / 2;
-          gridGroup.add(line);
-        }
-
-        // Horizontal roads - Don't render road for the last row (dome area)
-        if (i < GRID_SIZE -1) {
-          const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
-          const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
-          horizontalRoad.rotation.x = -Math.PI / 2;
-          horizontalRoad.position.y = roadYPosition;
-          horizontalRoad.position.z = roadOffset;
-          horizontalRoad.receiveShadow = true;
-          gridGroup.add(horizontalRoad);
-
-          // Horizontal lane markings
-          for (let j = -halfTotalWidth; j < halfTotalWidth; j += lineLength + lineGap) {
-            const line = new THREE.Mesh(lineGeom, lineMaterial);
-            line.position.set(j + lineLength / 2, roadYPosition + 0.01, roadOffset);
-            line.rotation.x = -Math.PI / 2;
-            line.rotation.z = Math.PI / 2;
-            gridGroup.add(line);
-          }
+        const line = new THREE.Mesh(lineGeom, lineMaterial);
+        line.position.set(j + lineLength / 2, roadYPosition + 0.01, roadOffset);
+        line.rotation.x = -Math.PI / 2;
+        line.rotation.z = Math.PI / 2;
+        gridGroup.add(line);
         }
     }
   }
@@ -164,15 +152,6 @@ export function createGridAndScenery(
 
       let sectorGroup: THREE.Group;
       
-      let sectorYOffset = 0;
-
-      // Check if the sector is part of the dome area
-      if (j === 4) { // Sectors 21, 22, 23, 24, 25 are in row 4
-          const nx = (cellCenterX - domeCenterX) / halfDomeWidth;
-          const ny = (cellCenterZ - domeCenterZ) / halfDomeDepth;
-          sectorYOffset = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(ny * Math.PI / 2);
-      }
-      
       switch (sectorNumber) {
         case 1:
           sectorGroup = createSector1({ cellCenterX, cellCenterZ, staticCollidersRef, walkingNpcsRef });
@@ -201,7 +180,14 @@ export function createGridAndScenery(
         case 23: // Now part of the dome
           sectorGroup = new THREE.Group();
           const toriiGate = createToriiGate();
-          toriiGate.position.set(cellCenterX, 0, cellCenterZ);
+          
+          const gateX = cellCenterX;
+          const gateZ = cellCenterZ;
+          const nxGate = (gateX - domeCenterX) / halfDomeWidth;
+          const nzGate = (gateZ - domeCenterZ) / halfDomeDepth;
+          const gateY = domeHeight * Math.cos(nxGate * Math.PI / 2) * Math.cos(nzGate * Math.PI / 2);
+
+          toriiGate.position.set(gateX, gateY, gateZ);
           toriiGate.scale.set(2, 1.8, 2);
           toriiGate.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate);
@@ -223,8 +209,18 @@ export function createGridAndScenery(
           break;
       }
       
-      if (j === 4) { // If the sector is on the dome
-        sectorGroup.position.y = sectorYOffset; // Apply the calculated Y-offset to the whole group
+      // If the sector is on the dome, adjust individual children instead of the whole group
+      if (j === 4) { 
+        sectorGroup.children.forEach(child => {
+          if (child instanceof THREE.Group || child instanceof THREE.Mesh) {
+            const childX = child.position.x;
+            const childZ = child.position.z;
+            const nx = (childX - domeCenterX) / halfDomeWidth;
+            const nz = (childZ - domeCenterZ) / halfDomeDepth;
+            const yOffset = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(nz * Math.PI / 2);
+            child.position.y += yOffset;
+          }
+        });
       }
 
       gridGroup.add(sectorGroup);
