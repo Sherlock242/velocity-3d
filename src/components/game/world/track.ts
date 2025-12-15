@@ -191,66 +191,11 @@ export function createGridAndScenery(
           break;
         case 21:
         case 22:
-           sectorGroup = createGenericSector({
-            theme,
-            cellCenterX,
-            cellCenterZ,
-            walkingNpcsRef,
-          });
-          break;
         case 23:
-          sectorGroup = createSector23({ cellCenterX, cellCenterZ, staticCollidersRef });
-          const toriiGate23 = createToriiGate();
-          
-          const gateX23 = cellCenterX;
-          const gateZ23 = cellCenterZ;
-          
-          let gateNx23 = (gateX23 - domeCenterX) / halfDomeWidth;
-          const gateNz23 = (gateZ23 - domeCenterZ) / halfDomeDepth;
-
-          if (gateNx23 <= peakNormalizedX) {
-            gateNx23 = peakNormalizedX;
-          }
-
-          const gateHeightXComponent23 = Math.cos((gateNx23 - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-          const gateHeightZComponent23 = Math.cos(gateNz23 * Math.PI / 2);
-          const gateYOffset23 = domeHeight * gateHeightXComponent23 * gateHeightZComponent23;
-
-          toriiGate23.position.set(gateX23, gateYOffset23, gateZ23);
-          toriiGate23.scale.set(2, 1.8, 2);
-          toriiGate23.rotation.y = Math.PI / 2;
-          sectorGroup.add(toriiGate23);
-          break;
         case 24:
-           sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
-           const toriiGate24 = createToriiGate();
-           
-           const gateX24 = cellCenterX;
-           const gateZ24 = cellCenterZ;
-           
-           let gateNx24 = (gateX24 - domeCenterX) / halfDomeWidth;
-           const gateNz24 = (gateZ24 - domeCenterZ) / halfDomeDepth;
- 
-           if (gateNx24 <= peakNormalizedX) {
-             gateNx24 = peakNormalizedX;
-           }
- 
-           const gateHeightXComponent24 = Math.cos((gateNx24 - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-           const gateHeightZComponent24 = Math.cos(gateNz24 * Math.PI / 2);
-           const gateYOffset24 = domeHeight * gateHeightXComponent24 * gateHeightZComponent24;
- 
-           toriiGate24.position.set(gateX24, gateYOffset24 + roadYPosition, gateZ24);
-           toriiGate24.scale.set(2, 1.8, 2);
-           toriiGate24.rotation.y = Math.PI / 2;
-           sectorGroup.add(toriiGate24);
-           break;
         case 25:
-          sectorGroup = createGenericSector({
-            theme,
-            cellCenterX,
-            cellCenterZ,
-            walkingNpcsRef,
-          });
+          // These sectors are on the dome, so we don't add buildings or gates.
+          sectorGroup = new THREE.Group();
           break;
         default:
           sectorGroup = createGenericSector({
