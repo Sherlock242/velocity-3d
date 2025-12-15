@@ -63,7 +63,7 @@ export function createToriiGate() {
   const kasagiGeom = new THREE.ExtrudeGeometry(kasagiShape, kasagiExtrudeSettings);
   
   const kasagi = new THREE.Mesh(kasagiGeom, blackMaterial);
-  kasagi.position.set(0, pillarHeight + kasagiHeight, -kasagiDepth / 2);
+  kasagi.position.set(0, pillarHeight, -kasagiDepth / 2);
   torii.add(kasagi);
 
   // Second beam (Nuki)
