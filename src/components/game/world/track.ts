@@ -200,7 +200,19 @@ export function createGridAndScenery(
           const gateX = cellCenterX;
           const gateZ = cellCenterZ;
           
-          toriiGate.position.set(gateX, 0, gateZ);
+          // Calculate Y position on the dome for the gate
+          let gateNx = (gateX - domeCenterX) / halfDomeWidth;
+          const gateNz = (gateZ - domeCenterZ) / halfDomeDepth;
+
+          if (gateNx <= peakNormalizedX) {
+            gateNx = peakNormalizedX;
+          }
+
+          const gateHeightXComponent = Math.cos((gateNx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+          const gateHeightZComponent = Math.cos(gateNz * Math.PI / 2);
+          const gateYOffset = domeHeight * gateHeightXComponent * gateHeightZComponent;
+
+          toriiGate.position.set(gateX, gateYOffset, gateZ);
           toriiGate.scale.set(2, 1.8, 2);
           toriiGate.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate);
@@ -220,7 +232,7 @@ export function createGridAndScenery(
       }
       
       // If the sector is on the dome, adjust individual children instead of the whole group
-      if (j === 4) { 
+      if (j === 4 && sectorNumber !== 23) { // Exclude sector 23 as its gate is already positioned
         sectorGroup.children.forEach(child => {
           if (child instanceof THREE.Group || child instanceof THREE.Mesh) {
             const childX = child.position.x;
