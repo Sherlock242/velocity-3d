@@ -92,7 +92,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
+    archShape.absarc(0, 0, archRadius, Math.PI, Math.PI * 2, false);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -197,7 +197,7 @@ export function createWardencliffHouse() {
     const transomRadius = (doorWidth * 2) * 0.7;
     const transomShape = new THREE.Shape();
     transomShape.moveTo(-transomRadius, 0);
-    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
+    transomShape.absarc(0, 0, transomRadius, Math.PI, Math.PI * 2, false);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshLambertMaterial({color: 0x000000});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
@@ -253,7 +253,7 @@ export function createWardencliffHouse() {
             
             // Bottom face
             3, 2, 1,  3, 1, 0,
-        ];
+        ]);
 
         roofGeometry.setIndex(indices);
         roofGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -317,7 +317,7 @@ export function createWardencliffHouse() {
     
     // --- Tower ---
     const tower = createWardencliffTower();
-    tower.position.set(0, 0, -150); 
+    tower.position.set(0, 0, -100); 
     house.add(tower);
     
     // --- Parking Area for Tower ---
@@ -325,7 +325,7 @@ export function createWardencliffHouse() {
     const parkingGeom = new THREE.CylinderGeometry(parkingRadius, parkingRadius, 1, 32);
     const parkingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
     const parkingArea = new THREE.Mesh(parkingGeom, parkingMaterial);
-    parkingArea.position.set(0, 0.5, -150);
+    parkingArea.position.set(0, 0.5, -100);
     house.add(parkingArea);
 
 
@@ -353,14 +353,14 @@ export function createWardencliffHouse() {
 function createWardencliffTower() {
     const towerGroup = new THREE.Group();
     const metalMaterial = new THREE.MeshStandardMaterial({
-        color: 0x333333,
+        color: 0xcccccc,
         metalness: 0.9,
         roughness: 0.4,
     });
     
-    const towerHeight = 250;
+    const towerHeight = 187;
     const baseRadius = 80;
-    const topRadius = 15;
+    const topRadius = 25;
     const numLegs = 8;
     const numLevels = 10;
     const legThickness = 1.5;
@@ -404,11 +404,12 @@ function createWardencliffTower() {
     }
 
     const domeRadius = 50;
-    const platformRadius = 48; // Platform is smaller than the dome
+    const platformRadius = 40; // Platform is smaller than the dome
     const platformHeight = 4;
+    const platformMaterial = new THREE.MeshStandardMaterial({color: 0x111111});
 
     const platformGeom = new THREE.CylinderGeometry(platformRadius, platformRadius, platformHeight, 32);
-    const platform = new THREE.Mesh(platformGeom, metalMaterial);
+    const platform = new THREE.Mesh(platformGeom, platformMaterial);
     platform.position.y = towerHeight;
     towerGroup.add(platform);
     
@@ -425,9 +426,12 @@ function createWardencliffTower() {
         const curvePoints = [];
         for (let j = 0; j <= horizontalSegments; j++) {
             const phi = (j / horizontalSegments) * (Math.PI / 2);
-            const x = Math.cos(phi) * domeRadius * Math.cos(angle);
+            let radius = domeRadius;
+            if (j === 0) radius = platformRadius; // Start from platform edge
+
+            const x = Math.cos(phi) * radius * Math.cos(angle);
             const y = Math.sin(phi) * domeRadius;
-            const z = Math.cos(phi) * domeRadius * Math.sin(angle);
+            const z = Math.cos(phi) * radius * Math.sin(angle);
             curvePoints.push(new THREE.Vector3(x, y, z));
         }
 
@@ -461,3 +465,4 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
