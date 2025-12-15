@@ -248,27 +248,6 @@ export function createGridAndScenery(
            break;
         case 25:
           sectorGroup = createSector25({ cellCenterX, cellCenterZ, staticCollidersRef });
-          const toriiGate25 = createToriiGate();
-
-          const gateX25 = cellCenterX;
-          const gateZ25 = cellCenterZ;
-          
-          let gateNx25 = (gateX25 - domeCenterX) / halfDomeWidth;
-          const gateNz25 = (gateZ25 - domeCenterZ) / halfDomeDepth;
-
-          if (gateNx25 <= peakNormalizedX) {
-            gateNx25 = peakNormalizedX;
-          }
-
-          const gateHeightXComponent25 = Math.cos((gateNx25 - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-          const gateHeightZComponent25 = Math.cos(gateNz25 * Math.PI / 2);
-          const gateYOffset25 = domeHeight * gateHeightXComponent25 * gateHeightZComponent25;
-
-          toriiGate25.position.set(gateX25, gateYOffset25, gateZ25);
-          toriiGate25.scale.set(2, 1.8, 2);
-          toriiGate25.rotation.y = Math.PI / 2;
-          sectorGroup.add(toriiGate25);
-          staticCollidersRef.current.push(toriiGate25);
           break;
         default:
           sectorGroup = createGenericSector({
