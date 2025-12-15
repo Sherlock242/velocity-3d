@@ -109,7 +109,7 @@ function createArchedWindow() {
 
     // --- Arch Panes ---
     const centerPaneGeom = new THREE.BoxGeometry(paneThickness, archRadius, paneThickness);
-    const centerPane = new THREE.Mesh(centerPaneGeom, blackMaterial);
+    const centerPane = new THREE.Mesh(centerPaneGeom, whiteMaterial);
     centerPane.position.y = frameHeight / 2 + archRadius / 2;
     centerPane.position.z = 0.6;
     windowGroup.add(centerPane);
@@ -119,7 +119,7 @@ function createArchedWindow() {
         const angle = (Math.PI / (numArchPanes + 1)) * (i + 1);
         const paneLength = archRadius;
         const paneGeom = new THREE.BoxGeometry(paneThickness, paneLength, paneThickness);
-        const pane = new THREE.Mesh(paneGeom, blackMaterial);
+        const pane = new THREE.Mesh(paneGeom, whiteMaterial);
         pane.position.y = frameHeight / 2;
         pane.position.z = 0.6;
         pane.rotation.z = Math.PI / 2 - angle;
