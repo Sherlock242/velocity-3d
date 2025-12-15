@@ -311,8 +311,13 @@ export function createGridAndScenery(
       }
       const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
       const heightZComponent = Math.cos(nz * Math.PI / 2);
-      const yOffset = domeHeight * heightXComponent * heightZComponent;
+      let yOffset = domeHeight * heightXComponent * heightZComponent;
       
+      // Use the fixed elevation for the Sector 24 part of the road
+      if (worldPos.x >= sector24StartX && worldPos.x < sector24EndX) {
+        yOffset = 1;
+      }
+
       // Set the Z attribute of the vertex in its local space to create height
       // This is because the plane is rotated. Y in world is Z in local.
       roadPositions.setZ(i, yOffset + roadYPosition + 0.1); // a bit of offset to prevent z-fighting
