@@ -51,7 +51,7 @@ function createArchedWindow() {
     const windowGroup = new THREE.Group();
 
     const frameMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const glassMaterial = new THREE.MeshBasicMaterial({ color: 0x111111 });
+    const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.1 });
     const frameWidth = 10;
     const frameHeight = 15;
     const frameDepth = 1;
@@ -91,7 +91,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -198,7 +198,7 @@ export function createWardencliffHouse() {
     transomShape.moveTo(-transomRadius, 0);
     transomShape.absarc(0, 0, transomRadius, Math.PI, 0, true);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
-    const transomGlassMaterial = new THREE.MeshBasicMaterial({color: 0x111111});
+    const transomGlassMaterial = new THREE.MeshStandardMaterial({color: 0x111111, metalness: 0.9, roughness: 0.1});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
     transomGlass.position.set(0, 2 + doorHeight + 2, doorZ + 0.5);
     entranceGroup.add(transomGlass);
