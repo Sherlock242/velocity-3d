@@ -216,11 +216,10 @@ export function createGridAndScenery(
           const gateHeightZComponent23 = Math.cos(gateNz23 * Math.PI / 2);
           const gateYOffset23 = domeHeight * gateHeightXComponent23 * gateHeightZComponent23;
 
-          toriiGate23.position.set(gateX23, gateYOffset23, gateZ23);
+          toriiGate23.position.set(gateX23, gateYOffset23 + roadYPosition, gateZ23);
           toriiGate23.scale.set(2, 1.8, 2);
           toriiGate23.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate23);
-          staticCollidersRef.current.push(toriiGate23);
           break;
         case 24:
            sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
@@ -240,14 +239,33 @@ export function createGridAndScenery(
            const gateHeightZComponent24 = Math.cos(gateNz24 * Math.PI / 2);
            const gateYOffset24 = domeHeight * gateHeightXComponent24 * gateHeightZComponent24;
  
-           toriiGate24.position.set(gateX24, gateYOffset24, gateZ24);
+           toriiGate24.position.set(gateX24, gateYOffset24 + roadYPosition, gateZ24);
            toriiGate24.scale.set(2, 1.8, 2);
            toriiGate24.rotation.y = Math.PI / 2;
            sectorGroup.add(toriiGate24);
-           staticCollidersRef.current.push(toriiGate24);
            break;
         case 25:
           sectorGroup = createSector25({ cellCenterX, cellCenterZ, staticCollidersRef });
+          const toriiGate25 = createToriiGate();
+
+          const gateX25 = cellCenterX;
+          const gateZ25 = cellCenterZ;
+
+          let gateNx25 = (gateX25 - domeCenterX) / halfDomeWidth;
+          const gateNz25 = (gateZ25 - domeCenterZ) / halfDomeDepth;
+
+          if (gateNx25 <= peakNormalizedX) {
+              gateNx25 = peakNormalizedX;
+          }
+
+          const gateHeightXComponent25 = Math.cos((gateNx25 - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+          const gateHeightZComponent25 = Math.cos(gateNz25 * Math.PI / 2);
+          const gateYOffset25 = domeHeight * gateHeightXComponent25 * gateHeightZComponent25;
+
+          toriiGate25.position.set(gateX25, gateYOffset25 + roadYPosition, gateZ25);
+          toriiGate25.scale.set(2, 1.8, 2);
+          toriiGate25.rotation.y = Math.PI / 2;
+          sectorGroup.add(toriiGate25);
           break;
         default:
           sectorGroup = createGenericSector({
