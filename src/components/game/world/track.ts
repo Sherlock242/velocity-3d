@@ -263,8 +263,7 @@ export function createGridAndScenery(
       const yOffset = domeHeight * heightXComponent * heightZComponent;
 
       const gate = createToriiGate();
-      const gateYPosition = roadYPosition + yOffset;
-      gate.position.set(gateX, gateYPosition, gateZ);
+      gate.position.set(gateX, yOffset + roadYPosition, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
   }
