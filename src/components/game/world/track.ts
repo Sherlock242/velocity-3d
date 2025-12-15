@@ -84,22 +84,24 @@ export function createGridAndScenery(
           gridGroup.add(line);
         }
 
-        // Horizontal roads
-        const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
-        const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
-        horizontalRoad.rotation.x = -Math.PI / 2;
-        horizontalRoad.position.y = roadYPosition;
-        horizontalRoad.position.z = roadOffset;
-        horizontalRoad.receiveShadow = true;
-        gridGroup.add(horizontalRoad);
+        // Horizontal roads - Don't render road for the last row (dome area)
+        if (i < GRID_SIZE -1) {
+          const horizontalRoadGeom = new THREE.PlaneGeometry(TOTAL_GRID_WIDTH, ROAD_WIDTH);
+          const horizontalRoad = new THREE.Mesh(horizontalRoadGeom, roadMaterial);
+          horizontalRoad.rotation.x = -Math.PI / 2;
+          horizontalRoad.position.y = roadYPosition;
+          horizontalRoad.position.z = roadOffset;
+          horizontalRoad.receiveShadow = true;
+          gridGroup.add(horizontalRoad);
 
-        // Horizontal lane markings
-        for (let j = -halfTotalWidth; j < halfTotalWidth; j += lineLength + lineGap) {
-          const line = new THREE.Mesh(lineGeom, lineMaterial);
-          line.position.set(j + lineLength / 2, roadYPosition + 0.01, roadOffset);
-          line.rotation.x = -Math.PI / 2;
-          line.rotation.z = Math.PI / 2;
-          gridGroup.add(line);
+          // Horizontal lane markings
+          for (let j = -halfTotalWidth; j < halfTotalWidth; j += lineLength + lineGap) {
+            const line = new THREE.Mesh(lineGeom, lineMaterial);
+            line.position.set(j + lineLength / 2, roadYPosition + 0.01, roadOffset);
+            line.rotation.x = -Math.PI / 2;
+            line.rotation.z = Math.PI / 2;
+            gridGroup.add(line);
+          }
         }
     }
   }
@@ -215,8 +217,8 @@ export function createGridAndScenery(
           });
           break;
       }
-      if (sectorYOffset > 0) {
-        sectorGroup.position.y = sectorYOffset;
+      if (j === 4) { // If the sector is on the dome
+        sectorGroup.position.y = sectorYOffset; // Apply the calculated Y-offset to the whole group
       }
       gridGroup.add(sectorGroup);
     }
