@@ -16,6 +16,7 @@ import { createSector14 } from './sectors/sector-14';
 import { createSector15 } from './sectors/sector-15';
 import { createSector18 } from './sectors/sector-18';
 import { createSector20 } from './sectors/sector-20';
+import { createSector23 } from './sectors/sector-23';
 import { createSector24 } from './sectors/sector-24';
 import { createSector25 } from './sectors/sector-25';
 import { createGenericSector } from './sectors/generic-sector';
@@ -190,17 +191,20 @@ export function createGridAndScenery(
           break;
         case 21:
         case 22:
-        case 25:
-          sectorGroup = createSector25({ cellCenterX, cellCenterZ, staticCollidersRef });
+           sectorGroup = createGenericSector({
+            theme,
+            cellCenterX,
+            cellCenterZ,
+            walkingNpcsRef,
+          });
           break;
         case 23:
-          sectorGroup = new THREE.Group();
+          sectorGroup = createSector23({ cellCenterX, cellCenterZ, staticCollidersRef });
           const toriiGate23 = createToriiGate();
           
           const gateX23 = cellCenterX;
           const gateZ23 = cellCenterZ;
           
-          // Calculate Y position on the dome for the gate
           let gateNx23 = (gateX23 - domeCenterX) / halfDomeWidth;
           const gateNz23 = (gateZ23 - domeCenterZ) / halfDomeDepth;
 
@@ -212,14 +216,14 @@ export function createGridAndScenery(
           const gateHeightZComponent23 = Math.cos(gateNz23 * Math.PI / 2);
           const gateYOffset23 = domeHeight * gateHeightXComponent23 * gateHeightZComponent23;
 
-          toriiGate23.position.set(gateX23, gateYOffset23, gateZ23);
+          toriiGate23.position.set(gateX23, roadYPosition + gateYOffset23, gateZ23);
           toriiGate23.scale.set(2, 1.8, 2);
           toriiGate23.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate23);
           staticCollidersRef.current.push(toriiGate23);
           break;
         case 24:
-           sectorGroup = new THREE.Group();
+           sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
            const toriiGate24 = createToriiGate();
            
            const gateX24 = cellCenterX;
@@ -236,12 +240,36 @@ export function createGridAndScenery(
            const gateHeightZComponent24 = Math.cos(gateNz24 * Math.PI / 2);
            const gateYOffset24 = domeHeight * gateHeightXComponent24 * gateHeightZComponent24;
  
-           toriiGate24.position.set(gateX24, gateYOffset24, gateZ24);
+           toriiGate24.position.set(gateX24, roadYPosition + gateYOffset24, gateZ24);
            toriiGate24.scale.set(2, 1.8, 2);
            toriiGate24.rotation.y = Math.PI / 2;
            sectorGroup.add(toriiGate24);
            staticCollidersRef.current.push(toriiGate24);
            break;
+        case 25:
+          sectorGroup = createSector25({ cellCenterX, cellCenterZ, staticCollidersRef });
+          const toriiGate25 = createToriiGate();
+
+          const gateX25 = cellCenterX;
+          const gateZ25 = cellCenterZ;
+          
+          let gateNx25 = (gateX25 - domeCenterX) / halfDomeWidth;
+          const gateNz25 = (gateZ25 - domeCenterZ) / halfDomeDepth;
+
+          if (gateNx25 <= peakNormalizedX) {
+            gateNx25 = peakNormalizedX;
+          }
+
+          const gateHeightXComponent25 = Math.cos((gateNx25 - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+          const gateHeightZComponent25 = Math.cos(gateNz25 * Math.PI / 2);
+          const gateYOffset25 = domeHeight * gateHeightXComponent25 * gateHeightZComponent25;
+
+          toriiGate25.position.set(gateX25, roadYPosition + gateYOffset25, gateZ25);
+          toriiGate25.scale.set(2, 1.8, 2);
+          toriiGate25.rotation.y = Math.PI / 2;
+          sectorGroup.add(toriiGate25);
+          staticCollidersRef.current.push(toriiGate25);
+          break;
         default:
           sectorGroup = createGenericSector({
             theme,
@@ -253,7 +281,7 @@ export function createGridAndScenery(
       }
       
       // If the sector is on the dome, adjust individual children instead of the whole group
-      if (j === 4 && sectorNumber !== 23 && sectorNumber !== 24) { // Exclude sectors where height is already calculated
+      if (j === 4 && sectorNumber !== 23 && sectorNumber !== 24 && sectorNumber !== 25) { // Exclude sectors where height is already calculated
         sectorGroup.children.forEach(child => {
           if (child instanceof THREE.Group || child instanceof THREE.Mesh) {
             const childX = child.position.x;

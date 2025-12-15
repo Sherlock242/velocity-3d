@@ -16,8 +16,7 @@ export function createSector23({
   const sectorGroup = new THREE.Group();
 
   // This sector is part of the ramp. You can add scenery on the sides.
+  // Gate creation is now handled in track.ts to ensure correct height on the dome.
 
   return sectorGroup;
 }
-
-    

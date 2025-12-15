@@ -18,12 +18,7 @@ export function createSector25({
 }: Sector25Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
-  const toriiGate = createToriiGate();
-  toriiGate.position.set(cellCenterX, 0, cellCenterZ);
-  toriiGate.scale.set(2, 1.8, 2);
-  toriiGate.rotation.y = Math.PI / 2;
-  sectorGroup.add(toriiGate);
-  staticCollidersRef.current.push(toriiGate);
+  // Gate creation is now handled in track.ts to ensure correct height on the dome.
 
 
   return sectorGroup;
