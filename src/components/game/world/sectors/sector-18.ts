@@ -23,9 +23,9 @@ function createElectricSparks(count: number, position: THREE.Vector3) {
         for (let j = 0; j < numSegments; j++) {
             const nextPoint = currentPoint.clone().add(
                 new THREE.Vector3(
-                    (Math.random() - 0.5) * 20,
-                    (Math.random() - 0.5) * 20,
-                    (Math.random() - 0.5) * 20
+                    (Math.random() - 0.5) * 50,
+                    (Math.random() - 0.5) * 50,
+                    (Math.random() - 0.5) * 50
                 )
             );
             points.push(nextPoint);
