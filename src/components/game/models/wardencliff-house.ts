@@ -92,7 +92,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -102,7 +102,7 @@ function createArchedWindow() {
 
     // Arch glass
     const archGlassGeom = new THREE.ShapeGeometry(archShape);
-    const archGlass = new THREE.Mesh(archGlassGeom, blackGlassMaterial);
+    const archGlass = new THREE.Mesh(archGeom, blackGlassMaterial);
     archGlass.position.y = frameHeight / 2;
     archGlass.position.z = 0.5;
     windowGroup.add(archGlass);
@@ -197,7 +197,7 @@ export function createWardencliffHouse() {
     const transomRadius = (doorWidth * 2) * 0.7;
     const transomShape = new THREE.Shape();
     transomShape.moveTo(-transomRadius, 0);
-    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, true);
+    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshLambertMaterial({color: 0x000000});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
@@ -404,7 +404,7 @@ function createWardencliffTower() {
     }
 
     const domeRadius = 50;
-    const platformRadius = 55;
+    const platformRadius = 48; // Platform is smaller than the dome
     const platformHeight = 4;
 
     const platformGeom = new THREE.CylinderGeometry(platformRadius, platformRadius, platformHeight, 32);
@@ -413,7 +413,7 @@ function createWardencliffTower() {
     towerGroup.add(platform);
     
     const domeGroup = new THREE.Group();
-    domeGroup.position.y = towerHeight + platformHeight / 2;
+    domeGroup.position.y = towerHeight; // Dome starts from the platform level
 
     const braceRadius = 0.5;
     const verticalSegments = 12;
@@ -456,7 +456,7 @@ function createWardencliffTower() {
     const topSphereGeom = new THREE.SphereGeometry(2, 16, 8);
     const topSphere = new THREE.Mesh(topSphereGeom, metalMaterial);
     topSphere.name = 'wardencliffTopSphere';
-    topSphere.position.y = towerHeight + platformHeight / 2 + domeRadius;
+    topSphere.position.y = towerHeight + domeRadius;
     towerGroup.add(topSphere);
     
     return towerGroup;
