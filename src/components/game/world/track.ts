@@ -264,7 +264,8 @@ export function createGridAndScenery(
 
       const gate = createToriiGate();
       gate.scale.set(0.5, 0.5, 0.5);
-      gate.position.set(gateX, yOffset + roadYPosition, gateZ);
+      const gateYPosition = roadYPosition + yOffset + 0.01;
+      gate.position.set(gateX, gateYPosition, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
   }
