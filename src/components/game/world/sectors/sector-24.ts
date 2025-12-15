@@ -19,6 +19,7 @@ export function createSector24({
   const toriiGate = createToriiGate();
   toriiGate.position.set(cellCenterX, 0, cellCenterZ);
   toriiGate.scale.set(2, 2, 2);
+  toriiGate.rotation.y = Math.PI / 2;
   sectorGroup.add(toriiGate);
   staticCollidersRef.current.push(toriiGate);
 
