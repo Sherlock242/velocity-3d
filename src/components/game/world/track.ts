@@ -260,9 +260,18 @@ export function createGridAndScenery(
       const gateX = THREE.MathUtils.lerp(startSector25X, endSector22X, tunnelProgress);
       const gateZ = domeCenterZ; // Center them on the dome's depth
 
+      // Calculate height based on dome geometry
+      let nx = (gateX - domeCenterX) / halfDomeWidth;
+      const nz = (gateZ - domeCenterZ) / halfDomeDepth;
+      if (nx <= peakNormalizedX) {
+          nx = peakNormalizedX;
+      }
+      const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+      const heightZComponent = Math.cos(nz * Math.PI / 2);
+      const yOffset = domeHeight * heightXComponent * heightZComponent;
+
       const gate = createToriiGate();
-      // Set a constant, elevated Y position for a straight bridge
-      gate.position.set(gateX, 150, gateZ);
+      gate.position.set(gateX, yOffset, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
   }
