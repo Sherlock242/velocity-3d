@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 // Function to create a texture with vertical text
@@ -22,7 +23,7 @@ function createTextTexture(
   context.fillRect(0, 0, width, height);
 
   // Set text properties
-  const fontSize = width * 0.8;
+  const fontSize = width * 0.6;
   context.font = `bold ${fontSize}px sans-serif`;
   context.fillStyle = textColor;
   context.textAlign = 'center';
