@@ -241,7 +241,8 @@ export function createGridAndScenery(
   const tilePlaneGeom = new THREE.PlaneGeometry(domeDepth, flatTopWidth);
   const tileMaterial = createTileMaterial();
   const tilePlane = new THREE.Mesh(tilePlaneGeom, tileMaterial);
-  tilePlane.rotation.x = -Math.PI/2;
+  tilePlane.rotation.x = -Math.PI / 2;
+  tilePlane.rotation.z = Math.PI / 2;
 
   // Calculate position for the tiled plane
   const tilePlaneX = domeCenterX - halfDomeWidth + flatTopWidth / 2;
