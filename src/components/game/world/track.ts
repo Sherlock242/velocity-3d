@@ -245,7 +245,7 @@ export function createGridAndScenery(
 
   // Calculate position for the tiled plane
   const tilePlaneX = domeCenterX - halfDomeWidth + flatTopWidth / 2;
-  const tilePlaneY = roadYPosition + domeHeight + 0.1;
+  const tilePlaneY = roadYPosition + domeHeight + 0.2; // Adjusted to prevent z-fighting
   const tilePlaneZ = domeCenterZ;
   
   tilePlane.position.set(tilePlaneX, tilePlaneY, tilePlaneZ);
