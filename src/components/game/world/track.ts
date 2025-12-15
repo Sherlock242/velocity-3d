@@ -264,13 +264,44 @@ export function createGridAndScenery(
 
       const gate = createToriiGate();
       gate.scale.set(0.5, 0.5, 0.5);
-      gate.position.set(gateX, yOffset + roadYPosition, gateZ);
+      gate.position.set(gateX, yOffset, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
   }
 
+  // --- Walkable Path under Tunnel ---
+  const pathGeom = new THREE.PlaneGeometry(tunnelLength, 90, 100, 1);
+  const pathMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
+  const pathMesh = new THREE.Mesh(pathGeom, pathMat);
+  pathMesh.position.set(
+    endSector22X + tunnelLength / 2,
+    0, // Will be adjusted per-vertex
+    domeCenterZ
+  );
+  pathMesh.rotation.x = -Math.PI / 2;
+  
+  const pathPositions = pathMesh.geometry.attributes.position;
+  for (let i = 0; i < pathPositions.count; i++) {
+    const localPos = new THREE.Vector3().fromBufferAttribute(pathPositions, i);
+    const worldPos = pathMesh.localToWorld(localPos);
+    
+    let nx = (worldPos.x - domeCenterX) / halfDomeWidth;
+    const nz = (worldPos.z - domeCenterZ) / halfDomeDepth;
+    if (nx <= peakNormalizedX) {
+      nx = peakNormalizedX;
+    }
+    const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+    const heightZComponent = Math.cos(nz * Math.PI / 2);
+    const yOffset = domeHeight * heightXComponent * heightZComponent;
+    
+    // Set the Z attribute of the vertex in its local space to create height
+    pathPositions.setZ(i, yOffset + 0.3); // a bit of offset to prevent z-fighting
+  }
+  pathPositions.needsUpdate = true;
+  pathMesh.geometry.computeVertexNormals();
+
+  gridGroup.add(pathMesh);
+
 
   return gridGroup;
 }
-
-    
