@@ -7,7 +7,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp } = gameState;
     if (!playerRef.current) return;
 
-    const playerHeight = controlModeRef.current === 'car' ? 1.5 : 2.5;
+    const playerHeight = controlModeRef.current === 'car' ? 2.5 : 3.5; // Increased from 1.5/2.5
     let onRamp = false;
     const raycaster = new THREE.Raycaster();
     
@@ -36,6 +36,20 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
             playerRef.current.position.y = playerHeight;
             velocityRef.current.y = 0;
         }
+
+        // Safeguard to ensure player is always above the main dome
+        if (rampMeshRef.current) {
+            raycaster.set(playerRef.current.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));
+            const domeIntersects = raycaster.intersectObject(rampMeshRef.current);
+            if (domeIntersects.length > 0) {
+                const domeGroundY = domeIntersects[0].point.y;
+                if (playerRef.current.position.y < domeGroundY + playerHeight) {
+                    playerRef.current.position.y = domeGroundY + playerHeight;
+                    velocityRef.current.y = 0; // Stop any downward velocity
+                }
+            }
+        }
+
     } else {
         velocityRef.current.y = 0;
     }
