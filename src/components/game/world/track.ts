@@ -234,5 +234,33 @@ export function createGridAndScenery(
     }
   }
 
+  // --- Torii Gate Tunnel ---
+  const numGates = 10;
+  const gateSpacing = 200;
+  const startSector25X = (4 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2) - 100;
+  const endSector22X = (1 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2);
+
+  for (let i = 0; i < numGates; i++) {
+      const tunnelProgress = i / (numGates - 1);
+      const gateX = THREE.MathUtils.lerp(startSector25X, endSector22X, tunnelProgress);
+      const gateZ = domeCenterZ; // Center them on the dome's depth
+
+      let nx = (gateX - domeCenterX) / halfDomeWidth;
+      const nz = (gateZ - domeCenterZ) / halfDomeDepth;
+      if (nx <= peakNormalizedX) {
+        nx = peakNormalizedX;
+      }
+      const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+      const heightZComponent = Math.cos(nz * Math.PI / 2);
+      const yOffset = domeHeight * heightXComponent * heightZComponent;
+
+      const gate = createToriiGate();
+      gate.scale.set(0.5, 0.5, 0.5);
+      gate.position.set(gateX, yOffset, gateZ);
+      gate.rotation.y = Math.PI / 2;
+      gridGroup.add(gate);
+  }
+
+
   return gridGroup;
 }
