@@ -224,9 +224,7 @@ export function createWardencliffHouse() {
     function createHippedRoof(width: number, depth: number, height: number) {
         const roofGeometry = new THREE.BufferGeometry();
         
-        // A hipped roof has a rectangular base and a ridge line at the top.
-        // The length of the ridge is the width of the roof minus twice the run (which is based on height and pitch, here simplified).
-        const ridgeLength = width - depth; // Assuming 45 degree pitch for simplicity
+        const ridgeLength = width > depth ? width - depth : 0;
         const halfW = width / 2;
         const halfD = depth / 2;
         const halfRidge = ridgeLength / 2;
@@ -244,19 +242,19 @@ export function createWardencliffHouse() {
         ]);
 
         const indices = [
-            // Back face (trapezoid)
-            0, 1, 5,   0, 5, 4,
             // Front face (trapezoid)
-            3, 5, 2,   3, 4, 5,
+            3, 2, 5,   3, 5, 4,
+            // Back face (trapezoid)
+            0, 4, 5,   0, 5, 1,
             // Left end (triangle)
-            0, 4, 3,
+            0, 3, 4,
             // Right end (triangle)
-            1, 2, 5,
+            1, 2, 5
         ];
 
         roofGeometry.setIndex(indices);
         roofGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-        roofGeometry.computeVertexNormals(); // Important for correct lighting
+        roofGeometry.computeVertexNormals(); 
 
         const roofMesh = new THREE.Mesh(roofGeometry, roofMaterial);
         return roofMesh;
@@ -269,6 +267,11 @@ export function createWardencliffHouse() {
     mainRoof.position.y = roofY;
     house.add(mainRoof);
     
+    const pavilionRoof = createHippedRoof(pavilionWidth + 2, pavilionDepth + 2, 5);
+    pavilionRoof.position.y = roofY;
+    pavilionRoof.position.z = buildingDepth / 2 + pavilionDepth / 2;
+    house.add(pavilionRoof);
+
     // --- Dormer (Mini House) on Roof ---
     const dormerY = roofY + roofHeight;
     const dormerWidth = 40;
@@ -464,6 +467,7 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
 
 
 
