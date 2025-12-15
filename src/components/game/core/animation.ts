@@ -7,6 +7,7 @@ import { applyPhysicsAndBoundaries } from '../animations/player-physics';
 import { checkTrackAndPenalties } from '../animations/track-penalties';
 import { updateCameraPosition } from '../animations/camera';
 import { updateSceneElements } from '../animations/scene-elements';
+import { updateElectricSparks } from '../animations/sparks';
 import type { GameState } from './state';
 
 const clock = new THREE.Clock();
@@ -20,7 +21,7 @@ export function createAnimationLoop(
     setGameData: React.Dispatch<React.SetStateAction<{ speed: number; time: number; carPosition: { x: number; z: number; }; carRotation: number; controlMode: 'car' | 'person'; gear: 1 | 2 | 3; }>>,
     topDownSector: number | null
 ) {
-    const { animationFrameIdRef, playerRef, gameTimeRef, velocityRef, gearRef } = gameState;
+    const { animationFrameIdRef, playerRef, gameTimeRef, velocityRef, gearRef, electricSparksRef } = gameState;
 
     const animate = () => {
         animationFrameIdRef.current = requestAnimationFrame(animate);
@@ -30,6 +31,8 @@ export function createAnimationLoop(
 
         updateEmoji(gameState, delta);
         updateSceneElements(gameState, delta, now, scene);
+        updateElectricSparks(electricSparksRef.current);
+
 
         if (playerRef.current) {
             updatePlayerMovement(gameState, delta, scene, camera, now);

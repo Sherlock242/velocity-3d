@@ -55,6 +55,7 @@ export type GameState = {
     currentFacePositionRef: React.MutableRefObject<THREE.Spherical>;
     domeRef: React.MutableRefObject<THREE.Mesh | undefined>;
     faceRotationStepRef: React.MutableRefObject<number>;
+    electricSparksRef: React.MutableRefObject<THREE.Line[]>;
 };
 
 export function useGameState(): GameState {
@@ -96,6 +97,7 @@ export function useGameState(): GameState {
     const currentFacePositionRef = React.useRef(new THREE.Spherical(200, THREE.MathUtils.degToRad(45), 0));
     const domeRef = React.useRef<THREE.Mesh>();
     const faceRotationStepRef = React.useRef(0);
+    const electricSparksRef = React.useRef<THREE.Line[]>([]);
 
 
     return {
@@ -132,5 +134,6 @@ export function useGameState(): GameState {
         currentFacePositionRef,
         domeRef,
         faceRotationStepRef,
+        electricSparksRef,
     };
 }

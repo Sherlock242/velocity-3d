@@ -1,4 +1,5 @@
 
+
 import * as THREE from 'three';
 
 // Helper to create a procedural brick texture
@@ -90,7 +91,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -449,6 +450,7 @@ function createWardencliffTower() {
 
     const topSphereGeom = new THREE.SphereGeometry(2, 16, 8);
     const topSphere = new THREE.Mesh(topSphereGeom, metalMaterial);
+    topSphere.name = 'wardencliffTopSphere';
     topSphere.position.y = towerHeight + platformHeight / 2 + domeRadius;
     towerGroup.add(topSphere);
     
