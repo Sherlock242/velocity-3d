@@ -253,6 +253,11 @@ export function createGridAndScenery(
   const tunnelLength = startSector25X - endSector22X;
   const gateSpacing = 40;
   const numGates = Math.floor(tunnelLength / gateSpacing);
+  
+  // Define Sector 24 boundaries
+  const sector24Index = 3;
+  const sector24StartX = sector24Index * CELL_SIZE - halfTotalWidth;
+  const sector24EndX = sector24StartX + CELL_SIZE;
 
 
   for (let i = 0; i < numGates; i++) {
@@ -261,10 +266,10 @@ export function createGridAndScenery(
       const gateZ = domeCenterZ; // Center them on the dome's depth
       
       let yOffset: number;
-
-      if (i >= numGates - 10) {
-        // Elevate the last 10 gates in a straight line
-        yOffset = 25;
+      
+      // Check if the gate is within Sector 24
+      if (gateX >= sector24StartX && gateX < sector24EndX) {
+          yOffset = 25; // Elevate straight forward
       } else {
         // Calculate height based on dome geometry for other gates
         let nx = (gateX - domeCenterX) / halfDomeWidth;
