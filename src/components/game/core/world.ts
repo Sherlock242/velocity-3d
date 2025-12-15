@@ -13,9 +13,9 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     // Player
     const transformer = createTransformer();
     
-    // Set starting position to the center of Sector 23
+    // Set starting position to the center of Sector 16
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
-    const sectorIndex = 22; // Sector 23 is index 22
+    const sectorIndex = 15; // Sector 16 is index 15
     const i = sectorIndex % GRID_SIZE;
     const j = Math.floor(sectorIndex / GRID_SIZE);
     
@@ -24,7 +24,7 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
 
     transformer.position.x = cellCenterX;
     transformer.position.z = cellCenterZ;
-    transformer.rotation.y = Math.PI; 
+    transformer.rotation.y = -Math.PI / 2;
     
     scene.add(transformer);
     playerRef.current = transformer;
