@@ -109,6 +109,47 @@ export function createGridAndScenery(
     }
   }
 
+  // --- Upland Ramp for Sectors 21-24 ---
+  const rampWidth = CELL_SIZE;
+  const rampLength = CELL_SIZE * 4;
+  const rampHeight = 100;
+  const rampGeometry = new THREE.PlaneGeometry(rampWidth, rampLength);
+  const rampMaterial = new THREE.MeshStandardMaterial({
+    color: TRACK_THEMES[theme].ground,
+    side: THREE.DoubleSide,
+  });
+  const ramp = new THREE.Mesh(rampGeometry, rampMaterial);
+  
+  // Position ramp over sectors 21-24
+  const startRow = 4;
+  const rampZ = startRow * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+  ramp.position.z = rampZ;
+
+  // Create the ramp incline
+  const positions = ramp.geometry.attributes.position;
+  const rampStart = -rampLength / 2;
+  const rampEndFlat = rampStart + CELL_SIZE * 2;
+  const rampSectionLength = CELL_SIZE * 2;
+  
+  for (let i = 0; i < positions.count; i++) {
+    const y = positions.getY(i); // Corresponds to X in a non-rotated plane
+    let newY = 0;
+    if (y < rampEndFlat) {
+      newY = rampHeight;
+    } else {
+      const progress = 1 - (y - rampEndFlat) / rampSectionLength;
+      newY = progress * rampHeight;
+    }
+    positions.setZ(i, positions.getZ(i) + newY);
+  }
+  positions.needsUpdate = true;
+  ramp.geometry.computeVertexNormals();
+
+  ramp.rotation.x = -Math.PI / 2;
+  ramp.position.y = roadYPosition + 0.01;
+  gridGroup.add(ramp);
+  rampMeshRef.current = ramp; // Make it collidable
+
   // Add scenery
   for (let i = 0; i < GRID_SIZE; i++) {
     for (let j = 0; j < GRID_SIZE; j++) {
@@ -117,6 +158,20 @@ export function createGridAndScenery(
       const sectorNumber = j * GRID_SIZE + i + 1;
 
       let sectorGroup: THREE.Group;
+      let sectorYOffset = 0;
+
+      // Check if the sector is part of the upland area
+      if (sectorNumber >= 21 && sectorNumber <= 24) {
+          const relativeX = cellCenterX; // Plane is along X axis
+          if (relativeX < -halfTotalWidth + CELL_SIZE * 2) {
+              sectorYOffset = rampHeight;
+          } else if (relativeX < -halfTotalWidth + CELL_SIZE * 4) {
+              const rampStartX = -halfTotalWidth + CELL_SIZE * 2;
+              const rampLength = CELL_SIZE * 2;
+              const progress = 1 - (relativeX - rampStartX) / rampLength;
+              sectorYOffset = progress * rampHeight;
+          }
+      }
 
       switch (sectorNumber) {
         case 1:
@@ -132,7 +187,7 @@ export function createGridAndScenery(
           sectorGroup = createSector13({ cellCenterX, cellCenterZ, staticCollidersRef, emojiFaceRef, domeRef });
           break;
         case 14:
-          sectorGroup = createSector14({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef, rampWallsRef, universityRamp });
+          sectorGroup = createSector14({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef: new THREE.ObjectRef(), rampWallsRef, universityRamp });
           break;
         case 15:
           sectorGroup = createSector15({ cellCenterX, cellCenterZ, staticCollidersRef });
@@ -146,15 +201,15 @@ export function createGridAndScenery(
         case 23:
           sectorGroup = new THREE.Group();
           const toriiGate = createToriiGate();
-          toriiGate.position.set(cellCenterX, 0, cellCenterZ);
+          toriiGate.position.set(cellCenterX, sectorYOffset, cellCenterZ);
           toriiGate.scale.set(2, 1.8, 2);
           toriiGate.rotation.y = Math.PI / 2;
           sectorGroup.add(toriiGate);
           staticCollidersRef.current.push(toriiGate);
           break;
         case 24:
-          sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
-          break;
+           sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
+           break;
         case 25:
           sectorGroup = createSector25({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
@@ -165,6 +220,9 @@ export function createGridAndScenery(
             cellCenterZ,
             walkingNpcsRef,
           });
+          if (sectorYOffset > 0) {
+            sectorGroup.position.y = sectorYOffset;
+          }
           break;
       }
       gridGroup.add(sectorGroup);

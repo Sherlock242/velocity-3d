@@ -16,7 +16,16 @@ export function createSector24({
 }: Sector24Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
-  // This sector is now empty. The gate has been moved to sector 23.
+  // This sector is now the start of the ramp.
+  // Add a torii gate as the entrance to the ramp.
+  const toriiGate = createToriiGate();
+  toriiGate.position.set(cellCenterX + 200, 0, cellCenterZ);
+  toriiGate.scale.set(2, 1.8, 2);
+  toriiGate.rotation.y = Math.PI;
+  sectorGroup.add(toriiGate);
+  staticCollidersRef.current.push(toriiGate);
 
   return sectorGroup;
 }
+
+    
