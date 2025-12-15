@@ -289,42 +289,53 @@ export function createGridAndScenery(
   }
 
   // --- Road under Tunnel ---
-  const roadUnderTunnelGeom = new THREE.PlaneGeometry(tunnelLength, ROAD_WIDTH, 10, 1);
-  const roadUnderTunnelMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
-  const roadUnderTunnelMesh = new THREE.Mesh(roadUnderTunnelGeom, roadUnderTunnelMat);
-  roadUnderTunnelMesh.position.set(
-      endSector22X + tunnelLength / 2,
-      0, // Will be adjusted per-vertex
-      domeCenterZ
-  );
-  roadUnderTunnelMesh.rotation.x = -Math.PI / 2;
-
-  const roadPositions = roadUnderTunnelMesh.geometry.attributes.position;
-  for (let i = 0; i < roadPositions.count; i++) {
-      const localPos = new THREE.Vector3().fromBufferAttribute(roadPositions, i);
-      const worldPos = roadUnderTunnelMesh.localToWorld(localPos.clone());
-      
-      let nx = (worldPos.x - domeCenterX) / halfDomeWidth;
-      const nz = (worldPos.z - domeCenterZ) / halfDomeDepth;
-      if (nx <= peakNormalizedX) {
-          nx = peakNormalizedX;
-      }
-      const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-      const heightZComponent = Math.cos(nz * Math.PI / 2);
-      let yOffset = domeHeight * heightXComponent * heightZComponent;
-      
-      // Use the fixed elevation for the Sector 24 part of the road
-      if (worldPos.x >= sector24StartX && worldPos.x < sector24EndX) {
-        yOffset = 1;
-      }
-
-      // Set the Z attribute of the vertex in its local space to create height
-      // This is because the plane is rotated. Y in world is Z in local.
-      roadPositions.setZ(i, yOffset + roadYPosition + 0.4); // a bit of offset to prevent z-fighting
-  }
-  roadPositions.needsUpdate = true;
-  roadUnderTunnelMesh.geometry.computeVertexNormals();
+  const roadUnderTunnelGeom = new THREE.BufferGeometry();
+  const roadUnderTunnelMat = new THREE.MeshStandardMaterial({ color: 0x444444, side: THREE.DoubleSide });
   
+  const roadSegments = 50;
+  const vertices = [];
+  const indices = [];
+  const halfRoadWidth = ROAD_WIDTH / 2;
+
+  for (let i = 0; i <= roadSegments; i++) {
+    const progress = i / roadSegments;
+    const roadX = THREE.MathUtils.lerp(startSector25X, endSector22X, progress);
+    const roadZ = domeCenterZ;
+
+    let yOffset;
+    if (roadX >= sector24StartX && roadX < sector24EndX) {
+        yOffset = 1;
+    } else {
+        let nx = (roadX - domeCenterX) / halfDomeWidth;
+        const nz = (roadZ - domeCenterZ) / halfDomeDepth;
+        if (nx <= peakNormalizedX) {
+            nx = peakNormalizedX;
+        }
+        const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+        const heightZComponent = Math.cos(nz * Math.PI / 2);
+        yOffset = domeHeight * heightXComponent * heightZComponent;
+    }
+    
+    const height = yOffset + roadYPosition + 0.4; // Increased offset
+
+    // Add vertices for the left and right side of the road segment
+    vertices.push(roadX, height, roadZ - halfRoadWidth); // right vertex
+    vertices.push(roadX, height, roadZ + halfRoadWidth); // left vertex
+
+    // Create faces
+    if (i < roadSegments) {
+        const i2 = i * 2;
+        indices.push(i2, i2 + 1, i2 + 3);
+        indices.push(i2, i2 + 3, i2 + 2);
+    }
+  }
+
+  roadUnderTunnelGeom.setIndex(indices);
+  roadUnderTunnelGeom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  roadUnderTunnelGeom.computeVertexNormals();
+  
+  const roadUnderTunnelMesh = new THREE.Mesh(roadUnderTunnelGeom, roadUnderTunnelMat);
+  roadUnderTunnelMesh.receiveShadow = true;
   gridGroup.add(roadUnderTunnelMesh);
 
 
