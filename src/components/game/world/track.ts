@@ -320,7 +320,7 @@ export function createGridAndScenery(
 
       // Set the Z attribute of the vertex in its local space to create height
       // This is because the plane is rotated. Y in world is Z in local.
-      roadPositions.setZ(i, yOffset + roadYPosition + 0.1); // a bit of offset to prevent z-fighting
+      roadPositions.setZ(i, yOffset + roadYPosition + 0.2); // a bit of offset to prevent z-fighting
   }
   roadPositions.needsUpdate = true;
   roadUnderTunnelMesh.geometry.computeVertexNormals();
