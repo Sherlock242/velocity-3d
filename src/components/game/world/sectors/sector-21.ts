@@ -20,16 +20,16 @@ export function createSector21({
   // Add the temple
   const temple = createJapaneseTemple();
   temple.scale.set(1.5, 1.5, 1.5);
-  temple.position.set(cellCenterX, 1, cellCenterZ - 100);
-  temple.rotation.y = Math.PI / 2;
+  temple.position.set(cellCenterX, 1, cellCenterZ);
+  temple.rotation.y = Math.PI;
   sectorGroup.add(temple);
   staticCollidersRef.current.push(temple);
 
   // Add the entrance gate
   const entranceGate = createToriiGate();
   entranceGate.scale.set(1.2, 1.2, 1.2);
-  entranceGate.position.set(cellCenterX, 1, cellCenterZ + 150);
-  entranceGate.rotation.y = Math.PI / 2;
+  entranceGate.position.set(cellCenterX, 1, cellCenterZ + 200);
+  entranceGate.rotation.y = 0;
   sectorGroup.add(entranceGate);
   staticCollidersRef.current.push(entranceGate);
 
