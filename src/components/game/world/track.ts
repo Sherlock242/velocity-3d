@@ -290,7 +290,7 @@ export function createGridAndScenery(
 
   // --- Road under Tunnel ---
   const roadUnderTunnelGeom = new THREE.PlaneGeometry(tunnelLength, ROAD_WIDTH, 10, 1);
-  const roadUnderTunnelMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
+  const roadUnderTunnelMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
   const roadUnderTunnelMesh = new THREE.Mesh(roadUnderTunnelGeom, roadUnderTunnelMat);
   roadUnderTunnelMesh.position.set(
       endSector22X + tunnelLength / 2,
@@ -320,7 +320,7 @@ export function createGridAndScenery(
 
       // Set the Z attribute of the vertex in its local space to create height
       // This is because the plane is rotated. Y in world is Z in local.
-      roadPositions.setZ(i, yOffset + roadYPosition + 0.2); // a bit of offset to prevent z-fighting
+      roadPositions.setZ(i, yOffset + roadYPosition + 0.4); // a bit of offset to prevent z-fighting
   }
   roadPositions.needsUpdate = true;
   roadUnderTunnelMesh.geometry.computeVertexNormals();
