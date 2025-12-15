@@ -51,6 +51,7 @@ function createArchedWindow() {
     const windowGroup = new THREE.Group();
 
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
     const blackGlassMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 });
     const frameWidth = 10;
     const frameHeight = 15;
@@ -95,7 +96,7 @@ function createArchedWindow() {
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
-    const archFrame = new THREE.Mesh(archGeom, whiteMaterial);
+    const archFrame = new THREE.Mesh(archGeom, blackMaterial);
     archFrame.position.y = frameHeight / 2;
     windowGroup.add(archFrame);
 
@@ -108,7 +109,7 @@ function createArchedWindow() {
 
     // --- Arch Panes ---
     const centerPaneGeom = new THREE.BoxGeometry(paneThickness, archRadius, paneThickness);
-    const centerPane = new THREE.Mesh(centerPaneGeom, whiteMaterial);
+    const centerPane = new THREE.Mesh(centerPaneGeom, blackMaterial);
     centerPane.position.y = frameHeight / 2 + archRadius / 2;
     centerPane.position.z = 0.6;
     windowGroup.add(centerPane);
@@ -118,7 +119,7 @@ function createArchedWindow() {
         const angle = (Math.PI / (numArchPanes + 1)) * (i + 1);
         const paneLength = archRadius;
         const paneGeom = new THREE.BoxGeometry(paneThickness, paneLength, paneThickness);
-        const pane = new THREE.Mesh(paneGeom, whiteMaterial);
+        const pane = new THREE.Mesh(paneGeom, blackMaterial);
         pane.position.y = frameHeight / 2;
         pane.position.z = 0.6;
         pane.rotation.z = Math.PI / 2 - angle;
@@ -185,22 +186,22 @@ export function createWardencliffHouse() {
     const doorZ = buildingDepth / 2 + pavilionDepth + 2;
 
     const leftDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
-    leftDoor.position.set(-doorWidth / 2, doorY, doorZ + 1.2);
+    leftDoor.position.set(-doorWidth / 2, doorY, doorZ);
     entranceGroup.add(leftDoor);
 
     const rightDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
-    rightDoor.position.set(doorWidth / 2, doorY, doorZ + 1.2);
+    rightDoor.position.set(doorWidth / 2, doorY, doorZ);
     entranceGroup.add(rightDoor);
 
     // Arched window above door
     const transomRadius = (doorWidth * 2) * 0.7;
     const transomShape = new THREE.Shape();
     transomShape.moveTo(-transomRadius, 0);
-    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
+    transomShape.absarc(0, 0, transomRadius, 0, Math.PI, true);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshLambertMaterial({color: 0x000000});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
-    transomGlass.position.set(0, 2 + doorHeight + 2, doorZ + 1.7);
+    transomGlass.position.set(0, 2 + doorHeight + 2, doorZ + 0.5);
     entranceGroup.add(transomGlass);
     
     // Transom Panes
