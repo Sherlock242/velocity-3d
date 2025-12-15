@@ -17,6 +17,7 @@ import { createSector14 } from './sectors/sector-14';
 import { createSector15 } from './sectors/sector-15';
 import { createSector18 } from './sectors/sector-18';
 import { createSector20 } from './sectors/sector-20';
+import { createSector21 } from './sectors/sector-21';
 import { createSector23 } from './sectors/sector-23';
 import { createSector24 } from './sectors/sector-24';
 import { createGenericSector } from './sectors/generic-sector';
@@ -337,6 +338,8 @@ export function createGridAndScenery(
           sectorGroup = createSector20({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 21:
+          sectorGroup = createSector21({ cellCenterX, cellCenterZ, staticCollidersRef });
+          break;
         case 22:
           // These sectors are on the dome, so we don't add buildings or gates.
           sectorGroup = new THREE.Group();
@@ -362,7 +365,7 @@ export function createGridAndScenery(
       }
       
       // If the sector is on the dome, adjust individual children instead of the whole group
-      if (j === 4 && sectorNumber !== 23 && sectorNumber !== 24 && sectorNumber !== 25) { // Exclude sectors where height is already calculated
+      if (j === 4) { 
         sectorGroup.children.forEach(child => {
           if (child instanceof THREE.Group || child instanceof THREE.Mesh) {
             const childX = child.position.x;
@@ -371,15 +374,20 @@ export function createGridAndScenery(
             let nx = (childX - domeCenterX) / halfDomeWidth;
             const nz = (childZ - domeCenterZ) / halfDomeDepth;
 
-            if (nx <= peakNormalizedX) {
-              nx = peakNormalizedX;
+            // Sectors 21 and 22 are on the flat top part
+            if (sectorNumber === 21 || sectorNumber === 22) {
+                 child.position.y += tilePlaneY; // Use tile plane height
+            } else {
+                if (nx <= peakNormalizedX) {
+                  nx = peakNormalizedX;
+                }
+    
+                const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+                const heightZComponent = Math.cos(nz * Math.PI / 2);
+                const yOffset = domeHeight * heightXComponent * heightZComponent;
+                
+                child.position.y += yOffset;
             }
-
-            const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-            const heightZComponent = Math.cos(nz * Math.PI / 2);
-            const yOffset = domeHeight * heightXComponent * heightZComponent;
-            
-            child.position.y += yOffset;
           }
         });
       }
@@ -482,5 +490,3 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
-
-    
