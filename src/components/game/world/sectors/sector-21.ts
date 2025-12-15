@@ -21,6 +21,7 @@ export function createSector21({
   const temple = createJapaneseTemple();
   temple.scale.set(1.5, 1.5, 1.5);
   temple.position.set(cellCenterX, 1, cellCenterZ - 100);
+  temple.rotation.y = Math.PI / 2;
   sectorGroup.add(temple);
   staticCollidersRef.current.push(temple);
 
@@ -28,6 +29,7 @@ export function createSector21({
   const entranceGate = createToriiGate();
   entranceGate.scale.set(1.2, 1.2, 1.2);
   entranceGate.position.set(cellCenterX, 1, cellCenterZ + 150);
+  entranceGate.rotation.y = Math.PI / 2;
   sectorGroup.add(entranceGate);
   staticCollidersRef.current.push(entranceGate);
 
