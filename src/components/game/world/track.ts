@@ -20,6 +20,7 @@ import { createSector24 } from './sectors/sector-24';
 import { createSector25 } from './sectors/sector-25';
 import { createGenericSector } from './sectors/generic-sector';
 import type { GameState } from '../core/state';
+import { createToriiGate } from '../models/torii-gate';
 
 export function createGridAndScenery(
   theme: TrackTheme,
@@ -143,7 +144,13 @@ export function createGridAndScenery(
           sectorGroup = createSector20({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 23:
-          sectorGroup = new THREE.Group(); // Empty sector
+          sectorGroup = new THREE.Group();
+          const toriiGate = createToriiGate();
+          toriiGate.position.set(cellCenterX, 0, cellCenterZ);
+          toriiGate.scale.set(2, 1.8, 2);
+          toriiGate.rotation.y = Math.PI / 2;
+          sectorGroup.add(toriiGate);
+          staticCollidersRef.current.push(toriiGate);
           break;
         case 24:
           sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
