@@ -109,38 +109,42 @@ export function createGridAndScenery(
     }
   }
 
-  // --- Upland Ramp for Sectors 21-24 ---
-  const rampWidth = CELL_SIZE;
-  const rampLength = CELL_SIZE * 4;
+  // --- Upland Ramp ---
+  const rampWidth = CELL_SIZE * 2; // Span two cells wide
+  const rampLength = CELL_SIZE * 2; // Span two cells long
   const rampHeight = 100;
-  const rampGeometry = new THREE.PlaneGeometry(rampWidth, rampLength);
+  const rampGeometry = new THREE.PlaneGeometry(rampLength, rampWidth, 20, 20); // Swapped width and length for rotation
   const rampMaterial = new THREE.MeshStandardMaterial({
     color: TRACK_THEMES[theme].ground,
     side: THREE.DoubleSide,
   });
   const ramp = new THREE.Mesh(rampGeometry, rampMaterial);
-  
-  // Position ramp over sectors 21-24
-  const startRow = 4;
-  const rampZ = startRow * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
-  ramp.position.z = rampZ;
 
-  // Create the ramp incline
+  // Position ramp over sectors 21-24 equivalent area, but rotated
+  const startRow = 4; // row for 21-25
+  const startCol = 0; // col for 21
+  const rampCenterX = (startCol * CELL_SIZE - halfTotalWidth) + rampLength / 2;
+  const rampCenterZ = (startRow * CELL_SIZE - halfTotalWidth) + rampWidth / 2;
+  ramp.position.x = rampCenterX;
+  ramp.position.z = rampCenterZ;
+
+
+  // Create the ramp incline along the X-axis of the plane
   const positions = ramp.geometry.attributes.position;
   const rampStart = -rampLength / 2;
-  const rampEndFlat = rampStart + CELL_SIZE * 2;
-  const rampSectionLength = CELL_SIZE * 2;
-  
+  const rampEndFlat = rampStart + CELL_SIZE; // Ramp up over one cell length
+  const rampSectionLength = CELL_SIZE;
+
   for (let i = 0; i < positions.count; i++) {
-    const y = positions.getY(i); // Corresponds to X in a non-rotated plane
+    const x = positions.getX(i); // Check position along the length (X-axis of Plane)
     let newY = 0;
-    if (y < rampEndFlat) {
+    if (x > rampEndFlat) { // Flipped condition: The flat part is now at the "end" of the x-axis
       newY = rampHeight;
-    } else {
-      const progress = 1 - (y - rampEndFlat) / rampSectionLength;
+    } else if (x > rampStart) {
+      const progress = (x - rampStart) / rampSectionLength;
       newY = progress * rampHeight;
     }
-    positions.setZ(i, positions.getZ(i) + newY);
+    positions.setZ(i, positions.getZ(i) + newY); // Apply height offset to the Z attribute of the vertex
   }
   positions.needsUpdate = true;
   ramp.geometry.computeVertexNormals();
@@ -160,15 +164,13 @@ export function createGridAndScenery(
       let sectorGroup: THREE.Group;
       let sectorYOffset = 0;
 
-      // Check if the sector is part of the upland area
-      if (sectorNumber >= 21 && sectorNumber <= 24) {
-          const relativeX = cellCenterX; // Plane is along X axis
-          if (relativeX < -halfTotalWidth + CELL_SIZE * 2) {
+      // Check if the sector is part of the upland area after rotation
+      if (j === 4 && (i === 0 || i === 1 || i === 2 || i === 3)) { // Sectors 21, 22, 23, 24 are in row 4
+          const relativeX = cellCenterX - rampCenterX + rampLength / 2;
+          if (relativeX > rampEndFlat) {
               sectorYOffset = rampHeight;
-          } else if (relativeX < -halfTotalWidth + CELL_SIZE * 4) {
-              const rampStartX = -halfTotalWidth + CELL_SIZE * 2;
-              const rampLength = CELL_SIZE * 2;
-              const progress = 1 - (relativeX - rampStartX) / rampLength;
+          } else if (relativeX > rampStart) {
+              const progress = (relativeX - rampStart) / rampSectionLength;
               sectorYOffset = progress * rampHeight;
           }
       }
@@ -198,16 +200,16 @@ export function createGridAndScenery(
         case 20:
           sectorGroup = createSector20({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
-        case 23:
+        case 23: // Now part of the ramp incline
           sectorGroup = new THREE.Group();
           const toriiGate = createToriiGate();
           toriiGate.position.set(cellCenterX, sectorYOffset, cellCenterZ);
           toriiGate.scale.set(2, 1.8, 2);
-          toriiGate.rotation.y = Math.PI / 2;
+          toriiGate.rotation.y = Math.PI / 2; // Re-orient for the new ramp direction
           sectorGroup.add(toriiGate);
           staticCollidersRef.current.push(toriiGate);
           break;
-        case 24:
+        case 24: // Now the start of the ramp
            sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
            break;
         case 25:
@@ -220,10 +222,10 @@ export function createGridAndScenery(
             cellCenterZ,
             walkingNpcsRef,
           });
-          if (sectorYOffset > 0) {
-            sectorGroup.position.y = sectorYOffset;
-          }
           break;
+      }
+      if (sectorYOffset > 0) {
+        sectorGroup.position.y = sectorYOffset;
       }
       gridGroup.add(sectorGroup);
     }
