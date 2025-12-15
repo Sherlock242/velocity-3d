@@ -102,7 +102,7 @@ export function createGridAndScenery(
   theme: TrackTheme,
   gameState: GameState
 ) {
-  const { walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef, domeRef, universityRamp, electricSparksRef } = gameState;
+  const { walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef, domeRef, universityRamp, electricSparksRef, tilePlaneRef } = gameState;
   
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
@@ -250,6 +250,7 @@ export function createGridAndScenery(
   
   tilePlane.position.set(tilePlaneX, tilePlaneY, tilePlaneZ);
   gridGroup.add(tilePlane);
+  tilePlaneRef.current = tilePlane;
 
 
   // Add scenery
