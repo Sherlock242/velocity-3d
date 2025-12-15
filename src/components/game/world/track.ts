@@ -187,7 +187,7 @@ export function createGridAndScenery(
           sectorGroup = createSector13({ cellCenterX, cellCenterZ, staticCollidersRef, emojiFaceRef, domeRef });
           break;
         case 14:
-          sectorGroup = createSector14({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef: new THREE.ObjectRef(), rampWallsRef, universityRamp });
+          sectorGroup = createSector14({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef, rampWallsRef, universityRamp });
           break;
         case 15:
           sectorGroup = createSector15({ cellCenterX, cellCenterZ, staticCollidersRef });
