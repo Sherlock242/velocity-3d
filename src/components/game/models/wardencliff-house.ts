@@ -55,7 +55,7 @@ function createArchedWindow() {
     const blackGlassMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 });
     const frameWidth = 10;
     const frameHeight = 15;
-    const frameDepth = 1;
+    const frameDepth = -1;
     const paneThickness = 0.2;
 
     // --- Main Rectangular Frame ---
@@ -66,7 +66,7 @@ function createArchedWindow() {
     // Main window glass
     const mainGlassGeom = new THREE.BoxGeometry(frameWidth - 1, frameHeight - 1, frameDepth * 0.5);
     const mainGlass = new THREE.Mesh(mainGlassGeom, blackGlassMaterial);
-    mainGlass.position.z = 0.3;
+    mainGlass.position.z = 0.4;
     windowGroup.add(mainGlass);
 
     // --- Rectangular Panes (Mullions) ---
@@ -92,7 +92,7 @@ function createArchedWindow() {
     const archRadius = frameWidth / 2;
     const archShape = new THREE.Shape();
     archShape.moveTo(-archRadius, 0);
-    archShape.absarc(0, 0, archRadius, Math.PI, 0, true);
+    archShape.absarc(0, 0, archRadius, Math.PI, 0, false);
     
     const extrudeSettings = { depth: frameDepth, bevelEnabled: false };
     const archGeom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
@@ -183,7 +183,7 @@ export function createWardencliffHouse() {
     const doorHeight = 18;
     const doorWidth = 7;
     const doorY = 2 + doorFrameHeight / 2 - (doorFrameHeight - doorHeight) / 2;
-    const doorZ = buildingDepth / 2 + pavilionDepth + 2;
+    const doorZ = buildingDepth / 2 + pavilionDepth + 3;
 
     const leftDoor = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, doorHeight, 1), woodMaterial);
     leftDoor.position.set(-doorWidth / 2, doorY, doorZ);
@@ -197,7 +197,7 @@ export function createWardencliffHouse() {
     const transomRadius = (doorWidth * 2) * 0.7;
     const transomShape = new THREE.Shape();
     transomShape.moveTo(-transomRadius, 0);
-    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, true);
+    transomShape.absarc(0, 0, transomRadius, Math.PI, 0, false);
     const transomGeom = new THREE.ShapeGeometry(transomShape);
     const transomGlassMaterial = new THREE.MeshLambertMaterial({color: 0x000000});
     const transomGlass = new THREE.Mesh(transomGeom, transomGlassMaterial);
@@ -249,7 +249,10 @@ export function createWardencliffHouse() {
             3, 0, 4,  3, 4, 7, // Left face
 
             // Top face (rectangle)
-            4, 5, 6,  4, 6, 7
+            4, 5, 6,  4, 6, 7,
+            
+            // Bottom face
+            3, 2, 1,  3, 1, 0,
         ];
 
         roofGeometry.setIndex(indices);
@@ -314,7 +317,7 @@ export function createWardencliffHouse() {
     
     // --- Tower ---
     const tower = createWardencliffTower();
-    tower.position.set(0, 0, -100); 
+    tower.position.set(0, 0, -150); 
     house.add(tower);
     
     // --- Parking Area for Tower ---
@@ -322,7 +325,7 @@ export function createWardencliffHouse() {
     const parkingGeom = new THREE.CylinderGeometry(parkingRadius, parkingRadius, 1, 32);
     const parkingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
     const parkingArea = new THREE.Mesh(parkingGeom, parkingMaterial);
-    parkingArea.position.set(0, 0.5, -100);
+    parkingArea.position.set(0, 0.5, -150);
     house.add(parkingArea);
 
 
@@ -355,9 +358,9 @@ function createWardencliffTower() {
         roughness: 0.4,
     });
     
-    const towerHeight = 187;
+    const towerHeight = 250;
     const baseRadius = 80;
-    const topRadius = 25;
+    const topRadius = 15;
     const numLegs = 8;
     const numLevels = 10;
     const legThickness = 1.5;
