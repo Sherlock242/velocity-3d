@@ -140,7 +140,7 @@ export function createWardencliffHouse() {
         ? new THREE.MeshStandardMaterial({ map: brickTexture, roughness: 0.9 })
         : new THREE.MeshStandardMaterial({ color: '#8B4513', roughness: 0.9 }); // Fallback color
 
-    const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+    const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
     const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
 
@@ -245,11 +245,11 @@ export function createWardencliffHouse() {
             // Front face (trapezoid)
             3, 2, 5,   3, 5, 4,
             // Back face (trapezoid)
-            0, 4, 5,   0, 5, 1,
+            1, 0, 4,   1, 4, 5,
             // Left end (triangle)
             0, 3, 4,
             // Right end (triangle)
-            1, 2, 5
+            2, 1, 5
         ];
 
         roofGeometry.setIndex(indices);
@@ -467,6 +467,7 @@ function createWardencliffTower() {
     
     return towerGroup;
 }
+
 
 
 
