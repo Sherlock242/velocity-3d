@@ -1,6 +1,4 @@
-
 import * as THREE from 'three';
-import { createToriiGate } from '../../models/torii-gate';
 import type { MutableRefObject } from 'react';
 
 type Sector24Props = {
@@ -16,14 +14,7 @@ export function createSector24({
 }: Sector24Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
-  // Add a torii gate at the center of the sector.
-  const toriiGate = createToriiGate();
-  toriiGate.position.set(cellCenterX, 0, cellCenterZ);
-  toriiGate.scale.set(2, 1.8, 2);
-  toriiGate.rotation.y = Math.PI / 2;
-  sectorGroup.add(toriiGate);
-  staticCollidersRef.current.push(toriiGate);
-
+  // The gate is now created in track.ts to calculate its height correctly on the dome.
 
   return sectorGroup;
 }

@@ -191,35 +191,56 @@ export function createGridAndScenery(
         case 21:
         case 22:
         case 25:
-          sectorGroup = new THREE.Group(); // Empty sectors on the dome
+          sectorGroup = createSector25({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
-        case 23: // Now part of the dome
+        case 23:
           sectorGroup = new THREE.Group();
-          const toriiGate = createToriiGate();
+          const toriiGate23 = createToriiGate();
           
-          const gateX = cellCenterX;
-          const gateZ = cellCenterZ;
+          const gateX23 = cellCenterX;
+          const gateZ23 = cellCenterZ;
           
           // Calculate Y position on the dome for the gate
-          let gateNx = (gateX - domeCenterX) / halfDomeWidth;
-          const gateNz = (gateZ - domeCenterZ) / halfDomeDepth;
+          let gateNx23 = (gateX23 - domeCenterX) / halfDomeWidth;
+          const gateNz23 = (gateZ23 - domeCenterZ) / halfDomeDepth;
 
-          if (gateNx <= peakNormalizedX) {
-            gateNx = peakNormalizedX;
+          if (gateNx23 <= peakNormalizedX) {
+            gateNx23 = peakNormalizedX;
           }
 
-          const gateHeightXComponent = Math.cos((gateNx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-          const gateHeightZComponent = Math.cos(gateNz * Math.PI / 2);
-          const gateYOffset = domeHeight * gateHeightXComponent * gateHeightZComponent;
+          const gateHeightXComponent23 = Math.cos((gateNx23 - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+          const gateHeightZComponent23 = Math.cos(gateNz23 * Math.PI / 2);
+          const gateYOffset23 = domeHeight * gateHeightXComponent23 * gateHeightZComponent23;
 
-          toriiGate.position.set(gateX, gateYOffset, gateZ);
-          toriiGate.scale.set(2, 1.8, 2);
-          toriiGate.rotation.y = Math.PI / 2;
-          sectorGroup.add(toriiGate);
-          staticCollidersRef.current.push(toriiGate);
+          toriiGate23.position.set(gateX23, gateYOffset23, gateZ23);
+          toriiGate23.scale.set(2, 1.8, 2);
+          toriiGate23.rotation.y = Math.PI / 2;
+          sectorGroup.add(toriiGate23);
+          staticCollidersRef.current.push(toriiGate23);
           break;
         case 24:
-           sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
+           sectorGroup = new THREE.Group();
+           const toriiGate24 = createToriiGate();
+           
+           const gateX24 = cellCenterX;
+           const gateZ24 = cellCenterZ;
+           
+           let gateNx24 = (gateX24 - domeCenterX) / halfDomeWidth;
+           const gateNz24 = (gateZ24 - domeCenterZ) / halfDomeDepth;
+ 
+           if (gateNx24 <= peakNormalizedX) {
+             gateNx24 = peakNormalizedX;
+           }
+ 
+           const gateHeightXComponent24 = Math.cos((gateNx24 - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+           const gateHeightZComponent24 = Math.cos(gateNz24 * Math.PI / 2);
+           const gateYOffset24 = domeHeight * gateHeightXComponent24 * gateHeightZComponent24;
+ 
+           toriiGate24.position.set(gateX24, gateYOffset24, gateZ24);
+           toriiGate24.scale.set(2, 1.8, 2);
+           toriiGate24.rotation.y = Math.PI / 2;
+           sectorGroup.add(toriiGate24);
+           staticCollidersRef.current.push(toriiGate24);
            break;
         default:
           sectorGroup = createGenericSector({
@@ -232,7 +253,7 @@ export function createGridAndScenery(
       }
       
       // If the sector is on the dome, adjust individual children instead of the whole group
-      if (j === 4 && sectorNumber !== 23) { // Exclude sector 23 as its gate is already positioned
+      if (j === 4 && sectorNumber !== 23 && sectorNumber !== 24) { // Exclude sectors where height is already calculated
         sectorGroup.children.forEach(child => {
           if (child instanceof THREE.Group || child instanceof THREE.Mesh) {
             const childX = child.position.x;
