@@ -22,7 +22,7 @@ export function createSector21({
   const temple = createJapaneseTemple();
   temple.scale.set(1.5, 1.5, 1.5);
   temple.position.set(cellCenterX, 1, cellCenterZ);
-  temple.rotation.y = Math.PI;
+  temple.rotation.y = Math.PI / 2;
   sectorGroup.add(temple);
   staticCollidersRef.current.push(temple);
 
