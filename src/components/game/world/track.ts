@@ -97,6 +97,33 @@ function createTileMaterial() {
   });
 }
 
+// Function to create railings
+function createRailing(length: number) {
+  const railingGroup = new THREE.Group();
+  const railingMaterial = new THREE.MeshStandardMaterial({ color: 0xff4500 });
+  const pillarHeight = 8;
+  const pillarRadius = 0.5;
+  const numPillars = Math.floor(length / 20) + 1;
+
+  for (let i = 0; i < numPillars; i++) {
+      const pillar = new THREE.Mesh(
+          new THREE.CylinderGeometry(pillarRadius, pillarRadius, pillarHeight),
+          railingMaterial
+      );
+      pillar.position.x = -length / 2 + i * (length / (numPillars - 1));
+      pillar.position.y = pillarHeight / 2;
+      railingGroup.add(pillar);
+  }
+  const topRail = new THREE.Mesh(
+      new THREE.BoxGeometry(length, 0.5, 0.5),
+      railingMaterial
+  );
+  topRail.position.y = pillarHeight;
+  railingGroup.add(topRail);
+
+  return railingGroup;
+}
+
 
 export function createGridAndScenery(
   theme: TrackTheme,
@@ -252,32 +279,27 @@ export function createGridAndScenery(
   gridGroup.add(tilePlane);
   tilePlaneRef.current = tilePlane;
   
-    // --- Orange Borders for Tiled Area ---
-    const borderMaterial = new THREE.MeshStandardMaterial({ color: 0xff4500 });
-    const borderThickness = 2;
-    const borderHeight = 1;
+  // --- Orange Railings for Tiled Area ---
+  const railingY = tilePlaneY + 4; // y position of the railings
+  const railingOffset = 0.5;
 
-    // Top Border
-    const topBorderGeom = new THREE.BoxGeometry(flatTopWidth, borderHeight, borderThickness);
-    const topBorder = new THREE.Mesh(topBorderGeom, borderMaterial);
-    topBorder.position.set(tilePlaneX, tilePlaneY, tilePlaneZ + domeDepth / 2 - borderThickness / 2);
-    gridGroup.add(topBorder);
+  const topRailing = createRailing(flatTopWidth);
+  topRailing.position.set(tilePlaneX, railingY, tilePlaneZ + domeDepth / 2 - railingOffset);
+  gridGroup.add(topRailing);
 
-    // Bottom Border
-    const bottomBorder = topBorder.clone();
-    bottomBorder.position.set(tilePlaneX, tilePlaneY, tilePlaneZ - domeDepth / 2 + borderThickness / 2);
-    gridGroup.add(bottomBorder);
+  const bottomRailing = createRailing(flatTopWidth);
+  bottomRailing.position.set(tilePlaneX, railingY, tilePlaneZ - domeDepth / 2 + railingOffset);
+  gridGroup.add(bottomRailing);
 
-    // Left Border
-    const leftBorderGeom = new THREE.BoxGeometry(borderThickness, borderHeight, domeDepth);
-    const leftBorder = new THREE.Mesh(leftBorderGeom, borderMaterial);
-    leftBorder.position.set(tilePlaneX - flatTopWidth / 2 + borderThickness / 2, tilePlaneY, tilePlaneZ);
-    gridGroup.add(leftBorder);
-
-    // Right Border
-    const rightBorder = leftBorder.clone();
-    rightBorder.position.set(tilePlaneX + flatTopWidth / 2 - borderThickness / 2, tilePlaneY, tilePlaneZ);
-    gridGroup.add(rightBorder);
+  const leftRailing = createRailing(domeDepth);
+  leftRailing.rotation.y = Math.PI / 2;
+  leftRailing.position.set(tilePlaneX - flatTopWidth / 2 + railingOffset, railingY, tilePlaneZ);
+  gridGroup.add(leftRailing);
+  
+  const rightRailing = createRailing(domeDepth);
+  rightRailing.rotation.y = Math.PI / 2;
+  rightRailing.position.set(tilePlaneX + flatTopWidth / 2 - railingOffset, railingY, tilePlaneZ);
+  gridGroup.add(rightRailing);
 
 
   // Add scenery
@@ -460,3 +482,5 @@ export function createGridAndScenery(
 
   return gridGroup;
 }
+
+    
