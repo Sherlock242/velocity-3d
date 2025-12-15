@@ -16,6 +16,7 @@ import { createSector14 } from './sectors/sector-14';
 import { createSector15 } from './sectors/sector-15';
 import { createSector18 } from './sectors/sector-18';
 import { createSector20 } from './sectors/sector-20';
+import { createSector24 } from './sectors/sector-24';
 import { createSector25 } from './sectors/sector-25';
 import { createGenericSector } from './sectors/generic-sector';
 import type { GameState } from '../core/state';
@@ -143,6 +144,9 @@ export function createGridAndScenery(
           break;
         case 23:
           sectorGroup = new THREE.Group(); // Empty sector
+          break;
+        case 24:
+          sectorGroup = createSector24({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 25:
           sectorGroup = createSector25({ cellCenterX, cellCenterZ, staticCollidersRef });
