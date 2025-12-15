@@ -239,7 +239,7 @@ export function createGridAndScenery(
            const gateHeightZComponent24 = Math.cos(gateNz24 * Math.PI / 2);
            const gateYOffset24 = domeHeight * gateHeightXComponent24 * gateHeightZComponent24;
  
-           toriiGate24.position.set(gateX24, gateYOffset24, gateZ24);
+           toriiGate24.position.set(gateX24, gateYOffset24 + roadYPosition, gateZ24);
            toriiGate24.scale.set(2, 1.8, 2);
            toriiGate24.rotation.y = Math.PI / 2;
            sectorGroup.add(toriiGate24);
