@@ -117,6 +117,8 @@ export function createGridAndScenery(
   const halfDomeWidth = domeWidth / 2;
   const halfDomeDepth = domeDepth / 2;
   const baseHeight = dome.position.y - domeHeight / 2;
+  const peakOffsetX = -0.2 * domeWidth; // Shift peak to Sector 22 (20% to the left of center)
+
 
   for (let i = 0; i < positions.count; i++) {
     const y = positions.getY(i);
@@ -126,7 +128,7 @@ export function createGridAndScenery(
       const z = positions.getZ(i);
 
       // Calculate normalized distances from the center of the dome plane
-      const nx = x / halfDomeWidth;
+      const nx = (x - peakOffsetX) / halfDomeWidth;
       const nz = z / halfDomeDepth;
 
       // Use a cosine-based curve for a smooth dome shape
@@ -214,7 +216,7 @@ export function createGridAndScenery(
           if (child instanceof THREE.Group || child instanceof THREE.Mesh) {
             const childX = child.position.x;
             const childZ = child.position.z;
-            const nx = (childX - domeCenterX) / halfDomeWidth;
+            const nx = (childX - domeCenterX - peakOffsetX) / halfDomeWidth;
             const nz = (childZ - domeCenterZ) / halfDomeDepth;
             const yOffset = domeHeight * Math.cos(nx * Math.PI / 2) * Math.cos(nz * Math.PI / 2);
             child.position.y += yOffset;
