@@ -64,7 +64,7 @@ function createKitsuneStatue() {
 
 // Helper to create the roof. Changed to a flat top cone (frustum).
 function createPyramidRoof(width: number, depth: number, height: number, material: THREE.Material) {
-    const geometry = new THREE.ConeGeometry(Math.max(width, depth) / 1.5, height, 4);
+    const geometry = new THREE.ConeGeometry(Math.max(width, depth) / 1.5, height, 4, 1, true);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.y = Math.PI / 4;
     return mesh;
@@ -378,7 +378,7 @@ export function createJapaneseTemple() {
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
-    plaqueGroup.position.set(0, secondFloorHeight + 4, 16); 
+    plaqueGroup.position.set(0, secondFloorHeight + 2, 16); 
     
     const plaqueBackGeom = new THREE.BoxGeometry(10, 18, 1);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
