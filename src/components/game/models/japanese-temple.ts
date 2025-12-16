@@ -135,9 +135,14 @@ function createGoldRailing(width: number, height: number, goldMaterial: THREE.Ma
     const postGeom = new THREE.CylinderGeometry(0.8, 0.8, postHeight, 12);
     const numPosts = 7;
 
+    const baseRailGeom = new THREE.BoxGeometry(width, 1.5, 2);
+    const baseRail = new THREE.Mesh(baseRailGeom, goldMaterial);
+    baseRail.position.y = -0.75;
+    railing.add(baseRail);
+
     for (let i = 0; i < numPosts; i++) {
         const post = new THREE.Mesh(postGeom, redMaterial);
-        post.position.set(-width / 2 + (i * (width / (numPosts-1))), postHeight / 2, 0);
+        post.position.set(-width / 2 + (i * (width / (numPosts - 1))), postHeight / 2, 0);
         
         const goldCap = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 12), goldMaterial);
         goldCap.position.y = postHeight / 2;
@@ -281,14 +286,14 @@ export function createJapaneseTemple() {
 
     for (let i = 0; i < numStairs; i++) {
         const step = new THREE.Mesh(
-            new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth * (i + 1)),
+            new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth * (numStairs - i)),
             stairMaterial
         );
-        step.position.y = totalStairHeight - (stairHeight / 2 + i * stairHeight);
-        step.position.z = stairDepth * (i + 1) / 2;
+        step.position.y = stairHeight / 2 + i * stairHeight;
+        step.position.z = -stairDepth * i / 2;
         stairsGroup.add(step);
     }
-    stairsGroup.position.set(0, 0, (baseDepth + 5) / 2);
+    stairsGroup.position.set(0, 0, (baseDepth + 5) / 2 + stairDepth * numStairs / 2);
     walkableGroup.add(baseGroup, stairsGroup);
 
 
