@@ -24,25 +24,11 @@ export function createNorenCurtain() {
     curtainGroup.add(stripe);
 
     // Central black circle emblem
-    const circleRadius = 2.0; // Made smaller
+    const circleRadius = 2.0;
     const circleGeom = new THREE.CircleGeometry(circleRadius, 32);
     const circle = new THREE.Mesh(circleGeom, blackMaterial);
     circle.position.z = 0.1; // Position slightly in front to avoid z-fighting
     curtainGroup.add(circle);
-    
-    // Vertical bars next to the circle
-    const barHeight = 4;
-    const barWidth = 0.5;
-    const barGeom = new THREE.BoxGeometry(barWidth, barHeight, 0.1);
-    
-    const leftBar = new THREE.Mesh(barGeom, blackMaterial);
-    leftBar.position.set(-circleRadius - barWidth, 0, 0.1);
-    curtainGroup.add(leftBar);
-    
-    const rightBar = new THREE.Mesh(barGeom, blackMaterial);
-    rightBar.position.set(circleRadius + barWidth, 0, 0.1);
-    curtainGroup.add(rightBar);
-
 
     return curtainGroup;
 }
