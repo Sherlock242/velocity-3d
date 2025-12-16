@@ -258,7 +258,8 @@ export function createGridAndScenery(
           const nx = (Math.max(dxToPeak, dxToStart)) / (halfDomeWidth * (1 - Math.abs(peakNormalizedX)));
           const nz = dz / (halfDomeDepth - halfFlatTopDepth);
           
-          const heightXComponent = Math.cos(nx * Math.PI / 2);
+          let heightXComponent = Math.cos(nx * Math.PI / 2);
+          if (nx > 1) heightXComponent = 0; // Clamp the curve to ground level
           const heightZComponent = Math.cos(nz * Math.PI / 2);
 
           heightOffset = domeHeight * heightXComponent * heightZComponent;
@@ -375,9 +376,12 @@ export function createGridAndScenery(
       // If the sector is on the dome, adjust individual children instead of the whole group
       if (j === 4) {
         if (sectorNumber === 21) {
-            // For sector 21, just move everything up to the flat tile plane height.
-            sectorGroup.children.forEach(child => {
-                child.position.y += tilePlaneY;
+             sectorGroup.children.forEach(child => {
+                if (child.name === 'FushimiInariGatehouse_Container') {
+                    child.position.y += tilePlaneY;
+                } else {
+                    child.position.y += roadYPosition + domeHeight;
+                }
             });
         } else {
             sectorGroup.children.forEach(child => {
@@ -400,7 +404,8 @@ export function createGridAndScenery(
                     const nx = (Math.max(dxToPeak, dxToStart)) / (halfDomeWidth * (1 - Math.abs(peakNormalizedX)));
                     const nz = dz / (halfDomeDepth - halfFlatTopDepth);
                     
-                    const heightXComponent = Math.cos(nx * Math.PI / 2);
+                    let heightXComponent = Math.cos(nx * Math.PI / 2);
+                    if (nx > 1) heightXComponent = 0;
                     const heightZComponent = Math.cos(nz * Math.PI / 2);
     
                     yOffset = domeHeight * heightXComponent * heightZComponent;
@@ -446,7 +451,8 @@ export function createGridAndScenery(
         if (nx <= peakNormalizedX) {
             yOffset = domeHeight;
         } else {
-            const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+            let heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+            if ((nx - peakNormalizedX) > (1 - Math.abs(peakNormalizedX))) heightXComponent = 0;
             const heightZComponent = Math.cos(nz * Math.PI / 2);
             yOffset = domeHeight * heightXComponent * heightZComponent;
         }
@@ -481,7 +487,8 @@ export function createGridAndScenery(
         if (nx <= peakNormalizedX) {
             yOffset = domeHeight;
         } else {
-            const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+            let heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+            if ((nx - peakNormalizedX) > (1 - Math.abs(peakNormalizedX))) heightXComponent = 0;
             const heightZComponent = Math.cos(nz * Math.PI / 2);
             yOffset = domeHeight * heightXComponent * heightZComponent;
         }
