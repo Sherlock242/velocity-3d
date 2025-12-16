@@ -109,7 +109,7 @@ export function createJapaneseTemple() {
 
     // Add Noren curtains to the main entrance
     const noren = createNorenCurtain();
-    noren.position.set(0, firstFloorHeight - 8, 14);
+    noren.position.set(0, firstFloorHeight - 10, 14);
     noren.rotation.x = Math.random() * 0.1;
     mainStructureGroup.add(noren);
 
