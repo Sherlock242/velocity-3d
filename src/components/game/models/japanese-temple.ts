@@ -328,6 +328,15 @@ export function createJapaneseTemple() {
     wall2Group.position.set(0, firstFloorHeight/2, 14);
     mainStructureGroup.add(wall2Group);
     
+    // Golden trim above white wall
+    const goldTrimGeom = new THREE.BoxGeometry(structureWidth, 1.5, 1);
+    const frontGoldTrim = new THREE.Mesh(goldTrimGeom, goldMaterial);
+    frontGoldTrim.position.set(0, firstFloorHeight, 14.6);
+    mainStructureGroup.add(frontGoldTrim);
+    const backGoldTrim = new THREE.Mesh(goldTrimGeom, goldMaterial);
+    backGoldTrim.position.set(0, firstFloorHeight, -14.6);
+    mainStructureGroup.add(backGoldTrim);
+    
 
     // First Floor Roof Support & Brackets
     const lowerRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 8, 40);
