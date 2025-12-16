@@ -176,6 +176,12 @@ export function createJapaneseTemple() {
     orangeStripAbove2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), stripedPanelY + 8, 15);
     mainStructureGroup.add(orangeStripAbove2);
 
+    // --- Noren Curtain ---
+    const noren = createNorenCurtain();
+    noren.scale.set(0.7, 0.7, 0.7);
+    noren.position.set(0, firstFloorHeight - 10, 14);
+    mainStructureGroup.add(noren);
+
     // --- Inner Entrance ---
     const innerEntranceGroup = new THREE.Group();
     const innerPillarHeight = firstFloorHeight * 0.8;
@@ -200,11 +206,6 @@ export function createJapaneseTemple() {
     innerEntranceGroup.position.z = -5; // Position it inside the main structure
     mainStructureGroup.add(innerEntranceGroup);
     
-    // Add Noren curtains to the inner entrance
-    const noren = createNorenCurtain();
-    noren.scale.set(0.4, 0.4, 0.4);
-    noren.position.set(0, innerPillarHeight - 8, 2); // Attach to lintel
-    innerEntranceGroup.add(noren);
 
     // First Floor Plaster Walls (behind side bays)
     const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, firstFloorHeight, 1);
