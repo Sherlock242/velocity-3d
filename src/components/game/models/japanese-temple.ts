@@ -345,6 +345,17 @@ export function createJapaneseTemple() {
     greenRailing2.position.set(-(centerBayWidth/2 + sideBayWidth/2), greenRailingHeight/2, 15);
     mainStructureGroup.add(greenRailing2);
 
+    // Thick orange strip over green railing
+    const orangeStripGeom = new THREE.BoxGeometry(sideBayWidth, 3, 2);
+    const orangeStrip1 = new THREE.Mesh(orangeStripGeom, vermilionRed);
+    orangeStrip1.position.set(centerBayWidth / 2 + sideBayWidth / 2, greenRailingHeight + 1.5, 15);
+    mainStructureGroup.add(orangeStrip1);
+
+    const orangeStrip2 = new THREE.Mesh(orangeStripGeom, vermilionRed);
+    orangeStrip2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight + 1.5, 15);
+    mainStructureGroup.add(orangeStrip2);
+
+
     // Function to create the brown panel with grey stripes
     function createStripedPanel(width: number) {
       const panelGroup = new THREE.Group();
@@ -365,14 +376,25 @@ export function createJapaneseTemple() {
       return panelGroup;
     }
 
+    const stripedPanelY = greenRailingHeight + 3 + 3.5; // Raised higher
     const stripedPanel1 = createStripedPanel(sideBayWidth);
-    stripedPanel1.position.set(centerBayWidth / 2 + sideBayWidth / 2, greenRailingHeight + 2.5, 15);
+    stripedPanel1.position.set(centerBayWidth / 2 + sideBayWidth / 2, stripedPanelY, 15);
     mainStructureGroup.add(stripedPanel1);
 
     const stripedPanel2 = createStripedPanel(sideBayWidth);
-    stripedPanel2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight + 2.5, 15);
+    stripedPanel2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), stripedPanelY, 15);
     mainStructureGroup.add(stripedPanel2);
     
+    // Thick orange strip above brown panels
+    const orangeStripAboveWoodGeom = new THREE.BoxGeometry(sideBayWidth, 3, 2);
+    const orangeStripAbove1 = new THREE.Mesh(orangeStripAboveWoodGeom, vermilionRed);
+    orangeStripAbove1.position.set(centerBayWidth / 2 + sideBayWidth / 2, stripedPanelY + 5 + 1.5, 15);
+    mainStructureGroup.add(orangeStripAbove1);
+
+    const orangeStripAbove2 = new THREE.Mesh(orangeStripAboveWoodGeom, vermilionRed);
+    orangeStripAbove2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), stripedPanelY + 5 + 1.5, 15);
+    mainStructureGroup.add(orangeStripAbove2);
+
     // First floor center latticework
     const centerLatticePanel = createLatticePanel(centerBayWidth, 15, vermilionRed, whitePlaster);
     centerLatticePanel.position.set(0, firstFloorHeight - 7.5, 15);
@@ -408,7 +430,7 @@ export function createJapaneseTemple() {
 
     for(let i = 0; i < 10; i++) {
         const bracket = createDougong(5);
-        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight + 5.5, 20);
+        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight + 2.5, 20);
         mainStructureGroup.add(bracket);
         const bracket2 = bracket.clone();
         bracket2.position.z = -20;
