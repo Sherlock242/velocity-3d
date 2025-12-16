@@ -237,9 +237,34 @@ export function createJapaneseTemple() {
     simpleRoofSupport.position.y = firstFloorHeight + 1.5;
     mainStructureGroup.add(simpleRoofSupport);
     
+    // White Box with Gray lines
+    const stripedBoxHeight = 5;
+    const stripedBoxY = firstFloorHeight + 3 + stripedBoxHeight / 2;
+    const stripedBox = new THREE.Group();
+    stripedBox.position.y = stripedBoxY;
+    mainStructureGroup.add(stripedBox);
+
+    const boxGeom = new THREE.BoxGeometry(structureWidth, stripedBoxHeight, 30);
+    const boxMesh = new THREE.Mesh(boxGeom, whitePlaster);
+    stripedBox.add(boxMesh);
+
+    const lineMaterial = new THREE.MeshStandardMaterial({color: 0x888888});
+    const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.2, 30.1);
+    const vLineGeom = new THREE.BoxGeometry(0.2, stripedBoxHeight, 30.1);
+
+    const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
+    hLine.position.y = 0;
+    stripedBox.add(hLine);
     
+    for (let i = 0; i < 5; i++) {
+        const vLine = new THREE.Mesh(vLineGeom, lineMaterial);
+        vLine.position.x = (i - 2) * (structureWidth / 5);
+        stripedBox.add(vLine);
+    }
+    
+
     // --- Second Floor ---
-    const secondFloorY = firstFloorHeight + 3;
+    const secondFloorY = stripedBoxY + stripedBoxHeight / 2;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
