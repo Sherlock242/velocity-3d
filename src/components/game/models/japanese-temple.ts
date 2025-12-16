@@ -149,6 +149,63 @@ function createLatticeDoor(width: number, height: number, material: THREE.Materi
     return door;
 }
 
+// Helper to create the gold railing
+function createGoldRailing(width: number, depth: number, material: THREE.Material) {
+    const railing = new THREE.Group();
+    const railHeight = 4;
+    const railThickness = 0.5;
+
+    const postGeom = new THREE.CylinderGeometry(railThickness, railThickness, railHeight, 8);
+    
+    const numPostsX = Math.floor(width / 8);
+    const numPostsZ = Math.floor(depth / 8);
+
+    // Front Rail
+    for (let i = 0; i <= numPostsX; i++) {
+        const post = new THREE.Mesh(postGeom, material);
+        post.position.set(-width/2 + i * (width/numPostsX), railHeight/2, depth/2);
+        railing.add(post);
+    }
+    const frontRailGeom = new THREE.BoxGeometry(width, railThickness, railThickness);
+    const frontTopRail = new THREE.Mesh(frontRailGeom, material);
+    frontTopRail.position.set(0, railHeight, depth/2);
+    railing.add(frontTopRail);
+
+    // Back Rail
+    for (let i = 0; i <= numPostsX; i++) {
+        const post = new THREE.Mesh(postGeom, material);
+        post.position.set(-width/2 + i * (width/numPostsX), railHeight/2, -depth/2);
+        railing.add(post);
+    }
+    const backTopRail = new THREE.Mesh(frontRailGeom, material);
+    backTopRail.position.set(0, railHeight, -depth/2);
+    railing.add(backTopRail);
+    
+    // Left Rail
+    for (let i = 1; i < numPostsZ; i++) {
+        const post = new THREE.Mesh(postGeom, material);
+        post.position.set(-width/2, railHeight/2, -depth/2 + i * (depth/numPostsZ));
+        railing.add(post);
+    }
+    const sideRailGeom = new THREE.BoxGeometry(railThickness, railThickness, depth);
+    const leftTopRail = new THREE.Mesh(sideRailGeom, material);
+    leftTopRail.position.set(-width/2, railHeight, 0);
+    railing.add(leftTopRail);
+
+    // Right Rail
+    for (let i = 1; i < numPostsZ; i++) {
+        const post = new THREE.Mesh(postGeom, material);
+        post.position.set(width/2, railHeight/2, -depth/2 + i * (depth/numPostsZ));
+        railing.add(post);
+    }
+    const rightTopRail = new THREE.Mesh(sideRailGeom, material);
+    rightTopRail.position.set(width/2, railHeight, 0);
+    railing.add(rightTopRail);
+
+
+    return railing;
+}
+
 export function createJapaneseTemple() {
     const temple = new THREE.Group();
     temple.name = 'FushimiInariGatehouse';
@@ -289,13 +346,14 @@ export function createJapaneseTemple() {
     }
 
 
-    // --- First Roof ---
-    const firstRoof = createCurvedRoof(structureWidth + 20, 60, 10, darkBrownRoof);
-    firstRoof.position.y = firstFloorHeight + 8;
-    mainStructureGroup.add(firstRoof);
+    // --- Gold Railing ---
+    const railing = createGoldRailing(structureWidth + 4, 40, goldMaterial);
+    railing.position.y = firstFloorHeight + 8;
+    mainStructureGroup.add(railing);
+
 
     // --- Second Floor ---
-    const secondFloorY = firstFloorHeight + 12;
+    const secondFloorY = firstFloorHeight + 8;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
@@ -314,25 +372,30 @@ export function createJapaneseTemple() {
     upperFrame.position.y = secondFloorHeight / 2;
     secondFloorGroup.add(upperFrame);
 
+    // Second story railing
+    const railing2 = createGoldRailing(secondFloorWidth + 2, 32, goldMaterial);
+    railing2.position.y = secondFloorHeight;
+    secondFloorGroup.add(railing2);
+
 
     // --- Main Top Roof ---
     const topRoof = createCurvedRoof(secondFloorWidth + 20, 55, 15, darkBrownRoof);
-    topRoof.position.y = secondFloorHeight;
+    topRoof.position.y = secondFloorHeight + 4;
     secondFloorGroup.add(topRoof);
     
     // Black decorative ridge on top roof
     const ridgeGeom = new THREE.BoxGeometry(40, 4, 4);
     const ridge = new THREE.Mesh(ridgeGeom, blackAccent);
-    ridge.position.y = secondFloorHeight + 15;
+    ridge.position.y = secondFloorHeight + 15 + 4;
     secondFloorGroup.add(ridge);
 
     // Gold end-caps on ridge
     const endCapGeom = new THREE.BoxGeometry(6, 6, 6);
     const leftCap = new THREE.Mesh(endCapGeom, goldMaterial);
-    leftCap.position.set(-22, secondFloorHeight + 15, 0);
+    leftCap.position.set(-22, secondFloorHeight + 15 + 4, 0);
     secondFloorGroup.add(leftCap);
     const rightCap = new THREE.Mesh(endCapGeom, goldMaterial);
-    rightCap.position.set(22, secondFloorHeight + 15, 0);
+    rightCap.position.set(22, secondFloorHeight + 15 + 4, 0);
     secondFloorGroup.add(rightCap);
 
     // --- Plaque (Gaku) ---
