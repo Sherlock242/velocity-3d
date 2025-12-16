@@ -86,7 +86,7 @@ function createCurvedRoof(width: number, depth: number, height: number, material
 // Helper to create detailed Dougong (bracket sets)
 function createDougong(size: number) {
     const dougong = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({color: 0xffffff}); // White
+    const mat = new THREE.MeshStandardMaterial({color: 0xdc4405}); // Vermilion Red
 
     const mainArm = new THREE.Mesh(new THREE.BoxGeometry(size, size*0.2, size*0.2), mat);
     dougong.add(mainArm);
@@ -299,6 +299,12 @@ export function createJapaneseTemple() {
         const pillar = new THREE.Mesh(pillarGeom, vermilionRed);
         pillar.position.set(pos.x, firstFloorHeight / 2, pos.z);
         mainStructureGroup.add(pillar);
+
+        // Add vertical gold ornament
+        const goldOrnamentGeom = new THREE.BoxGeometry(1, 4, 1);
+        const goldOrnament = new THREE.Mesh(goldOrnamentGeom, goldMaterial);
+        goldOrnament.position.set(pos.x, firstFloorHeight - 5, pos.z + pillarDiameter + 0.5);
+        mainStructureGroup.add(goldOrnament);
     });
 
     // First Floor Plaster Walls (with tomoe symbols)
@@ -328,16 +334,6 @@ export function createJapaneseTemple() {
     wall2Group.position.set(0, firstFloorHeight/2, 14);
     mainStructureGroup.add(wall2Group);
     
-    // Golden trim above white wall
-    const goldTrimGeom = new THREE.BoxGeometry(structureWidth, 1.5, 1);
-    const frontGoldTrim = new THREE.Mesh(goldTrimGeom, goldMaterial);
-    frontGoldTrim.position.set(0, firstFloorHeight, 14.6);
-    mainStructureGroup.add(frontGoldTrim);
-    const backGoldTrim = new THREE.Mesh(goldTrimGeom, goldMaterial);
-    backGoldTrim.position.set(0, firstFloorHeight, -14.6);
-    mainStructureGroup.add(backGoldTrim);
-    
-
     // First Floor Roof Support & Brackets
     const lowerRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 8, 40);
     const lowerRoofSupport = new THREE.Mesh(lowerRoofSupportGeom, vermilionRed);
