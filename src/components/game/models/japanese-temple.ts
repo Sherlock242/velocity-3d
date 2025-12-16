@@ -205,6 +205,7 @@ function createNorenCurtain() {
     const stripeGeom = new THREE.PlaneGeometry(curtainWidth, stripeHeight);
     const stripe = new THREE.Mesh(stripeGeom, blackMaterial);
     stripe.position.y = curtainHeight / 2 - stripeHeight / 2;
+    stripe.position.z = 0.01;
     curtainGroup.add(stripe);
 
     // Central black circle emblem
@@ -335,6 +336,7 @@ export function createJapaneseTemple() {
     norenPositions.forEach(xPos => {
         const noren = createNorenCurtain();
         noren.position.set(xPos, firstFloorHeight - 8, 16);
+        noren.rotation.x = Math.random() * 0.1;
         mainStructureGroup.add(noren);
     });
 
@@ -357,11 +359,12 @@ export function createJapaneseTemple() {
       panel.position.y = panelHeight / 2;
       panelGroup.add(panel);
 
-      const stripeHeight = 0.3;
-      const stripeGeom = new THREE.BoxGeometry(width, stripeHeight, 1.1);
+      const stripeWidth = 0.3;
+      const stripeGeom = new THREE.BoxGeometry(stripeWidth, panelHeight, 1.1);
       for (let i = 0; i < 3; i++) {
         const stripe = new THREE.Mesh(stripeGeom, greyStripeMaterial);
-        stripe.position.y = (i - 1) * 1.5 + panelHeight / 2;
+        stripe.position.x = (i - 1) * (width / 4);
+        stripe.position.y = panelHeight / 2;
         panelGroup.add(stripe);
       }
       return panelGroup;
@@ -477,20 +480,24 @@ export function createJapaneseTemple() {
     const topDetailGeom = new THREE.BoxGeometry(detailWidth, 1, 1);
     const topDetail = new THREE.Mesh(topDetailGeom, ancientGoldMaterial);
     topDetail.position.y = detailHeight / 2;
+    topDetail.position.z = 0.5;
     plaqueGroup.add(topDetail);
 
     const bottomDetail = new THREE.Mesh(topDetailGeom, ancientGoldMaterial);
     bottomDetail.position.y = -detailHeight / 2;
+    bottomDetail.position.z = 0.5;
     plaqueGroup.add(bottomDetail);
 
     // Side details
     const sideDetailGeom = new THREE.BoxGeometry(1, detailHeight, 1);
     const leftDetail = new THREE.Mesh(sideDetailGeom, ancientGoldMaterial);
     leftDetail.position.x = -detailWidth / 2;
+    leftDetail.position.z = 0.5;
     plaqueGroup.add(leftDetail);
 
     const rightDetail = new THREE.Mesh(sideDetailGeom, ancientGoldMaterial);
     rightDetail.position.x = detailWidth / 2;
+    rightDetail.position.z = 0.5;
     plaqueGroup.add(rightDetail);
 
     // Corner decorative elements
@@ -503,7 +510,7 @@ export function createJapaneseTemple() {
     ];
     cornerPositions.forEach(pos => {
         const corner = new THREE.Mesh(cornerGeom, ancientGoldMaterial);
-        corner.position.set(pos.x, pos.y, 0);
+        corner.position.set(pos.x, pos.y, 0.5);
         corner.rotation.z = Math.PI / 4;
         plaqueGroup.add(corner);
     });
