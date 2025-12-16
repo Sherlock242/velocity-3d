@@ -1,10 +1,10 @@
 
 import * as THREE from 'three';
 import type { MutableRefObject } from 'react';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { createJapaneseTemple } from '../../models/japanese-temple';
 import { createToriiGate } from '../../models/torii-gate';
 import { CELL_SIZE } from '@/lib/game-constants';
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 type Sector21Props = {
   cellCenterX: number;
@@ -28,14 +28,16 @@ export function createSector21({
   templeContainer.rotation.y = Math.PI / 2;
   sectorGroup.add(templeContainer);
   
+  // The main building itself is a static collider
   staticCollidersRef.current.push(mainBuilding);
 
-  // Process walkable group for ramp physics
+  // Process the walkable group for ramp physics
   const geometries: THREE.BufferGeometry[] = [];
   walkableGroup.updateMatrixWorld(true);
   walkableGroup.traverse((child) => {
       if (child instanceof THREE.Mesh) {
           const geom = child.geometry.clone();
+          // Apply the world matrix of the child and its container to get the correct world position
           geom.applyMatrix4(child.matrixWorld);
           geometries.push(geom);
       }
@@ -43,13 +45,11 @@ export function createSector21({
 
   if (geometries.length > 0) {
       const mergedGeometry = mergeGeometries(geometries, false);
-      // We need to apply the container's matrix to the merged geometry
-      // so it's positioned correctly in world space.
-      mergedGeometry.applyMatrix4(templeContainer.matrixWorld);
       
+      // The merged geometry is already in world coordinates, so we don't need to apply the container's matrix again.
       const walkableMesh = new THREE.Mesh(mergedGeometry, new THREE.MeshBasicMaterial({ visible: false, wireframe: true }));
-      // The walkableMesh is now in world coordinates, so we don't add it to any parent group.
-      // We assign it directly to the rampMeshRef.
+      
+      // Assign the world-transformed mesh directly to the rampMeshRef.
       rampMeshRef.current = walkableMesh;
   }
 
