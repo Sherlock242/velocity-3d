@@ -269,7 +269,6 @@ export function createJapaneseTemple() {
     rightStatueBase.position.set(baseWidth/2 - statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 20);
     baseGroup.add(rightStatueBase);
 
-    walkableGroup.add(baseGroup);
     
     // --- Stairs ---
     const stairsGroup = new THREE.Group();
@@ -282,15 +281,15 @@ export function createJapaneseTemple() {
 
     for (let i = 0; i < numStairs; i++) {
         const step = new THREE.Mesh(
-            new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth * (numStairs - i)),
+            new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth * (i + 1)),
             stairMaterial
         );
-        step.position.y = stairHeight / 2 + i * stairHeight;
-        step.position.z = stairDepth * (numStairs - i) / 2;
+        step.position.y = totalStairHeight - (stairHeight / 2 + i * stairHeight);
+        step.position.z = stairDepth * (i + 1) / 2;
         stairsGroup.add(step);
     }
     stairsGroup.position.set(0, 0, (baseDepth + 5) / 2);
-    baseGroup.add(stairsGroup);
+    walkableGroup.add(baseGroup, stairsGroup);
 
 
     // --- Main Structure ---
