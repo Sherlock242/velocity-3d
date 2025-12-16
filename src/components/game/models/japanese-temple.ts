@@ -397,7 +397,7 @@ export function createJapaneseTemple() {
     // Inner black background
     const plaqueBackGeom = new THREE.BoxGeometry(plaqueFrameWidth * 0.7, plaqueFrameHeight * 0.8, 0.5);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
-    plaqueBack.position.z = 0.6; // Bring it forward so it's inset
+    plaqueBack.position.z = 1.0; // Bring it forward so it's inset
     plaqueGroup.add(plaqueBack);
 
     // Add decorative frame details to suggest ornateness
@@ -438,12 +438,12 @@ export function createJapaneseTemple() {
         corner.rotation.z = Math.PI / 4;
         plaqueGroup.add(corner);
     });
-
+    plaqueGroup.scale.set(0.9, 0.9, 0.9);
     secondFloorGroup.add(plaqueGroup);
 
 
     // --- Main Top Roof ---
-    const topRoof = createPyramidRoof(secondFloorWidth + 50, 85, 20, darkBrownRoof);
+    const topRoof = createPyramidRoof(secondFloorWidth + 50, 85, 18, darkBrownRoof);
     topRoof.position.y = secondFloorHeight + 7.5; // Adjusted Y position
     secondFloorGroup.add(topRoof);
 
