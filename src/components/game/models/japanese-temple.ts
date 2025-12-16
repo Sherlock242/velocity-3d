@@ -18,11 +18,12 @@ export function createJapaneseTemple() {
     const vermilionRed = new THREE.MeshStandardMaterial({ color: 0xdc4405, roughness: 0.6 });
     const blackAccent = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.1, roughness: 0.7 });
     const darkBrownRoof = new THREE.MeshStandardMaterial({ color: 0x3f2a1d, roughness: 0.9 });
-    const whitePlaster = new THREE.MeshStandardMaterial({ color: 0xf5f5dc, roughness: 0.8 });
+    const whitePlaster = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
     const stoneBaseMaterial = new THREE.MeshStandardMaterial({ color: 0x9fa8a3, roughness: 0.9 });
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
+    const darkOrange = new THREE.MeshStandardMaterial({ color: 0x8B2500, roughness: 0.6 });
 
 
     // --- Stone Base ---
@@ -197,16 +198,16 @@ export function createJapaneseTemple() {
 
     const entrancePillarGeom = new THREE.CylinderGeometry(innerPillarDiameter, innerPillarDiameter, innerPillarHeight, 12);
     
-    const leftInnerPillar = new THREE.Mesh(entrancePillarGeom, vermilionRed);
+    const leftInnerPillar = new THREE.Mesh(entrancePillarGeom, darkOrange);
     leftInnerPillar.position.set(-innerEntranceWidth / 2, innerPillarHeight / 2, 0);
     innerEntranceGroup.add(leftInnerPillar);
 
-    const rightInnerPillar = new THREE.Mesh(entrancePillarGeom, vermilionRed);
+    const rightInnerPillar = new THREE.Mesh(entrancePillarGeom, darkOrange);
     rightInnerPillar.position.set(innerEntranceWidth / 2, innerPillarHeight / 2, 0);
     innerEntranceGroup.add(rightInnerPillar);
 
     const innerLintelGeom = new THREE.BoxGeometry(innerEntranceWidth, 3, 3);
-    const innerLintel = new THREE.Mesh(innerLintelGeom, vermilionRed);
+    const innerLintel = new THREE.Mesh(innerLintelGeom, darkOrange);
     innerLintel.position.set(0, innerPillarHeight, 0);
     innerEntranceGroup.add(innerLintel);
 
@@ -224,11 +225,23 @@ export function createJapaneseTemple() {
     rightSideWall.position.set(centerBayWidth / 2 + sideBayWidth / 2, firstFloorHeight/2, -14);
     mainStructureGroup.add(rightSideWall);
     
-    // First Floor Plaster Walls (center)
-    const centerWallGeom = new THREE.BoxGeometry(centerBayWidth, firstFloorHeight, 1);
-    const centerWall = new THREE.Mesh(centerWallGeom, whitePlaster);
-    centerWall.position.set(0, firstFloorHeight/2, -14);
-    mainStructureGroup.add(centerWall);
+    // First Floor Plaster Walls (center) - with opening
+    const centerWallSideWidth = (centerBayWidth - innerEntranceWidth) / 2;
+    const centerWallSideGeom = new THREE.BoxGeometry(centerWallSideWidth, firstFloorHeight, 1);
+
+    const leftCenterWall = new THREE.Mesh(centerWallSideGeom, whitePlaster);
+    leftCenterWall.position.set(-(innerEntranceWidth / 2 + centerWallSideWidth / 2), firstFloorHeight/2, -14);
+    mainStructureGroup.add(leftCenterWall);
+
+    const rightCenterWall = new THREE.Mesh(centerWallSideGeom, whitePlaster);
+    rightCenterWall.position.set(innerEntranceWidth / 2 + centerWallSideWidth / 2, firstFloorHeight/2, -14);
+    mainStructureGroup.add(rightCenterWall);
+    
+    const centerLintelHeight = firstFloorHeight - innerPillarHeight;
+    const centerLintelGeom = new THREE.BoxGeometry(innerEntranceWidth, centerLintelHeight, 1);
+    const centerLintel = new THREE.Mesh(centerLintelGeom, whitePlaster);
+    centerLintel.position.set(0, innerPillarHeight + centerLintelHeight / 2, -14);
+    mainStructureGroup.add(centerLintel);
 
 
     // First Floor Roof Support
@@ -244,21 +257,23 @@ export function createJapaneseTemple() {
     stripedBox.position.y = stripedBoxY;
     mainStructureGroup.add(stripedBox);
 
-    const boxGeom = new THREE.BoxGeometry(structureWidth, stripedBoxHeight, 30);
+    const boxGeom = new THREE.BoxGeometry(structureWidth, stripedBoxHeight, 35);
     const boxMesh = new THREE.Mesh(boxGeom, whitePlaster);
     stripedBox.add(boxMesh);
 
     const lineMaterial = vermilionRed;
-    const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.2, 30.1);
-    const vLineGeom = new THREE.BoxGeometry(0.2, stripedBoxHeight, 30.1);
+    const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.4, 35.1);
+    const vLineGeom = new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.1);
 
     const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
     hLine.position.y = 0;
+    hLine.position.z = 0.01;
     stripedBox.add(hLine);
     
     for (let i = 0; i < 5; i++) {
         const vLine = new THREE.Mesh(vLineGeom, lineMaterial);
         vLine.position.x = (i - 2) * (structureWidth / 5);
+        vLine.position.z = 0.01;
         stripedBox.add(vLine);
     }
     
