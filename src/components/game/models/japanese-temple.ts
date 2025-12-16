@@ -442,6 +442,24 @@ export function createJapaneseTemple() {
     secondBackWall.position.set(0, secondFloorHeight / 2, -15);
     secondFloorGroup.add(secondBackWall);
 
+    // --- Orange panels from user request ---
+    const orangePanelHeight = 5;
+    const orangePanelGeom = new THREE.BoxGeometry(sideBayWidth, orangePanelHeight, 1);
+    const orangePanelMaterial = new THREE.MeshStandardMaterial({ color: 0xdc4405 });
+    
+    const orangePanel1 = new THREE.Mesh(orangePanelGeom, orangePanelMaterial);
+    orangePanel1.position.set(centerBayWidth / 2 + sideBayWidth / 2, firstFloorHeight - (orangePanelHeight / 2), 15);
+    mainStructureGroup.add(orangePanel1);
+    
+    const orangePanel2 = new THREE.Mesh(orangePanelGeom, orangePanelMaterial);
+    orangePanel2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), firstFloorHeight - (orangePanelHeight / 2), 15);
+    mainStructureGroup.add(orangePanel2);
+    
+    const centerTopPanelGeom = new THREE.BoxGeometry(centerBayWidth, 2.5, 1);
+    const centerTopPanel = new THREE.Mesh(centerTopPanelGeom, orangePanelMaterial);
+    centerTopPanel.position.set(0, firstFloorHeight - 1.25, 15);
+    mainStructureGroup.add(centerTopPanel);
+
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
