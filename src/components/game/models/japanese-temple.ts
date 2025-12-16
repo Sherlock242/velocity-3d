@@ -354,6 +354,15 @@ export function createJapaneseTemple() {
     const orangeStrip2 = new THREE.Mesh(orangeStripGeom, vermilionRed);
     orangeStrip2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight, 15);
     mainStructureGroup.add(orangeStrip2);
+    
+    // Thick orange strip under green railing
+    const bottomOrangeStrip1 = new THREE.Mesh(orangeStripGeom, vermilionRed);
+    bottomOrangeStrip1.position.set(centerBayWidth / 2 + sideBayWidth / 2, 0, 15);
+    mainStructureGroup.add(bottomOrangeStrip1);
+
+    const bottomOrangeStrip2 = new THREE.Mesh(orangeStripGeom, vermilionRed);
+    bottomOrangeStrip2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), 0, 15);
+    mainStructureGroup.add(bottomOrangeStrip2);
 
 
     // Function to create the brown panel with grey stripes
@@ -376,7 +385,7 @@ export function createJapaneseTemple() {
       return panelGroup;
     }
 
-    const stripedPanelY = greenRailingHeight + 3 + 3.5; // Raised higher
+    const stripedPanelY = greenRailingHeight + 5;
     const stripedPanel1 = createStripedPanel(sideBayWidth);
     stripedPanel1.position.set(centerBayWidth / 2 + sideBayWidth / 2, stripedPanelY, 15);
     mainStructureGroup.add(stripedPanel1);
@@ -388,11 +397,11 @@ export function createJapaneseTemple() {
     // Thick orange strip above brown panels
     const orangeStripAboveWoodGeom = new THREE.BoxGeometry(sideBayWidth, 3, 2);
     const orangeStripAbove1 = new THREE.Mesh(orangeStripAboveWoodGeom, vermilionRed);
-    orangeStripAbove1.position.set(centerBayWidth / 2 + sideBayWidth / 2, stripedPanelY + 5 + 1.5, 15);
+    orangeStripAbove1.position.set(centerBayWidth / 2 + sideBayWidth / 2, stripedPanelY + 5, 15);
     mainStructureGroup.add(orangeStripAbove1);
 
     const orangeStripAbove2 = new THREE.Mesh(orangeStripAboveWoodGeom, vermilionRed);
-    orangeStripAbove2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), stripedPanelY + 5 + 1.5, 15);
+    orangeStripAbove2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), stripedPanelY + 5, 15);
     mainStructureGroup.add(orangeStripAbove2);
 
     // First floor center latticework
