@@ -63,12 +63,10 @@ function createKitsuneStatue() {
 
 
 // Helper to create the roof. Changed to a flat top cone (frustum).
-function createFrustumRoof(width: number, depth: number, height: number, material: THREE.Material) {
-    const radiusBottom = Math.max(width, depth) / 2;
-    const radiusTop = radiusBottom * 0.3; // 30% of the bottom radius
-    const radialSegments = 16;
-    const geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+function createPyramidRoof(width: number, depth: number, height: number, material: THREE.Material) {
+    const geometry = new THREE.ConeGeometry(Math.max(width, depth) / 1.5, height, 4);
     const mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.y = Math.PI / 4;
     return mesh;
 }
 
@@ -380,7 +378,7 @@ export function createJapaneseTemple() {
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
-    plaqueGroup.position.set(0, secondFloorHeight - 4, 16); 
+    plaqueGroup.position.set(0, secondFloorHeight + 4, 16); 
     
     const plaqueBackGeom = new THREE.BoxGeometry(10, 18, 1);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
@@ -395,24 +393,10 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createFrustumRoof(secondFloorWidth + 20, 55, 25, darkBrownRoof);
-    topRoof.position.y = secondFloorHeight + 12.5; // Adjusted Y position
+    const topRoof = createPyramidRoof(secondFloorWidth + 50, 85, 15, darkBrownRoof);
+    topRoof.position.y = secondFloorHeight + 7.5; // Adjusted Y position
     secondFloorGroup.add(topRoof);
-    
-    // Black decorative ridge on top roof
-    const ridgeGeom = new THREE.BoxGeometry(40, 4, 4);
-    const ridge = new THREE.Mesh(ridgeGeom, blackAccent);
-    ridge.position.y = secondFloorHeight + 25 + 1;
-    secondFloorGroup.add(ridge);
 
-    // Gold end-caps on ridge
-    const endCapGeom = new THREE.BoxGeometry(6, 6, 6);
-    const leftCap = new THREE.Mesh(endCapGeom, goldMaterial);
-    leftCap.position.set(-22, secondFloorHeight + 25 + 1, 0);
-    secondFloorGroup.add(leftCap);
-    const rightCap = new THREE.Mesh(endCapGeom, goldMaterial);
-    rightCap.position.set(22, secondFloorHeight + 25 + 1, 0);
-    secondFloorGroup.add(rightCap);
 
     // --- Kitsune Statues ---
     const leftStatue = createKitsuneStatue();
