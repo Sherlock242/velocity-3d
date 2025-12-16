@@ -97,13 +97,13 @@ export function createJapaneseTemple() {
 
     const pillarPositions = [
       // Center bay pillars (front are outer)
-      { x: -centerBayWidth / 2, z: 15, outer: true }, { x: centerBayWidth / 2, z: 15, outer: true },
+      { x: -centerBayWidth / 2, z: 15, outer: true, rotation: 0 }, { x: centerBayWidth / 2, z: 15, outer: true, rotation: 0 },
       // Inner pillars are behind the front ones
-      { x: -centerBayWidth / 2, z: -15, outer: false }, { x: centerBayWidth / 2, z: -15, outer: false },
+      { x: -centerBayWidth / 2, z: -15, outer: false, rotation: 0 }, { x: centerBayWidth / 2, z: -15, outer: false, rotation: 0 },
 
       // Side bay pillars (outer)
-      { x: -structureWidth / 2, z: 15, outer: true }, { x: -structureWidth / 2, z: -15, outer: true },
-      { x: structureWidth / 2, z: 15, outer: true }, { x: structureWidth / 2, z: -15, outer: true },
+      { x: -structureWidth / 2, z: 15, outer: true, rotation: Math.PI / 2 }, { x: -structureWidth / 2, z: -15, outer: true, rotation: Math.PI / 2 },
+      { x: structureWidth / 2, z: 15, outer: true, rotation: -Math.PI / 2 }, { x: structureWidth / 2, z: -15, outer: true, rotation: -Math.PI / 2 },
     ];
 
     pillarPositions.forEach(pos => {
@@ -115,6 +115,7 @@ export function createJapaneseTemple() {
 
         const dougong = createDougong(8, vermilionRed, goldMaterial);
         dougong.position.set(pos.x, isOuter ? outerPillarHeight : firstFloorHeight, pos.z);
+        dougong.rotation.y = pos.rotation;
         mainStructureGroup.add(dougong);
     });
 
