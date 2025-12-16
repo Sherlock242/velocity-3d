@@ -22,7 +22,7 @@ import type { TrackTheme, Gear } from '@/lib/types';
 import Hud from './hud';
 import AiOpponentGenerator from './ai-opponent-generator';
 import LargeMap from './large-map';
-import { TRACK_THEMES, GRID_SIZE, TOTAL_GRID_WIDTH } from '@/lib/game-constants';
+import { TRACK_THEMES, GRID_SIZE, TOTAL_GRID_WIDTH, CELL_SIZE } from '@/lib/game-constants';
 import { useGameState, type GameState } from './core/state';
 import { setupScene } from './core/scene';
 import { initAudio, initAudioOnInteraction } from './core/audio';
@@ -62,7 +62,24 @@ export default function GameWrapper() {
     setGameData(prev => ({ ...prev, gear: newGear }));
   };
 
-  const handleSectorSelect = (sector: number) => {
+  const handleTeleport = (sector: number) => {
+    const { playerRef, velocityRef } = gameState;
+    if (!playerRef.current) return;
+    
+    const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
+    const row = Math.floor((sector - 1) / GRID_SIZE);
+    const col = (sector - 1) % GRID_SIZE;
+    const sectorCenterX = col * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+    const sectorCenterZ = row * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
+
+    playerRef.current.position.set(sectorCenterX, 5, sectorCenterZ);
+    velocityRef.current.set(0, 0, 0);
+
+    setTopDownSector(null);
+    setIsLargeMapOpen(false);
+  };
+
+  const handleSetTopDownView = (sector: number) => {
     setTopDownSector(sector);
     setIsLargeMapOpen(false);
   };
@@ -230,7 +247,8 @@ export default function GameWrapper() {
         {isLargeMapOpen && (
           <LargeMap
             gridSize={GRID_SIZE}
-            onSectorSelect={handleSectorSelect}
+            onSetTopDownView={handleSetTopDownView}
+            onTeleport={handleTeleport}
             onClose={() => setIsLargeMapOpen(false)}
           />
         )}

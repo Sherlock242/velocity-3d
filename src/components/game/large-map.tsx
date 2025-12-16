@@ -1,19 +1,56 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { useState } from 'react';
+import { Eye, Send, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 type LargeMapProps = {
   gridSize: number;
-  onSectorSelect: (sector: number) => void;
+  onSetTopDownView: (sector: number) => void;
+  onTeleport: (sector: number) => void;
   onClose: () => void;
 };
 
 export default function LargeMap({
   gridSize,
-  onSectorSelect,
+  onSetTopDownView,
+  onTeleport,
   onClose,
 }: LargeMapProps) {
+  const [selectedSector, setSelectedSector] = useState<number | null>(null);
+
+  const handleSectorClick = (sectorNumber: number) => {
+    setSelectedSector(sectorNumber);
+  };
+
+  const handleTopView = () => {
+    if (selectedSector !== null) {
+      onSetTopDownView(selectedSector);
+    }
+    setSelectedSector(null);
+  };
+
+  const handleTeleport = () => {
+    if (selectedSector !== null) {
+      onTeleport(selectedSector);
+    }
+    setSelectedSector(null);
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedSector(null);
+  };
+
   return (
     <div className="absolute inset-0 bg-black/80 z-20 flex items-center justify-center pointer-events-auto">
       <div className="relative bg-card p-4 rounded-lg shadow-2xl border-accent/20 border">
@@ -42,7 +79,7 @@ export default function LargeMap({
               <button
                 key={sectorNumber}
                 className="w-full h-full border border-accent/20 rounded-sm flex items-center justify-center text-accent font-bold text-xl hover:bg-accent/20 hover:text-primary transition-colors"
-                onClick={() => onSectorSelect(sectorNumber)}
+                onClick={() => handleSectorClick(sectorNumber)}
               >
                 {sectorNumber}
               </button>
@@ -50,6 +87,28 @@ export default function LargeMap({
           })}
         </div>
       </div>
+
+      <AlertDialog open={selectedSector !== null} onOpenChange={handleCloseDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sector {selectedSector}</AlertDialogTitle>
+            <AlertDialogDescription>
+              What would you like to do with this sector?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleTopView} className='bg-secondary text-secondary-foreground hover:bg-secondary/80'>
+              <Eye className="mr-2 h-4 w-4" />
+              Top View
+            </AlertDialogAction>
+            <AlertDialogAction onClick={handleTeleport}>
+              <Send className="mr-2 h-4 w-4" />
+              Teleport
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
