@@ -14,29 +14,29 @@ export function createDougong(size: number) {
     const dougong = new THREE.Group();
     const mat = new THREE.MeshStandardMaterial({color: 0xdc4405}); // Vermilion Red
 
-    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(size, size*0.2, size*0.2), mat);
+    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(size, size*0.4, size*0.4), mat);
     dougong.add(mainArm);
 
-    const crossArm = new THREE.Mesh(new THREE.BoxGeometry(size*0.2, size*0.2, size), mat);
+    const crossArm = new THREE.Mesh(new THREE.BoxGeometry(size*0.4, size*0.4, size), mat);
     dougong.add(crossArm);
 
     // First layer block
-    const block1 = new THREE.Mesh(new THREE.BoxGeometry(size*0.3, size*0.3, size*0.3), mat);
-    block1.position.y = size * 0.25;
+    const block1 = new THREE.Mesh(new THREE.BoxGeometry(size*0.5, size*0.4, size*0.5), mat);
+    block1.position.y = size * 0.4;
     dougong.add(block1);
 
     // Second layer arms
-    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.8, size * 0.15, size * 0.15), mat);
-    arm2.position.y = size * 0.45;
+    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.8, size * 0.25, size * 0.25), mat);
+    arm2.position.y = size * 0.7;
     dougong.add(arm2);
     
-    const arm3 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.15, size * 0.15, size * 0.8), mat);
-    arm3.position.y = size * 0.45;
+    const arm3 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.25, size * 0.25, size * 0.8), mat);
+    arm3.position.y = size * 0.7;
     dougong.add(arm3);
     
     // Top block
-    const block2 = new THREE.Mesh(new THREE.BoxGeometry(size*0.4, size*0.2, size*0.4), mat);
-    block2.position.y = size * 0.6;
+    const block2 = new THREE.Mesh(new THREE.BoxGeometry(size*0.6, size*0.3, size*0.6), mat);
+    block2.position.y = size * 0.9;
     dougong.add(block2);
     
     return dougong;
