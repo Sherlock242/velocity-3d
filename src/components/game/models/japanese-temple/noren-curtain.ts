@@ -6,7 +6,7 @@ export function createNorenCurtain() {
     const norenGroup = new THREE.Group();
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide });
     const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, side: THREE.DoubleSide });
-    const redMaterial = new THREE.MeshStandardMaterial({ color: 0xdc4405, side: THREE.DoubleSide });
+    const darkRedMaterial = new THREE.MeshStandardMaterial({ color: 0x8b0000, side: THREE.DoubleSide });
 
     const panelHeight = 20;
     const redLineWidth = 0.2;
@@ -26,7 +26,7 @@ export function createNorenCurtain() {
     // Helper function to add a red line
     const addRedLine = () => {
         const lineGeom = new THREE.BoxGeometry(redLineWidth, panelHeight, 0.1);
-        const line = new THREE.Mesh(lineGeom, redMaterial);
+        const line = new THREE.Mesh(lineGeom, darkRedMaterial);
         line.position.x = currentX + redLineWidth / 2;
         line.position.z = 0.05;
         norenGroup.add(line);
