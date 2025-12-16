@@ -144,7 +144,7 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(bottomOrangeStrip2);
 
 
-    // Function to create the brown panel with grey stripes
+    // Function to create the brown panel with red stripes
     function createStripedPanel(width: number) {
       const panelGroup = new THREE.Group();
       const panelHeight = 5;
@@ -153,11 +153,11 @@ export function createJapaneseTemple() {
       panel.position.y = panelHeight / 2;
       panelGroup.add(panel);
 
-      const greyStripeMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
+      const redStripeMaterial = vermilionRed;
       const stripeHeight = panelHeight;
       const stripeGeom = new THREE.BoxGeometry(0.3, stripeHeight, 1.1);
       for (let i = 0; i < 3; i++) {
-        const stripe = new THREE.Mesh(stripeGeom, greyStripeMaterial);
+        const stripe = new THREE.Mesh(stripeGeom, redStripeMaterial);
         stripe.position.x = (i - 1) * (width / 4);
         stripe.position.y = panelHeight / 2;
         panelGroup.add(stripe);
@@ -213,16 +213,28 @@ export function createJapaneseTemple() {
 
     innerEntranceGroup.position.z = -5; // Position it inside the main structure
     mainStructureGroup.add(innerEntranceGroup);
+
+    // --- Inner Chamber ---
+    const chamberWidth = innerEntranceWidth * 1.2;
+    const chamberHeight = innerPillarHeight;
+    const chamberDepth = 20;
+    const chamberMaterial = new THREE.MeshStandardMaterial({ color: 0x101010, side: THREE.BackSide });
+    const chamberGeom = new THREE.BoxGeometry(chamberWidth, chamberHeight, chamberDepth);
+    const innerChamber = new THREE.Mesh(chamberGeom, chamberMaterial);
+    // Position it behind the entrance opening
+    innerChamber.position.set(0, chamberHeight/2, -15 - chamberDepth / 2);
+    mainStructureGroup.add(innerChamber);
+    
     
 
     // First Floor Plaster Walls (behind side bays)
     const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, firstFloorHeight, 1);
     const leftSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
-    leftSideWall.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), firstFloorHeight/2, -14);
+    leftSideWall.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), firstFloorHeight/2, -15);
     mainStructureGroup.add(leftSideWall);
     
     const rightSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
-    rightSideWall.position.set(centerBayWidth / 2 + sideBayWidth / 2, firstFloorHeight/2, -14);
+    rightSideWall.position.set(centerBayWidth / 2 + sideBayWidth / 2, firstFloorHeight/2, -15);
     mainStructureGroup.add(rightSideWall);
     
     // First Floor Plaster Walls (center) - with opening
@@ -230,17 +242,17 @@ export function createJapaneseTemple() {
     const centerWallSideGeom = new THREE.BoxGeometry(centerWallSideWidth, firstFloorHeight, 1);
 
     const leftCenterWall = new THREE.Mesh(centerWallSideGeom, whitePlaster);
-    leftCenterWall.position.set(-(innerEntranceWidth / 2 + centerWallSideWidth / 2), firstFloorHeight/2, -14);
+    leftCenterWall.position.set(-(innerEntranceWidth / 2 + centerWallSideWidth / 2), firstFloorHeight/2, -15);
     mainStructureGroup.add(leftCenterWall);
 
     const rightCenterWall = new THREE.Mesh(centerWallSideGeom, whitePlaster);
-    rightCenterWall.position.set(innerEntranceWidth / 2 + centerWallSideWidth / 2, firstFloorHeight/2, -14);
+    rightCenterWall.position.set(innerEntranceWidth / 2 + centerWallSideWidth / 2, firstFloorHeight/2, -15);
     mainStructureGroup.add(rightCenterWall);
     
     const centerLintelHeight = firstFloorHeight - innerPillarHeight;
     const centerLintelGeom = new THREE.BoxGeometry(innerEntranceWidth, centerLintelHeight, 1);
     const centerLintel = new THREE.Mesh(centerLintelGeom, whitePlaster);
-    centerLintel.position.set(0, innerPillarHeight + centerLintelHeight / 2, -14);
+    centerLintel.position.set(0, innerPillarHeight + centerLintelHeight / 2, -15);
     mainStructureGroup.add(centerLintel);
 
 
