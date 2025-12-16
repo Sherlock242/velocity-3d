@@ -224,9 +224,9 @@ export function createJapaneseTemple() {
 
 
     // First Floor Roof Support
-    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 4, 30);
+    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 3, 30);
     const simpleRoofSupport = new THREE.Mesh(simpleRoofSupportGeom, vermilionRed);
-    simpleRoofSupport.position.y = firstFloorHeight + 2;
+    simpleRoofSupport.position.y = firstFloorHeight + 1.5;
     mainStructureGroup.add(simpleRoofSupport);
     
     
