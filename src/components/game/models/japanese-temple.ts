@@ -84,7 +84,7 @@ export function createJapaneseTemple() {
     mainBuilding.add(mainStructureGroup);
 
     const structureWidth = 120;
-    const firstFloorHeight = 30;
+    const firstFloorHeight = 32;
     const pillarDiameter = 3.5;
     const centerBayWidth = stairWidth + 10;
     const sideBayWidth = (structureWidth - centerBayWidth) / 2;
@@ -225,9 +225,9 @@ export function createJapaneseTemple() {
 
 
     // First Floor Roof Support
-    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 3, 30);
+    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 6, 30);
     const simpleRoofSupport = new THREE.Mesh(simpleRoofSupportGeom, vermilionRed);
-    simpleRoofSupport.position.y = firstFloorHeight + 1.5;
+    simpleRoofSupport.position.y = firstFloorHeight + 3;
     mainStructureGroup.add(simpleRoofSupport);
     
     
