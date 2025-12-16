@@ -116,37 +116,29 @@ function createDougong(size: number) {
     return dougong;
 }
 
-// Helper to create the green lattice doors
-function createLatticeDoor(width: number, height: number, material: THREE.Material) {
-    const door = new THREE.Group();
+function createGreenRailing(width: number, height: number, material: THREE.Material) {
+    const railing = new THREE.Group();
     const frameThickness = 1;
 
     // Create frame
     const topFrame = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 1), material);
-    topFrame.position.y = height/2 - frameThickness/2;
-    door.add(topFrame);
+    topFrame.position.y = height / 2 - frameThickness / 2;
+    railing.add(topFrame);
 
     const bottomFrame = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 1), material);
-    bottomFrame.position.y = -height/2 + frameThickness/2;
-    door.add(bottomFrame);
+    bottomFrame.position.y = -height / 2 + frameThickness / 2;
+    railing.add(bottomFrame);
 
-    const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(frameThickness, height, 1), material);
-    leftFrame.position.x = -width/2 + frameThickness/2;
-    door.add(leftFrame);
-
-    const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(frameThickness, height, 1), material);
-    rightFrame.position.x = width/2 - frameThickness/2;
-    door.add(rightFrame);
-
-    // Create lattice
-    const latticeBarGeom = new THREE.BoxGeometry(0.5, height - (frameThickness * 2), 0.5);
-    for(let i=1; i < 4; i++) {
-        const vBar = new THREE.Mesh(latticeBarGeom, material);
-        vBar.position.x = -width/2 + (i * width/4);
-        door.add(vBar);
+    // Create dense vertical bars
+    const numBarsV = 20; // Increased for density
+    const barGeom = new THREE.BoxGeometry(0.5, height, 0.5);
+    for (let i = 0; i < numBarsV; i++) {
+        const vBar = new THREE.Mesh(barGeom, material);
+        vBar.position.x = -width / 2 + (i + 0.5) * (width / numBarsV);
+        railing.add(vBar);
     }
 
-    return door;
+    return railing;
 }
 
 // Helper to create the gold railing
@@ -286,54 +278,52 @@ export function createJapaneseTemple() {
     const structureWidth = 120;
     const firstFloorHeight = 25;
     const pillarDiameter = 4;
+    const bayWidth = (structureWidth - (stairWidth + pillarDiameter * 2)) / 2;
+
 
     // Main Pillars
     const pillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, firstFloorHeight, 16);
     const pillarPositions = [
-        { x: -structureWidth / 2.2, z: -15 }, { x: structureWidth / 2.2, z: -15 },
-        { x: -structureWidth / 2.2, z: 15 }, { x: structureWidth / 2.2, z: 15 },
-        { x: -20, z: -15 }, { x: 20, z: -15 },
-        { x: -20, z: 15 }, { x: 20, z: 15 },
+      { x: -stairWidth / 2 - pillarDiameter, z: 15 }, { x: stairWidth / 2 + pillarDiameter, z: 15 },
+      { x: -stairWidth / 2 - pillarDiameter, z: -15 }, { x: stairWidth / 2 + pillarDiameter, z: -15 },
+
+      { x: -structureWidth / 2 + pillarDiameter, z: 15 }, { x: -structureWidth / 2 + pillarDiameter, z: -15 },
+      { x: structureWidth / 2 - pillarDiameter, z: 15 }, { x: structureWidth / 2 - pillarDiameter, z: -15 },
     ];
     pillarPositions.forEach(pos => {
         const pillar = new THREE.Mesh(pillarGeom, vermilionRed);
         pillar.position.set(pos.x, firstFloorHeight / 2, pos.z);
         mainStructureGroup.add(pillar);
-
-        // Add vertical gold ornament
-        const goldOrnamentGeom = new THREE.BoxGeometry(1, 4, 1);
-        const goldOrnament = new THREE.Mesh(goldOrnamentGeom, goldMaterial);
-        goldOrnament.position.set(pos.x, firstFloorHeight - 5, pos.z + pillarDiameter + 0.5);
-        mainStructureGroup.add(goldOrnament);
     });
 
-    // First Floor Plaster Walls (with tomoe symbols)
-    const wallGeom = new THREE.BoxGeometry(structureWidth, firstFloorHeight, 1);
-    const wall1 = new THREE.Mesh(wallGeom, whitePlaster);
-    wall1.position.set(0, firstFloorHeight/2, -14);
-    mainStructureGroup.add(wall1);
+    // Green Railing in side bays
+    const sideBayWidth = bayWidth - pillarDiameter * 2;
+    const greenRailingHeight = 12;
+    const greenRailing = createGreenRailing(sideBayWidth, greenRailingHeight, greenLatticeMaterial);
+    greenRailing.position.set(stairWidth / 2 + pillarDiameter + sideBayWidth / 2, greenRailingHeight / 2, 15);
+    mainStructureGroup.add(greenRailing);
 
-    const wall2Group = new THREE.Group();
-    const wall2 = new THREE.Mesh(wallGeom, whitePlaster);
-    wall2Group.add(wall2);
+    const greenRailing2 = createGreenRailing(sideBayWidth, greenRailingHeight, greenLatticeMaterial);
+    greenRailing2.position.set(-(stairWidth / 2 + pillarDiameter + sideBayWidth / 2), greenRailingHeight / 2, 15);
+    mainStructureGroup.add(greenRailing2);
 
-    // Circular Tomoe details on the front wall
-    const tomoeGeom = new THREE.CylinderGeometry(4, 4, 1.2, 32);
-    const tomoeMat = new THREE.MeshStandardMaterial({color: 0x000000});
-    const tomoePositions = [-50, -35, 35, 50];
-    tomoePositions.forEach(xPos => {
-      const tomoeBorder = new THREE.Mesh(tomoeGeom, whitePlaster);
-      tomoeBorder.rotation.x = Math.PI / 2;
-      tomoeBorder.position.set(xPos, firstFloorHeight/2, 0);
-      const tomoeCenter = new THREE.Mesh(new THREE.CircleGeometry(3, 32), tomoeMat);
-      tomoeCenter.position.z = 0.7;
-      tomoeBorder.add(tomoeCenter);
-      wall2Group.add(tomoeBorder);
-    });
+    // First Floor Plaster Walls (behind side bays)
+    const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, firstFloorHeight, 1);
+    const leftSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
+    leftSideWall.position.set(-(stairWidth / 2 + pillarDiameter + sideBayWidth / 2), firstFloorHeight/2, -14);
+    mainStructureGroup.add(leftSideWall);
     
-    wall2Group.position.set(0, firstFloorHeight/2, 14);
-    mainStructureGroup.add(wall2Group);
+    const rightSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
+    rightSideWall.position.set(stairWidth / 2 + pillarDiameter + sideBayWidth / 2, firstFloorHeight/2, -14);
+    mainStructureGroup.add(rightSideWall);
     
+    // First Floor Plaster Walls (center)
+    const centerWallGeom = new THREE.BoxGeometry(stairWidth + pillarDiameter*2, firstFloorHeight, 1);
+    const centerWall = new THREE.Mesh(centerWallGeom, whitePlaster);
+    centerWall.position.set(0, firstFloorHeight/2, -14);
+    mainStructureGroup.add(centerWall);
+
+
     // First Floor Roof Support & Brackets
     const lowerRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 8, 40);
     const lowerRoofSupport = new THREE.Mesh(lowerRoofSupportGeom, vermilionRed);
@@ -400,7 +390,6 @@ export function createJapaneseTemple() {
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
     plaqueGroup.position.set(0, secondFloorHeight - 8, 16); // Position on 2nd floor facade
-    plaqueGroup.rotation.z = Math.PI / 2; // Rotate 90 degrees
     
     const plaqueBackGeom = new THREE.BoxGeometry(18, 10, 1);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
@@ -412,15 +401,6 @@ export function createJapaneseTemple() {
     plaqueGroup.add(plaqueFrame);
     
     secondFloorGroup.add(plaqueGroup);
-
-    // --- Green Lattice Doors ---
-    const leftDoor = createLatticeDoor(15, firstFloorHeight * 0.8, greenLatticeMaterial);
-    leftDoor.position.set(-stairWidth/2 - 7.5, firstFloorHeight * 0.4, 15);
-    mainStructureGroup.add(leftDoor);
-
-    const rightDoor = createLatticeDoor(15, firstFloorHeight * 0.8, greenLatticeMaterial);
-    rightDoor.position.set(stairWidth/2 + 7.5, firstFloorHeight * 0.4, 15);
-    mainStructureGroup.add(rightDoor);
 
     // --- Kitsune Statues ---
     const leftStatue = createKitsuneStatue();
