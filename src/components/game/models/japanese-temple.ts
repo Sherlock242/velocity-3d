@@ -109,7 +109,7 @@ export function createJapaneseTemple() {
 
     // Add Noren curtains to the main entrance
     const noren = createNorenCurtain();
-    noren.position.set(0, firstFloorHeight - 8, 16);
+    noren.position.set(0, firstFloorHeight - 10, 16);
     noren.rotation.x = Math.random() * 0.1;
     mainStructureGroup.add(noren);
 
@@ -126,11 +126,11 @@ export function createJapaneseTemple() {
     // Thick orange strip over green railing
     const orangeStripGeom = new THREE.BoxGeometry(sideBayWidth, 3, 2);
     const orangeStrip1 = new THREE.Mesh(orangeStripGeom, vermilionRed);
-    orangeStrip1.position.set(centerBayWidth / 2 + sideBayWidth / 2, greenRailingHeight - 4.5, 15);
+    orangeStrip1.position.set(centerBayWidth / 2 + sideBayWidth / 2, greenRailingHeight + 2.5, 15);
     mainStructureGroup.add(orangeStrip1);
 
     const orangeStrip2 = new THREE.Mesh(orangeStripGeom, vermilionRed);
-    orangeStrip2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight - 4.5, 15);
+    orangeStrip2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight + 2.5, 15);
     mainStructureGroup.add(orangeStrip2);
     
     // Thick orange strip under green railing
