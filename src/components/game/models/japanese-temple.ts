@@ -267,11 +267,11 @@ export function createJapaneseTemple() {
     const statueBaseHeight = 18;
     const statueBaseDepth = 25;
     const leftStatueBase = new THREE.Mesh(new THREE.BoxGeometry(statueBaseWidth, statueBaseHeight, statueBaseDepth), stoneBaseMaterial);
-    leftStatueBase.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 20);
+    leftStatueBase.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 0);
     baseGroup.add(leftStatueBase);
     
     const rightStatueBase = new THREE.Mesh(new THREE.BoxGeometry(statueBaseWidth, statueBaseHeight, statueBaseDepth), stoneBaseMaterial);
-    rightStatueBase.position.set(baseWidth/2 - statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 20);
+    rightStatueBase.position.set(baseWidth/2 - statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 0);
     baseGroup.add(rightStatueBase);
 
     
@@ -521,12 +521,12 @@ export function createJapaneseTemple() {
 
     // --- Kitsune Statues ---
     const leftStatue = createKitsuneStatue();
-    leftStatue.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 20);
+    leftStatue.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 0);
     leftStatue.rotation.y = Math.PI / 6;
     mainBuilding.add(leftStatue);
     
     const rightStatue = createKitsuneStatue();
-    rightStatue.position.set(baseWidth/2 - statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 20);
+    rightStatue.position.set(baseWidth/2 - statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 0);
     rightStatue.rotation.y = -Math.PI / 6;
     mainBuilding.add(rightStatue);
     
