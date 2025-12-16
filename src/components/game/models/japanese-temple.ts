@@ -182,10 +182,10 @@ export function createJapaneseTemple() {
     orangeStripAbove2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), stripedPanelY + 5, 15);
     mainStructureGroup.add(orangeStripAbove2);
 
-    // First floor center latticework
-    const centerLatticePanel = createLatticePanel(centerBayWidth, 15, vermilionRed, whitePlaster);
-    centerLatticePanel.position.set(0, firstFloorHeight - 7.5, 15);
-    mainStructureGroup.add(centerLatticePanel);
+    // First floor center latticework - This is the unwanted horizontal bar
+    // const centerLatticePanel = createLatticePanel(centerBayWidth, 15, vermilionRed, whitePlaster);
+    // centerLatticePanel.position.set(0, firstFloorHeight - 7.5, 15);
+    // mainStructureGroup.add(centerLatticePanel);
 
     // First Floor Plaster Walls (behind side bays)
     const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, firstFloorHeight, 1);
