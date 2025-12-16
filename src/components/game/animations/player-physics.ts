@@ -4,7 +4,7 @@ import { TOTAL_GRID_WIDTH } from '@/lib/game-constants';
 import type { GameState } from '../core/state';
 
 export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
-    const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp, tilePlaneRef } = gameState;
+    const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp, tilePlaneRef, staticCollidersRef } = gameState;
     if (!playerRef.current) return;
 
     const playerHeight = controlModeRef.current === 'car' ? 2.5 : 3.5; // Increased from 1.5/2.5
@@ -12,7 +12,13 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     const raycaster = new THREE.Raycaster();
     
     // The university ramp was missing from this check, causing gravity to be incorrectly applied.
-    const rampObjects = [rampMeshRef.current, collegeRampMeshRef.current, universityRamp.current, tilePlaneRef.current].filter(Boolean) as (THREE.Mesh | THREE.Group)[];
+    const rampObjects = [
+        rampMeshRef.current, 
+        collegeRampMeshRef.current, 
+        universityRamp.current, 
+        tilePlaneRef.current,
+        ...staticCollidersRef.current
+    ].filter(Boolean) as (THREE.Mesh | THREE.Group)[];
 
     if (rampObjects.length > 0) {
         raycaster.set(playerRef.current.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));
