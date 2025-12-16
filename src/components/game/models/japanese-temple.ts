@@ -273,19 +273,19 @@ export function createJapaneseTemple() {
     const boxMesh = new THREE.Mesh(boxGeom, whitePlaster);
     stripedBox.add(boxMesh);
 
-    const lineMaterial = vermilionRed;
-    const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.4, 35.1);
-    const vLineGeom = new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.1);
+    const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
+    const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.5, 35.2);
+    const vLineGeom = new THREE.BoxGeometry(0.5, stripedBoxHeight, 35.2);
 
     const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
     hLine.position.y = 0;
-    hLine.position.z = 0.01;
+    hLine.position.z = 0.05;
     stripedBox.add(hLine);
     
     for (let i = 0; i < 5; i++) {
         const vLine = new THREE.Mesh(vLineGeom, lineMaterial);
         vLine.position.x = (i - 2) * (structureWidth / 5);
-        vLine.position.z = 0.01;
+        vLine.position.z = 0.05;
         stripedBox.add(vLine);
     }
     
@@ -320,6 +320,16 @@ export function createJapaneseTemple() {
     const secondBackWall = new THREE.Mesh(new THREE.BoxGeometry(secondFloorWidth, secondFloorHeight, 1), whitePlaster);
     secondBackWall.position.set(0, secondFloorHeight / 2, -15);
     secondFloorGroup.add(secondBackWall);
+
+    // Side walls for second floor
+    const secondSideWallGeom = new THREE.BoxGeometry(1, secondFloorHeight, 30);
+    const secondSideWallLeft = new THREE.Mesh(secondSideWallGeom, whitePlaster);
+    secondSideWallLeft.position.set(-secondFloorWidth / 2, secondFloorHeight / 2, 0);
+    secondFloorGroup.add(secondSideWallLeft);
+    const secondSideWallRight = new THREE.Mesh(secondSideWallGeom, whitePlaster);
+    secondSideWallRight.position.set(secondFloorWidth / 2, secondFloorHeight / 2, 0);
+    secondFloorGroup.add(secondSideWallRight);
+
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = createPlaque(blackAccent);
