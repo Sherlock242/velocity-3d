@@ -231,6 +231,7 @@ export function createJapaneseTemple() {
 
     // Staircase
     const stairsGroup = new THREE.Group();
+    const stairsRotationGroup = new THREE.Group();
     const stairWidth = 40;
     const numSteps = 15;
     const stepHeight = baseHeight / numSteps;
@@ -263,7 +264,11 @@ export function createJapaneseTemple() {
     rightRailing.rotation.y = -rightRailing.rotation.y;
     stairsGroup.add(rightRailing);
 
-    baseGroup.add(stairsGroup);
+    stairsRotationGroup.add(stairsGroup);
+    stairsRotationGroup.rotation.y = Math.PI;
+    stairsRotationGroup.position.z = -stepDepth * numSteps;
+
+    baseGroup.add(stairsRotationGroup);
 
 
     // Tiered bases for statues
@@ -362,7 +367,7 @@ export function createJapaneseTemple() {
 
     // White plaster walls with red frame
     const upperWallGeom = new THREE.BoxGeometry(secondFloorWidth, secondFloorHeight, 30);
-    const upperWall = new THREE.Mesh(upperWallGeom, whitePlaster);
+    const upperWall = new THREE.Mesh(upperWallGeom, vermilionRed);
     upperWall.position.y = secondFloorHeight / 2;
     secondFloorGroup.add(upperWall);
     
@@ -400,6 +405,7 @@ export function createJapaneseTemple() {
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
     plaqueGroup.position.set(0, secondFloorHeight - 8, 16); // Position on 2nd floor facade
+    plaqueGroup.rotation.y = Math.PI / 2; // Rotate it 90 degrees
     
     const plaqueBackGeom = new THREE.BoxGeometry(18, 10, 1);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
