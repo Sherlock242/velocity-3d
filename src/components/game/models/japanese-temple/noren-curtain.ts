@@ -11,7 +11,7 @@ export function createNorenCurtain() {
     const panelHeight = 20;
     const redLineWidth = 0.2;
     const emblemPanelWidth = 11;
-    const gapPanelWidth = 3;
+    const gapPanelWidth = 8;
     const endPanelWidth = 5.5; // Half of emblem panel
 
     const totalWidth = (endPanelWidth * 2) + (emblemPanelWidth * 3) + (gapPanelWidth * 2) + (redLineWidth * 6);
