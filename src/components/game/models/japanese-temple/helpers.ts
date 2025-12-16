@@ -10,32 +10,36 @@ export function createPyramidRoof(width: number, depth: number, height: number, 
 }
 
 // Helper to create detailed Dougong (bracket sets)
-export function createDougong(size: number) {
+export function createDougong(size: number, redMaterial: THREE.Material, goldMaterial: THREE.Material) {
     const dougong = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({color: 0xdc4405}); // Vermilion Red
 
-    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(size, size*0.4, size*0.4), mat);
+    const goldPlate = new THREE.Mesh(new THREE.CylinderGeometry(size * 0.7, size * 0.7, 0.5, 32), goldMaterial);
+    goldPlate.rotation.x = Math.PI / 2;
+    goldPlate.position.z = -1; // Position it behind the bracket
+    dougong.add(goldPlate);
+
+    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(size, size*0.4, size*0.4), redMaterial);
     dougong.add(mainArm);
 
-    const crossArm = new THREE.Mesh(new THREE.BoxGeometry(size*0.4, size*0.4, size), mat);
+    const crossArm = new THREE.Mesh(new THREE.BoxGeometry(size*0.4, size*0.4, size), redMaterial);
     dougong.add(crossArm);
 
     // First layer block
-    const block1 = new THREE.Mesh(new THREE.BoxGeometry(size*0.5, size*0.4, size*0.5), mat);
+    const block1 = new THREE.Mesh(new THREE.BoxGeometry(size*0.5, size*0.4, size*0.5), redMaterial);
     block1.position.y = size * 0.4;
     dougong.add(block1);
 
     // Second layer arms
-    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.8, size * 0.25, size * 0.25), mat);
+    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.8, size * 0.25, size * 0.25), redMaterial);
     arm2.position.y = size * 0.7;
     dougong.add(arm2);
     
-    const arm3 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.25, size * 0.25, size * 0.8), mat);
+    const arm3 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.25, size * 0.25, size * 0.8), redMaterial);
     arm3.position.y = size * 0.7;
     dougong.add(arm3);
     
     // Top block
-    const block2 = new THREE.Mesh(new THREE.BoxGeometry(size*0.6, size*0.3, size*0.6), mat);
+    const block2 = new THREE.Mesh(new THREE.BoxGeometry(size*0.6, size*0.3, size*0.6), redMaterial);
     block2.position.y = size * 0.9;
     dougong.add(block2);
     

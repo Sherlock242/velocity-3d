@@ -113,7 +113,7 @@ export function createJapaneseTemple() {
         pillar.position.set(pos.x, pillarYPosition, pos.z);
         mainStructureGroup.add(pillar);
 
-        const dougong = createDougong(8);
+        const dougong = createDougong(8, vermilionRed, goldMaterial);
         dougong.position.set(pos.x, isOuter ? outerPillarHeight : firstFloorHeight, pos.z);
         mainStructureGroup.add(dougong);
     });
