@@ -23,6 +23,7 @@ import Hud from './hud';
 import AiOpponentGenerator from './ai-opponent-generator';
 import LargeMap from './large-map';
 import { TRACK_THEMES, GRID_SIZE, TOTAL_GRID_WIDTH, CELL_SIZE } from '@/lib/game-constants';
+import { DOME_WIDTH, DOME_DEPTH, DOME_HEIGHT } from '@/lib/dome-constants';
 import { useGameState, type GameState } from './core/state';
 import { setupScene } from './core/scene';
 import { initAudio, initAudioOnInteraction } from './core/audio';
@@ -65,14 +66,48 @@ export default function GameWrapper() {
   const handleTeleport = (sector: number) => {
     const { playerRef, velocityRef } = gameState;
     if (!playerRef.current) return;
-    
+
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
     const row = Math.floor((sector - 1) / GRID_SIZE);
     const col = (sector - 1) % GRID_SIZE;
     const sectorCenterX = col * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
     const sectorCenterZ = row * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
 
-    playerRef.current.position.set(sectorCenterX, 5, sectorCenterZ);
+    let yPos = 5; // Default ground-level height
+
+    // Check if the teleport destination is on the dome (Sectors 21-25)
+    const isDomeSector = sector >= 21 && sector <= 25;
+    if (isDomeSector) {
+      const roadYPosition = 0.4;
+      const tilePlaneY = roadYPosition + DOME_HEIGHT + 0.2;
+      
+      // Sectors 21 and 22 are on the flat tiled surface
+      if (sector === 21 || sector === 22) {
+        yPos = tilePlaneY;
+      } else {
+        // Sectors 23, 24, 25 are on the curved part of the dome
+        const domeCenterX = 0;
+        const domeCenterZ = (4 * CELL_SIZE - halfTotalWidth) + DOME_DEPTH / 2;
+        const halfDomeWidth = DOME_WIDTH / 2;
+        const peakOffsetX = -0.2 * DOME_WIDTH;
+        const peakNormalizedX = peakOffsetX / halfDomeWidth;
+        
+        let nx = (sectorCenterX - domeCenterX) / halfDomeWidth;
+        const nz = (sectorCenterZ - domeCenterZ) / DOME_DEPTH / 2;
+
+        if (nx <= peakNormalizedX) {
+          nx = peakNormalizedX;
+        }
+
+        const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+        const heightZComponent = Math.cos(nz * Math.PI / 2);
+        const yOffset = DOME_HEIGHT * heightXComponent * heightZComponent;
+        
+        yPos = roadYPosition + yOffset + 2; // Add a small buffer to avoid clipping
+      }
+    }
+
+    playerRef.current.position.set(sectorCenterX, yPos, sectorCenterZ);
     velocityRef.current.set(0, 0, 0);
 
     setTopDownSector(null);
