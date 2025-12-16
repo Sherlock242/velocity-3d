@@ -247,15 +247,16 @@ export function createJapaneseTemple() {
     const secondFloorWidth = 90;
     const secondFloorHeight = 20;
     
-    // Side plaster walls
-    const secondSideWallGeom = new THREE.BoxGeometry( (secondFloorWidth - centerBayWidth) / 2, secondFloorHeight, 30);
-    const leftSecondWall = new THREE.Mesh(secondSideWallGeom, whitePlaster);
-    leftSecondWall.position.set(-(centerBayWidth / 2 + (secondFloorWidth - centerBayWidth) / 4), secondFloorHeight / 2, 0);
-    secondFloorGroup.add(leftSecondWall);
+    // Side lattice walls
+    const latticePanelWidth = (secondFloorWidth - centerBayWidth) / 2;
+    const leftLatticePanel = createLatticePanel(latticePanelWidth, secondFloorHeight, vermilionRed, whitePlaster);
+    leftLatticePanel.position.set(-(centerBayWidth / 2 + latticePanelWidth / 2), secondFloorHeight / 2, 0);
+    secondFloorGroup.add(leftLatticePanel);
     
-    const rightSecondWall = new THREE.Mesh(secondSideWallGeom, whitePlaster);
-    rightSecondWall.position.set(centerBayWidth / 2 + (secondFloorWidth - centerBayWidth) / 4, secondFloorHeight / 2, 0);
-    secondFloorGroup.add(rightSecondWall);
+    const rightLatticePanel = createLatticePanel(latticePanelWidth, secondFloorHeight, vermilionRed, whitePlaster);
+    rightLatticePanel.position.set(centerBayWidth / 2 + latticePanelWidth / 2, secondFloorHeight / 2, 0);
+    secondFloorGroup.add(rightLatticePanel);
+
 
     // Second story railing
     const railing2 = createGoldRailing(centerBayWidth, 12, goldMaterial, vermilionRed);
