@@ -280,7 +280,7 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(stripedBox);
 
     const boxGeom = new THREE.BoxGeometry(structureWidth, stripedBoxHeight, 35);
-    const boxMesh = new THREE.Mesh(boxGeom, vermilionRed);
+    const boxMesh = new THREE.Mesh(boxGeom, whitePlaster);
     stripedBox.add(boxMesh);
 
     const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
