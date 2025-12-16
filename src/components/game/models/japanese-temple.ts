@@ -277,11 +277,12 @@ export function createJapaneseTemple() {
     const numStairs = 10;
     const stairHeight = (baseHeight + secondTierHeight) / numStairs;
     const stairDepth = 30 / numStairs;
+    const stairMaterial = new THREE.MeshStandardMaterial({ color: 0xfffdd0 });
 
     for (let i = 0; i < numStairs; i++) {
         const step = new THREE.Mesh(
             new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth),
-            stoneBaseMaterial
+            stairMaterial
         );
         step.position.set(0, (i + 0.5) * stairHeight, (i + 0.5) * stairDepth);
         stairsGroup.add(step);
