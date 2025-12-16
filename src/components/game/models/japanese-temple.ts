@@ -408,7 +408,7 @@ export function createJapaneseTemple() {
 
     for(let i = 0; i < 10; i++) {
         const bracket = createDougong(5);
-        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight, 20);
+        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight + 5.5, 20);
         mainStructureGroup.add(bracket);
         const bracket2 = bracket.clone();
         bracket2.position.z = -20;
