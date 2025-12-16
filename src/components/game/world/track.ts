@@ -338,7 +338,7 @@ export function createGridAndScenery(
           sectorGroup = createSector20({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 21:
-          sectorGroup = createSector21({ cellCenterX, cellCenterZ, staticCollidersRef });
+          sectorGroup = createSector21({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef });
           break;
         case 22:
           // These sectors are on the dome, so we don't add buildings or gates.

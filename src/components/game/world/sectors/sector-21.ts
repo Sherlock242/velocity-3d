@@ -4,27 +4,49 @@ import type { MutableRefObject } from 'react';
 import { createJapaneseTemple } from '../../models/japanese-temple';
 import { createToriiGate } from '../../models/torii-gate';
 import { CELL_SIZE } from '@/lib/game-constants';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 type Sector21Props = {
   cellCenterX: number;
   cellCenterZ: number;
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
+  rampMeshRef: MutableRefObject<THREE.Mesh | undefined>;
 };
 
 export function createSector21({
   cellCenterX,
   cellCenterZ,
   staticCollidersRef,
+  rampMeshRef,
 }: Sector21Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
   // Add the temple
-  const temple = createJapaneseTemple();
-  temple.scale.set(1.5, 1.5, 1.5);
-  temple.position.set(cellCenterX, 1, cellCenterZ);
-  temple.rotation.y = Math.PI / 2;
-  sectorGroup.add(temple);
-  staticCollidersRef.current.push(temple);
+  const { templeContainer, mainBuilding, walkableGroup } = createJapaneseTemple();
+  templeContainer.scale.set(1.5, 1.5, 1.5);
+  templeContainer.position.set(cellCenterX, 1, cellCenterZ);
+  templeContainer.rotation.y = Math.PI / 2;
+  sectorGroup.add(templeContainer);
+  
+  staticCollidersRef.current.push(mainBuilding);
+
+  // Process walkable group for ramp physics
+  const geometries: THREE.BufferGeometry[] = [];
+  walkableGroup.updateMatrixWorld(true);
+  walkableGroup.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+          const geom = child.geometry.clone();
+          geom.applyMatrix4(child.matrixWorld);
+          geometries.push(geom);
+      }
+  });
+
+  if (geometries.length > 0) {
+      const mergedGeometry = mergeGeometries(geometries, false);
+      const walkableMesh = new THREE.Mesh(mergedGeometry, new THREE.MeshBasicMaterial({ visible: false }));
+      rampMeshRef.current = walkableMesh;
+  }
+
 
   // Add the entrance gate to the right side
   const entranceGate = createToriiGate();

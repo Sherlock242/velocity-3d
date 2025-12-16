@@ -1,5 +1,6 @@
 
 import * as THREE from 'three';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 // Helper function to create the Kitsune (fox) statues
 function createKitsuneStatue() {
@@ -199,8 +200,14 @@ function createGoldRailing(width: number, depth: number, material: THREE.Materia
 }
 
 export function createJapaneseTemple() {
-    const temple = new THREE.Group();
-    temple.name = 'FushimiInariGatehouse';
+    const templeContainer = new THREE.Group();
+    templeContainer.name = 'FushimiInariGatehouse_Container';
+
+    const mainBuilding = new THREE.Group();
+    mainBuilding.name = 'FushimiInariGatehouse_MainBuilding';
+    
+    const walkableGroup = new THREE.Group();
+    walkableGroup.name = 'FushimiInariGatehouse_Walkable';
 
     const vermilionRed = new THREE.MeshStandardMaterial({ color: 0xdc4405, roughness: 0.6 });
     const blackAccent = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.1, roughness: 0.7 });
@@ -269,12 +276,12 @@ export function createJapaneseTemple() {
     rightStatueBase.position.set(stairWidth/2 + statueBaseWidth/2 + 5, statueBaseHeight/2, baseDepth/2 - 20);
     baseGroup.add(rightStatueBase);
 
-    temple.add(baseGroup);
+    walkableGroup.add(baseGroup);
 
     // --- Main Structure ---
     const mainStructureGroup = new THREE.Group();
     mainStructureGroup.position.y = baseHeight;
-    temple.add(mainStructureGroup);
+    mainBuilding.add(mainStructureGroup);
 
     const structureWidth = 120;
     const firstFloorHeight = 25;
@@ -407,12 +414,12 @@ export function createJapaneseTemple() {
     const leftStatue = createKitsuneStatue();
     leftStatue.position.set(-stairWidth/2 - statueBaseWidth/2 - 5, statueBaseHeight, baseDepth/2 - 20);
     leftStatue.rotation.y = Math.PI / 6;
-    baseGroup.add(leftStatue);
+    walkableGroup.add(leftStatue);
     
     const rightStatue = createKitsuneStatue();
     rightStatue.position.set(stairWidth/2 + statueBaseWidth/2 + 5, statueBaseHeight, baseDepth/2 - 20);
     rightStatue.rotation.y = -Math.PI / 6;
-    baseGroup.add(rightStatue);
+    walkableGroup.add(rightStatue);
     
     // --- Side Lanterns ---
     function createLantern() {
@@ -445,21 +452,23 @@ export function createJapaneseTemple() {
     
     const leftLantern = createLantern();
     leftLantern.position.set(-stairWidth - 15, 0, baseDepth / 2 + 25);
-    baseGroup.add(leftLantern);
+    walkableGroup.add(leftLantern);
 
     const rightLantern = createLantern();
     rightLantern.position.set(stairWidth + 15, 0, baseDepth / 2 + 25);
-    baseGroup.add(rightLantern);
+    walkableGroup.add(rightLantern);
 
 
-    temple.castShadow = true;
-    temple.receiveShadow = true;
-    temple.traverse((child) => {
+    mainBuilding.castShadow = true;
+    mainBuilding.receiveShadow = true;
+    mainBuilding.traverse((child) => {
         if (child instanceof THREE.Mesh) {
             child.castShadow = true;
             child.receiveShadow = true;
         }
     });
 
-    return temple;
+    templeContainer.add(mainBuilding, walkableGroup);
+
+    return { templeContainer, mainBuilding, walkableGroup };
 }
