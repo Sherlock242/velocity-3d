@@ -5,6 +5,7 @@ import * as THREE from 'three';
 export function createNorenCurtain() {
     const norenGroup = new THREE.Group();
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+
     const blackMaterial = new THREE.MeshStandardMaterial({
         color: 0x1a1a1a,
         side: THREE.DoubleSide,
@@ -38,7 +39,7 @@ export function createNorenCurtain() {
         const lineGeom = new THREE.BoxGeometry(redLineWidth, panelHeight, 0.1);
         const line = new THREE.Mesh(lineGeom, darkRedMaterial);
         line.position.x = currentX + redLineWidth / 2;
-        line.position.z = 0.05;
+        line.position.z = 0.1;
         norenGroup.add(line);
         currentX += redLineWidth;
     };
@@ -49,7 +50,7 @@ export function createNorenCurtain() {
         const circleGeom = new THREE.CircleGeometry(circleRadius, 32);
         const circle = new THREE.Mesh(circleGeom, blackMaterial);
         circle.position.x = xPos;
-        circle.position.z = 0.1;
+        circle.position.z = 0.2;
         norenGroup.add(circle);
     }
 
