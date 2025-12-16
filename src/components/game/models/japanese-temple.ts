@@ -108,13 +108,10 @@ export function createJapaneseTemple() {
     });
 
     // Add Noren curtains to the main entrance
-    const norenPositions = [-16, 0, 16];
-    norenPositions.forEach(xPos => {
-        const noren = createNorenCurtain();
-        noren.position.set(xPos, firstFloorHeight - 8, 16);
-        noren.rotation.x = Math.random() * 0.1;
-        mainStructureGroup.add(noren);
-    });
+    const noren = createNorenCurtain();
+    noren.position.set(0, firstFloorHeight - 8, 16);
+    noren.rotation.x = Math.random() * 0.1;
+    mainStructureGroup.add(noren);
 
     // Green Railing in side bays
     const greenRailingHeight = 12;
