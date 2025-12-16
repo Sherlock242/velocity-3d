@@ -109,7 +109,7 @@ export function createJapaneseTemple() {
 
     // Add Noren curtains to the main entrance
     const noren = createNorenCurtain();
-    noren.position.set(0, firstFloorHeight - 10, 16);
+    noren.position.set(0, firstFloorHeight - 8, 16);
     noren.rotation.x = Math.random() * 0.1;
     mainStructureGroup.add(noren);
 
@@ -235,10 +235,6 @@ export function createJapaneseTemple() {
     lowerRoofSupport.position.y = firstFloorHeight + 1.5;
     mainStructureGroup.add(lowerRoofSupport);
     
-    const upperRoofSupportGeom = new THREE.BoxGeometry(structureWidth + 4, 1, 42);
-    const upperRoofSupport = new THREE.Mesh(upperRoofSupportGeom, vermilionRed);
-    upperRoofSupport.position.y = firstFloorHeight + 4.5;
-    mainStructureGroup.add(upperRoofSupport);
 
     for(let i = 0; i < 10; i++) {
         const bracket = createDougong(5);
