@@ -8,10 +8,9 @@ export function createNorenCurtain() {
     const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, side: THREE.DoubleSide });
     const redMaterial = new THREE.MeshStandardMaterial({ color: 0xdc4405, side: THREE.DoubleSide });
 
-    const totalWidth = 36;
     const panelWidth = 11;
     const panelHeight = 20;
-    const numPanels = 5; // 3 with emblems, 2 plain
+    const numPanels = 7; // 4 plain, 3 with emblems
     const panelSpacing = 1.5;
     const redLineWidth = 0.2;
     const redLineInset = 0.5;
@@ -28,8 +27,8 @@ export function createNorenCurtain() {
         const panel = new THREE.Mesh(panelGeom, whiteMaterial);
         panelGroup.add(panel);
 
-        // Add emblem and borders only for panels 0, 2, 4 (the original ones)
-        if (i % 2 === 0) {
+        // Add emblem and borders for panels 1, 3, 5
+        if (i % 2 !== 0) {
             // Black circle emblem
             const circleRadius = 2.5;
             const circleGeom = new THREE.CircleGeometry(circleRadius, 32);

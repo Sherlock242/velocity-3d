@@ -202,8 +202,8 @@ export function createJapaneseTemple() {
     
     // Add Noren curtains to the inner entrance
     const noren = createNorenCurtain();
-    noren.scale.set(0.7, 0.7, 0.7);
-    noren.position.set(0, innerPillarHeight - 6, 2); // Attach to lintel
+    noren.scale.set(0.4, 0.4, 0.4);
+    noren.position.set(0, innerPillarHeight - 8, 2); // Attach to lintel
     innerEntranceGroup.add(noren);
 
     // First Floor Plaster Walls (behind side bays)
