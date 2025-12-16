@@ -109,7 +109,7 @@ export function createJapaneseTemple() {
 
     // Add Noren curtains to the main entrance
     const noren = createNorenCurtain();
-    noren.position.set(0, firstFloorHeight - 10, 16);
+    noren.position.set(0, firstFloorHeight - 8, 16);
     noren.rotation.x = Math.random() * 0.1;
     mainStructureGroup.add(noren);
 
@@ -181,6 +181,31 @@ export function createJapaneseTemple() {
     const orangeStripAbove2 = new THREE.Mesh(orangeStripAboveWoodGeom, vermilionRed);
     orangeStripAbove2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), stripedPanelY + 8, 15);
     mainStructureGroup.add(orangeStripAbove2);
+
+    // --- Inner Entrance ---
+    const innerEntranceGroup = new THREE.Group();
+    const innerPillarHeight = firstFloorHeight * 0.8;
+    const innerPillarDiameter = 2.5;
+    const innerEntranceWidth = centerBayWidth * 0.7;
+
+    const innerPillarGeom = new THREE.CylinderGeometry(innerPillarDiameter, innerPillarDiameter, innerPillarHeight, 12);
+    
+    const leftInnerPillar = new THREE.Mesh(innerPillarGeom, vermilionRed);
+    leftInnerPillar.position.set(-innerEntranceWidth / 2, innerPillarHeight / 2, 0);
+    innerEntranceGroup.add(leftInnerPillar);
+
+    const rightInnerPillar = new THREE.Mesh(innerPillarGeom, vermilionRed);
+    rightInnerPillar.position.set(innerEntranceWidth / 2, innerPillarHeight / 2, 0);
+    innerEntranceGroup.add(rightInnerPillar);
+
+    const innerLintelGeom = new THREE.BoxGeometry(innerEntranceWidth, 3, 3);
+    const innerLintel = new THREE.Mesh(innerLintelGeom, vermilionRed);
+    innerLintel.position.set(0, innerPillarHeight, 0);
+    innerEntranceGroup.add(innerLintel);
+
+    innerEntranceGroup.position.z = -5; // Position it inside the main structure
+    mainStructureGroup.add(innerEntranceGroup);
+
 
     // First floor center latticework - This is the unwanted horizontal bar
     // const centerLatticePanel = createLatticePanel(centerBayWidth, 15, vermilionRed, whitePlaster);
