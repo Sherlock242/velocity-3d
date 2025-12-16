@@ -109,7 +109,7 @@ export function createJapaneseTemple() {
 
     // Add Noren curtains to the main entrance
     const noren = createNorenCurtain();
-    noren.position.set(0, firstFloorHeight - 8, 16);
+    noren.position.set(0, firstFloorHeight - 10, 16);
     noren.rotation.x = Math.random() * 0.1;
     mainStructureGroup.add(noren);
 
@@ -186,7 +186,7 @@ export function createJapaneseTemple() {
     const innerEntranceGroup = new THREE.Group();
     const innerPillarHeight = firstFloorHeight * 0.8;
     const innerPillarDiameter = 2.5;
-    const innerEntranceWidth = centerBayWidth * 0.7;
+    const innerEntranceWidth = centerBayWidth * 0.5;
 
     const innerPillarGeom = new THREE.CylinderGeometry(innerPillarDiameter, innerPillarDiameter, innerPillarHeight, 12);
     
