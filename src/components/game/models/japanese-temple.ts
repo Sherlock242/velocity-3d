@@ -203,6 +203,8 @@ export function createJapaneseTemple() {
     const stoneBaseMaterial = new THREE.MeshStandardMaterial({ color: 0x9fa8a3, roughness: 0.9 });
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
+    const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
+    const greyStripeMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
 
 
     // --- Stone Base ---
@@ -305,6 +307,33 @@ export function createJapaneseTemple() {
     const greenRailing2 = createGreenRailing(sideBayWidth, greenRailingHeight, greenLatticeMaterial);
     greenRailing2.position.set(-(centerBayWidth/2 + sideBayWidth/2), greenRailingHeight/2, 15);
     mainStructureGroup.add(greenRailing2);
+
+    // Function to create the brown panel with grey stripes
+    function createStripedPanel(width: number) {
+      const panelGroup = new THREE.Group();
+      const panelHeight = 5;
+      const panelGeom = new THREE.BoxGeometry(width, panelHeight, 1);
+      const panel = new THREE.Mesh(panelGeom, woodMaterial);
+      panel.position.y = panelHeight / 2;
+      panelGroup.add(panel);
+
+      const stripeHeight = 0.3;
+      const stripeGeom = new THREE.BoxGeometry(width, stripeHeight, 1.1);
+      for (let i = 0; i < 3; i++) {
+        const stripe = new THREE.Mesh(stripeGeom, greyStripeMaterial);
+        stripe.position.y = (i - 1) * 1.5 + panelHeight / 2;
+        panelGroup.add(stripe);
+      }
+      return panelGroup;
+    }
+
+    const stripedPanel1 = createStripedPanel(sideBayWidth);
+    stripedPanel1.position.set(centerBayWidth / 2 + sideBayWidth / 2, greenRailingHeight + 2.5, 15);
+    mainStructureGroup.add(stripedPanel1);
+
+    const stripedPanel2 = createStripedPanel(sideBayWidth);
+    stripedPanel2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight + 2.5, 15);
+    mainStructureGroup.add(stripedPanel2);
     
     // First floor center latticework
     const centerLatticePanel = createLatticePanel(centerBayWidth, 15, vermilionRed, whitePlaster);
