@@ -23,7 +23,6 @@ export function createJapaneseTemple() {
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
-    const greyStripeMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
 
 
     // --- Stone Base ---
@@ -153,6 +152,7 @@ export function createJapaneseTemple() {
       panel.position.y = panelHeight / 2;
       panelGroup.add(panel);
 
+      const greyStripeMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
       const stripeHeight = panelHeight;
       const stripeGeom = new THREE.BoxGeometry(0.3, stripeHeight, 1.1);
       for (let i = 0; i < 3; i++) {
@@ -237,7 +237,7 @@ export function createJapaneseTemple() {
     simpleRoofSupport.position.y = firstFloorHeight + 1.5;
     mainStructureGroup.add(simpleRoofSupport);
     
-    // White Box with Gray lines
+    // White Box with Red lines
     const stripedBoxHeight = 5;
     const stripedBoxY = firstFloorHeight + 3 + stripedBoxHeight / 2;
     const stripedBox = new THREE.Group();
@@ -248,7 +248,7 @@ export function createJapaneseTemple() {
     const boxMesh = new THREE.Mesh(boxGeom, whitePlaster);
     stripedBox.add(boxMesh);
 
-    const lineMaterial = new THREE.MeshStandardMaterial({color: 0x888888});
+    const lineMaterial = vermilionRed;
     const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.2, 30.1);
     const vLineGeom = new THREE.BoxGeometry(0.2, stripedBoxHeight, 30.1);
 
