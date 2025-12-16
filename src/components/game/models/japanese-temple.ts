@@ -291,21 +291,29 @@ export function createJapaneseTemple() {
     // --- Side Lanterns ---
     function createLantern() {
         const lanternGroup = new THREE.Group();
+        const tealRoofMaterial = new THREE.MeshStandardMaterial({ color: 0x008080 }); // Teal color
+
         const postGeom = new THREE.BoxGeometry(4, 25, 4);
         const post = new THREE.Mesh(postGeom, vermilionRed);
         post.position.y = 12.5;
         lanternGroup.add(post);
 
-        const topGeom = new THREE.BoxGeometry(12, 3, 12);
-        const top = new THREE.Mesh(topGeom, darkBrownRoof);
-        top.position.y = 28;
-        lanternGroup.add(top);
+        const baseTopGeom = new THREE.BoxGeometry(12, 3, 12);
+        const baseTop = new THREE.Mesh(baseTopGeom, darkBrownRoof);
+        baseTop.position.y = 26.5;
+        lanternGroup.add(baseTop);
 
         const lightGeom = new THREE.BoxGeometry(8, 10, 8);
         const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
         light.position.y = 20;
         lanternGroup.add(light);
         
+        const lanternRoofGeom = new THREE.ConeGeometry(10, 6, 4);
+        const lanternRoof = new THREE.Mesh(lanternRoofGeom, tealRoofMaterial);
+        lanternRoof.position.y = 28 + 3; // On top of the dark brown 'top'
+        lanternRoof.rotation.y = Math.PI / 4;
+        lanternGroup.add(lanternRoof);
+
         return lanternGroup;
     }
     
