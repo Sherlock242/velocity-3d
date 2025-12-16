@@ -96,8 +96,9 @@ export function createJapaneseTemple() {
     const outerPillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, outerPillarHeight, 16);
 
     const pillarPositions = [
-      // Center bay pillars (inner are back, outer are front)
+      // Center bay pillars (front are outer)
       { x: -centerBayWidth / 2, z: 15, outer: true }, { x: centerBayWidth / 2, z: 15, outer: true },
+      // Inner pillars are behind the front ones
       { x: -centerBayWidth / 2, z: -15, outer: false }, { x: centerBayWidth / 2, z: -15, outer: false },
 
       // Side bay pillars (outer)
@@ -231,14 +232,14 @@ export function createJapaneseTemple() {
 
 
     // First Floor Roof Support
-    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 6, 30);
+    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 4, 30);
     const simpleRoofSupport = new THREE.Mesh(simpleRoofSupportGeom, vermilionRed);
-    simpleRoofSupport.position.y = firstFloorHeight + 3;
+    simpleRoofSupport.position.y = firstFloorHeight + 2;
     mainStructureGroup.add(simpleRoofSupport);
     
     
     // --- Second Floor ---
-    const secondFloorY = firstFloorHeight + 6;
+    const secondFloorY = firstFloorHeight + 4;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
