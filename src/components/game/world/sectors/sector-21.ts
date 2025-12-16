@@ -27,16 +27,12 @@ export function createSector21({
   templeContainer.rotation.y = Math.PI / 2;
   sectorGroup.add(templeContainer);
   
-  // The main building itself is a static collider
-  staticCollidersRef.current.push(mainBuilding);
-
   // Add the entrance gate to the right side
   const entranceGate = createToriiGate();
   entranceGate.scale.set(1.2, 1.2, 1.2);
   entranceGate.position.set(cellCenterX + CELL_SIZE / 2 - 100, 1, cellCenterZ);
   entranceGate.rotation.y = -Math.PI / 2;
   sectorGroup.add(entranceGate);
-  staticCollidersRef.current.push(entranceGate);
 
   return sectorGroup;
 }

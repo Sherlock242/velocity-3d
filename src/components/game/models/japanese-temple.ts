@@ -218,7 +218,7 @@ export function createJapaneseTemple() {
     const darkBrownStairMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d, roughness: 0.8 });
 
 
-    // --- Stone Base and Stairs ---
+    // --- Stone Base ---
     const baseGroup = new THREE.Group();
     const baseWidth = 150;
     const baseDepth = 70;
@@ -229,58 +229,16 @@ export function createJapaneseTemple() {
     mainBase.position.y = baseHeight / 2;
     baseGroup.add(mainBase);
 
-    // Staircase
-    const stairsGroup = new THREE.Group();
-    const stairsRotationGroup = new THREE.Group();
-    const stairWidth = 40;
-    const numSteps = 15;
-    const stepHeight = baseHeight / numSteps;
-    const stepDepth = 2.5;
-
-    for (let i = 0; i < numSteps; i++) {
-        const singleStepGeom = new THREE.BoxGeometry(stairWidth, stepHeight, stepDepth);
-        const step = new THREE.Mesh(singleStepGeom, darkBrownStairMaterial);
-        step.position.set(
-            0,
-            (stepHeight / 2) + (i * stepHeight),
-            (baseDepth / 2) + (stepDepth / 2) + (i * stepDepth)
-        );
-        stairsGroup.add(step);
-    }
-    
-    // Staircase Railings
-    const railingLength = numSteps * stepDepth * 1.2;
-    const railingHeight = 10;
-    const railingGeom = new THREE.BoxGeometry(1.5, railingHeight, railingLength);
-    
-    const leftRailing = new THREE.Mesh(railingGeom, darkBrownStairMaterial);
-    leftRailing.position.set(-stairWidth/2 - 2, baseHeight/2 + 2.5, baseDepth/2 + (numSteps * stepDepth)/2);
-    leftRailing.rotation.y = -0.05; // slight angle
-    leftRailing.rotation.x = -Math.PI / 4.5; // Angled down
-    stairsGroup.add(leftRailing);
-    
-    const rightRailing = leftRailing.clone();
-    rightRailing.position.x = stairWidth/2 + 2;
-    rightRailing.rotation.y = -rightRailing.rotation.y;
-    stairsGroup.add(rightRailing);
-
-    stairsRotationGroup.add(stairsGroup);
-    stairsRotationGroup.rotation.y = Math.PI;
-    stairsRotationGroup.position.z = -stepDepth * numSteps;
-
-    baseGroup.add(stairsRotationGroup);
-
-
     // Tiered bases for statues
     const statueBaseWidth = 25;
     const statueBaseHeight = 18;
     const statueBaseDepth = 25;
     const leftStatueBase = new THREE.Mesh(new THREE.BoxGeometry(statueBaseWidth, statueBaseHeight, statueBaseDepth), stoneBaseMaterial);
-    leftStatueBase.position.set(-stairWidth/2 - statueBaseWidth/2 - 5, statueBaseHeight/2, baseDepth/2 - 20);
+    leftStatueBase.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 20);
     baseGroup.add(leftStatueBase);
     
     const rightStatueBase = new THREE.Mesh(new THREE.BoxGeometry(statueBaseWidth, statueBaseHeight, statueBaseDepth), stoneBaseMaterial);
-    rightStatueBase.position.set(stairWidth/2 + statueBaseWidth/2 + 5, statueBaseHeight/2, baseDepth/2 - 20);
+    rightStatueBase.position.set(baseWidth/2 - statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 20);
     baseGroup.add(rightStatueBase);
 
     walkableGroup.add(baseGroup);
@@ -293,6 +251,7 @@ export function createJapaneseTemple() {
     const structureWidth = 120;
     const firstFloorHeight = 25;
     const pillarDiameter = 4;
+    const stairWidth = 40;
     const bayWidth = (structureWidth - (stairWidth + pillarDiameter * 2)) / 2;
 
 
@@ -420,12 +379,12 @@ export function createJapaneseTemple() {
 
     // --- Kitsune Statues ---
     const leftStatue = createKitsuneStatue();
-    leftStatue.position.set(-stairWidth/2 - statueBaseWidth/2 - 5, statueBaseHeight, baseDepth/2 - 20);
+    leftStatue.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 20);
     leftStatue.rotation.y = Math.PI / 6;
     mainBuilding.add(leftStatue);
     
     const rightStatue = createKitsuneStatue();
-    rightStatue.position.set(stairWidth/2 + statueBaseWidth/2 + 5, statueBaseHeight, baseDepth/2 - 20);
+    rightStatue.position.set(baseWidth/2 - statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 20);
     rightStatue.rotation.y = -Math.PI / 6;
     mainBuilding.add(rightStatue);
     
@@ -459,11 +418,11 @@ export function createJapaneseTemple() {
     }
     
     const leftLantern = createLantern();
-    leftLantern.position.set(-stairWidth - 15, 0, baseDepth / 2 + 25);
+    leftLantern.position.set(-baseWidth/2 - 15, 0, baseDepth / 2 + 25);
     mainBuilding.add(leftLantern);
 
     const rightLantern = createLantern();
-    rightLantern.position.set(stairWidth + 15, 0, baseDepth / 2 + 25);
+    rightLantern.position.set(baseWidth/2 - 15, 0, baseDepth / 2 + 25);
     mainBuilding.add(rightLantern);
 
 
