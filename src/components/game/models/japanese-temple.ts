@@ -206,12 +206,6 @@ export function createJapaneseTemple() {
     innerEntranceGroup.position.z = -5; // Position it inside the main structure
     mainStructureGroup.add(innerEntranceGroup);
 
-
-    // First floor center latticework - This is the unwanted horizontal bar
-    // const centerLatticePanel = createLatticePanel(centerBayWidth, 15, vermilionRed, whitePlaster);
-    // centerLatticePanel.position.set(0, firstFloorHeight - 7.5, 15);
-    // mainStructureGroup.add(centerLatticePanel);
-
     // First Floor Plaster Walls (behind side bays)
     const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, firstFloorHeight, 1);
     const leftSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
@@ -229,21 +223,11 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(centerWall);
 
 
-    // First Floor Roof Support & Brackets
-    const lowerRoofSupportGeom = new THREE.BoxGeometry(structureWidth + 4, 1, 42);
-    const lowerRoofSupport = new THREE.Mesh(lowerRoofSupportGeom, vermilionRed);
-    lowerRoofSupport.position.y = firstFloorHeight + 1.5;
-    mainStructureGroup.add(lowerRoofSupport);
-    
-
-    for(let i = 0; i < 10; i++) {
-        const bracket = createDougong(5);
-        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight + 2.5, 20);
-        mainStructureGroup.add(bracket);
-        const bracket2 = bracket.clone();
-        bracket2.position.z = -20;
-        mainStructureGroup.add(bracket2);
-    }
+    // First Floor Roof Support
+    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 4, 30);
+    const simpleRoofSupport = new THREE.Mesh(simpleRoofSupportGeom, vermilionRed);
+    simpleRoofSupport.position.y = firstFloorHeight + 2;
+    mainStructureGroup.add(simpleRoofSupport);
     
     
     // --- Second Floor ---
@@ -310,7 +294,7 @@ export function createJapaneseTemple() {
         lanternGroup.add(post);
         
         const lightGeom = new THREE.BoxGeometry(8, 10, 8);
-        const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
+        const light = new THREE.Mesh(new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
         light.position.y = 20;
         lanternGroup.add(light);
         
