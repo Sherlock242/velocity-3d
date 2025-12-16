@@ -521,12 +521,12 @@ export function createJapaneseTemple() {
 
     // --- Kitsune Statues ---
     const leftStatue = createKitsuneStatue();
-    leftStatue.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 20);
+    leftStatue.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight, baseDepth/2 + 15);
     leftStatue.rotation.y = Math.PI / 6;
     mainBuilding.add(leftStatue);
     
     const rightStatue = createKitsuneStatue();
-    rightStatue.position.set(baseWidth/2 - statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 20);
+    rightStatue.position.set(baseWidth/2 - statueBaseWidth/2, statueBaseHeight, baseDepth/2 + 15);
     rightStatue.rotation.y = -Math.PI / 6;
     mainBuilding.add(rightStatue);
     
