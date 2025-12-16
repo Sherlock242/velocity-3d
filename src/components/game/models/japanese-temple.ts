@@ -230,6 +230,7 @@ export function createJapaneseTemple() {
     baseGroup.add(mainBase);
 
     // Staircase
+    const stairsGroup = new THREE.Group();
     const stairWidth = 40;
     const numSteps = 15;
     const stepHeight = baseHeight / numSteps;
@@ -243,7 +244,7 @@ export function createJapaneseTemple() {
             (stepHeight / 2) + (i * stepHeight),
             (baseDepth / 2) + (stepDepth / 2) + (i * stepDepth)
         );
-        baseGroup.add(step);
+        stairsGroup.add(step);
     }
     
     // Staircase Railings
@@ -255,12 +256,14 @@ export function createJapaneseTemple() {
     leftRailing.position.set(-stairWidth/2 - 2, baseHeight/2 + 2.5, baseDepth/2 + (numSteps * stepDepth)/2);
     leftRailing.rotation.y = -0.05; // slight angle
     leftRailing.rotation.x = -Math.PI / 4.5; // Angled down
-    baseGroup.add(leftRailing);
+    stairsGroup.add(leftRailing);
     
     const rightRailing = leftRailing.clone();
     rightRailing.position.x = stairWidth/2 + 2;
     rightRailing.rotation.y = -rightRailing.rotation.y;
-    baseGroup.add(rightRailing);
+    stairsGroup.add(rightRailing);
+
+    baseGroup.add(stairsGroup);
 
 
     // Tiered bases for statues
@@ -413,12 +416,12 @@ export function createJapaneseTemple() {
     const leftStatue = createKitsuneStatue();
     leftStatue.position.set(-stairWidth/2 - statueBaseWidth/2 - 5, statueBaseHeight, baseDepth/2 - 20);
     leftStatue.rotation.y = Math.PI / 6;
-    walkableGroup.add(leftStatue);
+    mainBuilding.add(leftStatue);
     
     const rightStatue = createKitsuneStatue();
     rightStatue.position.set(stairWidth/2 + statueBaseWidth/2 + 5, statueBaseHeight, baseDepth/2 - 20);
     rightStatue.rotation.y = -Math.PI / 6;
-    walkableGroup.add(rightStatue);
+    mainBuilding.add(rightStatue);
     
     // --- Side Lanterns ---
     function createLantern() {
@@ -451,11 +454,11 @@ export function createJapaneseTemple() {
     
     const leftLantern = createLantern();
     leftLantern.position.set(-stairWidth - 15, 0, baseDepth / 2 + 25);
-    walkableGroup.add(leftLantern);
+    mainBuilding.add(leftLantern);
 
     const rightLantern = createLantern();
     rightLantern.position.set(stairWidth + 15, 0, baseDepth / 2 + 25);
-    walkableGroup.add(rightLantern);
+    mainBuilding.add(rightLantern);
 
 
     mainBuilding.castShadow = true;

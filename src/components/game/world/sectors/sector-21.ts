@@ -43,7 +43,13 @@ export function createSector21({
 
   if (geometries.length > 0) {
       const mergedGeometry = mergeGeometries(geometries, false);
-      const walkableMesh = new THREE.Mesh(mergedGeometry, new THREE.MeshBasicMaterial({ visible: false }));
+      // We need to apply the container's matrix to the merged geometry
+      // so it's positioned correctly in world space.
+      mergedGeometry.applyMatrix4(templeContainer.matrixWorld);
+      
+      const walkableMesh = new THREE.Mesh(mergedGeometry, new THREE.MeshBasicMaterial({ visible: false, wireframe: true }));
+      // The walkableMesh is now in world coordinates, so we don't add it to any parent group.
+      // We assign it directly to the rampMeshRef.
       rampMeshRef.current = walkableMesh;
   }
 
