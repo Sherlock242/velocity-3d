@@ -23,7 +23,7 @@ export function createJapaneseTemple() {
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
-    const darkOrange = vermilionRed;
+    const darkOrange = new THREE.MeshStandardMaterial({ color: 0xcc3300 });
 
 
     // --- Stone Base ---
