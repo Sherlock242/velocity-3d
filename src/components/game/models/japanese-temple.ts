@@ -209,6 +209,7 @@ export function createJapaneseTemple() {
     const stoneBaseMaterial = new THREE.MeshStandardMaterial({ color: 0x9fa8a3, roughness: 0.9 });
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
+    const darkBrownStairMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d, roughness: 0.8 });
 
 
     // --- Stone Base and Stairs ---
@@ -230,7 +231,7 @@ export function createJapaneseTemple() {
 
     for (let i = 0; i < numSteps; i++) {
         const singleStepGeom = new THREE.BoxGeometry(stairWidth, stepHeight, stepDepth);
-        const step = new THREE.Mesh(singleStepGeom, stoneBaseMaterial);
+        const step = new THREE.Mesh(singleStepGeom, darkBrownStairMaterial);
         step.position.set(
             0,
             (stepHeight / 2) + (i * stepHeight),
@@ -244,7 +245,7 @@ export function createJapaneseTemple() {
     const railingHeight = 10;
     const railingGeom = new THREE.BoxGeometry(1.5, railingHeight, railingLength);
     
-    const leftRailing = new THREE.Mesh(railingGeom, stoneBaseMaterial);
+    const leftRailing = new THREE.Mesh(railingGeom, darkBrownStairMaterial);
     leftRailing.position.set(-stairWidth/2 - 2, baseHeight/2 + 2.5, baseDepth/2 + (numSteps * stepDepth)/2);
     leftRailing.rotation.y = -0.05; // slight angle
     leftRailing.rotation.x = -Math.PI / 4.5; // Angled down
