@@ -315,6 +315,14 @@ export function createJapaneseTemple() {
     rightLantern.position.set(baseWidth/2 + 15, 0, baseDepth / 2 + 25);
     mainBuilding.add(rightLantern);
 
+    // ADDED: Single long orange strip
+    const longOrangeStrip = new THREE.Mesh(
+        new THREE.BoxGeometry(structureWidth, 3, 2),
+        vermilionRed
+    );
+    longOrangeStrip.position.set(0, firstFloorHeight + 1.5, 15);
+    mainStructureGroup.add(longOrangeStrip);
+
 
     mainBuilding.castShadow = true;
     mainBuilding.receiveShadow = true;
