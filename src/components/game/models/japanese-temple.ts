@@ -241,17 +241,17 @@ export function createJapaneseTemple() {
     const centerWallSideWidth = (centerBayWidth - innerEntranceWidth) / 2;
     const centerWallSideGeom = new THREE.BoxGeometry(centerWallSideWidth, firstFloorHeight, 1);
 
-    const leftCenterWall = new THREE.Mesh(centerWallSideGeom, whitePlaster);
+    const leftCenterWall = new THREE.Mesh(centerWallSideGeom, vermilionRed);
     leftCenterWall.position.set(-(innerEntranceWidth / 2 + centerWallSideWidth / 2), firstFloorHeight/2, -15);
     mainStructureGroup.add(leftCenterWall);
 
-    const rightCenterWall = new THREE.Mesh(centerWallSideGeom, whitePlaster);
+    const rightCenterWall = new THREE.Mesh(centerWallSideGeom, vermilionRed);
     rightCenterWall.position.set(innerEntranceWidth / 2 + centerWallSideWidth / 2, firstFloorHeight/2, -15);
     mainStructureGroup.add(rightCenterWall);
     
     const centerLintelHeight = firstFloorHeight - innerPillarHeight;
     const centerLintelGeom = new THREE.BoxGeometry(innerEntranceWidth, centerLintelHeight, 1);
-    const centerLintel = new THREE.Mesh(centerLintelGeom, whitePlaster);
+    const centerLintel = new THREE.Mesh(centerLintelGeom, vermilionRed);
     centerLintel.position.set(0, innerPillarHeight + centerLintelHeight / 2, -15);
     mainStructureGroup.add(centerLintel);
 
@@ -284,8 +284,8 @@ export function createJapaneseTemple() {
     stripedBox.add(boxMesh);
 
     const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
-    const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.5, 35.2);
-    const vLineGeom = new THREE.BoxGeometry(0.5, stripedBoxHeight, 35.2);
+    const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.4, 35.2);
+    const vLineGeom = new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.2);
 
     const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
     hLine.position.y = 0;
