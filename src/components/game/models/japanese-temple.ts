@@ -287,7 +287,8 @@ export function createJapaneseTemple() {
         step.position.set(0, (i + 0.5) * stairHeight, (i + 0.5) * stairDepth);
         stairsGroup.add(step);
     }
-    stairsGroup.position.set(0, - (baseHeight + secondTierHeight) / 2, baseDepth / 2 + 22.5);
+    stairsGroup.position.set(0, - (baseHeight + secondTierHeight) / 2, -baseDepth / 2 - 22.5);
+    stairsGroup.rotation.y = Math.PI;
     baseGroup.add(stairsGroup);
 
 
