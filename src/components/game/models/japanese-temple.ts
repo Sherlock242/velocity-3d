@@ -348,11 +348,11 @@ export function createJapaneseTemple() {
     // Thick orange strip over green railing
     const orangeStripGeom = new THREE.BoxGeometry(sideBayWidth, 3, 2);
     const orangeStrip1 = new THREE.Mesh(orangeStripGeom, vermilionRed);
-    orangeStrip1.position.set(centerBayWidth / 2 + sideBayWidth / 2, greenRailingHeight - 1.5, 15);
+    orangeStrip1.position.set(centerBayWidth / 2 + sideBayWidth / 2, greenRailingHeight - 2.5, 15);
     mainStructureGroup.add(orangeStrip1);
 
     const orangeStrip2 = new THREE.Mesh(orangeStripGeom, vermilionRed);
-    orangeStrip2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight - 1.5, 15);
+    orangeStrip2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight - 2.5, 15);
     mainStructureGroup.add(orangeStrip2);
     
     // Thick orange strip under green railing
