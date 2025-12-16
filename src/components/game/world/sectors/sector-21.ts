@@ -29,7 +29,6 @@ export function createSector21({
   templeContainer.position.set(cellCenterX, 0, cellCenterZ);
   templeContainer.rotation.y = Math.PI / 2;
   sectorGroup.add(templeContainer);
-  staticCollidersRef.current.push(mainBuilding);
   walkableSurfacesRef.current.push(walkableGroup);
   
   // Add the entrance gate to the right side
