@@ -62,20 +62,12 @@ function createKitsuneStatue() {
 }
 
 
-// Helper to create the roof. Changed to a simple triangular prism.
-function createTriangularRoof(width: number, depth: number, height: number, material: THREE.Material) {
-    const shape = new THREE.Shape();
-
-    // Define a simple triangle shape
-    shape.moveTo(-width / 2, 0);
-    shape.lineTo(0, height);
-    shape.lineTo(width / 2, 0);
-    shape.closePath();
-
-    const extrudeSettings = { depth: depth, bevelEnabled: false };
-    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.translate(0, 0, -depth / 2);
-
+// Helper to create the roof. Changed to a flat top cone (frustum).
+function createFrustumRoof(width: number, depth: number, height: number, material: THREE.Material) {
+    const radiusBottom = Math.max(width, depth) / 2;
+    const radiusTop = radiusBottom * 0.3; // 30% of the bottom radius
+    const radialSegments = 16;
+    const geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
     const mesh = new THREE.Mesh(geometry, material);
     return mesh;
 }
@@ -388,7 +380,7 @@ export function createJapaneseTemple() {
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
-    plaqueGroup.position.set(0, secondFloorHeight + 4, 0); 
+    plaqueGroup.position.set(0, secondFloorHeight - 4, 16); 
     
     const plaqueBackGeom = new THREE.BoxGeometry(10, 18, 1);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
@@ -403,8 +395,8 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createTriangularRoof(secondFloorWidth + 20, 55, 25, darkBrownRoof);
-    topRoof.position.y = secondFloorHeight;
+    const topRoof = createFrustumRoof(secondFloorWidth + 20, 55, 25, darkBrownRoof);
+    topRoof.position.y = secondFloorHeight + 12.5; // Adjusted Y position
     secondFloorGroup.add(topRoof);
     
     // Black decorative ridge on top roof
