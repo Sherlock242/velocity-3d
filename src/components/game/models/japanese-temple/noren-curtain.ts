@@ -12,10 +12,10 @@ export function createNorenCurtain() {
     const panelWidth = 11;
     const panelHeight = 20;
     const numPanels = 3;
-    const panelSpacing = 0.5;
+    const panelSpacing = 1.5; // Increased spacing between panels
     const redLineWidth = 0.5;
 
-    const fullPanelWidth = panelWidth + redLineWidth * 2;
+    const fullPanelWidth = panelWidth;
 
     for (let i = 0; i < numPanels; i++) {
         const panelGroup = new THREE.Group();
@@ -37,14 +37,14 @@ export function createNorenCurtain() {
         // Left red vertical line
         const leftRedLineGeom = new THREE.BoxGeometry(redLineWidth, panelHeight, 0.1);
         const leftRedLine = new THREE.Mesh(leftRedLineGeom, redMaterial);
-        leftRedLine.position.x = -panelWidth / 2 - redLineWidth / 2;
+        leftRedLine.position.x = -panelWidth / 2 + redLineWidth / 2 + 0.5; // Inset from the edge
         leftRedLine.position.z = 0.05;
         panelGroup.add(leftRedLine);
 
         // Right red vertical line
         const rightRedLineGeom = new THREE.BoxGeometry(redLineWidth, panelHeight, 0.1);
         const rightRedLine = new THREE.Mesh(rightRedLineGeom, redMaterial);
-        rightRedLine.position.x = panelWidth / 2 + redLineWidth / 2;
+        rightRedLine.position.x = panelWidth / 2 - redLineWidth / 2 - 0.5; // Inset from the edge
         rightRedLine.position.z = 0.05;
         panelGroup.add(rightRedLine);
 
