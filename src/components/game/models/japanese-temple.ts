@@ -23,7 +23,7 @@ export function createJapaneseTemple() {
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
-    const darkOrange = new THREE.MeshStandardMaterial({ color: 0x8B2500, roughness: 0.6 });
+    const darkOrange = vermilionRed;
 
 
     // --- Stone Base ---
@@ -255,6 +255,16 @@ export function createJapaneseTemple() {
     centerLintel.position.set(0, innerPillarHeight + centerLintelHeight / 2, -15);
     mainStructureGroup.add(centerLintel);
 
+    // --- Side Walls ---
+    const sideWallFullGeom = new THREE.BoxGeometry(1, firstFloorHeight, 30); // Depth is 15 - (-15) = 30
+    const leftFullWall = new THREE.Mesh(sideWallFullGeom, whitePlaster);
+    leftFullWall.position.set(-structureWidth / 2, firstFloorHeight / 2, 0);
+    mainStructureGroup.add(leftFullWall);
+
+    const rightFullWall = new THREE.Mesh(sideWallFullGeom, whitePlaster);
+    rightFullWall.position.set(structureWidth / 2, firstFloorHeight / 2, 0);
+    mainStructureGroup.add(rightFullWall);
+
 
     // First Floor Roof Support
     const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 3, 30);
@@ -279,13 +289,13 @@ export function createJapaneseTemple() {
 
     const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
     hLine.position.y = 0;
-    hLine.position.z = 0.05;
+    hLine.position.z = 0.1;
     stripedBox.add(hLine);
     
     for (let i = 0; i < 5; i++) {
         const vLine = new THREE.Mesh(vLineGeom, lineMaterial);
         vLine.position.x = (i - 2) * (structureWidth / 5);
-        vLine.position.z = 0.05;
+        vLine.position.z = 0.1;
         stripedBox.add(vLine);
     }
     
