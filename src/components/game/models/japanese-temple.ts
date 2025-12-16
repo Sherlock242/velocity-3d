@@ -96,8 +96,8 @@ export function createJapaneseTemple() {
     const outerPillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, outerPillarHeight, 16);
 
     const pillarPositions = [
-      // Center bay pillars (inner)
-      { x: -centerBayWidth / 2, z: 15, outer: false }, { x: centerBayWidth / 2, z: 15, outer: false },
+      // Center bay pillars (inner are back, outer are front)
+      { x: -centerBayWidth / 2, z: 15, outer: true }, { x: centerBayWidth / 2, z: 15, outer: true },
       { x: -centerBayWidth / 2, z: -15, outer: false }, { x: centerBayWidth / 2, z: -15, outer: false },
 
       // Side bay pillars (outer)
@@ -275,7 +275,7 @@ export function createJapaneseTemple() {
 
     // --- Main Top Roof ---
     const topRoof = createPyramidRoof(secondFloorWidth + 50, 85, 18, darkBrownRoof);
-    topRoof.position.y = secondFloorHeight + 7.5; // Adjusted Y position
+    topRoof.position.y = secondFloorHeight + 5; // Adjusted Y position
     secondFloorGroup.add(topRoof);
 
 
