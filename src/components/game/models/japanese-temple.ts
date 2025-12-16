@@ -345,7 +345,7 @@ export function createJapaneseTemple() {
     // Intricate brackets (detailed)
     for(let i = 0; i < 10; i++) {
         const bracket = createDougong(5);
-        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight + 2, 20);
+        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight - 2, 20);
         mainStructureGroup.add(bracket);
         const bracket2 = bracket.clone();
         bracket2.position.z = -20;
@@ -354,13 +354,13 @@ export function createJapaneseTemple() {
     
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
-    plaqueGroup.position.set(0, firstFloorHeight + 4, 20.5); 
+    plaqueGroup.position.set(0, firstFloorHeight + 5.5, 19.5); 
     
-    const plaqueBackGeom = new THREE.BoxGeometry(18, 10, 1);
+    const plaqueBackGeom = new THREE.BoxGeometry(10, 18, 1);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
     plaqueGroup.add(plaqueBack);
 
-    const plaqueFrameGeom = new THREE.BoxGeometry(20, 12, 1.2);
+    const plaqueFrameGeom = new THREE.BoxGeometry(12, 20, 1.2);
     const plaqueFrame = new THREE.Mesh(plaqueFrameGeom, goldMaterial);
     plaqueFrame.position.z = -0.2;
     plaqueGroup.add(plaqueFrame);
