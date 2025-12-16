@@ -351,12 +351,6 @@ export function createJapaneseTemple() {
     }
 
 
-    // --- Gold Railing ---
-    const railing = createGoldRailing(structureWidth + 4, 40, goldMaterial);
-    railing.position.y = firstFloorHeight + 8;
-    mainStructureGroup.add(railing);
-
-
     // --- Second Floor ---
     const secondFloorY = firstFloorHeight + 8;
     const secondFloorGroup = new THREE.Group();
@@ -405,7 +399,8 @@ export function createJapaneseTemple() {
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
-    plaqueGroup.position.set(0, firstFloorHeight - 5, 21);
+    plaqueGroup.position.set(0, secondFloorHeight - 8, 16); // Position on 2nd floor facade
+    plaqueGroup.rotation.z = Math.PI / 2; // Rotate 90 degrees
     
     const plaqueBackGeom = new THREE.BoxGeometry(18, 10, 1);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
@@ -416,7 +411,7 @@ export function createJapaneseTemple() {
     plaqueFrame.position.z = -0.2;
     plaqueGroup.add(plaqueFrame);
     
-    mainStructureGroup.add(plaqueGroup);
+    secondFloorGroup.add(plaqueGroup);
 
     // --- Green Lattice Doors ---
     const leftDoor = createLatticeDoor(15, firstFloorHeight * 0.8, greenLatticeMaterial);
