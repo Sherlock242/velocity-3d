@@ -283,10 +283,12 @@ export function createJapaneseTemple() {
             new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth),
             stoneBaseMaterial
         );
-        step.position.set(0, (i + 0.5) * stairHeight, baseDepth / 2 + 5 + (i + 0.5) * stairDepth);
+        step.position.set(0, (i + 0.5) * stairHeight, (i + 0.5) * stairDepth);
         stairsGroup.add(step);
     }
     stairsGroup.position.y = - (baseHeight + secondTierHeight) / 2 + 1;
+    stairsGroup.position.z = -baseDepth / 2 - 5;
+    stairsGroup.rotation.y = Math.PI;
     baseGroup.add(stairsGroup);
 
     // --- Side Ramp ---
@@ -295,9 +297,9 @@ export function createJapaneseTemple() {
     const rampLength = 35;
     const rampGeom = new THREE.BoxGeometry(rampWidth, 0.5, rampLength);
     const ramp = new THREE.Mesh(rampGeom, stoneBaseMaterial);
-    ramp.rotation.y = -Math.PI / 8;
+    ramp.rotation.y = Math.PI / 8;
     ramp.rotation.x = Math.atan((baseHeight + secondTierHeight) / rampLength);
-    ramp.position.set(stairWidth / 2 + rampWidth / 2 + 10, (baseHeight + secondTierHeight) / 2, baseDepth / 2 + 15);
+    ramp.position.set(-stairWidth / 2 - rampWidth / 2 - 10, (baseHeight + secondTierHeight) / 2, -baseDepth / 2 - 15);
     rampGroup.add(ramp);
     baseGroup.add(rampGroup);
 
