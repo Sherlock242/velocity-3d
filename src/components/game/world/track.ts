@@ -209,6 +209,7 @@ export function createGridAndScenery(
   const domeDepth = DOME_DEPTH;
   const domeHeight = DOME_HEIGHT;
   const segments = 100;
+  const flatTopDepth = CELL_SIZE * 0.4; // Narrower flat area
 
   const domeGeometry = new THREE.BoxGeometry(domeWidth, domeHeight, domeDepth, segments, 1, segments);
   const rampMaterial = new THREE.MeshStandardMaterial({
@@ -226,10 +227,13 @@ export function createGridAndScenery(
   const positions = dome.geometry.attributes.position;
   const halfDomeWidth = domeWidth / 2;
   const halfDomeDepth = domeDepth / 2;
+  const halfFlatTopDepth = flatTopDepth / 2;
   const baseHeight = dome.position.y - domeHeight / 2;
-  const peakOffsetX = -0.2 * domeWidth; // Shift peak to Sector 22 (20% to the left of center)
+  const peakOffsetX = -0.2 * domeWidth;
   const peakNormalizedX = (peakOffsetX) / halfDomeWidth;
-
+  const flatTopStartX = -1; // Corresponds to the left edge of the dome
+  const flatTopEndX = peakNormalizedX;
+  const flatTopWidth = (flatTopEndX - flatTopStartX) * halfDomeWidth;
 
   for (let i = 0; i < positions.count; i++) {
     const y = positions.getY(i);
@@ -238,21 +242,28 @@ export function createGridAndScenery(
       const x = positions.getX(i);
       const z = positions.getZ(i);
 
-      // Calculate normalized distances from the center of the dome plane
-      let nx = (x) / halfDomeWidth;
-      const nz = z / halfDomeDepth;
-
       let heightOffset;
-      // If x is to the left of the peak (in sectors 21, 22), clamp it to the peak's height.
-      if (nx <= peakNormalizedX) {
-        heightOffset = domeHeight;
+
+      const isWithinFlatX = x >= -halfDomeWidth && x <= peakOffsetX;
+      const isWithinFlatZ = z >= -halfFlatTopDepth && z <= halfFlatTopDepth;
+
+      if (isWithinFlatX && isWithinFlatZ) {
+          heightOffset = domeHeight;
       } else {
-        const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-        const heightZComponent = Math.cos(nz * Math.PI / 2);
-        heightOffset = domeHeight * heightXComponent * heightZComponent;
+          // Calculate distance to the nearest edge of the flat rectangle
+          const dxToPeak = Math.max(0, x - peakOffsetX);
+          const dxToStart = Math.max(0, -halfDomeWidth - x);
+          const dz = Math.max(0, Math.abs(z) - halfFlatTopDepth);
+
+          const nx = (Math.max(dxToPeak, dxToStart)) / (halfDomeWidth * (1 - Math.abs(peakNormalizedX)));
+          const nz = dz / (halfDomeDepth - halfFlatTopDepth);
+          
+          const heightXComponent = Math.cos(nx * Math.PI / 2);
+          const heightZComponent = Math.cos(nz * Math.PI / 2);
+
+          heightOffset = domeHeight * heightXComponent * heightZComponent;
       }
       
-      // Apply the height offset to the Y attribute of the vertex
       positions.setY(i, baseHeight + heightOffset);
     }
   }
@@ -264,15 +275,13 @@ export function createGridAndScenery(
   rampMeshRef.current = dome; // Make it collidable
 
   // --- Tiled Platform on Dome ---
-  const flatTopWidth = (peakNormalizedX - (-1)) * halfDomeWidth;
-  const tilePlaneGeom = new THREE.PlaneGeometry(flatTopWidth, domeDepth);
+  const tilePlaneGeom = new THREE.PlaneGeometry(flatTopWidth, flatTopDepth);
   const tileMaterial = createTileMaterial();
   const tilePlane = new THREE.Mesh(tilePlaneGeom, tileMaterial);
   tilePlane.rotation.x = -Math.PI / 2;
 
-  // Calculate position for the tiled plane
   const tilePlaneX = domeCenterX - halfDomeWidth + flatTopWidth / 2;
-  const tilePlaneY = roadYPosition + domeHeight + 0.2; // Adjusted to prevent z-fighting
+  const tilePlaneY = roadYPosition + domeHeight + 0.2; 
   const tilePlaneZ = domeCenterZ;
   
   tilePlane.position.set(tilePlaneX, tilePlaneY, tilePlaneZ);
@@ -280,23 +289,23 @@ export function createGridAndScenery(
   tilePlaneRef.current = tilePlane;
   
   // --- Orange Railings for Tiled Area ---
-  const railingY = tilePlaneY + 4; // y position of the railings
+  const railingY = tilePlaneY + 4;
   const railingOffset = 0.5;
 
   const topRailing = createRailing(flatTopWidth);
-  topRailing.position.set(tilePlaneX, railingY, tilePlaneZ + domeDepth / 2 - railingOffset);
+  topRailing.position.set(tilePlaneX, railingY, tilePlaneZ + flatTopDepth / 2 - railingOffset);
   gridGroup.add(topRailing);
 
   const bottomRailing = createRailing(flatTopWidth);
-  bottomRailing.position.set(tilePlaneX, railingY, tilePlaneZ - domeDepth / 2 + railingOffset);
+  bottomRailing.position.set(tilePlaneX, railingY, tilePlaneZ - flatTopDepth / 2 + railingOffset);
   gridGroup.add(bottomRailing);
 
-  const leftRailing = createRailing(domeDepth);
+  const leftRailing = createRailing(flatTopDepth);
   leftRailing.rotation.y = Math.PI / 2;
   leftRailing.position.set(tilePlaneX - flatTopWidth / 2 + railingOffset, railingY, tilePlaneZ);
   gridGroup.add(leftRailing);
   
-  const rightRailing = createRailing(domeDepth);
+  const rightRailing = createRailing(flatTopDepth);
   rightRailing.rotation.y = Math.PI / 2;
   rightRailing.position.set(tilePlaneX + flatTopWidth / 2 - railingOffset, railingY, tilePlaneZ);
   gridGroup.add(rightRailing);
@@ -370,23 +379,28 @@ export function createGridAndScenery(
             const childX = child.position.x;
             const childZ = child.position.z;
             
-            let nx = (childX - domeCenterX) / halfDomeWidth;
-            const nz = (childZ - domeCenterZ) / halfDomeDepth;
+            const isWithinFlatX = childX >= cellCenterX - halfDomeWidth && childX <= cellCenterX + peakOffsetX;
+            const isWithinFlatZ = childZ >= domeCenterZ - halfFlatTopDepth && childZ <= domeCenterZ + halfFlatTopDepth;
 
-            // Sectors 21 and 22 are on the flat top part
-            if (sectorNumber === 21 || sectorNumber === 22) {
-                 child.position.y += tilePlaneY; // Use tile plane height
+            let yOffset;
+
+            if (isWithinFlatX && isWithinFlatZ) {
+                yOffset = domeHeight;
             } else {
-                if (nx <= peakNormalizedX) {
-                  nx = peakNormalizedX;
-                }
-    
-                const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-                const heightZComponent = Math.cos(nz * Math.PI / 2);
-                const yOffset = domeHeight * heightXComponent * heightZComponent;
+                const dxToPeak = Math.max(0, childX - (cellCenterX + peakOffsetX));
+                const dxToStart = Math.max(0, (cellCenterX - halfDomeWidth) - childX);
+                const dz = Math.max(0, Math.abs(childZ - domeCenterZ) - halfFlatTopDepth);
+
+                const nx = (Math.max(dxToPeak, dxToStart)) / (halfDomeWidth * (1 - Math.abs(peakNormalizedX)));
+                const nz = dz / (halfDomeDepth - halfFlatTopDepth);
                 
-                child.position.y += yOffset;
+                const heightXComponent = Math.cos(nx * Math.PI / 2);
+                const heightZComponent = Math.cos(nz * Math.PI / 2);
+
+                yOffset = domeHeight * heightXComponent * heightZComponent;
             }
+                
+            child.position.y += yOffset;
           }
         });
       }
