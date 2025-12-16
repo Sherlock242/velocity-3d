@@ -378,13 +378,13 @@ export function createJapaneseTemple() {
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
-    plaqueGroup.position.set(0, secondFloorHeight + 5, 16); 
+    plaqueGroup.position.set(0, secondFloorHeight / 2, 16); 
     
-    const plaqueBackGeom = new THREE.BoxGeometry(10, 18, 1);
+    const plaqueBackGeom = new THREE.BoxGeometry(12, 20, 1);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
     plaqueGroup.add(plaqueBack);
 
-    const plaqueFrameGeom = new THREE.BoxGeometry(12, 20, 1.2);
+    const plaqueFrameGeom = new THREE.BoxGeometry(14, 22, 1.2);
     const plaqueFrame = new THREE.Mesh(plaqueFrameGeom, goldMaterial);
     plaqueFrame.position.z = -0.2;
     plaqueGroup.add(plaqueFrame);
@@ -393,7 +393,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createPyramidRoof(secondFloorWidth + 50, 85, 18, darkBrownRoof);
+    const topRoof = createPyramidRoof(secondFloorWidth + 50, 85, 20, darkBrownRoof);
     topRoof.position.y = secondFloorHeight + 7.5; // Adjusted Y position
     secondFloorGroup.add(topRoof);
 
