@@ -242,16 +242,15 @@ export function createGridAndScenery(
       let nx = (x) / halfDomeWidth;
       const nz = z / halfDomeDepth;
 
-      // If x is to the left of the peak (in sectors 21, 22), clamp it to the peak's x.
+      let heightOffset;
+      // If x is to the left of the peak (in sectors 21, 22), clamp it to the peak's height.
       if (nx <= peakNormalizedX) {
-        nx = peakNormalizedX;
+        heightOffset = domeHeight;
+      } else {
+        const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+        const heightZComponent = Math.cos(nz * Math.PI / 2);
+        heightOffset = domeHeight * heightXComponent * heightZComponent;
       }
-      
-      const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-      const heightZComponent = Math.cos(nz * Math.PI / 2);
-
-      // Use a cosine-based curve for a smooth dome shape
-      const heightOffset = domeHeight * heightXComponent * heightZComponent;
       
       // Apply the height offset to the Y attribute of the vertex
       positions.setY(i, baseHeight + heightOffset);
@@ -265,7 +264,7 @@ export function createGridAndScenery(
   rampMeshRef.current = dome; // Make it collidable
 
   // --- Tiled Platform on Dome ---
-  const flatTopWidth = ((peakNormalizedX - -1) * halfDomeWidth); 
+  const flatTopWidth = (peakNormalizedX - (-1)) * halfDomeWidth;
   const tilePlaneGeom = new THREE.PlaneGeometry(flatTopWidth, domeDepth);
   const tileMaterial = createTileMaterial();
   const tilePlane = new THREE.Mesh(tilePlaneGeom, tileMaterial);
@@ -424,11 +423,12 @@ export function createGridAndScenery(
         let nx = (gateX - domeCenterX) / halfDomeWidth;
         const nz = (gateZ - domeCenterZ) / halfDomeDepth;
         if (nx <= peakNormalizedX) {
-            nx = peakNormalizedX;
+            yOffset = domeHeight;
+        } else {
+            const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+            const heightZComponent = Math.cos(nz * Math.PI / 2);
+            yOffset = domeHeight * heightXComponent * heightZComponent;
         }
-        const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-        const heightZComponent = Math.cos(nz * Math.PI / 2);
-        yOffset = domeHeight * heightXComponent * heightZComponent;
       }
 
       const gate = createToriiGate();
@@ -458,11 +458,12 @@ export function createGridAndScenery(
         let nx = (roadX - domeCenterX) / halfDomeWidth;
         const nz = (roadZ - domeCenterZ) / halfDomeDepth;
         if (nx <= peakNormalizedX) {
-            nx = peakNormalizedX;
+            yOffset = domeHeight;
+        } else {
+            const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
+            const heightZComponent = Math.cos(nz * Math.PI / 2);
+            yOffset = domeHeight * heightXComponent * heightZComponent;
         }
-        const heightXComponent = Math.cos((nx - peakNormalizedX) * (Math.PI / (2 * (1 - Math.abs(peakNormalizedX)))));
-        const heightZComponent = Math.cos(nz * Math.PI / 2);
-        yOffset = domeHeight * heightXComponent * heightZComponent;
     }
     
     const height = yOffset + roadYPosition + 0.1;
