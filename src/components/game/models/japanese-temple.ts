@@ -126,11 +126,11 @@ export function createJapaneseTemple() {
     // Thick orange strip over green railing
     const orangeStripGeom = new THREE.BoxGeometry(sideBayWidth, 3, 2);
     const orangeStrip1 = new THREE.Mesh(orangeStripGeom, vermilionRed);
-    orangeStrip1.position.set(centerBayWidth / 2 + sideBayWidth / 2, greenRailingHeight + 2.5, 15);
+    orangeStrip1.position.set(centerBayWidth / 2 + sideBayWidth / 2, greenRailingHeight - 4.5, 15);
     mainStructureGroup.add(orangeStrip1);
 
     const orangeStrip2 = new THREE.Mesh(orangeStripGeom, vermilionRed);
-    orangeStrip2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight + 2.5, 15);
+    orangeStrip2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), greenRailingHeight - 4.5, 15);
     mainStructureGroup.add(orangeStrip2);
     
     // Thick orange strip under green railing
@@ -175,11 +175,11 @@ export function createJapaneseTemple() {
     // Thick orange strip above brown panels
     const orangeStripAboveWoodGeom = new THREE.BoxGeometry(sideBayWidth, 3, 2);
     const orangeStripAbove1 = new THREE.Mesh(orangeStripAboveWoodGeom, vermilionRed);
-    orangeStripAbove1.position.set(centerBayWidth / 2 + sideBayWidth / 2, stripedPanelY + 5, 15);
+    orangeStripAbove1.position.set(centerBayWidth / 2 + sideBayWidth / 2, stripedPanelY + 8, 15);
     mainStructureGroup.add(orangeStripAbove1);
 
     const orangeStripAbove2 = new THREE.Mesh(orangeStripAboveWoodGeom, vermilionRed);
-    orangeStripAbove2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), stripedPanelY + 5, 15);
+    orangeStripAbove2.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), stripedPanelY + 8, 15);
     mainStructureGroup.add(orangeStripAbove2);
 
     // First floor center latticework - This is the unwanted horizontal bar
@@ -314,14 +314,6 @@ export function createJapaneseTemple() {
     const rightLantern = createLantern();
     rightLantern.position.set(baseWidth/2 + 15, 0, baseDepth / 2 + 25);
     mainBuilding.add(rightLantern);
-
-    // ADDED: Single long orange strip
-    const longOrangeStrip = new THREE.Mesh(
-        new THREE.BoxGeometry(structureWidth, 3, 2),
-        vermilionRed
-    );
-    longOrangeStrip.position.set(0, firstFloorHeight + 1.5, 15);
-    mainStructureGroup.add(longOrangeStrip);
 
 
     mainBuilding.castShadow = true;
