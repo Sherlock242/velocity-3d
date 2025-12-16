@@ -83,7 +83,7 @@ function createCurvedRoof(width: number, depth: number, height: number, material
     return mesh;
 }
 
-// Helper to create Dougong (bracket sets)
+// Helper to create detailed Dougong (bracket sets)
 function createDougong(size: number) {
     const dougong = new THREE.Group();
     const mat = new THREE.MeshStandardMaterial({color: 0xffffff}); // White
@@ -94,11 +94,59 @@ function createDougong(size: number) {
     const crossArm = new THREE.Mesh(new THREE.BoxGeometry(size*0.2, size*0.2, size), mat);
     dougong.add(crossArm);
 
-    const smallBlock = new THREE.Mesh(new THREE.BoxGeometry(size*0.3, size*0.3, size*0.3), mat);
-    smallBlock.position.y = size * 0.25;
-    dougong.add(smallBlock);
+    // First layer block
+    const block1 = new THREE.Mesh(new THREE.BoxGeometry(size*0.3, size*0.3, size*0.3), mat);
+    block1.position.y = size * 0.25;
+    dougong.add(block1);
+
+    // Second layer arms
+    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.8, size * 0.15, size * 0.15), mat);
+    arm2.position.y = size * 0.45;
+    dougong.add(arm2);
+    
+    const arm3 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.15, size * 0.15, size * 0.8), mat);
+    arm3.position.y = size * 0.45;
+    dougong.add(arm3);
+    
+    // Top block
+    const block2 = new THREE.Mesh(new THREE.BoxGeometry(size*0.4, size*0.2, size*0.4), mat);
+    block2.position.y = size * 0.6;
+    dougong.add(block2);
     
     return dougong;
+}
+
+// Helper to create the green lattice doors
+function createLatticeDoor(width: number, height: number, material: THREE.Material) {
+    const door = new THREE.Group();
+    const frameThickness = 1;
+
+    // Create frame
+    const topFrame = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 1), material);
+    topFrame.position.y = height/2 - frameThickness/2;
+    door.add(topFrame);
+
+    const bottomFrame = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 1), material);
+    bottomFrame.position.y = -height/2 + frameThickness/2;
+    door.add(bottomFrame);
+
+    const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(frameThickness, height, 1), material);
+    leftFrame.position.x = -width/2 + frameThickness/2;
+    door.add(leftFrame);
+
+    const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(frameThickness, height, 1), material);
+    rightFrame.position.x = width/2 - frameThickness/2;
+    door.add(rightFrame);
+
+    // Create lattice
+    const latticeBarGeom = new THREE.BoxGeometry(0.5, height - (frameThickness * 2), 0.5);
+    for(let i=1; i < 4; i++) {
+        const vBar = new THREE.Mesh(latticeBarGeom, material);
+        vBar.position.x = -width/2 + (i * width/4);
+        door.add(vBar);
+    }
+
+    return door;
 }
 
 export function createJapaneseTemple() {
@@ -142,16 +190,33 @@ export function createJapaneseTemple() {
         baseGroup.add(step);
     }
     
+    // Staircase Railings
+    const railingLength = numSteps * stepDepth * 1.2;
+    const railingHeight = 10;
+    const railingGeom = new THREE.BoxGeometry(1.5, railingHeight, railingLength);
+    
+    const leftRailing = new THREE.Mesh(railingGeom, stoneBaseMaterial);
+    leftRailing.position.set(-stairWidth/2 - 2, baseHeight/2 + 2.5, baseDepth/2 + (numSteps * stepDepth)/2);
+    leftRailing.rotation.y = -0.05; // slight angle
+    leftRailing.rotation.x = -Math.PI / 4.5; // Angled down
+    baseGroup.add(leftRailing);
+    
+    const rightRailing = leftRailing.clone();
+    rightRailing.position.x = stairWidth/2 + 2;
+    rightRailing.rotation.y = -rightRailing.rotation.y;
+    baseGroup.add(rightRailing);
+
+
     // Tiered bases for statues
     const statueBaseWidth = 25;
     const statueBaseHeight = 18;
     const statueBaseDepth = 25;
     const leftStatueBase = new THREE.Mesh(new THREE.BoxGeometry(statueBaseWidth, statueBaseHeight, statueBaseDepth), stoneBaseMaterial);
-    leftStatueBase.position.set(-stairWidth/2 - statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 20);
+    leftStatueBase.position.set(-stairWidth/2 - statueBaseWidth/2 - 5, statueBaseHeight/2, baseDepth/2 - 20);
     baseGroup.add(leftStatueBase);
     
     const rightStatueBase = new THREE.Mesh(new THREE.BoxGeometry(statueBaseWidth, statueBaseHeight, statueBaseDepth), stoneBaseMaterial);
-    rightStatueBase.position.set(stairWidth/2 + statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 20);
+    rightStatueBase.position.set(stairWidth/2 + statueBaseWidth/2 + 5, statueBaseHeight/2, baseDepth/2 - 20);
     baseGroup.add(rightStatueBase);
 
     temple.add(baseGroup);
@@ -179,14 +244,32 @@ export function createJapaneseTemple() {
         mainStructureGroup.add(pillar);
     });
 
-    // First Floor Plaster Walls
+    // First Floor Plaster Walls (with tomoe symbols)
     const wallGeom = new THREE.BoxGeometry(structureWidth, firstFloorHeight, 1);
     const wall1 = new THREE.Mesh(wallGeom, whitePlaster);
     wall1.position.set(0, firstFloorHeight/2, -14);
     mainStructureGroup.add(wall1);
+
+    const wall2Group = new THREE.Group();
     const wall2 = new THREE.Mesh(wallGeom, whitePlaster);
-    wall2.position.set(0, firstFloorHeight/2, 14);
-    mainStructureGroup.add(wall2);
+    wall2Group.add(wall2);
+
+    // Circular Tomoe details on the front wall
+    const tomoeGeom = new THREE.CylinderGeometry(4, 4, 1.2, 32);
+    const tomoeMat = new THREE.MeshStandardMaterial({color: 0x000000});
+    const tomoePositions = [-50, -35, 35, 50];
+    tomoePositions.forEach(xPos => {
+      const tomoeBorder = new THREE.Mesh(tomoeGeom, whitePlaster);
+      tomoeBorder.rotation.x = Math.PI / 2;
+      tomoeBorder.position.set(xPos, firstFloorHeight/2, 0);
+      const tomoeCenter = new THREE.Mesh(new THREE.CircleGeometry(3, 32), tomoeMat);
+      tomoeCenter.position.z = 0.7;
+      tomoeBorder.add(tomoeCenter);
+      wall2Group.add(tomoeBorder);
+    });
+    
+    wall2Group.position.set(0, firstFloorHeight/2, 14);
+    mainStructureGroup.add(wall2Group);
     
 
     // First Floor Roof Support & Brackets
@@ -195,10 +278,10 @@ export function createJapaneseTemple() {
     lowerRoofSupport.position.y = firstFloorHeight;
     mainStructureGroup.add(lowerRoofSupport);
     
-    // Intricate brackets (simplified)
+    // Intricate brackets (detailed)
     for(let i = 0; i < 10; i++) {
         const bracket = createDougong(5);
-        bracket.position.set(-structureWidth/2 + 10 + i * 12, firstFloorHeight + 2, 20);
+        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight + 2, 20);
         mainStructureGroup.add(bracket);
         const bracket2 = bracket.clone();
         bracket2.position.z = -20;
@@ -268,23 +351,22 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(plaqueGroup);
 
     // --- Green Lattice Doors ---
-    const latticeDoorGeom = new THREE.BoxGeometry(10, firstFloorHeight * 0.8, 1);
-    const leftDoor = new THREE.Mesh(latticeDoorGeom, greenLatticeMaterial);
-    leftDoor.position.set(-stairWidth/2 - 5, firstFloorHeight * 0.4, 15);
+    const leftDoor = createLatticeDoor(15, firstFloorHeight * 0.8, greenLatticeMaterial);
+    leftDoor.position.set(-stairWidth/2 - 7.5, firstFloorHeight * 0.4, 15);
     mainStructureGroup.add(leftDoor);
 
-    const rightDoor = new THREE.Mesh(latticeDoorGeom, greenLatticeMaterial);
-    rightDoor.position.set(stairWidth/2 + 5, firstFloorHeight * 0.4, 15);
+    const rightDoor = createLatticeDoor(15, firstFloorHeight * 0.8, greenLatticeMaterial);
+    rightDoor.position.set(stairWidth/2 + 7.5, firstFloorHeight * 0.4, 15);
     mainStructureGroup.add(rightDoor);
 
     // --- Kitsune Statues ---
     const leftStatue = createKitsuneStatue();
-    leftStatue.position.set(-stairWidth/2 - statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 20);
+    leftStatue.position.set(-stairWidth/2 - statueBaseWidth/2 - 5, statueBaseHeight, baseDepth/2 - 20);
     leftStatue.rotation.y = Math.PI / 6;
     baseGroup.add(leftStatue);
     
     const rightStatue = createKitsuneStatue();
-    rightStatue.position.set(stairWidth/2 + statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 20);
+    rightStatue.position.set(stairWidth/2 + statueBaseWidth/2 + 5, statueBaseHeight, baseDepth/2 - 20);
     rightStatue.rotation.y = -Math.PI / 6;
     baseGroup.add(rightStatue);
     
@@ -297,32 +379,32 @@ export function createJapaneseTemple() {
         const post = new THREE.Mesh(postGeom, vermilionRed);
         post.position.y = 12.5;
         lanternGroup.add(post);
-
-        const baseTopGeom = new THREE.BoxGeometry(12, 3, 12);
-        const baseTop = new THREE.Mesh(baseTopGeom, darkBrownRoof);
-        baseTop.position.y = 26.5;
-        lanternGroup.add(baseTop);
-
+        
         const lightGeom = new THREE.BoxGeometry(8, 10, 8);
         const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
         light.position.y = 20;
         lanternGroup.add(light);
         
-        const lanternRoofGeom = new THREE.ConeGeometry(10, 6, 4);
+        const lanternRoofGeom = new THREE.ConeGeometry(8, 8, 4);
         const lanternRoof = new THREE.Mesh(lanternRoofGeom, tealRoofMaterial);
-        lanternRoof.position.y = 28 + 3; // On top of the dark brown 'top'
+        lanternRoof.position.y = 25 + 4; // On top of the light
         lanternRoof.rotation.y = Math.PI / 4;
         lanternGroup.add(lanternRoof);
+
+        const roofTopGeom = new THREE.BoxGeometry(10, 2, 10);
+        const roofTop = new THREE.Mesh(roofTopGeom, blackAccent);
+        roofTop.position.y = 25;
+        lanternGroup.add(roofTop);
 
         return lanternGroup;
     }
     
     const leftLantern = createLantern();
-    leftLantern.position.set(-stairWidth, 0, baseDepth / 2 + 30);
+    leftLantern.position.set(-stairWidth - 15, 0, baseDepth / 2 + 25);
     baseGroup.add(leftLantern);
 
     const rightLantern = createLantern();
-    rightLantern.position.set(stairWidth, 0, baseDepth / 2 + 30);
+    rightLantern.position.set(stairWidth + 15, 0, baseDepth / 2 + 25);
     baseGroup.add(rightLantern);
 
 
