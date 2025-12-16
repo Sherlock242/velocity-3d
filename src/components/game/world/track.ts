@@ -143,7 +143,7 @@ export function createGridAndScenery(
   theme: TrackTheme,
   gameState: GameState
 ) {
-  const { walkingNpcsRef, staticCollidersRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef, domeRef, universityRamp, electricSparksRef, tilePlaneRef } = gameState;
+  const { walkingNpcsRef, staticCollidersRef, walkableSurfacesRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef, domeRef, universityRamp, electricSparksRef, tilePlaneRef } = gameState;
   
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
@@ -365,7 +365,7 @@ export function createGridAndScenery(
           sectorGroup = createSector20({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 21:
-          sectorGroup = createSector21({ cellCenterX, cellCenterZ, staticCollidersRef, rampMeshRef });
+          sectorGroup = createSector21({ cellCenterX, cellCenterZ, staticCollidersRef, walkableSurfacesRef, rampMeshRef });
           break;
         case 22:
           // These sectors are on the dome, so we don't add buildings or gates.

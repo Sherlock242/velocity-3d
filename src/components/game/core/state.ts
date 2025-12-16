@@ -35,6 +35,7 @@ export type GameState = {
     fountainWaterJetRef: React.MutableRefObject<THREE.Mesh | undefined>;
     walkingNpcsRef: React.MutableRefObject<THREE.Group[]>;
     staticCollidersRef: React.MutableRefObject<THREE.Group[]>;
+    walkableSurfacesRef: React.MutableRefObject<(THREE.Group | THREE.Mesh)[]>;
     rampMeshRef: React.MutableRefObject<THREE.Mesh | undefined>;
     rampWallsRef: React.MutableRefObject<THREE.Group | undefined>;
     collegeRampMeshRef: React.MutableRefObject<THREE.Group | undefined>;
@@ -78,6 +79,7 @@ export function useGameState(): GameState {
     const fountainWaterJetRef = React.useRef<THREE.Mesh>();
     const walkingNpcsRef = React.useRef<THREE.Group[]>([]);
     const staticCollidersRef = React.useRef<THREE.Group[]>([]);
+    const walkableSurfacesRef = React.useRef<(THREE.Group | THREE.Mesh)[]>([]);
     const rampMeshRef = React.useRef<THREE.Mesh>();
     const rampWallsRef = React.useRef<THREE.Group>();
     const collegeRampMeshRef = React.useRef<THREE.Group>();
@@ -116,6 +118,7 @@ export function useGameState(): GameState {
         fountainWaterJetRef,
         walkingNpcsRef,
         staticCollidersRef,
+        walkableSurfacesRef,
         rampMeshRef,
         rampWallsRef,
         collegeRampMeshRef,

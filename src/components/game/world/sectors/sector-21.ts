@@ -10,6 +10,7 @@ type Sector21Props = {
   cellCenterX: number;
   cellCenterZ: number;
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
+  walkableSurfacesRef: React.MutableRefObject<(THREE.Group | THREE.Mesh)[]>;
   rampMeshRef: MutableRefObject<THREE.Mesh | undefined>;
 };
 
@@ -17,6 +18,7 @@ export function createSector21({
   cellCenterX,
   cellCenterZ,
   staticCollidersRef,
+  walkableSurfacesRef,
   rampMeshRef,
 }: Sector21Props): THREE.Group {
   const sectorGroup = new THREE.Group();
@@ -27,7 +29,8 @@ export function createSector21({
   templeContainer.position.set(cellCenterX, 0, cellCenterZ);
   templeContainer.rotation.y = Math.PI / 2;
   sectorGroup.add(templeContainer);
-  staticCollidersRef.current.push(mainBuilding, walkableGroup);
+  staticCollidersRef.current.push(mainBuilding);
+  walkableSurfacesRef.current.push(walkableGroup);
   
   // Add the entrance gate to the right side
   const entranceGate = createToriiGate();

@@ -4,7 +4,7 @@ import { TOTAL_GRID_WIDTH } from '@/lib/game-constants';
 import type { GameState } from '../core/state';
 
 export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
-    const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp, tilePlaneRef, staticCollidersRef } = gameState;
+    const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp, tilePlaneRef, staticCollidersRef, walkableSurfacesRef } = gameState;
     if (!playerRef.current) return;
 
     const playerHeight = controlModeRef.current === 'car' ? 2.5 : 3.5; // Increased from 1.5/2.5
@@ -17,7 +17,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
         collegeRampMeshRef.current, 
         universityRamp.current, 
         tilePlaneRef.current,
-        ...staticCollidersRef.current
+        ...walkableSurfacesRef.current
     ].filter(Boolean) as (THREE.Mesh | THREE.Group)[];
 
     if (rampObjects.length > 0) {
