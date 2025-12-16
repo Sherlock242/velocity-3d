@@ -396,15 +396,19 @@ export function createJapaneseTemple() {
 
 
     // First Floor Roof Support & Brackets
-    const lowerRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 2, 38);
+    const lowerRoofSupportGeom = new THREE.BoxGeometry(structureWidth + 4, 3, 42);
     const lowerRoofSupport = new THREE.Mesh(lowerRoofSupportGeom, vermilionRed);
-    lowerRoofSupport.position.y = firstFloorHeight + 1;
+    lowerRoofSupport.position.y = firstFloorHeight + 1.5;
     mainStructureGroup.add(lowerRoofSupport);
     
-    // Intricate brackets (detailed)
+    const upperRoofSupportGeom = new THREE.BoxGeometry(structureWidth + 4, 3, 42);
+    const upperRoofSupport = new THREE.Mesh(upperRoofSupportGeom, vermilionRed);
+    upperRoofSupport.position.y = firstFloorHeight + 4.5;
+    mainStructureGroup.add(upperRoofSupport);
+
     for(let i = 0; i < 10; i++) {
         const bracket = createDougong(5);
-        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight - 2, 20);
+        bracket.position.set(-structureWidth/2 + 10 + i * 12.2, firstFloorHeight, 20);
         mainStructureGroup.add(bracket);
         const bracket2 = bracket.clone();
         bracket2.position.z = -20;
@@ -413,7 +417,7 @@ export function createJapaneseTemple() {
     
     
     // --- Second Floor ---
-    const secondFloorY = firstFloorHeight + 2;
+    const secondFloorY = firstFloorHeight + 6;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
