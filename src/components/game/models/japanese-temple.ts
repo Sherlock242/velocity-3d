@@ -112,6 +112,10 @@ export function createJapaneseTemple() {
         const pillarYPosition = isOuter ? outerPillarHeight / 2 : firstFloorHeight / 2;
         pillar.position.set(pos.x, pillarYPosition, pos.z);
         mainStructureGroup.add(pillar);
+
+        const dougong = createDougong(8);
+        dougong.position.set(pos.x, isOuter ? outerPillarHeight : firstFloorHeight, pos.z);
+        mainStructureGroup.add(dougong);
     });
 
     // Green Railing in side bays
