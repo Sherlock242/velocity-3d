@@ -24,7 +24,7 @@ export function createSector21({
   // Add the temple
   const { templeContainer, mainBuilding, walkableGroup } = createJapaneseTemple();
   templeContainer.scale.set(1.5, 1.5, 1.5);
-  templeContainer.position.set(cellCenterX, 1, cellCenterZ);
+  templeContainer.position.set(cellCenterX, 2, cellCenterZ);
   templeContainer.rotation.y = Math.PI / 2;
   sectorGroup.add(templeContainer);
   

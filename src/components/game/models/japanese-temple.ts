@@ -1,6 +1,5 @@
 
 import * as THREE from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 // Helper function to create the Kitsune (fox) statues
 function createKitsuneStatue() {
