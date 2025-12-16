@@ -380,14 +380,14 @@ export function createJapaneseTemple() {
     const plaqueGroup = new THREE.Group();
     plaqueGroup.position.set(0, secondFloorHeight / 2, 16); 
     
-    const plaqueBackGeom = new THREE.BoxGeometry(12, 20, 1);
-    const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
-    plaqueGroup.add(plaqueBack);
-
-    const plaqueFrameGeom = new THREE.BoxGeometry(14, 22, 1.2);
+    const plaqueFrameGeom = new THREE.BoxGeometry(12, 18, 1.2); // Frame size
     const plaqueFrame = new THREE.Mesh(plaqueFrameGeom, goldMaterial);
-    plaqueFrame.position.z = -0.2;
     plaqueGroup.add(plaqueFrame);
+    
+    const plaqueBackGeom = new THREE.BoxGeometry(10, 16, 1); // Black part slightly smaller
+    const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
+    plaqueBack.position.z = 0.3; // Bring it forward within the frame
+    plaqueGroup.add(plaqueBack);
     
     secondFloorGroup.add(plaqueGroup);
 
