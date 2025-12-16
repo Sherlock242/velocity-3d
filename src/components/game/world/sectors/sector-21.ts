@@ -21,7 +21,7 @@ export function createSector21({
 }: Sector21Props): THREE.Group {
   const sectorGroup = new THREE.Group();
   const roadYPosition = 0.4;
-  const tilePlaneY = roadYPosition + DOME_HEIGHT + 0.2;
+  const tilePlaneY = roadYPosition + DOME_HEIGHT - 0.2;
 
 
   // Add the temple
