@@ -62,23 +62,20 @@ function createKitsuneStatue() {
 }
 
 
-// Helper to create the curved roof (Irimoya-zukuri style)
-function createCurvedRoof(width: number, depth: number, height: number, material: THREE.Material) {
+// Helper to create the roof. Changed to a simple triangular prism.
+function createTriangularRoof(width: number, depth: number, height: number, material: THREE.Material) {
     const shape = new THREE.Shape();
-    const curveHeight = height * 0.6;
-    const midWidth = width * 0.95;
 
+    // Define a simple triangle shape
     shape.moveTo(-width / 2, 0);
-    shape.quadraticCurveTo(-midWidth/2, curveHeight, 0, curveHeight * 1.1);
-    shape.quadraticCurveTo(midWidth/2, curveHeight, width / 2, 0);
-    shape.lineTo(width / 2, -height * 0.4);
-    shape.lineTo(-width / 2, -height * 0.4);
+    shape.lineTo(0, height);
+    shape.lineTo(width / 2, 0);
     shape.closePath();
 
     const extrudeSettings = { depth: depth, bevelEnabled: false };
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.translate(0, 0, -depth/2);
-    
+    geometry.translate(0, 0, -depth / 2);
+
     const mesh = new THREE.Mesh(geometry, material);
     return mesh;
 }
@@ -391,7 +388,7 @@ export function createJapaneseTemple() {
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = new THREE.Group();
-    plaqueGroup.position.set(0, secondFloorHeight - 4, 16); 
+    plaqueGroup.position.set(0, secondFloorHeight + 4, 0); 
     
     const plaqueBackGeom = new THREE.BoxGeometry(10, 18, 1);
     const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
@@ -406,23 +403,23 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createCurvedRoof(secondFloorWidth + 20, 55, 15, darkBrownRoof);
+    const topRoof = createTriangularRoof(secondFloorWidth + 20, 55, 25, darkBrownRoof);
     topRoof.position.y = secondFloorHeight;
     secondFloorGroup.add(topRoof);
     
     // Black decorative ridge on top roof
     const ridgeGeom = new THREE.BoxGeometry(40, 4, 4);
     const ridge = new THREE.Mesh(ridgeGeom, blackAccent);
-    ridge.position.y = secondFloorHeight + 15 + 1;
+    ridge.position.y = secondFloorHeight + 25 + 1;
     secondFloorGroup.add(ridge);
 
     // Gold end-caps on ridge
     const endCapGeom = new THREE.BoxGeometry(6, 6, 6);
     const leftCap = new THREE.Mesh(endCapGeom, goldMaterial);
-    leftCap.position.set(-22, secondFloorHeight + 15 + 1, 0);
+    leftCap.position.set(-22, secondFloorHeight + 25 + 1, 0);
     secondFloorGroup.add(leftCap);
     const rightCap = new THREE.Mesh(endCapGeom, goldMaterial);
-    rightCap.position.set(22, secondFloorHeight + 15 + 1, 0);
+    rightCap.position.set(22, secondFloorHeight + 25 + 1, 0);
     secondFloorGroup.add(rightCap);
 
     // --- Kitsune Statues ---
