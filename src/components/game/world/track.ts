@@ -253,7 +253,7 @@ export function createGridAndScenery(
           // Calculate distance to the nearest edge of the flat rectangle
           const dxToPeak = Math.max(0, x - peakOffsetX);
           const dxToStart = Math.max(0, -halfDomeWidth - x);
-          const dz = Math.max(0, Math.abs(z) - halfFlatTopDepth);
+          const dz = Math.max(0, Math.abs(z) - halfFlatTopDepth) * 3;
 
           const nx = (Math.max(dxToPeak, dxToStart)) / (halfDomeWidth * (1 - Math.abs(peakNormalizedX)));
           const nz = dz / (halfDomeDepth - halfFlatTopDepth);
@@ -373,36 +373,43 @@ export function createGridAndScenery(
       }
       
       // If the sector is on the dome, adjust individual children instead of the whole group
-      if (j === 4) { 
-        sectorGroup.children.forEach(child => {
-          if (child instanceof THREE.Group || child instanceof THREE.Mesh) {
-            const childX = child.position.x;
-            const childZ = child.position.z;
-            
-            const isWithinFlatX = childX >= cellCenterX - halfDomeWidth && childX <= cellCenterX + peakOffsetX;
-            const isWithinFlatZ = childZ >= domeCenterZ - halfFlatTopDepth && childZ <= domeCenterZ + halfFlatTopDepth;
-
-            let yOffset;
-
-            if (isWithinFlatX && isWithinFlatZ) {
-                yOffset = domeHeight;
-            } else {
-                const dxToPeak = Math.max(0, childX - (cellCenterX + peakOffsetX));
-                const dxToStart = Math.max(0, (cellCenterX - halfDomeWidth) - childX);
-                const dz = Math.max(0, Math.abs(childZ - domeCenterZ) - halfFlatTopDepth);
-
-                const nx = (Math.max(dxToPeak, dxToStart)) / (halfDomeWidth * (1 - Math.abs(peakNormalizedX)));
-                const nz = dz / (halfDomeDepth - halfFlatTopDepth);
+      if (j === 4) {
+        if (sectorNumber === 21) {
+            // For sector 21, just move everything up to the flat tile plane height.
+            sectorGroup.children.forEach(child => {
+                child.position.y += tilePlaneY;
+            });
+        } else {
+            sectorGroup.children.forEach(child => {
+              if (child instanceof THREE.Group || child instanceof THREE.Mesh) {
+                const childX = child.position.x;
+                const childZ = child.position.z;
                 
-                const heightXComponent = Math.cos(nx * Math.PI / 2);
-                const heightZComponent = Math.cos(nz * Math.PI / 2);
-
-                yOffset = domeHeight * heightXComponent * heightZComponent;
-            }
-                
-            child.position.y += yOffset;
-          }
-        });
+                const isWithinFlatX = childX >= cellCenterX - halfDomeWidth && childX <= cellCenterX + peakOffsetX;
+                const isWithinFlatZ = childZ >= domeCenterZ - halfFlatTopDepth && childZ <= domeCenterZ + halfFlatTopDepth;
+    
+                let yOffset;
+    
+                if (isWithinFlatX && isWithinFlatZ) {
+                    yOffset = domeHeight;
+                } else {
+                    const dxToPeak = Math.max(0, childX - (cellCenterX + peakOffsetX));
+                    const dxToStart = Math.max(0, (cellCenterX - halfDomeWidth) - childX);
+                    const dz = Math.max(0, Math.abs(childZ - domeCenterZ) - halfFlatTopDepth) * 3;
+    
+                    const nx = (Math.max(dxToPeak, dxToStart)) / (halfDomeWidth * (1 - Math.abs(peakNormalizedX)));
+                    const nz = dz / (halfDomeDepth - halfFlatTopDepth);
+                    
+                    const heightXComponent = Math.cos(nx * Math.PI / 2);
+                    const heightZComponent = Math.cos(nz * Math.PI / 2);
+    
+                    yOffset = domeHeight * heightXComponent * heightZComponent;
+                }
+                    
+                child.position.y += yOffset;
+              }
+            });
+        }
       }
 
       gridGroup.add(sectorGroup);

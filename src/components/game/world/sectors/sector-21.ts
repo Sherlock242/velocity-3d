@@ -20,21 +20,18 @@ export function createSector21({
   rampMeshRef,
 }: Sector21Props): THREE.Group {
   const sectorGroup = new THREE.Group();
-  const roadYPosition = 0.4;
-  const tilePlaneY = roadYPosition + DOME_HEIGHT - 0.2;
-
 
   // Add the temple
   const { templeContainer, mainBuilding, walkableGroup } = createJapaneseTemple();
   templeContainer.scale.set(1.5, 1.5, 1.5);
-  templeContainer.position.set(cellCenterX, tilePlaneY, cellCenterZ);
+  templeContainer.position.set(cellCenterX, 0, cellCenterZ);
   templeContainer.rotation.y = Math.PI / 2;
   sectorGroup.add(templeContainer);
   
   // Add the entrance gate to the right side
   const entranceGate = createToriiGate();
   entranceGate.scale.set(1.2, 1.2, 1.2);
-  entranceGate.position.set(cellCenterX + CELL_SIZE / 2 - 100, tilePlaneY, cellCenterZ);
+  entranceGate.position.set(cellCenterX + CELL_SIZE / 2 - 100, 0, cellCenterZ);
   entranceGate.rotation.y = -Math.PI / 2;
   sectorGroup.add(entranceGate);
 
