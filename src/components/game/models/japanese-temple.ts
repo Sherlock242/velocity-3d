@@ -274,21 +274,22 @@ export function createJapaneseTemple() {
     // --- Stairs ---
     const stairsGroup = new THREE.Group();
     const stairWidth = 40;
+    const totalStairHeight = baseHeight + secondTierHeight;
     const numStairs = 10;
-    const stairHeight = (baseHeight + secondTierHeight) / numStairs;
-    const stairDepth = 45 / numStairs;
+    const stairHeight = totalStairHeight / numStairs;
+    const stairDepth = 4.5;
     const stairMaterial = new THREE.MeshStandardMaterial({ color: 0xfffdd0 });
 
     for (let i = 0; i < numStairs; i++) {
         const step = new THREE.Mesh(
-            new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth),
+            new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth * (numStairs - i)),
             stairMaterial
         );
-        step.position.set(0, (i + 0.5) * stairHeight, (i + 0.5) * stairDepth);
+        step.position.y = stairHeight / 2 + i * stairHeight;
+        step.position.z = stairDepth * (numStairs - i) / 2;
         stairsGroup.add(step);
     }
-    stairsGroup.position.set(0, - (baseHeight + secondTierHeight) / 2, -baseDepth / 2 - 22.5);
-    stairsGroup.rotation.y = Math.PI;
+    stairsGroup.position.set(0, 0, (baseDepth + 5) / 2);
     baseGroup.add(stairsGroup);
 
 
