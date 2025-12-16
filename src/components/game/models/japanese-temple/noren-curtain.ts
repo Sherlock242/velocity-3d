@@ -8,51 +8,84 @@ export function createNorenCurtain() {
     const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, side: THREE.DoubleSide });
     const redMaterial = new THREE.MeshStandardMaterial({ color: 0xdc4405, side: THREE.DoubleSide });
 
-    const panelWidth = 11;
     const panelHeight = 20;
-    const numPanels = 7; // 4 plain, 3 with emblems
-    const panelSpacing = 1.5;
     const redLineWidth = 0.2;
-    const redLineInset = 0.5;
+    const emblemPanelWidth = 11;
+    const gapPanelWidth = 3;
+    const endPanelWidth = 5.5; // Half of emblem panel
 
-    const fullWidthWithSpacing = (numPanels * panelWidth) + ((numPanels - 1) * panelSpacing);
+    const totalWidth = (endPanelWidth * 2) + (emblemPanelWidth * 3) + (gapPanelWidth * 2) + (redLineWidth * 6);
+    
+    // Create one single background panel
+    const mainPanelGeom = new THREE.PlaneGeometry(totalWidth, panelHeight);
+    const mainPanel = new THREE.Mesh(mainPanelGeom, whiteMaterial);
+    norenGroup.add(mainPanel);
 
-    for (let i = 0; i < numPanels; i++) {
-        const panelGroup = new THREE.Group();
-        const xPos = -fullWidthWithSpacing / 2 + panelWidth / 2 + i * (panelWidth + panelSpacing);
-        panelGroup.position.x = xPos;
+    let currentX = -totalWidth / 2;
 
-        // Main white panel
-        const panelGeom = new THREE.PlaneGeometry(panelWidth, panelHeight);
-        const panel = new THREE.Mesh(panelGeom, whiteMaterial);
-        panelGroup.add(panel);
-
-        // Add emblem and borders for panels 1, 3, 5
-        if (i % 2 !== 0) {
-            // Black circle emblem
-            const circleRadius = 2.5;
-            const circleGeom = new THREE.CircleGeometry(circleRadius, 32);
-            const circle = new THREE.Mesh(circleGeom, blackMaterial);
-            circle.position.z = 0.1; // Position slightly in front to avoid z-fighting
-            panelGroup.add(circle);
-            
-            // Left red vertical line
-            const leftRedLineGeom = new THREE.BoxGeometry(redLineWidth, panelHeight, 0.1);
-            const leftRedLine = new THREE.Mesh(leftRedLineGeom, redMaterial);
-            leftRedLine.position.x = -panelWidth / 2 + redLineInset + redLineWidth / 2;
-            leftRedLine.position.z = 0.05;
-            panelGroup.add(leftRedLine);
-
-            // Right red vertical line
-            const rightRedLineGeom = new THREE.BoxGeometry(redLineWidth, panelHeight, 0.1);
-            const rightRedLine = new THREE.Mesh(rightRedLineGeom, redMaterial);
-            rightRedLine.position.x = panelWidth / 2 - redLineInset - redLineWidth / 2;
-            rightRedLine.position.z = 0.05;
-            panelGroup.add(rightRedLine);
-        }
-
-        norenGroup.add(panelGroup);
+    // Helper function to add a red line
+    const addRedLine = () => {
+        const lineGeom = new THREE.BoxGeometry(redLineWidth, panelHeight, 0.1);
+        const line = new THREE.Mesh(lineGeom, redMaterial);
+        line.position.x = currentX + redLineWidth / 2;
+        line.position.z = 0.05;
+        norenGroup.add(line);
+        currentX += redLineWidth;
+    };
+    
+    // Helper function to add emblem
+    const addEmblem = (xPos: number) => {
+        const circleRadius = 2.5;
+        const circleGeom = new THREE.CircleGeometry(circleRadius, 32);
+        const circle = new THREE.Mesh(circleGeom, blackMaterial);
+        circle.position.x = xPos;
+        circle.position.z = 0.1;
+        norenGroup.add(circle);
     }
+
+    // Build the curtain from left to right
+
+    // 1. First half-width blank panel area
+    currentX += endPanelWidth;
+
+    // 2. First red line
+    addRedLine();
+
+    // 3. First emblem panel
+    addEmblem(currentX + emblemPanelWidth / 2);
+    currentX += emblemPanelWidth;
+    
+    // 4. Second red line
+    addRedLine();
+
+    // 5. First gap panel
+    currentX += gapPanelWidth;
+
+    // 6. Third red line
+    addRedLine();
+
+    // 7. Second emblem panel
+    addEmblem(currentX + emblemPanelWidth / 2);
+    currentX += emblemPanelWidth;
+
+    // 8. Fourth red line
+    addRedLine();
+    
+    // 9. Second gap panel
+    currentX += gapPanelWidth;
+    
+    // 10. Fifth red line
+    addRedLine();
+
+    // 11. Third emblem panel
+    addEmblem(currentX + emblemPanelWidth / 2);
+    currentX += emblemPanelWidth;
+    
+    // 12. Sixth red line
+    addRedLine();
+
+    // 13. Final half-width blank panel
+    currentX += endPanelWidth;
 
 
     return norenGroup;
