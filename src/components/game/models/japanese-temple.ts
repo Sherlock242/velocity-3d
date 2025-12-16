@@ -85,25 +85,31 @@ export function createJapaneseTemple() {
 
     const structureWidth = 120;
     const firstFloorHeight = 32;
+    const outerPillarHeight = 35;
     const pillarDiameter = 3.5;
     const centerBayWidth = stairWidth + 10;
     const sideBayWidth = (structureWidth - centerBayWidth) / 2;
 
 
     // Main Pillars
-    const pillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, firstFloorHeight, 16);
-    const pillarPositions = [
-      // Center bay pillars
-      { x: -centerBayWidth / 2, z: 15 }, { x: centerBayWidth / 2, z: 15 },
-      { x: -centerBayWidth / 2, z: -15 }, { x: centerBayWidth / 2, z: -15 },
+    const innerPillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, firstFloorHeight, 16);
+    const outerPillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, outerPillarHeight, 16);
 
-      // Side bay pillars
-      { x: -structureWidth / 2, z: 15 }, { x: -structureWidth / 2, z: -15 },
-      { x: structureWidth / 2, z: 15 }, { x: structureWidth / 2, z: -15 },
+    const pillarPositions = [
+      // Center bay pillars (inner)
+      { x: -centerBayWidth / 2, z: 15, outer: false }, { x: centerBayWidth / 2, z: 15, outer: false },
+      { x: -centerBayWidth / 2, z: -15, outer: false }, { x: centerBayWidth / 2, z: -15, outer: false },
+
+      // Side bay pillars (outer)
+      { x: -structureWidth / 2, z: 15, outer: true }, { x: -structureWidth / 2, z: -15, outer: true },
+      { x: structureWidth / 2, z: 15, outer: true }, { x: structureWidth / 2, z: -15, outer: true },
     ];
+
     pillarPositions.forEach(pos => {
-        const pillar = new THREE.Mesh(pillarGeom, vermilionRed);
-        pillar.position.set(pos.x, firstFloorHeight / 2, pos.z);
+        const isOuter = pos.outer;
+        const pillar = new THREE.Mesh(isOuter ? outerPillarGeom : innerPillarGeom, vermilionRed);
+        const pillarYPosition = isOuter ? outerPillarHeight / 2 : firstFloorHeight / 2;
+        pillar.position.set(pos.x, pillarYPosition, pos.z);
         mainStructureGroup.add(pillar);
     });
 
@@ -188,13 +194,13 @@ export function createJapaneseTemple() {
     const innerPillarDiameter = 2.5;
     const innerEntranceWidth = centerBayWidth * 0.5;
 
-    const innerPillarGeom = new THREE.CylinderGeometry(innerPillarDiameter, innerPillarDiameter, innerPillarHeight, 12);
+    const entrancePillarGeom = new THREE.CylinderGeometry(innerPillarDiameter, innerPillarDiameter, innerPillarHeight, 12);
     
-    const leftInnerPillar = new THREE.Mesh(innerPillarGeom, vermilionRed);
+    const leftInnerPillar = new THREE.Mesh(entrancePillarGeom, vermilionRed);
     leftInnerPillar.position.set(-innerEntranceWidth / 2, innerPillarHeight / 2, 0);
     innerEntranceGroup.add(leftInnerPillar);
 
-    const rightInnerPillar = new THREE.Mesh(innerPillarGeom, vermilionRed);
+    const rightInnerPillar = new THREE.Mesh(entrancePillarGeom, vermilionRed);
     rightInnerPillar.position.set(innerEntranceWidth / 2, innerPillarHeight / 2, 0);
     innerEntranceGroup.add(rightInnerPillar);
 
