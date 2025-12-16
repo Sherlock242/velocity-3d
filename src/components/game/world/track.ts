@@ -174,22 +174,27 @@ export function createGridAndScenery(
     for (let i = 0; i <= GRID_SIZE; i++) {
         const roadOffset = i * CELL_SIZE - halfTotalWidth;
 
-        if (j === 0) { // Only render vertical roads once
-            // Vertical roads
-            const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
-            const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
-            verticalRoad.rotation.x = -Math.PI / 2;
-            verticalRoad.position.y = roadYPosition;
-            verticalRoad.position.x = roadOffset;
-            verticalRoad.receiveShadow = true;
-            gridGroup.add(verticalRoad);
+        // Don't render vertical roads on the far right of the dome area
+        if (j < GRID_SIZE - 1 && i === GRID_SIZE) continue;
 
-            // Vertical lane markings
-            for (let k = -halfTotalWidth; k < halfTotalWidth; k += lineLength + lineGap) {
-                const line = new THREE.Mesh(lineGeom, lineMaterial);
-                line.position.set(roadOffset, roadYPosition + 0.01, k + lineLength / 2);
-                line.rotation.x = -Math.PI / 2;
-                gridGroup.add(line);
+        if (j === 0 || i < GRID_SIZE) { // Only render vertical roads once, and all horizontal roads
+             if (j === 0) {
+                // Vertical roads
+                const verticalRoadGeom = new THREE.PlaneGeometry(ROAD_WIDTH, TOTAL_GRID_WIDTH);
+                const verticalRoad = new THREE.Mesh(verticalRoadGeom, roadMaterial);
+                verticalRoad.rotation.x = -Math.PI / 2;
+                verticalRoad.position.y = roadYPosition;
+                verticalRoad.position.x = roadOffset;
+                verticalRoad.receiveShadow = true;
+                gridGroup.add(verticalRoad);
+
+                // Vertical lane markings
+                for (let k = -halfTotalWidth; k < halfTotalWidth; k += lineLength + lineGap) {
+                    const line = new THREE.Mesh(lineGeom, lineMaterial);
+                    line.position.set(roadOffset, roadYPosition + 0.01, k + lineLength / 2);
+                    line.rotation.x = -Math.PI / 2;
+                    gridGroup.add(line);
+                }
             }
         }
     }
@@ -295,7 +300,7 @@ export function createGridAndScenery(
   tilePlane.rotation.x = -Math.PI / 2;
 
   const tilePlaneX = domeCenterX - halfDomeWidth + flatTopWidth / 2;
-  const tilePlaneY = roadYPosition + domeHeight + 0.2; 
+  const tilePlaneY = roadYPosition + domeHeight + 0.5; 
   const tilePlaneZ = domeCenterZ;
   
   tilePlane.position.set(tilePlaneX, tilePlaneY, tilePlaneZ);
@@ -390,7 +395,7 @@ export function createGridAndScenery(
       if (j === 4) {
         if (sectorNumber === 21) {
             sectorGroup.children.forEach(child => {
-                child.position.y += tilePlaneY;
+                child.position.y += domeHeight;
             });
         } else {
             sectorGroup.children.forEach(child => {
@@ -431,7 +436,7 @@ export function createGridAndScenery(
   }
 
   // --- Torii Gate Tunnel ---
-  const startSector25X = (4 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2) - 150;
+  const startSector25X = (4 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2) - 200;
   const endSector22X = (1 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2);
   const tunnelLength = startSector25X - endSector22X;
   const gateSpacing = 40;
@@ -503,7 +508,7 @@ export function createGridAndScenery(
         }
     }
     
-    const height = yOffset + roadYPosition + 0.1;
+    const height = yOffset + roadYPosition + 0.5;
 
     // Add vertices for the left and right side of the road segment
     vertices.push(roadX, height, roadZ - halfRoadWidth); // right vertex
