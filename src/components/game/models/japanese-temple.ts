@@ -287,7 +287,7 @@ export function createJapaneseTemple() {
         stairsGroup.add(step);
     }
     stairsGroup.position.y = - (baseHeight + secondTierHeight) / 2 + 1;
-    stairsGroup.position.z = baseDepth / 2 + 15;
+    stairsGroup.position.z = baseDepth / 2 + 30;
     stairsGroup.rotation.y = Math.PI;
     baseGroup.add(stairsGroup);
 
@@ -361,8 +361,8 @@ export function createJapaneseTemple() {
       panel.position.y = panelHeight / 2;
       panelGroup.add(panel);
 
-      const stripeWidth = 0.3;
-      const stripeGeom = new THREE.BoxGeometry(stripeWidth, panelHeight, 1.1);
+      const stripeHeight = panelHeight;
+      const stripeGeom = new THREE.BoxGeometry(0.3, stripeHeight, 1.1);
       for (let i = 0; i < 3; i++) {
         const stripe = new THREE.Mesh(stripeGeom, greyStripeMaterial);
         stripe.position.x = (i - 1) * (width / 4);
