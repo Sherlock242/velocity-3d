@@ -193,6 +193,7 @@ export function createJapaneseTemple() {
     const innerEntranceGroup = new THREE.Group();
     const innerPillarHeight = firstFloorHeight * 0.8;
     const innerEntranceWidth = centerBayWidth * 0.5;
+    const innerPillarDiameter = 2.5;
 
     const entrancePillarGeom = new THREE.CylinderGeometry(innerPillarDiameter, innerPillarDiameter, innerPillarHeight, 12);
     
