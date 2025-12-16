@@ -228,6 +228,12 @@ export function createJapaneseTemple() {
     const mainBase = new THREE.Mesh(mainBaseGeom, stoneBaseMaterial);
     mainBase.position.y = baseHeight / 2;
     baseGroup.add(mainBase);
+    
+    const secondTierHeight = 3;
+    const secondTierGeom = new THREE.BoxGeometry(baseWidth + 5, secondTierHeight, baseDepth + 5);
+    const secondTier = new THREE.Mesh(secondTierGeom, stoneBaseMaterial);
+    secondTier.position.y = baseHeight + secondTierHeight / 2;
+    baseGroup.add(secondTier);
 
     // Tiered bases for statues
     const statueBaseWidth = 25;
@@ -242,27 +248,60 @@ export function createJapaneseTemple() {
     baseGroup.add(rightStatueBase);
 
     walkableGroup.add(baseGroup);
+    
+    // --- Stairs ---
+    const stairsGroup = new THREE.Group();
+    const stairWidth = 40;
+    const numStairs = 10;
+    const stairHeight = (baseHeight + secondTierHeight) / numStairs;
+    const stairDepth = 30 / numStairs;
+
+    for (let i = 0; i < numStairs; i++) {
+        const step = new THREE.Mesh(
+            new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth),
+            stoneBaseMaterial
+        );
+        step.position.set(0, (i + 0.5) * stairHeight, baseDepth / 2 + 5 + (i + 0.5) * stairDepth);
+        stairsGroup.add(step);
+    }
+    stairsGroup.position.y = - (baseHeight + secondTierHeight) / 2 + 1;
+    baseGroup.add(stairsGroup);
+
+    // --- Side Ramp ---
+    const rampGroup = new THREE.Group();
+    const rampWidth = 8;
+    const rampLength = 35;
+    const rampGeom = new THREE.BoxGeometry(rampWidth, 0.5, rampLength);
+    const ramp = new THREE.Mesh(rampGeom, stoneBaseMaterial);
+    ramp.rotation.y = -Math.PI / 8;
+    ramp.rotation.x = Math.atan((baseHeight + secondTierHeight) / rampLength);
+    ramp.position.set(stairWidth / 2 + rampWidth / 2 + 10, (baseHeight + secondTierHeight) / 2, baseDepth / 2 + 15);
+    rampGroup.add(ramp);
+    baseGroup.add(rampGroup);
+
 
     // --- Main Structure ---
     const mainStructureGroup = new THREE.Group();
-    mainStructureGroup.position.y = baseHeight;
+    mainStructureGroup.position.y = baseHeight + secondTierHeight;
     mainBuilding.add(mainStructureGroup);
 
     const structureWidth = 120;
     const firstFloorHeight = 25;
     const pillarDiameter = 4;
-    const stairWidth = 40;
-    const bayWidth = (structureWidth - (stairWidth + pillarDiameter * 2)) / 2;
+    const centerBayWidth = stairWidth + 10;
+    const sideBayWidth = (structureWidth - centerBayWidth) / 2;
 
 
     // Main Pillars
     const pillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, firstFloorHeight, 16);
     const pillarPositions = [
-      { x: -stairWidth / 2 - pillarDiameter, z: 15 }, { x: stairWidth / 2 + pillarDiameter, z: 15 },
-      { x: -stairWidth / 2 - pillarDiameter, z: -15 }, { x: stairWidth / 2 + pillarDiameter, z: -15 },
+      // Center bay pillars
+      { x: -centerBayWidth / 2, z: 15 }, { x: centerBayWidth / 2, z: 15 },
+      { x: -centerBayWidth / 2, z: -15 }, { x: centerBayWidth / 2, z: -15 },
 
-      { x: -structureWidth / 2 + pillarDiameter, z: 15 }, { x: -structureWidth / 2 + pillarDiameter, z: -15 },
-      { x: structureWidth / 2 - pillarDiameter, z: 15 }, { x: structureWidth / 2 - pillarDiameter, z: -15 },
+      // Side bay pillars
+      { x: -structureWidth / 2, z: 15 }, { x: -structureWidth / 2, z: -15 },
+      { x: structureWidth / 2, z: 15 }, { x: structureWidth / 2, z: -15 },
     ];
     pillarPositions.forEach(pos => {
         const pillar = new THREE.Mesh(pillarGeom, vermilionRed);
@@ -271,28 +310,27 @@ export function createJapaneseTemple() {
     });
 
     // Green Railing in side bays
-    const sideBayWidth = bayWidth - pillarDiameter * 2;
     const greenRailingHeight = 12;
     const greenRailing = createGreenRailing(sideBayWidth, greenRailingHeight, greenLatticeMaterial);
-    greenRailing.position.set(stairWidth / 2 + pillarDiameter + sideBayWidth / 2, greenRailingHeight / 2, 15);
+    greenRailing.position.set(centerBayWidth/2 + sideBayWidth/2, greenRailingHeight/2, 15);
     mainStructureGroup.add(greenRailing);
 
     const greenRailing2 = createGreenRailing(sideBayWidth, greenRailingHeight, greenLatticeMaterial);
-    greenRailing2.position.set(-(stairWidth / 2 + pillarDiameter + sideBayWidth / 2), greenRailingHeight / 2, 15);
+    greenRailing2.position.set(-(centerBayWidth/2 + sideBayWidth/2), greenRailingHeight/2, 15);
     mainStructureGroup.add(greenRailing2);
 
     // First Floor Plaster Walls (behind side bays)
     const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, firstFloorHeight, 1);
     const leftSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
-    leftSideWall.position.set(-(stairWidth / 2 + pillarDiameter + sideBayWidth / 2), firstFloorHeight/2, -14);
+    leftSideWall.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), firstFloorHeight/2, -14);
     mainStructureGroup.add(leftSideWall);
     
     const rightSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
-    rightSideWall.position.set(stairWidth / 2 + pillarDiameter + sideBayWidth / 2, firstFloorHeight/2, -14);
+    rightSideWall.position.set(centerBayWidth / 2 + sideBayWidth / 2, firstFloorHeight/2, -14);
     mainStructureGroup.add(rightSideWall);
     
     // First Floor Plaster Walls (center)
-    const centerWallGeom = new THREE.BoxGeometry(stairWidth + pillarDiameter*2, firstFloorHeight, 1);
+    const centerWallGeom = new THREE.BoxGeometry(centerBayWidth, firstFloorHeight, 1);
     const centerWall = new THREE.Mesh(centerWallGeom, whitePlaster);
     centerWall.position.set(0, firstFloorHeight/2, -14);
     mainStructureGroup.add(centerWall);
@@ -313,6 +351,21 @@ export function createJapaneseTemple() {
         bracket2.position.z = -20;
         mainStructureGroup.add(bracket2);
     }
+    
+    // --- Plaque (Gaku) ---
+    const plaqueGroup = new THREE.Group();
+    plaqueGroup.position.set(0, firstFloorHeight + 4, 20.5); 
+    
+    const plaqueBackGeom = new THREE.BoxGeometry(18, 10, 1);
+    const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
+    plaqueGroup.add(plaqueBack);
+
+    const plaqueFrameGeom = new THREE.BoxGeometry(20, 12, 1.2);
+    const plaqueFrame = new THREE.Mesh(plaqueFrameGeom, goldMaterial);
+    plaqueFrame.position.z = -0.2;
+    plaqueGroup.add(plaqueFrame);
+    
+    mainStructureGroup.add(plaqueGroup);
 
 
     // --- Second Floor ---
@@ -361,22 +414,6 @@ export function createJapaneseTemple() {
     rightCap.position.set(22, secondFloorHeight + 15 + 4, 0);
     secondFloorGroup.add(rightCap);
 
-    // --- Plaque (Gaku) ---
-    const plaqueGroup = new THREE.Group();
-    plaqueGroup.position.set(0, secondFloorHeight - 8, 16); // Position on 2nd floor facade
-    plaqueGroup.rotation.y = Math.PI / 2; // Rotate it 90 degrees
-    
-    const plaqueBackGeom = new THREE.BoxGeometry(18, 10, 1);
-    const plaqueBack = new THREE.Mesh(plaqueBackGeom, blackAccent);
-    plaqueGroup.add(plaqueBack);
-
-    const plaqueFrameGeom = new THREE.BoxGeometry(20, 12, 1.2);
-    const plaqueFrame = new THREE.Mesh(plaqueFrameGeom, goldMaterial);
-    plaqueFrame.position.z = -0.2;
-    plaqueGroup.add(plaqueFrame);
-    
-    secondFloorGroup.add(plaqueGroup);
-
     // --- Kitsune Statues ---
     const leftStatue = createKitsuneStatue();
     leftStatue.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight, baseDepth/2 - 20);
@@ -422,7 +459,7 @@ export function createJapaneseTemple() {
     mainBuilding.add(leftLantern);
 
     const rightLantern = createLantern();
-    rightLantern.position.set(baseWidth/2 - 15, 0, baseDepth / 2 + 25);
+    rightLantern.position.set(baseWidth/2 + 15, 0, baseDepth / 2 + 25);
     mainBuilding.add(rightLantern);
 
 
