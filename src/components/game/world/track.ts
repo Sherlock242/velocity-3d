@@ -34,28 +34,39 @@ function createTileMaterial() {
 
   if (!context) return new THREE.MeshStandardMaterial({ color: 0xcccccc });
 
-  // Base color
-  context.fillStyle = '#EAE8E1'; // Light sandy color
+  // Base stone color
+  context.fillStyle = '#b0b0b0';
   context.fillRect(0, 0, textureSize, textureSize);
 
-  // Add subtle color variations
-  for (let i = 0; i < 5000; i++) {
+  // Add subtle color variations for a stone look
+  for (let i = 0; i < 8000; i++) {
     const x = Math.random() * textureSize;
     const y = Math.random() * textureSize;
-    const radius = Math.random() * 2;
-    const color = Math.random() > 0.5 ? '#F0EEE6' : '#DCDAD0';
+    const radius = Math.random() * 2.5;
+    const alpha = Math.random() * 0.2;
+    const color = Math.random() > 0.5 ? 'rgba(255,255,255, ' + alpha + ')' : 'rgba(0,0,0, ' + alpha + ')';
     context.fillStyle = color;
     context.beginPath();
     context.arc(x, y, radius, 0, Math.PI * 2);
     context.fill();
   }
+
+  // Add some cracks
+  for (let i = 0; i < 20; i++) {
+    context.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+    context.lineWidth = Math.random() * 1.5 + 0.5;
+    context.beginPath();
+    context.moveTo(Math.random() * textureSize, Math.random() * textureSize);
+    context.lineTo(Math.random() * textureSize, Math.random() * textureSize);
+    context.stroke();
+  }
   
   const colorTexture = new THREE.CanvasTexture(canvas);
   colorTexture.wrapS = THREE.RepeatWrapping;
   colorTexture.wrapT = THREE.RepeatWrapping;
-  colorTexture.repeat.set(20, 20);
+  colorTexture.repeat.set(10, 10);
 
-  // Normal map for dimples
+  // Normal map for a rougher, more detailed surface
   const normalCanvas = document.createElement('canvas');
   normalCanvas.width = textureSize;
   normalCanvas.height = textureSize;
@@ -66,17 +77,19 @@ function createTileMaterial() {
   normalContext.fillStyle = 'rgb(128, 128, 255)'; // Neutral normal color
   normalContext.fillRect(0, 0, textureSize, textureSize);
   
-  for (let i = 0; i < 4000; i++) {
+  // Add bumps and grooves to the normal map
+  for (let i = 0; i < 6000; i++) {
       const x = Math.random() * textureSize;
       const y = Math.random() * textureSize;
-      const radius = Math.random() * 3 + 1;
+      const radius = Math.random() * 4 + 1;
       
       const angle = Math.random() * Math.PI * 2;
       const nx = Math.cos(angle) * 127 + 128;
       const ny = Math.sin(angle) * 127 + 128;
+      const nz = 255; // For bumps
 
       const grad = normalContext.createRadialGradient(x, y, 0, x, y, radius);
-      grad.addColorStop(0, `rgb(${nx}, ${ny}, 255)`);
+      grad.addColorStop(0, `rgb(${nx}, ${ny}, ${nz})`);
       grad.addColorStop(1, 'rgb(128, 128, 255)');
       
       normalContext.fillStyle = grad;
@@ -88,7 +101,7 @@ function createTileMaterial() {
   const normalTexture = new THREE.CanvasTexture(normalCanvas);
   normalTexture.wrapS = THREE.RepeatWrapping;
   normalTexture.wrapT = THREE.RepeatWrapping;
-  normalTexture.repeat.set(20, 20);
+  normalTexture.repeat.set(10, 10);
 
   return new THREE.MeshStandardMaterial({
     map: colorTexture,
@@ -376,12 +389,8 @@ export function createGridAndScenery(
       // If the sector is on the dome, adjust individual children instead of the whole group
       if (j === 4) {
         if (sectorNumber === 21) {
-             sectorGroup.children.forEach(child => {
-                if (child.name === 'FushimiInariGatehouse_Container') {
-                    child.position.y += tilePlaneY;
-                } else {
-                    child.position.y += roadYPosition + domeHeight;
-                }
+            sectorGroup.children.forEach(child => {
+                child.position.y += tilePlaneY;
             });
         } else {
             sectorGroup.children.forEach(child => {
@@ -422,7 +431,7 @@ export function createGridAndScenery(
   }
 
   // --- Torii Gate Tunnel ---
-  const startSector25X = (4 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2);
+  const startSector25X = (4 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2) - 150;
   const endSector22X = (1 * CELL_SIZE - halfTotalWidth) + (CELL_SIZE / 2);
   const tunnelLength = startSector25X - endSector22X;
   const gateSpacing = 40;
