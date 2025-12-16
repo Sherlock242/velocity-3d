@@ -13,14 +13,14 @@ export function createNorenCurtain() {
     const panelHeight = 20;
     const numPanels = 3;
     const panelSpacing = 1.5;
-    const redLineWidth = 0.2; // Thinner red line
-    const redLineInset = 0.5; // How far the red line is from the edge
+    const redLineWidth = 0.2;
+    const redLineInset = 0.5;
 
-    const fullPanelWidth = panelWidth;
+    const fullWidthWithSpacing = totalWidth + (numPanels - 1) * panelSpacing;
 
     for (let i = 0; i < numPanels; i++) {
         const panelGroup = new THREE.Group();
-        const xPos = -totalWidth / 2 + fullPanelWidth / 2 + i * (fullPanelWidth + panelSpacing);
+        const xPos = -fullWidthWithSpacing / 2 + panelWidth / 2 + i * (panelWidth + panelSpacing);
         panelGroup.position.x = xPos;
 
         // Main white panel
