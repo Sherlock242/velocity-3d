@@ -303,8 +303,8 @@ export function createJapaneseTemple() {
     mainBuilding.add(mainStructureGroup);
 
     const structureWidth = 120;
-    const firstFloorHeight = 25;
-    const pillarDiameter = 4;
+    const firstFloorHeight = 30;
+    const pillarDiameter = 3.5;
     const centerBayWidth = stairWidth + 10;
     const sideBayWidth = (structureWidth - centerBayWidth) / 2;
 
