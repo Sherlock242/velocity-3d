@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 
 // Helper to create the roof.
-export function createHippedRoof(material: THREE.Material, width: number, depth: number, height: number) {
+export function createHippedRoof(width: number, depth: number, height: number, material: THREE.Material) {
     const roofGeometry = new THREE.BufferGeometry();
     
     const isWide = width > depth;
