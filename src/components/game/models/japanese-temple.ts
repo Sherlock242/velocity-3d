@@ -32,17 +32,10 @@ export function createJapaneseTemple() {
         const panelHeight = 12.25 * 0.4;
         const panelWidth = width * 0.7;
         const panelGroup = new THREE.Group();
-        const borderThickness = 0.5;
-
-        // Border
-        const borderGeom = new THREE.BoxGeometry(panelWidth, panelHeight, 1);
-        const border = new THREE.Mesh(borderGeom, vermilionRed);
-        panelGroup.add(border);
 
         // Green Fill
-        const fillGeom = new THREE.BoxGeometry(panelWidth - borderThickness, panelHeight - borderThickness, 1);
+        const fillGeom = new THREE.BoxGeometry(panelWidth, panelHeight, 1);
         const fill = new THREE.Mesh(fillGeom, greenLatticeMaterial);
-        fill.position.z = 0.1; // Place it slightly in front of the border
         panelGroup.add(fill);
         
         return panelGroup;
@@ -489,7 +482,7 @@ export function createJapaneseTemple() {
     secondFloorInnerLintel.position.set(0, secondFloorInnerPillarHeight / 2, 0);
     secondFloorEntranceGroup.add(secondFloorInnerLintel);
     
-    // Decorative Panel
+    // Decorative Panel with Ovals
     const panelWidth = secondFloorInnerEntranceWidth * 0.8;
     const panelHeight = secondFloorInnerPillarHeight * 0.9;
     const panelGroup = new THREE.Group();
@@ -601,3 +594,4 @@ export function createJapaneseTemple() {
     
 
     
+
