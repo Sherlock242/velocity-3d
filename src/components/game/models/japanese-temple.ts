@@ -470,12 +470,12 @@ export function createJapaneseTemple() {
     ovalShape.absellipse(0, 0, ovalRadiusX, ovalRadiusY, 0, Math.PI * 2, false, 0);
     const ovalGeom = new THREE.ShapeGeometry(ovalShape);
     
-    const leftOval = new THREE.Mesh(ovalGeom, orangeCircleMaterial);
-    leftOval.position.set(-panelWidth * 0.25, 0, 0.3);
+    const leftOval = new THREE.Mesh(ovalGeom, vermilionRed);
+    leftOval.position.set(-panelWidth * 0.25, 0, 0.5);
     panelGroup.add(leftOval);
 
-    const rightOval = new THREE.Mesh(ovalGeom, orangeCircleMaterial);
-    rightOval.position.set(panelWidth * 0.25, 0, 0.3);
+    const rightOval = new THREE.Mesh(ovalGeom, vermilionRed);
+    rightOval.position.set(panelWidth * 0.25, 0, 0.5);
     panelGroup.add(rightOval);
 
     secondFloorEntranceGroup.add(panelGroup);
@@ -492,7 +492,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
@@ -559,3 +559,5 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
+
+    
