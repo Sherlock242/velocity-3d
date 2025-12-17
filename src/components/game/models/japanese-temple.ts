@@ -58,7 +58,7 @@ export function createJapaneseTemple() {
     
     // --- Stairs ---
     const stairsGroup = new THREE.Group();
-    const stairWidth = 40;
+    const stairWidth = 60;
     const totalStairHeight = baseHeight + secondTierHeight;
     const numStairs = 10;
     const stairHeight = totalStairHeight / numStairs;
@@ -378,7 +378,6 @@ export function createJapaneseTemple() {
         topWhiteBlock.add(vLine);
     }
 
-
     const orangeStripeGeom = new THREE.BoxGeometry(secondFloorWidth, stripeHeight, secondFloorDepth);
     const orangeStripe = new THREE.Mesh(orangeStripeGeom, vermilionRed);
     orangeStripe.position.y = secondFloorHeight / 2;
@@ -398,7 +397,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
