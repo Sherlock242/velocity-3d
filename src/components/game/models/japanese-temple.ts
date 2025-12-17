@@ -395,7 +395,7 @@ export function createJapaneseTemple() {
         lanternGroup.add(post);
         
         const lightGeom = new THREE.BoxGeometry(8, 10, 8);
-        const light = new THREE.Mesh(new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
+        const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
         light.position.y = 20;
         lanternGroup.add(light);
         
@@ -435,9 +435,3 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
-
-    
-
-    
-
-    
