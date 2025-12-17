@@ -432,29 +432,34 @@ export function createJapaneseTemple() {
         bottomWhiteBlock.add(pillar);
     });
 
-    // --- Add Side Panels to the front ---
-    const sideBayPillarDistance = (structureWidth / 2) - (centerBayWidth / 2);
-    const frontPanelWidth = sideBayPillarDistance - pillarDiameter;
-
-    const createSidePanel = (width: number, height: number) => {
+    // Helper function for the side panels
+    function createSidePanel(width: number, height: number) {
         const panelGroup = new THREE.Group();
+        const borderThickness = 0.5;
+
+        // Border
         const borderGeom = new THREE.BoxGeometry(width, height, 1);
         const border = new THREE.Mesh(borderGeom, vermilionRed);
         panelGroup.add(border);
 
-        const fillGeom = new THREE.BoxGeometry(width - 1, height - 1, 1);
+        // Green Fill
+        const fillGeom = new THREE.BoxGeometry(width - borderThickness, height - borderThickness, 1);
         const fill = new THREE.Mesh(fillGeom, greenLatticeMaterial);
-        fill.position.z = 0.5;
+        fill.position.z = 0.1; // Place it slightly in front of the border
         panelGroup.add(fill);
+        
         return panelGroup;
-    };
+    }
+
+    const sideBayPillarDistance = (secondFloorWidth / 2) - (centerBayWidth / 2);
+    const frontPanelWidth = sideBayPillarDistance - secondFloorPillarDiameter;
     
     const leftFrontPanel = createSidePanel(frontPanelWidth, whiteBlockHeight);
-    leftFrontPanel.position.set(-(centerBayWidth / 2 + sideBayPillarDistance / 2), 0, secondFloorDepth / 2 + 0.5);
+    leftFrontPanel.position.set(-(centerBayWidth / 2 + frontPanelWidth / 2), 0, secondFloorDepth / 2 + 0.5);
     bottomWhiteBlock.add(leftFrontPanel);
     
     const rightFrontPanel = createSidePanel(frontPanelWidth, whiteBlockHeight);
-    rightFrontPanel.position.set(centerBayWidth / 2 + sideBayPillarDistance / 2, 0, secondFloorDepth / 2 + 0.5);
+    rightFrontPanel.position.set(centerBayWidth / 2 + frontPanelWidth / 2, 0, secondFloorDepth / 2 + 0.5);
     bottomWhiteBlock.add(rightFrontPanel);
     
 
@@ -521,7 +526,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
