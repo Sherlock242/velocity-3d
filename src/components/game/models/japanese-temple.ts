@@ -289,7 +289,7 @@ export function createJapaneseTemple() {
     stripedBox.add(boxMesh);
 
     const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
-    const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.4, 35.2);
+    const hLineGeom = new THREE.BoxGeometry(structureWidth, 1.2, 35.2);
     const vLineGeom = new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.2);
 
     const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
@@ -351,7 +351,7 @@ export function createJapaneseTemple() {
 
     const secondFloorWidth = 100;
     const secondFloorHeight = 30;
-    const secondFloorDepth = 35;
+    const secondFloorDepth = 20;
     
     const secondFloorGeom = new THREE.BoxGeometry(secondFloorWidth, secondFloorHeight, secondFloorDepth);
     const secondFloorBlock = new THREE.Mesh(secondFloorGeom, whitePlaster);
@@ -369,7 +369,7 @@ export function createJapaneseTemple() {
 
     // --- Main Top Roof ---
     const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
-    topRoof.position.y = secondFloorHeight; // Position on top of second floor
+    topRoof.position.y = secondFloorHeight - 10; // Position on top of second floor
     secondFloorGroup.add(topRoof);
 
 

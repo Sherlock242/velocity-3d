@@ -15,6 +15,7 @@ import { createSector11 } from './sectors/sector-11';
 import { createSector13 } from './sectors/sector-13';
 import { createSector14 } from './sectors/sector-14';
 import { createSector15 } from './sectors/sector-15';
+import { createSector16 } from './sectors/sector-16';
 import { createSector17 } from './sectors/sector-17';
 import { createSector18 } from './sectors/sector-18';
 import { createSector20 } from './sectors/sector-20';
@@ -358,6 +359,9 @@ export function createGridAndScenery(
           break;
         case 15:
           sectorGroup = createSector15({ cellCenterX, cellCenterZ, staticCollidersRef });
+          break;
+        case 16:
+          sectorGroup = createSector16({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 17:
           sectorGroup = createSector17({ cellCenterX, cellCenterZ, staticCollidersRef });
