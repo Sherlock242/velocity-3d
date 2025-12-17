@@ -297,7 +297,7 @@ export function createJapaneseTemple() {
     
     // White Box with Red lines
     const stripedBoxHeight = 5;
-    const stripedBoxY = firstFloorHeight + 3 + stripedBoxHeight / 2; // 32 + 3 + 2.5 = 37.5
+    const stripedBoxY = firstFloorHeight + 3 + stripedBoxHeight / 2; // 34.5 + 3 + 2.5 = 40
     const stripedBox = new THREE.Group();
     stripedBox.position.y = stripedBoxY;
     mainStructureGroup.add(stripedBox);
@@ -313,6 +313,14 @@ export function createJapaneseTemple() {
     topHLine3.position.y = 0; // In the middle
     topHLine3.position.z = 0.1;
     stripedBox.add(topHLine3);
+    
+    const vLineGeom = new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.2);
+    for (let i = 0; i < 6; i++) {
+        const vLine = new THREE.Mesh(vLineGeom, lineMaterial);
+        vLine.position.x = (i - 2.5) * (structureWidth / 6);
+        vLine.position.z = 0.1;
+        stripedBox.add(vLine);
+    }
     
     // New orange roof layer
     const orangeRoofHeight = 1.5;
@@ -574,6 +582,8 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
+    
+
     
 
     
