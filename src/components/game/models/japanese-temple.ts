@@ -368,18 +368,18 @@ export function createJapaneseTemple() {
     const topVLineGeom = new THREE.BoxGeometry(0.4, whiteBlockHeight, secondFloorDepth + 0.2);
     
     const topHLine1 = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine1.position.y = whiteBlockHeight / 2 - 0.2;
+    topHLine1.position.y = whiteBlockHeight / 4; // Position slightly up from middle
     topHLine1.position.z = 0.1;
     topWhiteBlock.add(topHLine1);
     
     const topHLine2 = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine2.position.y = -whiteBlockHeight / 2 + 0.2;
+    topHLine2.position.y = -whiteBlockHeight / 4; // Position slightly down from middle
     topHLine2.position.z = 0.1;
     topWhiteBlock.add(topHLine2);
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
         const vLine = new THREE.Mesh(topVLineGeom, lineMaterial);
-        vLine.position.x = (i - 2) * (secondFloorWidth / 5);
+        vLine.position.x = (i - 2.5) * (secondFloorWidth / 6);
         vLine.position.z = 0.1;
         topWhiteBlock.add(vLine);
     }
