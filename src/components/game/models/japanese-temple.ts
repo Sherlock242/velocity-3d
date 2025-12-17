@@ -29,7 +29,7 @@ export function createJapaneseTemple() {
 
     // Helper function for the side panels
     function createSidePanel(width: number) {
-        const panelHeight = 12.25 * 0.4;
+        const panelHeight = 12.25 * 0.7;
         const panelWidth = width * 0.7;
         const panelGroup = new THREE.Group();
 
@@ -100,8 +100,8 @@ export function createJapaneseTemple() {
     mainBuilding.add(mainStructureGroup);
 
     const structureWidth = 120;
-    const firstFloorHeight = 32;
-    const outerPillarHeight = 35;
+    const firstFloorHeight = 34.5;
+    const outerPillarHeight = 37.5;
     const pillarDiameter = 3.5;
     const centerBayWidth = stairWidth + 10;
     const sideBayWidth = (structureWidth - centerBayWidth) / 2;
