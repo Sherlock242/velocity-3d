@@ -451,14 +451,15 @@ export function createJapaneseTemple() {
         return panelGroup;
     }
 
+    // --- Place new panels on the front sides ---
     const sideBayPillarDistance = (secondFloorWidth / 2) - (centerBayWidth / 2);
     const frontPanelWidth = sideBayPillarDistance - secondFloorPillarDiameter;
-    
-    const leftFrontPanel = createSidePanel(frontPanelWidth, whiteBlockHeight);
+
+    const leftFrontPanel = createSidePanel(frontPanelWidth * 0.3, whiteBlockHeight * 0.3); // Further reduced size
     leftFrontPanel.position.set(-(centerBayWidth / 2 + frontPanelWidth / 2), 0, secondFloorDepth / 2 + 0.5);
     bottomWhiteBlock.add(leftFrontPanel);
     
-    const rightFrontPanel = createSidePanel(frontPanelWidth, whiteBlockHeight);
+    const rightFrontPanel = createSidePanel(frontPanelWidth * 0.3, whiteBlockHeight * 0.3); // Further reduced size
     rightFrontPanel.position.set(centerBayWidth / 2 + frontPanelWidth / 2, 0, secondFloorDepth / 2 + 0.5);
     bottomWhiteBlock.add(rightFrontPanel);
     
@@ -526,7 +527,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
