@@ -113,7 +113,7 @@ export function createJapaneseTemple() {
         pillar.position.set(pos.x, pillarYPosition, pos.z);
         mainStructureGroup.add(pillar);
 
-        const dougong = createDougong(8, vermilionRed, goldMaterial);
+        const dougong = createDougong(5, vermilionRed, goldMaterial);
         dougong.position.set(pos.x, isOuter ? outerPillarHeight : firstFloorHeight, pos.z + (isOuter ? 20 : 0));
         dougong.rotation.y = pos.rotation;
         mainStructureGroup.add(dougong);
@@ -285,7 +285,7 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(stripedBox);
 
     const boxGeom = new THREE.BoxGeometry(structureWidth, stripedBoxHeight, 35);
-    const boxMesh = new THREE.Mesh(boxGeom, whitePlaster);
+    const boxMesh = new THREE.Mesh(boxGeom, vermilionRed);
     stripedBox.add(boxMesh);
 
     const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
