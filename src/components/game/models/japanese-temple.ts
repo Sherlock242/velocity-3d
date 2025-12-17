@@ -367,9 +367,21 @@ export function createJapaneseTemple() {
     const secondFloorHeight = 30;
     const secondFloorDepth = 20;
     const whiteBlockHeight = 12.25;
-
-    // Split the white block into three parts
     const stripeHeight = 2.5;
+
+    // Helper function to create side panels
+    function createSidePanel(panelWidth: number, panelHeight: number) {
+        const panelGroup = new THREE.Group();
+        const borderGeom = new THREE.BoxGeometry(panelWidth, panelHeight, 1);
+        const border = new THREE.Mesh(borderGeom, vermilionRed);
+        panelGroup.add(border);
+
+        const fillGeom = new THREE.BoxGeometry(panelWidth - 1, panelHeight - 1, 1);
+        const fill = new THREE.Mesh(fillGeom, greenLatticeMaterial);
+        fill.position.z = 0.5;
+        panelGroup.add(fill);
+        return panelGroup;
+    }
 
     const topWhiteBlockGeom = new THREE.BoxGeometry(secondFloorWidth, whiteBlockHeight, secondFloorDepth);
     const topWhiteBlock = new THREE.Mesh(topWhiteBlockGeom, whitePlaster);
@@ -403,13 +415,11 @@ export function createJapaneseTemple() {
         topWhiteBlock.add(vLine);
     }
 
-    const orangeStripeGeom = new THREE.BoxGeometry(secondFloorWidth, stripeHeight, secondFloorDepth);
-    const orangeStripe = new THREE.Mesh(orangeStripeGeom, vermilionRed);
+    const orangeStripe = new THREE.Mesh(new THREE.BoxGeometry(secondFloorWidth, stripeHeight, secondFloorDepth), vermilionRed);
     orangeStripe.position.y = secondFloorHeight / 2;
     secondFloorGroup.add(orangeStripe);
 
-    const bottomWhiteBlockGeom = new THREE.BoxGeometry(secondFloorWidth, whiteBlockHeight, secondFloorDepth);
-    const bottomWhiteBlock = new THREE.Mesh(bottomWhiteBlockGeom, whitePlaster);
+    const bottomWhiteBlock = new THREE.Mesh(new THREE.BoxGeometry(secondFloorWidth, whiteBlockHeight, secondFloorDepth), whitePlaster);
     bottomWhiteBlock.position.y = -whiteBlockHeight / 2 - stripeHeight / 2 + secondFloorHeight / 2;
     secondFloorGroup.add(bottomWhiteBlock);
 
@@ -428,8 +438,6 @@ export function createJapaneseTemple() {
         // Edge pillars
         { x: -secondFloorWidth / 2, z: 0 },
         { x: secondFloorWidth / 2, z: 0 },
-        { x: -secondFloorWidth / 2, z: secondFloorDepth / 2 },
-        { x: secondFloorWidth / 2, z: secondFloorDepth / 2 },
     ];
 
     secondFloorPillarPositions.forEach(pos => {
@@ -437,6 +445,20 @@ export function createJapaneseTemple() {
         pillar.position.set(pos.x, 0, pos.z);
         bottomWhiteBlock.add(pillar);
     });
+
+    // Add Side Panels
+    const sidePanelWidth = secondFloorDepth;
+    const sidePanelHeight = whiteBlockHeight;
+    const leftSidePanel = createSidePanel(sidePanelWidth, sidePanelHeight);
+    leftSidePanel.position.set(-secondFloorWidth / 2, 0, 0);
+    leftSidePanel.rotation.y = Math.PI / 2;
+    bottomWhiteBlock.add(leftSidePanel);
+    
+    const rightSidePanel = createSidePanel(sidePanelWidth, sidePanelHeight);
+    rightSidePanel.position.set(secondFloorWidth / 2, 0, 0);
+    rightSidePanel.rotation.y = -Math.PI / 2;
+    bottomWhiteBlock.add(rightSidePanel);
+
 
     // Second Floor Entrance
     const secondFloorEntranceGroup = new THREE.Group();
@@ -481,11 +503,11 @@ export function createJapaneseTemple() {
     const ovalGeom = new THREE.ShapeGeometry(ovalShape);
     
     const leftOval = new THREE.Mesh(ovalGeom, vermilionRed);
-    leftOval.position.set(-panelWidth * 0.25, 0, 0.6);
+    leftOval.position.set(-panelWidth * 0.25, 0, 0.7);
     panelGroup.add(leftOval);
 
     const rightOval = new THREE.Mesh(ovalGeom, vermilionRed);
-    rightOval.position.set(panelWidth * 0.25, 0, 0.6);
+    rightOval.position.set(panelWidth * 0.25, 0, 0.7);
     panelGroup.add(rightOval);
 
     // New green panels above ovals
@@ -589,5 +611,3 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
-
-    
