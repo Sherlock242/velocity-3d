@@ -24,7 +24,7 @@ export function createJapaneseTemple() {
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
-    const yellowPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xfff000 });
+    const yellowPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFDD0 });
     const orangeCircleMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500 });
 
 
@@ -356,10 +356,10 @@ export function createJapaneseTemple() {
     const secondFloorWidth = 100;
     const secondFloorHeight = 30;
     const secondFloorDepth = 20;
+    const whiteBlockHeight = 12.25;
 
     // Split the white block into three parts
     const stripeHeight = 2.5;
-    const whiteBlockHeight = (secondFloorHeight - stripeHeight) / 2;
 
     const topWhiteBlockGeom = new THREE.BoxGeometry(secondFloorWidth, whiteBlockHeight, secondFloorDepth);
     const topWhiteBlock = new THREE.Mesh(topWhiteBlockGeom, whitePlaster);
@@ -371,7 +371,7 @@ export function createJapaneseTemple() {
     const topVLineGeom = new THREE.BoxGeometry(0.4, whiteBlockHeight, secondFloorDepth + 0.2);
     
     const topHLine1 = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine1.position.y = whiteBlockHeight / 4;
+    topHLine1.position.y = whiteBlockHeight / 4 + 2;
     topHLine1.position.z = 0.1;
     topWhiteBlock.add(topHLine1);
 
@@ -381,7 +381,7 @@ export function createJapaneseTemple() {
     topWhiteBlock.add(topHLine3);
     
     const topHLine2 = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine2.position.y = -(whiteBlockHeight / 4);
+    topHLine2.position.y = -(whiteBlockHeight / 4) - 2;
     topHLine2.position.z = 0.1;
     topWhiteBlock.add(topHLine2);
 
@@ -409,11 +409,6 @@ export function createJapaneseTemple() {
     const secondFloorPillarGeom = new THREE.CylinderGeometry(secondFloorPillarDiameter, secondFloorPillarDiameter, secondFloorPillarHeight, 12);
     
     const secondFloorPillarPositions = [
-        // Corners
-        { x: -secondFloorWidth / 2, z: secondFloorDepth / 2 },
-        { x: secondFloorWidth / 2, z: secondFloorDepth / 2 },
-        { x: -secondFloorWidth / 2, z: -secondFloorDepth / 2 },
-        { x: secondFloorWidth / 2, z: -secondFloorDepth / 2 },
         // Center bay (front)
         { x: -centerBayWidth / 2, z: secondFloorDepth / 2 },
         { x: centerBayWidth / 2, z: secondFloorDepth / 2 },
@@ -423,6 +418,8 @@ export function createJapaneseTemple() {
         // Edge pillars
         { x: -secondFloorWidth / 2, z: 0 },
         { x: secondFloorWidth / 2, z: 0 },
+        { x: -secondFloorWidth / 2, z: secondFloorDepth / 2 },
+        { x: secondFloorWidth / 2, z: secondFloorDepth / 2 },
     ];
 
     secondFloorPillarPositions.forEach(pos => {
@@ -474,11 +471,11 @@ export function createJapaneseTemple() {
     const ovalGeom = new THREE.ShapeGeometry(ovalShape);
     
     const leftOval = new THREE.Mesh(ovalGeom, orangeCircleMaterial);
-    leftOval.position.set(-panelWidth * 0.25, 0, 0.2);
+    leftOval.position.set(-panelWidth * 0.25, 0, 0.3);
     panelGroup.add(leftOval);
 
     const rightOval = new THREE.Mesh(ovalGeom, orangeCircleMaterial);
-    rightOval.position.set(panelWidth * 0.25, 0, 0.2);
+    rightOval.position.set(panelWidth * 0.25, 0, 0.3);
     panelGroup.add(rightOval);
 
     secondFloorEntranceGroup.add(panelGroup);
@@ -495,7 +492,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
