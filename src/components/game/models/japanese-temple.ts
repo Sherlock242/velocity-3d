@@ -370,13 +370,13 @@ export function createJapaneseTemple() {
     const stripeHeight = 2.5;
 
     // Helper function to create side panels
-    function createSidePanel(panelWidth: number, panelHeight: number) {
+    function createSidePanel(width: number, height: number) {
         const panelGroup = new THREE.Group();
-        const borderGeom = new THREE.BoxGeometry(panelWidth, panelHeight, 1);
+        const borderGeom = new THREE.BoxGeometry(width, height, 1);
         const border = new THREE.Mesh(borderGeom, vermilionRed);
         panelGroup.add(border);
 
-        const fillGeom = new THREE.BoxGeometry(panelWidth - 1, panelHeight - 1, 1);
+        const fillGeom = new THREE.BoxGeometry(width - 1, height - 1, 1);
         const fill = new THREE.Mesh(fillGeom, greenLatticeMaterial);
         fill.position.z = 0.5;
         panelGroup.add(fill);
@@ -544,7 +544,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
