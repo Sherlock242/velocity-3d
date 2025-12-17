@@ -296,14 +296,24 @@ export function createJapaneseTemple() {
     const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.4, 35.2);
     const vLineGeom = new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.2);
 
-    const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
-    hLine.position.y = 0;
-    hLine.position.z = 0.1;
-    stripedBox.add(hLine);
+    const topHLine1 = new THREE.Mesh(hLineGeom, lineMaterial);
+    topHLine1.position.y = 1;
+    topHLine1.position.z = 0.1;
+    stripedBox.add(topHLine1);
+
+    const topHLine2 = new THREE.Mesh(hLineGeom, lineMaterial);
+    topHLine2.position.y = -1;
+    topHLine2.position.z = 0.1;
+    stripedBox.add(topHLine2);
     
-    for (let i = 0; i < 5; i++) {
+    const topHLine3 = new THREE.Mesh(hLineGeom, lineMaterial);
+    topHLine3.position.y = 0; // In the middle
+    topHLine3.position.z = 0.1;
+    stripedBox.add(topHLine3);
+    
+    for (let i = 0; i < 6; i++) {
         const vLine = new THREE.Mesh(vLineGeom, lineMaterial);
-        vLine.position.x = (i - 2) * (structureWidth / 5);
+        vLine.position.x = (i - 2.5) * (structureWidth / 6);
         vLine.position.z = 0.1;
         stripedBox.add(vLine);
     }
@@ -370,20 +380,20 @@ export function createJapaneseTemple() {
     const topHLineGeom = new THREE.BoxGeometry(secondFloorWidth, 0.4, secondFloorDepth + 0.2);
     const topVLineGeom = new THREE.BoxGeometry(0.4, whiteBlockHeight, secondFloorDepth + 0.2);
     
-    const topHLine1 = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine1.position.y = whiteBlockHeight / 4 + 2;
-    topHLine1.position.z = 0.1;
-    topWhiteBlock.add(topHLine1);
+    const topHLine1_2 = new THREE.Mesh(topHLineGeom, lineMaterial);
+    topHLine1_2.position.y = whiteBlockHeight / 4 + 2;
+    topHLine1_2.position.z = 0.1;
+    topWhiteBlock.add(topHLine1_2);
 
-    const topHLine3 = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine3.position.y = 0; // In the middle
-    topHLine3.position.z = 0.1;
-    topWhiteBlock.add(topHLine3);
-    
-    const topHLine2 = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine2.position.y = -(whiteBlockHeight / 4) - 2;
-    topHLine2.position.z = 0.1;
-    topWhiteBlock.add(topHLine2);
+    const topHLine2_2 = new THREE.Mesh(topHLineGeom, lineMaterial);
+    topHLine2_2.position.y = -(whiteBlockHeight / 4) - 2;
+    topHLine2_2.position.z = 0.1;
+    topWhiteBlock.add(topHLine2_2);
+
+    const topHLine3_2 = new THREE.Mesh(topHLineGeom, lineMaterial);
+    topHLine3_2.position.y = 0; // In the middle
+    topHLine3_2.position.z = 0.1;
+    topWhiteBlock.add(topHLine3_2);
 
 
     for (let i = 0; i < 6; i++) {
@@ -471,11 +481,11 @@ export function createJapaneseTemple() {
     const ovalGeom = new THREE.ShapeGeometry(ovalShape);
     
     const leftOval = new THREE.Mesh(ovalGeom, vermilionRed);
-    leftOval.position.set(-panelWidth * 0.25, 0, 0.5);
+    leftOval.position.set(-panelWidth * 0.25, 0, 0.6);
     panelGroup.add(leftOval);
 
     const rightOval = new THREE.Mesh(ovalGeom, vermilionRed);
-    rightOval.position.set(panelWidth * 0.25, 0, 0.5);
+    rightOval.position.set(panelWidth * 0.25, 0, 0.6);
     panelGroup.add(rightOval);
 
     secondFloorEntranceGroup.add(panelGroup);
@@ -492,7 +502,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
@@ -559,5 +569,3 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
-
-    
