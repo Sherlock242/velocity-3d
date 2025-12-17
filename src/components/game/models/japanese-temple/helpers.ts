@@ -15,7 +15,7 @@ export function createDougong(size: number, redMaterial: THREE.Material, goldMat
 
     const goldPlate = new THREE.Mesh(new THREE.CylinderGeometry(size * 0.7, size * 0.7, 0.5, 32), goldMaterial);
     goldPlate.rotation.x = Math.PI / 2;
-    goldPlate.position.z = -1; // Position it behind the bracket
+    goldPlate.position.z = 1; // Position it behind the bracket
     dougong.add(goldPlate);
 
     const mainArm = new THREE.Mesh(new THREE.BoxGeometry(size, size*0.4, size*0.4), redMaterial);
@@ -30,11 +30,11 @@ export function createDougong(size: number, redMaterial: THREE.Material, goldMat
     dougong.add(block1);
 
     // Second layer arms
-    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.8, size * 0.25, size * 0.25), redMaterial);
+    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(size * 1.2, size * 0.35, size * 0.35), redMaterial);
     arm2.position.y = size * 0.7;
     dougong.add(arm2);
     
-    const arm3 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.25, size * 0.25, size * 0.8), redMaterial);
+    const arm3 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.35, size * 0.35, size * 1.2), redMaterial);
     arm3.position.y = size * 0.7;
     dougong.add(arm3);
     
