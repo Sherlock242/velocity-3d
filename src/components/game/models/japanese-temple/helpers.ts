@@ -40,7 +40,7 @@ export function createDougong(size: number, redMaterial: THREE.Material, goldMat
 
 export function createGreenRailing(width: number, height: number, material: THREE.Material) {
     const railing = new THREE.Group();
-    const frameThickness = 1;
+    const frameThickness = 2; // Increased from 1
 
     // Create frame
     const topFrame = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 1), material);
@@ -53,7 +53,7 @@ export function createGreenRailing(width: number, height: number, material: THRE
 
     // Create dense vertical bars
     const numBarsV = 20; // Increased for density
-    const barGeom = new THREE.BoxGeometry(0.5, height, 0.5);
+    const barGeom = new THREE.BoxGeometry(1, height, 0.5); // Increased from 0.5
     for (let i = 0; i < numBarsV; i++) {
         const vBar = new THREE.Mesh(barGeom, material);
         vBar.position.x = -width / 2 + (i + 0.5) * (width / numBarsV);
