@@ -323,7 +323,7 @@ export function createJapaneseTemple() {
     // --- Railing on Golden Roof ---
     const railingHeight = 8;
     const railingY = goldRoofY + goldRoofHeight / 2;
-
+    
     const frontRailing = createOrangeRailing(structureWidth + 0.5, railingHeight, vermilionRed);
     frontRailing.position.set(0, railingY, (35 + 0.5) / 2);
     mainStructureGroup.add(frontRailing);
@@ -343,7 +343,6 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(rightRailing);
 
 
-
     // --- Second Floor ---
     const secondFloorY = railingY + railingHeight + 1.5; // Place on top of railing
     const secondFloorGroup = new THREE.Group();
@@ -352,49 +351,25 @@ export function createJapaneseTemple() {
 
     const secondFloorWidth = 90;
     const secondFloorHeight = 30;
+    const secondFloorDepth = 35;
     
-    // Side lattice walls
-    const latticePanelWidth = (secondFloorWidth - centerBayWidth) / 2;
-    const leftLatticePanel = createLatticePanel(latticePanelWidth, secondFloorHeight, vermilionRed, whitePlaster);
-    leftLatticePanel.position.set(-(centerBayWidth / 2 + latticePanelWidth / 2), secondFloorHeight / 2, 0);
-    secondFloorGroup.add(leftLatticePanel);
-    
-    const rightLatticePanel = createLatticePanel(latticePanelWidth, secondFloorHeight, vermilionRed, whitePlaster);
-    rightLatticePanel.position.set(centerBayWidth / 2 + latticePanelWidth / 2, secondFloorHeight / 2, 0);
-    secondFloorGroup.add(rightLatticePanel);
-
-
-    // Second story railing
-    const railing2 = createOrangeRailing(centerBayWidth, 12, vermilionRed);
-    railing2.position.y = 0;
-    railing2.position.z = 15;
-    secondFloorGroup.add(railing2);
-
-    // Back wall for second floor
-    const secondBackWall = new THREE.Mesh(new THREE.BoxGeometry(secondFloorWidth, secondFloorHeight, 1), whitePlaster);
-    secondBackWall.position.set(0, secondFloorHeight / 2, -15);
-    secondFloorGroup.add(secondBackWall);
-
-    // Side walls for second floor
-    const secondSideWallGeom = new THREE.BoxGeometry(1, secondFloorHeight, 30);
-    const secondSideWallLeft = new THREE.Mesh(secondSideWallGeom, whitePlaster);
-    secondSideWallLeft.position.set(-secondFloorWidth / 2, secondFloorHeight / 2, 0);
-    secondFloorGroup.add(secondSideWallLeft);
-    const secondSideWallRight = new THREE.Mesh(secondSideWallGeom, whitePlaster);
-    secondSideWallRight.position.set(secondFloorWidth / 2, secondFloorHeight / 2, 0);
-    secondFloorGroup.add(secondSideWallRight);
+    const secondFloorGeom = new THREE.BoxGeometry(secondFloorWidth, secondFloorHeight, secondFloorDepth);
+    const secondFloorBlock = new THREE.Mesh(secondFloorGeom, whitePlaster);
+    secondFloorBlock.position.y = secondFloorHeight / 2;
+    secondFloorGroup.add(secondFloorBlock);
 
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = createPlaque(blackAccent);
     plaqueGroup.scale.set(0.9, 0.9, 0.9);
     plaqueGroup.position.y = 10;
+    plaqueGroup.position.z = secondFloorDepth / 2 + 1; // Place it on the front of the block
     secondFloorGroup.add(plaqueGroup);
 
 
     // --- Main Top Roof ---
     const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 50, 85, 18);
-    topRoof.position.y = secondFloorHeight - 13; // Position on top of second floor
+    topRoof.position.y = secondFloorHeight; // Position on top of second floor
     secondFloorGroup.add(topRoof);
 
 
@@ -460,5 +435,7 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
+
+    
 
     
