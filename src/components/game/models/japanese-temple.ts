@@ -344,7 +344,7 @@ export function createJapaneseTemple() {
 
 
     // --- Second Floor ---
-    const secondFloorY = railingY + railingHeight + 1.5; // Place on top of railing
+    const secondFloorY = railingY + railingHeight + 1.5 - 10; // Place on top of railing, lowered by 10
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
@@ -368,7 +368,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 40, 30);
+    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorHeight; // Position on top of second floor
     secondFloorGroup.add(topRoof);
 
