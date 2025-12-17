@@ -434,12 +434,13 @@ export function createJapaneseTemple() {
 
     // --- Add Side Panels ---
     function createSidePanel(width: number, height: number) {
+        const panelHeight = 12.25;
         const panelGroup = new THREE.Group();
-        const borderGeom = new THREE.BoxGeometry(width, height, 1);
+        const borderGeom = new THREE.BoxGeometry(width, panelHeight, 1);
         const border = new THREE.Mesh(borderGeom, vermilionRed);
         panelGroup.add(border);
 
-        const fillGeom = new THREE.BoxGeometry(width - 1, height - 1, 1);
+        const fillGeom = new THREE.BoxGeometry(width - 1, panelHeight - 1, 1);
         const fill = new THREE.Mesh(fillGeom, greenLatticeMaterial);
         fill.position.z = 0.5;
         panelGroup.add(fill);
