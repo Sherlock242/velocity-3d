@@ -432,24 +432,23 @@ export function createJapaneseTemple() {
         bottomWhiteBlock.add(pillar);
     });
 
-    // --- Add Side Panels ---
-    function createSidePanel(width: number, height: number) {
-        const panelHeight = 12.25; // Fix: Define panelHeight
+    // --- Add Side Panels to the front ---
+    const sideBayPillarDistance = (structureWidth / 2) - (centerBayWidth / 2);
+    const frontPanelWidth = sideBayPillarDistance - pillarDiameter;
+
+    const createSidePanel = (width: number, height: number) => {
         const panelGroup = new THREE.Group();
-        const borderGeom = new THREE.BoxGeometry(width, panelHeight, 1);
+        const borderGeom = new THREE.BoxGeometry(width, height, 1);
         const border = new THREE.Mesh(borderGeom, vermilionRed);
         panelGroup.add(border);
 
-        const fillGeom = new THREE.BoxGeometry(width - 1, panelHeight - 1, 1);
+        const fillGeom = new THREE.BoxGeometry(width - 1, height - 1, 1);
         const fill = new THREE.Mesh(fillGeom, greenLatticeMaterial);
         fill.position.z = 0.5;
         panelGroup.add(fill);
         return panelGroup;
-    }
-
-    const sideBayPillarDistance = (structureWidth / 2) - (centerBayWidth / 2);
-    const frontPanelWidth = sideBayPillarDistance - pillarDiameter;
-
+    };
+    
     const leftFrontPanel = createSidePanel(frontPanelWidth, whiteBlockHeight);
     leftFrontPanel.position.set(-(centerBayWidth / 2 + sideBayPillarDistance / 2), 0, secondFloorDepth / 2 + 0.5);
     bottomWhiteBlock.add(leftFrontPanel);
@@ -522,7 +521,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
