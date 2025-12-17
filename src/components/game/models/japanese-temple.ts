@@ -27,6 +27,25 @@ export function createJapaneseTemple() {
     const yellowPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFDD0 });
     const orangeCircleMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500 });
 
+    // Helper function for the side panels
+    function createSidePanel(width: number) {
+        const panelHeight = 12.25; // Explicitly define height to fix NaN error
+        const panelGroup = new THREE.Group();
+        const borderThickness = 0.5;
+
+        // Border
+        const borderGeom = new THREE.BoxGeometry(width, panelHeight, 1);
+        const border = new THREE.Mesh(borderGeom, vermilionRed);
+        panelGroup.add(border);
+
+        // Green Fill
+        const fillGeom = new THREE.BoxGeometry(width - borderThickness, panelHeight - borderThickness, 1);
+        const fill = new THREE.Mesh(fillGeom, greenLatticeMaterial);
+        fill.position.z = 0.1; // Place it slightly in front of the border
+        panelGroup.add(fill);
+        
+        return panelGroup;
+    }
 
 
     // --- Stone Base ---
@@ -432,35 +451,17 @@ export function createJapaneseTemple() {
         bottomWhiteBlock.add(pillar);
     });
 
-    // Helper function for the side panels
-    function createSidePanel(width: number, height: number) {
-        const panelGroup = new THREE.Group();
-        const borderThickness = 0.5;
-
-        // Border
-        const borderGeom = new THREE.BoxGeometry(width, height, 1);
-        const border = new THREE.Mesh(borderGeom, vermilionRed);
-        panelGroup.add(border);
-
-        // Green Fill
-        const fillGeom = new THREE.BoxGeometry(width - borderThickness, height - borderThickness, 1);
-        const fill = new THREE.Mesh(fillGeom, greenLatticeMaterial);
-        fill.position.z = 0.1; // Place it slightly in front of the border
-        panelGroup.add(fill);
-        
-        return panelGroup;
-    }
-
+    
     // --- Place new panels on the front sides ---
     const sideBayPillarDistance = (secondFloorWidth / 2) - (centerBayWidth / 2);
     const frontPanelWidth = sideBayPillarDistance - secondFloorPillarDiameter;
 
-    const leftFrontPanel = createSidePanel(frontPanelWidth * 0.4, whiteBlockHeight * 0.4);
-    leftFrontPanel.position.set(-(centerBayWidth / 2 + frontPanelWidth / 2 + 10), 0, secondFloorDepth / 2 + 0.5);
+    const leftFrontPanel = createSidePanel(frontPanelWidth * 0.4);
+    leftFrontPanel.position.set(-(centerBayWidth / 2 + (sideBayPillarDistance / 2)), 0, secondFloorDepth / 2 - 1);
     bottomWhiteBlock.add(leftFrontPanel);
     
-    const rightFrontPanel = createSidePanel(frontPanelWidth * 0.4, whiteBlockHeight * 0.4);
-    rightFrontPanel.position.set(centerBayWidth / 2 + frontPanelWidth / 2 + 10, 0, secondFloorDepth / 2 + 0.5);
+    const rightFrontPanel = createSidePanel(frontPanelWidth * 0.4);
+    rightFrontPanel.position.set(centerBayWidth / 2 + (sideBayPillarDistance / 2), 0, secondFloorDepth / 2 - 1);
     bottomWhiteBlock.add(rightFrontPanel);
     
 
