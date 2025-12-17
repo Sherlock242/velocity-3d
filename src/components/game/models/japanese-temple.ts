@@ -373,7 +373,7 @@ export function createJapaneseTemple() {
     topWhiteBlock.add(topHLine1);
     
     const topHLine2 = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine2.position.y = -whiteBlockHeight / 4; // Position slightly down from middle
+    topHLine2.position.y = whiteBlockHeight / 4 - 2; // Position slightly down from middle
     topHLine2.position.z = 0.1;
     topWhiteBlock.add(topHLine2);
 
@@ -403,7 +403,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
