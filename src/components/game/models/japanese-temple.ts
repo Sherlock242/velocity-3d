@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { createKitsuneStatue } from './japanese-temple/kitsune-statue';
 import { createNorenCurtain } from './japanese-temple/noren-curtain';
 import { createPlaque } from './japanese-temple/plaque';
-import { createDougong, createGreenRailing, createOrangeRailing, createLatticePanel, createHippedRoof } from './japanese-temple/helpers';
+import { createDougong, createGreenRailing, createOrangeRailing, createLatticePanel } from './japanese-temple/helpers';
+import { createHippedRoof } from './japanese-temple/roof';
 
 export function createJapaneseTemple() {
     const templeContainer = new THREE.Group();
