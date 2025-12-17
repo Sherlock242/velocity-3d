@@ -434,7 +434,7 @@ export function createJapaneseTemple() {
 
     // --- Add Side Panels ---
     function createSidePanel(width: number, height: number) {
-        const panelHeight = 12.25;
+        const panelHeight = 12.25; // Fix: Define panelHeight
         const panelGroup = new THREE.Group();
         const borderGeom = new THREE.BoxGeometry(width, panelHeight, 1);
         const border = new THREE.Mesh(borderGeom, vermilionRed);
@@ -447,18 +447,16 @@ export function createJapaneseTemple() {
         return panelGroup;
     }
 
-    const sidePanelWidth = secondFloorDepth;
-    const sidePanelHeight = whiteBlockHeight;
+    const sideBayPillarDistance = (structureWidth / 2) - (centerBayWidth / 2);
+    const frontPanelWidth = sideBayPillarDistance - pillarDiameter;
 
-    const leftSidePanel = createSidePanel(sidePanelWidth, sidePanelHeight);
-    leftSidePanel.rotation.y = Math.PI / 2;
-    leftSidePanel.position.set(-secondFloorWidth / 2 - 0.5, 0, 0);
-    bottomWhiteBlock.add(leftSidePanel);
+    const leftFrontPanel = createSidePanel(frontPanelWidth, whiteBlockHeight);
+    leftFrontPanel.position.set(-(centerBayWidth / 2 + sideBayPillarDistance / 2), 0, secondFloorDepth / 2 + 0.5);
+    bottomWhiteBlock.add(leftFrontPanel);
     
-    const rightSidePanel = createSidePanel(sidePanelWidth, sidePanelHeight);
-    rightSidePanel.rotation.y = Math.PI / 2;
-    rightSidePanel.position.set(secondFloorWidth / 2 + 0.5, 0, 0);
-    bottomWhiteBlock.add(rightSidePanel);
+    const rightFrontPanel = createSidePanel(frontPanelWidth, whiteBlockHeight);
+    rightFrontPanel.position.set(centerBayWidth / 2 + sideBayPillarDistance / 2, 0, secondFloorDepth / 2 + 0.5);
+    bottomWhiteBlock.add(rightFrontPanel);
     
 
     // Second Floor Entrance
