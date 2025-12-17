@@ -345,7 +345,7 @@ export function createJapaneseTemple() {
 
 
     // --- Second Floor ---
-    const secondFloorY = railingY + railingHeight + 1.5 - 10;
+    const secondFloorY = railingY + railingHeight + 1.5;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
@@ -363,6 +363,22 @@ export function createJapaneseTemple() {
     topWhiteBlock.position.y = whiteBlockHeight / 2 + stripeHeight / 2 + secondFloorHeight / 2;
     secondFloorGroup.add(topWhiteBlock);
 
+    // Add lines to the top white block
+    const topHLineGeom = new THREE.BoxGeometry(secondFloorWidth, 0.4, secondFloorDepth + 0.2);
+    const topVLineGeom = new THREE.BoxGeometry(0.4, whiteBlockHeight, secondFloorDepth + 0.2);
+    
+    const topHLine = new THREE.Mesh(topHLineGeom, lineMaterial);
+    topHLine.position.z = 0.1;
+    topWhiteBlock.add(topHLine);
+
+    for (let i = 0; i < 5; i++) {
+        const vLine = new THREE.Mesh(topVLineGeom, lineMaterial);
+        vLine.position.x = (i - 2) * (secondFloorWidth / 5);
+        vLine.position.z = 0.1;
+        topWhiteBlock.add(vLine);
+    }
+
+
     const orangeStripeGeom = new THREE.BoxGeometry(secondFloorWidth, stripeHeight, secondFloorDepth);
     const orangeStripe = new THREE.Mesh(orangeStripeGeom, vermilionRed);
     orangeStripe.position.y = secondFloorHeight / 2;
@@ -376,16 +392,15 @@ export function createJapaneseTemple() {
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = createPlaque(blackAccent);
-    plaqueGroup.scale.set(0.9, 0.9, 0.9);
     plaqueGroup.position.y = 20;
     plaqueGroup.position.z = secondFloorDepth / 2 + 1; // Place it on the front of the block
     secondFloorGroup.add(plaqueGroup);
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
-    topRoof.position.y = secondFloorHeight - 10; // Position on top of second floor
-    secondFloorGroup.add(topRoof);
+    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
+    topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
+    mainStructureGroup.add(topRoof);
 
 
     // --- Kitsune Statues ---
