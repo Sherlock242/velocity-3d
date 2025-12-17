@@ -349,7 +349,7 @@ export function createJapaneseTemple() {
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
 
-    const secondFloorWidth = 90;
+    const secondFloorWidth = 100;
     const secondFloorHeight = 30;
     const secondFloorDepth = 35;
     
@@ -362,13 +362,13 @@ export function createJapaneseTemple() {
     // --- Plaque (Gaku) ---
     const plaqueGroup = createPlaque(blackAccent);
     plaqueGroup.scale.set(0.9, 0.9, 0.9);
-    plaqueGroup.position.y = 10;
+    plaqueGroup.position.y = 15;
     plaqueGroup.position.z = secondFloorDepth / 2 + 1; // Place it on the front of the block
     secondFloorGroup.add(plaqueGroup);
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 50, 85, 18);
+    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 40, 30);
     topRoof.position.y = secondFloorHeight; // Position on top of second floor
     secondFloorGroup.add(topRoof);
 
@@ -395,7 +395,7 @@ export function createJapaneseTemple() {
         lanternGroup.add(post);
         
         const lightGeom = new THREE.BoxGeometry(8, 10, 8);
-        const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
+        const light = new THREE.Mesh(new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
         light.position.y = 20;
         lanternGroup.add(light);
         
