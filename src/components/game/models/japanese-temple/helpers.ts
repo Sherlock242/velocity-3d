@@ -125,7 +125,7 @@ export function createLatticePanel(width: number, height: number, redMaterial: T
 export function createHippedRoof(material: THREE.Material, width: number, depth: number, height: number) {
     const roofGeometry = new THREE.BufferGeometry();
     
-    const ridgeLength = width > depth ? width - depth : 0;
+    const ridgeLength = Math.abs(width - depth);
     const halfW = width / 2;
     const halfD = depth / 2;
     const halfRidge = ridgeLength / 2;
