@@ -367,9 +367,15 @@ export function createJapaneseTemple() {
     const topHLineGeom = new THREE.BoxGeometry(secondFloorWidth, 0.4, secondFloorDepth + 0.2);
     const topVLineGeom = new THREE.BoxGeometry(0.4, whiteBlockHeight, secondFloorDepth + 0.2);
     
-    const topHLine = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine.position.z = 0.1;
-    topWhiteBlock.add(topHLine);
+    const topHLine1 = new THREE.Mesh(topHLineGeom, lineMaterial);
+    topHLine1.position.y = whiteBlockHeight / 2 - 0.2;
+    topHLine1.position.z = 0.1;
+    topWhiteBlock.add(topHLine1);
+    
+    const topHLine2 = new THREE.Mesh(topHLineGeom, lineMaterial);
+    topHLine2.position.y = -whiteBlockHeight / 2 + 0.2;
+    topHLine2.position.z = 0.1;
+    topWhiteBlock.add(topHLine2);
 
     for (let i = 0; i < 5; i++) {
         const vLine = new THREE.Mesh(topVLineGeom, lineMaterial);
@@ -397,7 +403,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
