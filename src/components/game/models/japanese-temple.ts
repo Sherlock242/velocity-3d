@@ -23,7 +23,6 @@ export function createJapaneseTemple() {
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
-    const darkOrange = new THREE.MeshStandardMaterial({ color: 0xcc3300 });
 
 
     // --- Stone Base ---
@@ -202,6 +201,7 @@ export function createJapaneseTemple() {
     const innerPillarDiameter = 2.5;
 
     const entrancePillarGeom = new THREE.CylinderGeometry(innerPillarDiameter, innerPillarDiameter, innerPillarHeight, 12);
+    const darkOrange = new THREE.MeshStandardMaterial({ color: 0xcc3300 });
     
     const leftInnerPillar = new THREE.Mesh(entrancePillarGeom, darkOrange);
     leftInnerPillar.position.set(-innerEntranceWidth / 2, innerPillarHeight / 2, 0);
@@ -351,7 +351,7 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(secondFloorGroup);
 
     const secondFloorWidth = 90;
-    const secondFloorHeight = 20;
+    const secondFloorHeight = 30;
     
     // Side lattice walls
     const latticePanelWidth = (secondFloorWidth - centerBayWidth) / 2;
