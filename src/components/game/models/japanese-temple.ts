@@ -290,7 +290,7 @@ export function createJapaneseTemple() {
 
     const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
     const hLineGeom = new THREE.BoxGeometry(structureWidth, 1.2, 35.2);
-    const vLineGeom = new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.2);
+    const vLineGeom = new THREE.BoxGeometry(1.2, stripedBoxHeight, 35.2);
 
     const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
     hLine.position.y = 0;
