@@ -30,7 +30,7 @@ export function createJapaneseTemple() {
     // Helper function for the side panels
     function createSidePanel(width: number) {
         const panelHeight = 12.25 * 0.4;
-        const panelWidth = width * 0.8;
+        const panelWidth = width * 0.7;
         const panelGroup = new THREE.Group();
         const borderThickness = 0.5;
 
@@ -458,12 +458,12 @@ export function createJapaneseTemple() {
     const frontPanelWidth = sideBayPillarDistance - secondFloorPillarDiameter;
 
     const leftFrontPanel = createSidePanel(frontPanelWidth);
-    leftFrontPanel.position.set(-(centerBayWidth / 2 + (sideBayPillarDistance / 2)), 0, secondFloorDepth / 2 + 5.5);
+    leftFrontPanel.position.set(-(centerBayWidth / 2 + (sideBayPillarDistance / 2)), 0, secondFloorDepth / 2 + 6.0);
     leftFrontPanel.rotation.y = Math.PI;
     bottomWhiteBlock.add(leftFrontPanel);
     
     const rightFrontPanel = createSidePanel(frontPanelWidth);
-    rightFrontPanel.position.set((centerBayWidth / 2 + (sideBayPillarDistance / 2)), 0, secondFloorDepth / 2 + 5.5);
+    rightFrontPanel.position.set((centerBayWidth / 2 + (sideBayPillarDistance / 2)), 0, secondFloorDepth / 2 + 6.0);
     rightFrontPanel.rotation.y = Math.PI;
     bottomWhiteBlock.add(rightFrontPanel);
     
