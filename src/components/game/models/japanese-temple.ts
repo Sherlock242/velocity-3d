@@ -289,8 +289,8 @@ export function createJapaneseTemple() {
     stripedBox.add(boxMesh);
 
     const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
-    const hLineGeom = new THREE.BoxGeometry(structureWidth, 1.2, 35.2);
-    const vLineGeom = new THREE.BoxGeometry(1.2, stripedBoxHeight, 35.2);
+    const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.4, 35.2);
+    const vLineGeom = new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.2);
 
     const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
     hLine.position.y = 0;
@@ -344,7 +344,7 @@ export function createJapaneseTemple() {
 
 
     // --- Second Floor ---
-    const secondFloorY = railingY + railingHeight + 1.5 - 10; // Place on top of railing, lowered by 10
+    const secondFloorY = railingY + railingHeight + 1.5;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
@@ -352,11 +352,25 @@ export function createJapaneseTemple() {
     const secondFloorWidth = 100;
     const secondFloorHeight = 30;
     const secondFloorDepth = 20;
-    
-    const secondFloorGeom = new THREE.BoxGeometry(secondFloorWidth, secondFloorHeight, secondFloorDepth);
-    const secondFloorBlock = new THREE.Mesh(secondFloorGeom, whitePlaster);
-    secondFloorBlock.position.y = secondFloorHeight / 2;
-    secondFloorGroup.add(secondFloorBlock);
+
+    // Split the white block into three parts
+    const stripeHeight = 2.5;
+    const whiteBlockHeight = (secondFloorHeight - stripeHeight) / 2;
+
+    const topWhiteBlockGeom = new THREE.BoxGeometry(secondFloorWidth, whiteBlockHeight, secondFloorDepth);
+    const topWhiteBlock = new THREE.Mesh(topWhiteBlockGeom, whitePlaster);
+    topWhiteBlock.position.y = whiteBlockHeight / 2 + stripeHeight / 2 + secondFloorHeight / 2;
+    secondFloorGroup.add(topWhiteBlock);
+
+    const orangeStripeGeom = new THREE.BoxGeometry(secondFloorWidth, stripeHeight, secondFloorDepth);
+    const orangeStripe = new THREE.Mesh(orangeStripeGeom, vermilionRed);
+    orangeStripe.position.y = secondFloorHeight / 2;
+    secondFloorGroup.add(orangeStripe);
+
+    const bottomWhiteBlockGeom = new THREE.BoxGeometry(secondFloorWidth, whiteBlockHeight, secondFloorDepth);
+    const bottomWhiteBlock = new THREE.Mesh(bottomWhiteBlockGeom, whitePlaster);
+    bottomWhiteBlock.position.y = -whiteBlockHeight / 2 - stripeHeight / 2 + secondFloorHeight / 2;
+    secondFloorGroup.add(bottomWhiteBlock);
 
 
     // --- Plaque (Gaku) ---
