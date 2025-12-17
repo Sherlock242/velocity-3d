@@ -114,7 +114,7 @@ export function createJapaneseTemple() {
         mainStructureGroup.add(pillar);
 
         const dougong = createDougong(5, vermilionRed, goldMaterial);
-        dougong.position.set(pos.x, isOuter ? outerPillarHeight : firstFloorHeight, pos.z + (isOuter ? 2 : 0));
+        dougong.position.set(pos.x, (isOuter ? outerPillarHeight : firstFloorHeight) + 1.5, pos.z + (isOuter ? 2 : 0));
         dougong.rotation.y = pos.rotation;
         mainStructureGroup.add(dougong);
     });
@@ -279,7 +279,7 @@ export function createJapaneseTemple() {
     
     // White Box with Red lines
     const stripedBoxHeight = 5;
-    const stripedBoxY = firstFloorHeight + 3 + stripedBoxHeight / 2;
+    const stripedBoxY = firstFloorHeight + 3 + stripedBoxHeight / 2; // 32 + 3 + 2.5 = 37.5
     const stripedBox = new THREE.Group();
     stripedBox.position.y = stripedBoxY;
     mainStructureGroup.add(stripedBox);
