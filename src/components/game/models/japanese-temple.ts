@@ -373,7 +373,7 @@ export function createJapaneseTemple() {
     topWhiteBlock.add(topHLine1);
     
     const topHLine2 = new THREE.Mesh(topHLineGeom, lineMaterial);
-    topHLine2.position.y = whiteBlockHeight / 4; // Position slightly up from middle
+    topHLine2.position.y = -whiteBlockHeight / 4 + 2; // Position slightly up from middle
     topHLine2.position.z = 0.1;
     topWhiteBlock.add(topHLine2);
 
@@ -381,6 +381,7 @@ export function createJapaneseTemple() {
     topHLine3.position.y = 0; // In the middle
     topHLine3.position.z = 0.1;
     topWhiteBlock.add(topHLine3);
+
 
     for (let i = 0; i < 6; i++) {
         const vLine = new THREE.Mesh(topVLineGeom, lineMaterial);
@@ -398,6 +399,47 @@ export function createJapaneseTemple() {
     const bottomWhiteBlock = new THREE.Mesh(bottomWhiteBlockGeom, whitePlaster);
     bottomWhiteBlock.position.y = -whiteBlockHeight / 2 - stripeHeight / 2 + secondFloorHeight / 2;
     secondFloorGroup.add(bottomWhiteBlock);
+
+    // --- Add pillars and entrance to the bottom block of the second floor ---
+    const secondFloorPillarHeight = whiteBlockHeight;
+    const secondFloorPillarDiameter = 2.5;
+    const secondFloorPillarGeom = new THREE.CylinderGeometry(secondFloorPillarDiameter, secondFloorPillarDiameter, secondFloorPillarHeight, 12);
+    
+    const secondFloorPillarPositions = [
+        { x: -centerBayWidth / 2, z: secondFloorDepth / 2 },
+        { x: centerBayWidth / 2, z: secondFloorDepth / 2 },
+        { x: -centerBayWidth / 2, z: -secondFloorDepth / 2 },
+        { x: centerBayWidth / 2, z: -secondFloorDepth / 2 }
+    ];
+
+    secondFloorPillarPositions.forEach(pos => {
+        const pillar = new THREE.Mesh(secondFloorPillarGeom, vermilionRed);
+        pillar.position.set(pos.x, 0, pos.z);
+        bottomWhiteBlock.add(pillar);
+    });
+
+    // Second Floor Entrance
+    const secondFloorEntranceGroup = new THREE.Group();
+    const secondFloorInnerPillarHeight = whiteBlockHeight * 0.8;
+    const secondFloorInnerEntranceWidth = centerBayWidth * 0.5;
+    const secondFloorInnerPillarDiameter = 2.0;
+
+    const secondFloorEntrancePillarGeom = new THREE.CylinderGeometry(secondFloorInnerPillarDiameter, secondFloorInnerPillarDiameter, secondFloorInnerPillarHeight, 12);
+    
+    const secondFloorLeftInnerPillar = new THREE.Mesh(secondFloorEntrancePillarGeom, darkOrange);
+    secondFloorLeftInnerPillar.position.set(-secondFloorInnerEntranceWidth / 2, 0, 0);
+    secondFloorEntranceGroup.add(secondFloorLeftInnerPillar);
+
+    const secondFloorRightInnerPillar = new THREE.Mesh(secondFloorEntrancePillarGeom, darkOrange);
+    secondFloorRightInnerPillar.position.set(secondFloorInnerEntranceWidth / 2, 0, 0);
+    secondFloorEntranceGroup.add(secondFloorRightInnerPillar);
+
+    const secondFloorInnerLintelGeom = new THREE.BoxGeometry(secondFloorInnerEntranceWidth, 2, 2);
+    const secondFloorInnerLintel = new THREE.Mesh(secondFloorInnerLintelGeom, darkOrange);
+    secondFloorInnerLintel.position.set(0, secondFloorInnerPillarHeight / 2, 0);
+    secondFloorEntranceGroup.add(secondFloorInnerLintel);
+    
+    bottomWhiteBlock.add(secondFloorEntranceGroup);
 
 
     // --- Plaque (Gaku) ---
