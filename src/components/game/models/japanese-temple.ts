@@ -100,8 +100,8 @@ export function createJapaneseTemple() {
     mainBuilding.add(mainStructureGroup);
 
     const structureWidth = 120;
-    const firstFloorHeight = 32;
-    const outerPillarHeight = 35;
+    const firstFloorHeight = 37.0;
+    const outerPillarHeight = 40.0;
     const pillarDiameter = 3.5;
     const centerBayWidth = stairWidth + 10;
     const sideBayWidth = (structureWidth - centerBayWidth) / 2;
@@ -250,28 +250,28 @@ export function createJapaneseTemple() {
     
 
     // First Floor Plaster Walls (behind side bays)
-    const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, firstFloorHeight, 1);
+    const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, 37, 1);
     const leftSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
-    leftSideWall.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), firstFloorHeight/2, -15);
+    leftSideWall.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), 37/2, -15);
     mainStructureGroup.add(leftSideWall);
     
     const rightSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
-    rightSideWall.position.set(centerBayWidth / 2 + sideBayWidth / 2, firstFloorHeight/2, -15);
+    rightSideWall.position.set(centerBayWidth / 2 + sideBayWidth / 2, 37/2, -15);
     mainStructureGroup.add(rightSideWall);
     
     // First Floor Plaster Walls (center) - with opening
     const centerWallSideWidth = (centerBayWidth - innerEntranceWidth) / 2;
-    const centerWallSideGeom = new THREE.BoxGeometry(centerWallSideWidth, firstFloorHeight, 1);
+    const centerWallSideGeom = new THREE.BoxGeometry(centerWallSideWidth, 37, 1);
 
     const leftCenterWall = new THREE.Mesh(centerWallSideGeom, vermilionRed);
-    leftCenterWall.position.set(-(innerEntranceWidth / 2 + centerWallSideWidth / 2), firstFloorHeight/2, -15);
+    leftCenterWall.position.set(-(innerEntranceWidth / 2 + centerWallSideWidth / 2), 37/2, -15);
     mainStructureGroup.add(leftCenterWall);
 
     const rightCenterWall = new THREE.Mesh(centerWallSideGeom, vermilionRed);
-    rightCenterWall.position.set(innerEntranceWidth / 2 + centerWallSideWidth / 2, firstFloorHeight/2, -15);
+    rightCenterWall.position.set(innerEntranceWidth / 2 + centerWallSideWidth / 2, 37/2, -15);
     mainStructureGroup.add(rightCenterWall);
     
-    const centerLintelHeight = firstFloorHeight - innerPillarHeight;
+    const centerLintelHeight = 37 - innerPillarHeight;
     const centerLintelGeom = new THREE.BoxGeometry(innerEntranceWidth, centerLintelHeight, 1);
     const centerLintel = new THREE.Mesh(centerLintelGeom, vermilionRed);
     centerLintel.position.set(0, innerPillarHeight + centerLintelHeight / 2, -15);
@@ -291,12 +291,12 @@ export function createJapaneseTemple() {
     // First Floor Roof Support
     const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 1.5, 30);
     const simpleRoofSupport = new THREE.Mesh(simpleRoofSupportGeom, vermilionRed);
-    simpleRoofSupport.position.y = firstFloorHeight + 2.25;
+    simpleRoofSupport.position.y = firstFloorHeight;
     mainStructureGroup.add(simpleRoofSupport);
     
     // White Box with Red lines
     const stripedBoxHeight = 5;
-    const stripedBoxY = firstFloorHeight + 3 + stripedBoxHeight / 2; // 32 + 3 + 2.5 = 37.5
+    const stripedBoxY = firstFloorHeight + 1.5 / 2 + stripedBoxHeight / 2;
     const stripedBox = new THREE.Group();
     stripedBox.position.y = stripedBoxY;
     mainStructureGroup.add(stripedBox);
@@ -318,10 +318,23 @@ export function createJapaneseTemple() {
     topHLine2.position.z = 0.1;
     stripedBox.add(topHLine2);
 
+    const topHLine3 = new THREE.Mesh(hLineGeom, lineMaterial);
+    topHLine3.position.y = 0; // In the middle
+    topHLine3.position.z = 0.1;
+    stripedBox.add(topHLine3);
+
+    for (let i = 0; i < 6; i++) {
+        const vLine = new THREE.Mesh(new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.2), lineMaterial);
+        vLine.position.x = (i - 2.5) * (structureWidth / 6);
+        vLine.position.z = 0.1;
+        stripedBox.add(vLine);
+    }
+
+
     // --- Railing on Golden Roof ---
     const orangeRoofHeight = 1.5;
     const orangeRoofY = stripedBoxY + stripedBoxHeight / 2 + orangeRoofHeight / 2;
-    const orangeRoofGeom = new THREE.BoxGeometry(structureWidth, orangeRoofHeight, 35);
+    const orangeRoofGeom = new THREE.BoxGeometry(structureWidth, orangeRoofHeight, 55);
     const orangeRoof = new THREE.Mesh(orangeRoofGeom, vermilionRed);
     orangeRoof.position.y = orangeRoofY;
     mainStructureGroup.add(orangeRoof);
@@ -329,7 +342,7 @@ export function createJapaneseTemple() {
     // New golden roof layer
     const goldRoofHeight = 1.5;
     const goldRoofY = orangeRoofY + orangeRoofHeight / 2 + goldRoofHeight / 2;
-    const goldRoofGeom = new THREE.BoxGeometry(structureWidth + 0.5, goldRoofHeight, 35.5);
+    const goldRoofGeom = new THREE.BoxGeometry(structureWidth + 0.5, goldRoofHeight, 55.5);
     const goldRoof = new THREE.Mesh(goldRoofGeom, goldMaterial);
     goldRoof.position.y = goldRoofY;
     mainStructureGroup.add(goldRoof);
@@ -339,19 +352,19 @@ export function createJapaneseTemple() {
     const railingY = goldRoofY + goldRoofHeight / 2;
     
     const frontRailing = createOrangeRailing(structureWidth + 0.5, railingHeight, vermilionRed);
-    frontRailing.position.set(0, railingY, (35.5) / 2);
+    frontRailing.position.set(0, railingY, (55.5) / 2);
     mainStructureGroup.add(frontRailing);
     
     const backRailing = createOrangeRailing(structureWidth + 0.5, railingHeight, vermilionRed);
-    backRailing.position.set(0, railingY, -(35.5) / 2);
+    backRailing.position.set(0, railingY, -(55.5) / 2);
     mainStructureGroup.add(backRailing);
     
-    const leftRailing = createOrangeRailing(35.5, railingHeight, vermilionRed);
+    const leftRailing = createOrangeRailing(55.5, railingHeight, vermilionRed);
     leftRailing.rotation.y = Math.PI / 2;
     leftRailing.position.set(-(structureWidth + 0.5) / 2, railingY, 0);
     mainStructureGroup.add(leftRailing);
     
-    const rightRailing = createOrangeRailing(35.5, railingHeight, vermilionRed);
+    const rightRailing = createOrangeRailing(55.5, railingHeight, vermilionRed);
     rightRailing.rotation.y = Math.PI / 2;
     rightRailing.position.set((structureWidth + 0.5) / 2, railingY, 0);
     mainStructureGroup.add(rightRailing);
