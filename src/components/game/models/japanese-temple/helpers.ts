@@ -1,14 +1,6 @@
 
 import * as THREE from 'three';
 
-// Helper to create the roof. Changed to a pyramid shape.
-export function createPyramidRoof(width: number, depth: number, height: number, material: THREE.Material) {
-    const geometry = new THREE.ConeGeometry(Math.max(width, depth) / 1.5, height, 4, 1);
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.rotation.y = Math.PI / 4;
-    return mesh;
-}
-
 // Helper to create detailed Dougong (bracket sets)
 export function createDougong(size: number, redMaterial: THREE.Material, goldMaterial: THREE.Material) {
     const dougong = new THREE.Group();
@@ -127,4 +119,44 @@ export function createLatticePanel(width: number, height: number, redMaterial: T
     panel.add(vBar);
 
     return panel;
+}
+
+// Helper to create the roof.
+export function createHippedRoof(material: THREE.Material, width: number, depth: number, height: number) {
+    const roofGeometry = new THREE.BufferGeometry();
+    
+    const ridgeLength = width > depth ? width - depth : 0;
+    const halfW = width / 2;
+    const halfD = depth / 2;
+    const halfRidge = ridgeLength / 2;
+
+    const vertices = new Float32Array([
+        // Base vertices (bottom of the roof)
+        -halfW, 0, -halfD,  // 0: back-left
+         halfW, 0, -halfD,  // 1: back-right
+         halfW, 0,  halfD,  // 2: front-right
+        -halfW, 0,  halfD,  // 3: front-left
+
+        // Ridge vertices (top of the roof)
+        -halfRidge, height, 0,  // 4: left-top
+         halfRidge, height, 0   // 5: right-top
+    ]);
+
+    const indices = [
+        // Front face (trapezoid)
+        3, 2, 5,   3, 5, 4,
+        // Back face (trapezoid)
+        1, 0, 4,   1, 4, 5,
+        // Left end (triangle)
+        0, 3, 4,
+        // Right end (triangle)
+        2, 1, 5
+    ];
+
+    roofGeometry.setIndex(indices);
+    roofGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    roofGeometry.computeVertexNormals(); 
+
+    const roofMesh = new THREE.Mesh(roofGeometry, material);
+    return roofMesh;
 }

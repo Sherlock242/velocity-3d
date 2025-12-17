@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { createKitsuneStatue } from './japanese-temple/kitsune-statue';
 import { createNorenCurtain } from './japanese-temple/noren-curtain';
 import { createPlaque } from './japanese-temple/plaque';
-import { createPyramidRoof, createDougong, createGreenRailing, createOrangeRailing, createLatticePanel } from './japanese-temple/helpers';
+import { createDougong, createGreenRailing, createOrangeRailing, createLatticePanel, createHippedRoof } from './japanese-temple/helpers';
 
 export function createJapaneseTemple() {
     const templeContainer = new THREE.Group();
@@ -272,9 +272,9 @@ export function createJapaneseTemple() {
 
 
     // First Floor Roof Support
-    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 1, 30);
+    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 1.5, 30);
     const simpleRoofSupport = new THREE.Mesh(simpleRoofSupportGeom, vermilionRed);
-    simpleRoofSupport.position.y = firstFloorHeight + 1.5;
+    simpleRoofSupport.position.y = firstFloorHeight + 2.25;
     mainStructureGroup.add(simpleRoofSupport);
     
     // White Box with Red lines
@@ -392,7 +392,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createPyramidRoof(secondFloorWidth + 50, 85, 18, darkBrownRoof);
+    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 50, 85, 18);
     topRoof.position.y = secondFloorHeight + 5; // Adjusted Y position
     secondFloorGroup.add(topRoof);
 
