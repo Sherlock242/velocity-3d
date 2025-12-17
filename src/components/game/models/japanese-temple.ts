@@ -488,6 +488,26 @@ export function createJapaneseTemple() {
     rightOval.position.set(panelWidth * 0.25, 0, 0.6);
     panelGroup.add(rightOval);
 
+    // New green panels above ovals
+    const greenPanelWidth = panelWidth * 0.3;
+    const greenPanelHeight = panelHeight * 0.2;
+    
+    const leftGreenPanel = new THREE.Group();
+    const leftGreenBorder = new THREE.Mesh(new THREE.BoxGeometry(greenPanelWidth, greenPanelHeight, 0.5), vermilionRed);
+    const leftGreenFill = new THREE.Mesh(new THREE.BoxGeometry(greenPanelWidth - 0.5, greenPanelHeight - 0.5, 0.5), greenLatticeMaterial);
+    leftGreenFill.position.z = 0.1;
+    leftGreenPanel.add(leftGreenBorder, leftGreenFill);
+    leftGreenPanel.position.set(-panelWidth * 0.25, ovalRadiusY + greenPanelHeight / 2 + 0.5, 0.7);
+    panelGroup.add(leftGreenPanel);
+
+    const rightGreenPanel = new THREE.Group();
+    const rightGreenBorder = new THREE.Mesh(new THREE.BoxGeometry(greenPanelWidth, greenPanelHeight, 0.5), vermilionRed);
+    const rightGreenFill = new THREE.Mesh(new THREE.BoxGeometry(greenPanelWidth - 0.5, greenPanelHeight - 0.5, 0.5), greenLatticeMaterial);
+    rightGreenFill.position.z = 0.1;
+    rightGreenPanel.add(rightGreenBorder, rightGreenFill);
+    rightGreenPanel.position.set(panelWidth * 0.25, ovalRadiusY + greenPanelHeight / 2 + 0.5, 0.7);
+    panelGroup.add(rightGreenPanel);
+
     secondFloorEntranceGroup.add(panelGroup);
 
     secondFloorEntranceGroup.position.z = secondFloorDepth / 2;
@@ -502,7 +522,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 70, 80 , 25);
+    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
@@ -569,3 +589,5 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
+
+    
