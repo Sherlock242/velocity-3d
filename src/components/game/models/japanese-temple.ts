@@ -20,7 +20,9 @@ export function createJapaneseTemple() {
     const darkBrownRoof = new THREE.MeshStandardMaterial({ color: 0x3f2a1d, roughness: 0.9 });
     const whitePlaster = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
     const stoneBaseMaterial = new THREE.MeshStandardMaterial({ color: 0x9fa8a3, roughness: 0.9 });
-    const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
+    const goldMaterial = new THREE
+
+.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
     const darkOrange = new THREE.MeshStandardMaterial({ color: 0xcc3300 });
@@ -311,10 +313,18 @@ export function createJapaneseTemple() {
     const orangeRoof = new THREE.Mesh(orangeRoofGeom, vermilionRed);
     orangeRoof.position.y = orangeRoofY;
     mainStructureGroup.add(orangeRoof);
+    
+    // New golden roof layer
+    const goldRoofHeight = 1.5;
+    const goldRoofY = orangeRoofY + orangeRoofHeight / 2 + goldRoofHeight / 2;
+    const goldRoofGeom = new THREE.BoxGeometry(structureWidth + 0.5, goldRoofHeight, 35 + 0.5);
+    const goldRoof = new THREE.Mesh(goldRoofGeom, goldMaterial);
+    goldRoof.position.y = goldRoofY;
+    mainStructureGroup.add(goldRoof);
 
 
     // --- Second Floor ---
-    const secondFloorY = orangeRoofY + orangeRoofHeight / 2;
+    const secondFloorY = goldRoofY + goldRoofHeight / 2;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
@@ -335,7 +345,7 @@ export function createJapaneseTemple() {
 
     // Second story railing
     const railing2 = createGoldRailing(centerBayWidth, 12, goldMaterial, vermilionRed);
-    railing2.position.y = 6;
+    railing2.position.y = 0;
     railing2.position.z = 15;
     secondFloorGroup.add(railing2);
 
