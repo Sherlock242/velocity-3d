@@ -250,28 +250,29 @@ export function createJapaneseTemple() {
     
 
     // First Floor Plaster Walls (behind side bays)
-    const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, firstFloorHeight, 1);
+    const backWallHeight = 37; // New height for the back wall
+    const sideWallGeom = new THREE.BoxGeometry(sideBayWidth, backWallHeight, 1);
     const leftSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
-    leftSideWall.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), firstFloorHeight/2, -15);
+    leftSideWall.position.set(-(centerBayWidth / 2 + sideBayWidth / 2), backWallHeight/2, -15);
     mainStructureGroup.add(leftSideWall);
     
     const rightSideWall = new THREE.Mesh(sideWallGeom, whitePlaster);
-    rightSideWall.position.set(centerBayWidth / 2 + sideBayWidth / 2, firstFloorHeight/2, -15);
+    rightSideWall.position.set(centerBayWidth / 2 + sideBayWidth / 2, backWallHeight/2, -15);
     mainStructureGroup.add(rightSideWall);
     
     // First Floor Plaster Walls (center) - with opening
     const centerWallSideWidth = (centerBayWidth - innerEntranceWidth) / 2;
-    const centerWallSideGeom = new THREE.BoxGeometry(centerWallSideWidth, firstFloorHeight, 1);
+    const centerWallSideGeom = new THREE.BoxGeometry(centerWallSideWidth, backWallHeight, 1);
 
     const leftCenterWall = new THREE.Mesh(centerWallSideGeom, vermilionRed);
-    leftCenterWall.position.set(-(innerEntranceWidth / 2 + centerWallSideWidth / 2), firstFloorHeight/2, -15);
+    leftCenterWall.position.set(-(innerEntranceWidth / 2 + centerWallSideWidth / 2), backWallHeight/2, -15);
     mainStructureGroup.add(leftCenterWall);
 
     const rightCenterWall = new THREE.Mesh(centerWallSideGeom, vermilionRed);
-    rightCenterWall.position.set(innerEntranceWidth / 2 + centerWallSideWidth / 2, firstFloorHeight/2, -15);
+    rightCenterWall.position.set(innerEntranceWidth / 2 + centerWallSideWidth / 2, backWallHeight/2, -15);
     mainStructureGroup.add(rightCenterWall);
     
-    const centerLintelHeight = firstFloorHeight - innerPillarHeight;
+    const centerLintelHeight = backWallHeight - innerPillarHeight;
     const centerLintelGeom = new THREE.BoxGeometry(innerEntranceWidth, centerLintelHeight, 1);
     const centerLintel = new THREE.Mesh(centerLintelGeom, vermilionRed);
     centerLintel.position.set(0, innerPillarHeight + centerLintelHeight / 2, -15);
