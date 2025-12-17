@@ -377,6 +377,11 @@ export function createJapaneseTemple() {
     topHLine2.position.z = 0.1;
     topWhiteBlock.add(topHLine2);
 
+    const topHLine3 = new THREE.Mesh(topHLineGeom, lineMaterial);
+    topHLine3.position.y = 0; // In the middle
+    topHLine3.position.z = 0.1;
+    topWhiteBlock.add(topHLine3);
+
     for (let i = 0; i < 6; i++) {
         const vLine = new THREE.Mesh(topVLineGeom, lineMaterial);
         vLine.position.x = (i - 2.5) * (secondFloorWidth / 6);
