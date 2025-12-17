@@ -12,7 +12,7 @@ export function createPlaque(blackAccent: THREE.Material) {
     });
     
     const plaqueFrameWidth = 10;
-    const plaqueFrameHeight = 16;
+    const plaqueFrameHeight = 12;
 
     // Main frame
     const plaqueFrameGeom = new THREE.BoxGeometry(plaqueFrameWidth, plaqueFrameHeight, 1.5);

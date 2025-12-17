@@ -376,7 +376,7 @@ export function createJapaneseTemple() {
     // --- Plaque (Gaku) ---
     const plaqueGroup = createPlaque(blackAccent);
     plaqueGroup.scale.set(0.9, 0.9, 0.9);
-    plaqueGroup.position.y = 15;
+    plaqueGroup.position.y = 20;
     plaqueGroup.position.z = secondFloorDepth / 2 + 1; // Place it on the front of the block
     secondFloorGroup.add(plaqueGroup);
 
