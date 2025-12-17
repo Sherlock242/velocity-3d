@@ -460,3 +460,5 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
+
+    
