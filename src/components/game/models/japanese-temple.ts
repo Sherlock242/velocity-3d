@@ -304,9 +304,17 @@ export function createJapaneseTemple() {
         stripedBox.add(vLine);
     }
     
+    // New orange roof layer
+    const orangeRoofHeight = 1.5;
+    const orangeRoofY = stripedBoxY + stripedBoxHeight / 2 + orangeRoofHeight / 2;
+    const orangeRoofGeom = new THREE.BoxGeometry(structureWidth, orangeRoofHeight, 35);
+    const orangeRoof = new THREE.Mesh(orangeRoofGeom, vermilionRed);
+    orangeRoof.position.y = orangeRoofY;
+    mainStructureGroup.add(orangeRoof);
+
 
     // --- Second Floor ---
-    const secondFloorY = stripedBoxY + stripedBoxHeight / 2;
+    const secondFloorY = orangeRoofY + orangeRoofHeight / 2;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
