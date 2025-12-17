@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { createKitsuneStatue } from './japanese-temple/kitsune-statue';
 import { createNorenCurtain } from './japanese-temple/noren-curtain';
 import { createPlaque } from './japanese-temple/plaque';
-import { createPyramidRoof, createDougong, createGreenRailing, createGoldRailing, createLatticePanel } from './japanese-temple/helpers';
+import { createPyramidRoof, createDougong, createGreenRailing, createOrangeRailing, createLatticePanel } from './japanese-temple/helpers';
 
 export function createJapaneseTemple() {
     const templeContainer = new THREE.Group();
@@ -20,9 +20,7 @@ export function createJapaneseTemple() {
     const darkBrownRoof = new THREE.MeshStandardMaterial({ color: 0x3f2a1d, roughness: 0.9 });
     const whitePlaster = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
     const stoneBaseMaterial = new THREE.MeshStandardMaterial({ color: 0x9fa8a3, roughness: 0.9 });
-    const goldMaterial = new THREE
-
-.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
+    const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
     const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
     const darkOrange = new THREE.MeshStandardMaterial({ color: 0xcc3300 });
@@ -274,7 +272,7 @@ export function createJapaneseTemple() {
 
 
     // First Floor Roof Support
-    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 3, 30);
+    const simpleRoofSupportGeom = new THREE.BoxGeometry(structureWidth, 1, 30);
     const simpleRoofSupport = new THREE.Mesh(simpleRoofSupportGeom, vermilionRed);
     simpleRoofSupport.position.y = firstFloorHeight + 1.5;
     mainStructureGroup.add(simpleRoofSupport);
@@ -322,9 +320,32 @@ export function createJapaneseTemple() {
     goldRoof.position.y = goldRoofY;
     mainStructureGroup.add(goldRoof);
 
+    // --- Railing on Golden Roof ---
+    const railingHeight = 8;
+    const railingY = goldRoofY + goldRoofHeight / 2;
+
+    const frontRailing = createOrangeRailing(structureWidth + 0.5, railingHeight, vermilionRed);
+    frontRailing.position.set(0, railingY, (35 + 0.5) / 2);
+    mainStructureGroup.add(frontRailing);
+    
+    const backRailing = createOrangeRailing(structureWidth + 0.5, railingHeight, vermilionRed);
+    backRailing.position.set(0, railingY, -(35 + 0.5) / 2);
+    mainStructureGroup.add(backRailing);
+    
+    const leftRailing = createOrangeRailing(35 + 0.5, railingHeight, vermilionRed);
+    leftRailing.rotation.y = Math.PI / 2;
+    leftRailing.position.set(-(structureWidth + 0.5) / 2, railingY, 0);
+    mainStructureGroup.add(leftRailing);
+    
+    const rightRailing = createOrangeRailing(35 + 0.5, railingHeight, vermilionRed);
+    rightRailing.rotation.y = Math.PI / 2;
+    rightRailing.position.set((structureWidth + 0.5) / 2, railingY, 0);
+    mainStructureGroup.add(rightRailing);
+
+
 
     // --- Second Floor ---
-    const secondFloorY = goldRoofY + goldRoofHeight / 2;
+    const secondFloorY = railingY + railingHeight + 1.5; // Place on top of railing
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
@@ -344,7 +365,7 @@ export function createJapaneseTemple() {
 
 
     // Second story railing
-    const railing2 = createGoldRailing(centerBayWidth, 12, goldMaterial, vermilionRed);
+    const railing2 = createOrangeRailing(centerBayWidth, 12, vermilionRed);
     railing2.position.y = 0;
     railing2.position.z = 15;
     secondFloorGroup.add(railing2);

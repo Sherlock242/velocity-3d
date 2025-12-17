@@ -71,32 +71,27 @@ export function createGreenRailing(width: number, height: number, material: THRE
     return railing;
 }
 
-// Helper to create the gold railing
-export function createGoldRailing(width: number, height: number, goldMaterial: THREE.Material, redMaterial: THREE.Material) {
+// Helper to create the orange railing
+export function createOrangeRailing(width: number, height: number, material: THREE.Material) {
     const railing = new THREE.Group();
     const postHeight = height;
-    const postGeom = new THREE.CylinderGeometry(0.8, 0.8, postHeight, 12);
-    const numPosts = 7;
+    const numPosts = 15;
 
     const baseRailGeom = new THREE.BoxGeometry(width, 1.5, 2);
-    const baseRail = new THREE.Mesh(baseRailGeom, goldMaterial);
-    baseRail.position.y = -0.75;
+    const baseRail = new THREE.Mesh(baseRailGeom, material);
+    baseRail.position.y = 0.75;
     railing.add(baseRail);
 
+    const postGeom = new THREE.CylinderGeometry(0.5, 0.5, postHeight, 8);
     for (let i = 0; i < numPosts; i++) {
-        const post = new THREE.Mesh(postGeom, redMaterial);
-        post.position.set(-width / 2 + (i * (width / (numPosts - 1))), postHeight / 2, 0);
-        
-        const goldCap = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 12), goldMaterial);
-        goldCap.position.y = postHeight / 2;
-        post.add(goldCap);
-
+        const post = new THREE.Mesh(postGeom, material);
+        post.position.set(-width / 2 + (i * (width / (numPosts - 1))), postHeight / 2 + 1.5, 0);
         railing.add(post);
     }
 
     const topRailGeom = new THREE.BoxGeometry(width, 1.5, 2);
-    const topRail = new THREE.Mesh(topRailGeom, goldMaterial);
-    topRail.position.y = postHeight;
+    const topRail = new THREE.Mesh(topRailGeom, material);
+    topRail.position.y = postHeight + 1.5;
     railing.add(topRail);
     
     return railing;
