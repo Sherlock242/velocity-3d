@@ -393,7 +393,7 @@ export function createJapaneseTemple() {
 
     // --- Main Top Roof ---
     const topRoof = createHippedRoof(darkBrownRoof, secondFloorWidth + 50, 85, 18);
-    topRoof.position.y = secondFloorHeight + 5; // Adjusted Y position
+    topRoof.position.y = secondFloorHeight; // Position on top of second floor
     secondFloorGroup.add(topRoof);
 
 
