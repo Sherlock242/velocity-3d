@@ -432,6 +432,13 @@ export function createJapaneseTemple() {
         const pillar = new THREE.Mesh(secondFloorPillarGeom, vermilionRed);
         pillar.position.set(pos.x, 0, pos.z);
         bottomWhiteBlock.add(pillar);
+
+        const dougong = createDougong(3.5, vermilionRed, goldMaterial);
+        dougong.position.set(pos.x, whiteBlockHeight / 2 + 1, pos.z);
+        if (pos.x === -secondFloorWidth / 2 || pos.x === secondFloorWidth / 2) {
+            dougong.rotation.y = Math.PI / 2;
+        }
+        bottomWhiteBlock.add(dougong);
     });
 
     
