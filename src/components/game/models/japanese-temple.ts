@@ -496,7 +496,7 @@ export function createJapaneseTemple() {
     secondFloorGroup.add(bottomWhiteBlock);
 
     // --- Add pillars to the bottom block of the second floor ---
-    const secondFloorPillarHeight = whiteBlockHeight;
+    const secondFloorPillarHeight = whiteBlockHeight + 2;
     const secondFloorPillarDiameter = 2.5;
     const secondFloorPillarGeom = new THREE.CylinderGeometry(secondFloorPillarDiameter, secondFloorPillarDiameter, secondFloorPillarHeight, 12);
     
