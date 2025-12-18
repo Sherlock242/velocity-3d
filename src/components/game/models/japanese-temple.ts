@@ -351,7 +351,7 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(goldRoof);
 
     // --- Railing on Golden Roof ---
-    const railingHeight = 8;
+    const railingHeight = 4;
     const railingY = goldRoofY + goldRoofHeight / 2;
     
     const frontRailing = createOrangeRailing(structureWidth + 0.5, railingHeight, vermilionRed);
@@ -374,7 +374,7 @@ export function createJapaneseTemple() {
 
 
     // --- Second Floor ---
-    const secondFloorY = orangeRoofY + orangeRoofHeight / 2;
+    const secondFloorY = railingY + railingHeight;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
@@ -533,7 +533,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(secondFloorWidth + 70, 80 , 25, darkBrownRoof);
+    const topRoof = createHippedRoof(secondFloorWidth, 80 , 25, darkBrownRoof);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
