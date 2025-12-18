@@ -495,13 +495,16 @@ export function createJapaneseTemple() {
         const totalBracketHeight = 12;
         
         const verticalLineGeom = new THREE.BoxGeometry(1, totalBracketHeight, 1);
-        const verticalLine = new THREE.Mesh(verticalLineGeom, bracketRedMaterial);
+        const verticalLine = new THREE.Mesh(verticalLineGeom, goldMaterial);
         verticalLine.position.y = totalBracketHeight / 2;
         verticalBracketGroup.add(verticalLine);
 
         for (let i = 0; i < 3; i++) {
             const bracket = new THREE.Mesh(new THREE.BoxGeometry(4, 1.5, 3), bracketRedMaterial);
             bracket.position.y = i * bracketSpacing + 1;
+            if (i === 1) { // Middle bracket
+                bracket.position.z += 2;
+            }
             verticalBracketGroup.add(bracket);
         }
         
