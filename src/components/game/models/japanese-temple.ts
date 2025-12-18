@@ -8,7 +8,7 @@ import { createHippedRoof } from './japanese-temple/roof';
 
 function createSupportBracket(material: THREE.Material) {
     const bracketGroup = new THREE.Group();
-    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(10, 12, 2), material);
+    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 2), material);
     bracketGroup.add(mainArm);
     return bracketGroup;
 }
@@ -151,9 +151,42 @@ export function createJapaneseTemple() {
         mainStructureGroup.add(pillar);
 
         const dougong = createDougong(5, vermilionRed, goldMaterial);
-        dougong.position.set(pos.x, (isOuter ? outerPillarHeight : firstFloorHeight), pos.z);
+        const dougongY = isOuter ? outerPillarHeight : firstFloorHeight;
+        dougong.position.set(pos.x, dougongY, pos.z);
         dougong.rotation.y = pos.rotation;
         mainStructureGroup.add(dougong);
+
+        // --- NEW: White block with red lines on top of bracket ---
+        const blockHeight = 5;
+        const blockWidth = 10;
+        const blockDepth = 10;
+        const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
+        
+        const whiteBlockGroup = new THREE.Group();
+        
+        const whiteBlockGeom = new THREE.BoxGeometry(blockWidth, blockHeight, blockDepth);
+        const whiteBlock = new THREE.Mesh(whiteBlockGeom, whitePlaster);
+        whiteBlockGroup.add(whiteBlock);
+        
+        // Horizontal line
+        const hLineGeom = new THREE.BoxGeometry(blockWidth, 0.4, blockDepth + 0.2);
+        const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
+        hLine.position.z = 0.1;
+        whiteBlockGroup.add(hLine);
+        
+        // Vertical lines
+        const numVLines = 6;
+        for (let i = 0; i < numVLines; i++) {
+            const vLineGeom = new THREE.BoxGeometry(0.4, blockHeight, blockDepth + 0.2);
+            const vLine = new THREE.Mesh(vLineGeom, lineMaterial);
+            vLine.position.x = (i - (numVLines - 1) / 2) * (blockWidth / numVLines);
+            vLine.position.z = 0.1;
+            whiteBlockGroup.add(vLine);
+        }
+        
+        whiteBlockGroup.position.set(pos.x, dougongY + 11, pos.z); // Position on top of dougong
+        whiteBlockGroup.rotation.y = pos.rotation;
+        mainStructureGroup.add(whiteBlockGroup);
     });
 
     // Green Railing in side bays
