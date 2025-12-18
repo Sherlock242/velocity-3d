@@ -122,7 +122,7 @@ export function createJapaneseTemple() {
 
     const structureWidth = 120;
     const firstFloorHeight = 34.5;
-    const outerPillarHeight = 37.5;
+    const outerPillarHeight = 40;
     const pillarDiameter = 3.5;
     const centerBayWidth = 60;
     const sideBayWidth = (structureWidth - centerBayWidth) / 2;
@@ -155,38 +155,6 @@ export function createJapaneseTemple() {
         dougong.position.set(pos.x, dougongY, pos.z);
         dougong.rotation.y = pos.rotation;
         mainStructureGroup.add(dougong);
-
-        // --- NEW: White block with red lines on top of bracket ---
-        const blockHeight = 5;
-        const blockWidth = 10;
-        const blockDepth = 10;
-        const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
-        
-        const whiteBlockGroup = new THREE.Group();
-        
-        const whiteBlockGeom = new THREE.BoxGeometry(blockWidth, blockHeight, blockDepth);
-        const whiteBlock = new THREE.Mesh(whiteBlockGeom, whitePlaster);
-        whiteBlockGroup.add(whiteBlock);
-        
-        // Horizontal line
-        const hLineGeom = new THREE.BoxGeometry(blockWidth, 0.4, blockDepth + 0.2);
-        const hLine = new THREE.Mesh(hLineGeom, lineMaterial);
-        hLine.position.z = 0.1;
-        whiteBlockGroup.add(hLine);
-        
-        // Vertical lines
-        const numVLines = 6;
-        for (let i = 0; i < numVLines; i++) {
-            const vLineGeom = new THREE.BoxGeometry(0.4, blockHeight, blockDepth + 0.2);
-            const vLine = new THREE.Mesh(vLineGeom, lineMaterial);
-            vLine.position.x = (i - (numVLines - 1) / 2) * (blockWidth / numVLines);
-            vLine.position.z = 0.1;
-            whiteBlockGroup.add(vLine);
-        }
-        
-        whiteBlockGroup.position.set(pos.x, dougongY + 11, pos.z); // Position on top of dougong
-        whiteBlockGroup.rotation.y = pos.rotation;
-        mainStructureGroup.add(whiteBlockGroup);
     });
 
     // Green Railing in side bays
@@ -585,10 +553,10 @@ export function createJapaneseTemple() {
 
     // --- Main Top Roof ---
     const roofWidth = structureWidth + 30;
-    const roofDepth = 120;
-    const roofHeight = 20;
-    const gabledRoofHeight = 15;
-    const gabledRoofDepth = 50;
+    const roofDepth = 80;
+    const roofHeight = 15;
+    const gabledRoofHeight = 10;
+    const gabledRoofDepth = 30;
 
     const topRoof = createHippedRoof({
         width: roofWidth,
