@@ -516,6 +516,23 @@ export function createJapaneseTemple() {
         const pillar = new THREE.Mesh(secondFloorPillarGeom, vermilionRed);
         pillar.position.set(pos.x, 0, pos.z);
         bottomWhiteBlock.add(pillar);
+
+        const bracketY = secondFloorPillarHeight / 2;
+
+        // Add 3 brackets in a cluster on top of each pillar
+        const bracket1 = createDougong(1.5, bracketRedMaterial, goldMaterial);
+        bracket1.position.set(pos.x, bracketY, pos.z + 1);
+        bottomWhiteBlock.add(bracket1);
+
+        const bracket2 = createDougong(1.5, bracketRedMaterial, goldMaterial);
+        bracket2.position.set(pos.x - 2, bracketY, pos.z);
+        bracket2.rotation.y = -Math.PI / 2;
+        bottomWhiteBlock.add(bracket2);
+
+        const bracket3 = createDougong(1.5, bracketRedMaterial, goldMaterial);
+        bracket3.position.set(pos.x + 2, bracketY, pos.z);
+        bracket3.rotation.y = Math.PI / 2;
+        bottomWhiteBlock.add(bracket3);
     });
 
     
@@ -699,3 +716,4 @@ export function createJapaneseTemple() {
     
 
     
+
