@@ -462,8 +462,8 @@ export function createJapaneseTemple() {
         { x: -centerBayWidth / 2, z: -secondFloorDepth / 2 },
         { x: centerBayWidth / 2, z: -secondFloorDepth / 2 },
         // Edge pillars
-        { x: -secondFloorWidth / 2, z: 0 },
-        { x: secondFloorWidth / 2, z: 0 },
+        { x: -secondFloorWidth / 2, z: secondFloorDepth / 2 },
+        { x: secondFloorWidth / 2, z: secondFloorDepth / 2 },
     ];
 
     secondFloorPillarPositions.forEach(pos => {
