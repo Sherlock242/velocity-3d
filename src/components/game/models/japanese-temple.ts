@@ -558,7 +558,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(structureWidth, 120, 30, darkBrownRoof);
+    const topRoof = createHippedRoof(structureWidth + 15, 120, 20, darkBrownRoof);
     topRoof.position.y = secondFloorY + secondFloorHeight / 2 + whiteBlockHeight / 2 + stripeHeight / 2; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
@@ -585,7 +585,7 @@ export function createJapaneseTemple() {
         lanternGroup.add(post);
         
         const lightGeom = new THREE.BoxGeometry(8, 10, 8);
-        const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
+        const light = new THREE.Mesh(new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
         light.position.y = 20;
         lanternGroup.add(light);
         
