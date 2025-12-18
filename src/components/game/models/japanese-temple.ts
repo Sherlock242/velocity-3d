@@ -74,21 +74,34 @@ export function createJapaneseTemple() {
     
     // --- Stairs ---
     const stairsGroup = new THREE.Group();
-    const stairWidth = 60;
+    const stairWidth = 80; // Widened
     const totalStairHeight = baseHeight + secondTierHeight;
     const numStairs = 10;
     const stairHeight = totalStairHeight / numStairs;
     const stairDepth = 4.5;
-    const stairMaterial = new THREE.MeshStandardMaterial({ color: 0xfffdd0 });
+    const lightGrayMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+    const darkGrayMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
 
     for (let i = 0; i < numStairs; i++) {
-        const step = new THREE.Mesh(
-            new THREE.BoxGeometry(stairWidth, stairHeight, stairDepth * (numStairs - i)),
-            stairMaterial
-        );
-        step.position.y = stairHeight / 2 + i * stairHeight;
-        step.position.z = -stairDepth * i / 2;
-        stairsGroup.add(step);
+        const stepGroup = new THREE.Group();
+        const bottomPartHeight = stairHeight * 0.6;
+        const topPartHeight = stairHeight * 0.4;
+
+        // Bottom light gray part
+        const bottomGeom = new THREE.BoxGeometry(stairWidth, bottomPartHeight, stairDepth * (numStairs - i));
+        const bottomStep = new THREE.Mesh(bottomGeom, lightGrayMaterial);
+        bottomStep.position.y = bottomPartHeight / 2;
+        stepGroup.add(bottomStep);
+
+        // Top dark gray part
+        const topGeom = new THREE.BoxGeometry(stairWidth * 0.98, topPartHeight, stairDepth * (numStairs - i) * 0.98);
+        const topStep = new THREE.Mesh(topGeom, darkGrayMaterial);
+        topStep.position.y = bottomPartHeight + topPartHeight / 2;
+        stepGroup.add(topStep);
+        
+        stepGroup.position.y = i * stairHeight;
+        stepGroup.position.z = -stairDepth * i / 2;
+        stairsGroup.add(stepGroup);
     }
     stairsGroup.position.set(0, 0, (baseDepth + 5) / 2 + stairDepth * numStairs / 2);
     walkableGroup.add(baseGroup, stairsGroup);
