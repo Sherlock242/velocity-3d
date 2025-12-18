@@ -8,7 +8,7 @@ import { createHippedRoof } from './japanese-temple/roof';
 
 function createSupportBracket(material: THREE.Material) {
     const bracketGroup = new THREE.Group();
-    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 2), material);
+    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(10, 12, 2), material);
     bracketGroup.add(mainArm);
     return bracketGroup;
 }
