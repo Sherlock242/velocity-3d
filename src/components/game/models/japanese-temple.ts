@@ -254,7 +254,7 @@ export function createJapaneseTemple() {
     innerLintel.position.set(0, innerPillarHeight, 0);
     innerEntranceGroup.add(innerLintel);
 
-    innerEntranceGroup.position.z = -5; // Position it inside the main structure
+    innerEntranceGroup.position.z = -2; // Position it inside the main structure
     mainStructureGroup.add(innerEntranceGroup);
 
     // --- Inner Chamber ---
