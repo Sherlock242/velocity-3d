@@ -296,7 +296,7 @@ export function createJapaneseTemple() {
     
     // White Box with Red lines
     const stripedBoxHeight = 5;
-    const stripedBoxY = firstFloorHeight + 1.5 / 2;
+    const stripedBoxY = firstFloorHeight + (1.5 / 2) + (stripedBoxHeight / 2);
     const stripedBox = new THREE.Group();
     stripedBox.position.y = stripedBoxY;
     mainStructureGroup.add(stripedBox);
@@ -361,7 +361,7 @@ export function createJapaneseTemple() {
 
 
     // --- Second Floor ---
-    const secondFloorY = railingY + railingHeight + 1.5 - 10;
+    const secondFloorY = railingY + railingHeight + 1.5;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
@@ -580,8 +580,6 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
-    
-
     
 
     
