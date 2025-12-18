@@ -6,6 +6,14 @@ import { createPlaque } from './japanese-temple/plaque';
 import { createDougong, createGreenRailing, createOrangeRailing, createLatticePanel } from './japanese-temple/helpers';
 import { createHippedRoof } from './japanese-temple/roof';
 
+function createSupportBracket(material: THREE.Material) {
+    const bracketGroup = new THREE.Group();
+    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 2), material);
+    bracketGroup.add(mainArm);
+    return bracketGroup;
+}
+
+
 export function createJapaneseTemple() {
     const templeContainer = new THREE.Group();
     templeContainer.name = 'FushimiInariGatehouse_Container';
@@ -354,23 +362,40 @@ export function createJapaneseTemple() {
     const railingHeight = 4;
     const railingY = goldRoofY + goldRoofHeight / 2;
     
-    const frontRailing = createOrangeRailing(structureWidth + 12.5, railingHeight, vermilionRed);
-    frontRailing.position.set(0, railingY, (55.5) / 2);
+    const frontRailingWidth = structureWidth + 12;
+    const sideRailingWidth = 55.5;
+
+    const frontRailing = createOrangeRailing(frontRailingWidth, railingHeight, vermilionRed);
+    frontRailing.position.set(0, railingY, sideRailingWidth / 2);
     mainStructureGroup.add(frontRailing);
     
-    const backRailing = createOrangeRailing(structureWidth + 12.5, railingHeight, vermilionRed);
-    backRailing.position.set(0, railingY, -(55.5) / 2);
+    const backRailing = createOrangeRailing(frontRailingWidth, railingHeight, vermilionRed);
+    backRailing.position.set(0, railingY, -sideRailingWidth / 2);
     mainStructureGroup.add(backRailing);
     
-    const leftRailing = createOrangeRailing(55.5, railingHeight, vermilionRed);
+    const leftRailing = createOrangeRailing(sideRailingWidth, railingHeight, vermilionRed);
     leftRailing.rotation.y = Math.PI / 2;
-    leftRailing.position.set(-(structureWidth + 12.5) / 2, railingY, 0);
+    leftRailing.position.set(-frontRailingWidth / 2, railingY, 0);
     mainStructureGroup.add(leftRailing);
     
-    const rightRailing = createOrangeRailing(55.5, railingHeight, vermilionRed);
+    const rightRailing = createOrangeRailing(sideRailingWidth, railingHeight, vermilionRed);
     rightRailing.rotation.y = Math.PI / 2;
-    rightRailing.position.set((structureWidth + 12.5) / 2, railingY, 0);
+    rightRailing.position.set(frontRailingWidth / 2, railingY, 0);
     mainStructureGroup.add(rightRailing);
+    
+    // Add support brackets from side pillars to the roof
+    const bracketY = outerPillarHeight;
+    const bracketZ = sideRailingWidth / 2;
+    
+    const leftBracket = createSupportBracket(vermilionRed);
+    leftBracket.position.set(-structureWidth / 2, bracketY, 0);
+    leftBracket.lookAt(new THREE.Vector3(-frontRailingWidth / 2, railingY, 0));
+    mainStructureGroup.add(leftBracket);
+    
+    const rightBracket = createSupportBracket(vermilionRed);
+    rightBracket.position.set(structureWidth / 2, bracketY, 0);
+    rightBracket.lookAt(new THREE.Vector3(frontRailingWidth / 2, railingY, 0));
+    mainStructureGroup.add(rightBracket);
 
 
     // --- Second Floor ---
@@ -533,7 +558,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(secondFloorWidth, 80 , 25, darkBrownRoof);
+    const topRoof = createHippedRoof(structureWidth, 80 , 25, darkBrownRoof);
     topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
@@ -600,6 +625,8 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
+    
+
     
 
     
