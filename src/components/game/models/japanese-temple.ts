@@ -488,22 +488,24 @@ export function createJapaneseTemple() {
         pillar.position.set(pos.x, 0, pos.z);
         bottomWhiteBlock.add(pillar);
 
-        const bracketY = secondFloorPillarHeight - 1;
+        const verticalBracketGroup = new THREE.Group();
+        verticalBracketGroup.position.set(pos.x, secondFloorPillarHeight / 2, pos.z + 3);
 
-        // Add 3 brackets in a cluster on top of each pillar
-        const bracket1 = createDougong(1.5, bracketRedMaterial, goldMaterial);
-        bracket1.position.set(pos.x, bracketY, pos.z + 2);
-        bottomWhiteBlock.add(bracket1);
+        const bracketSpacing = 4;
+        const totalBracketHeight = bracketSpacing * 2;
+        
+        const verticalLineGeom = new THREE.BoxGeometry(1, totalBracketHeight + 2, 1);
+        const verticalLine = new THREE.Mesh(verticalLineGeom, bracketRedMaterial);
+        verticalLine.position.y = totalBracketHeight / 2;
+        verticalBracketGroup.add(verticalLine);
 
-        const bracket2 = createDougong(1.5, bracketRedMaterial, goldMaterial);
-        bracket2.position.set(pos.x - 2, bracketY, pos.z + 1);
-        bracket2.rotation.y = -Math.PI / 2;
-        bottomWhiteBlock.add(bracket2);
-
-        const bracket3 = createDougong(1.5, bracketRedMaterial, goldMaterial);
-        bracket3.position.set(pos.x + 2, bracketY, pos.z + 1);
-        bracket3.rotation.y = Math.PI / 2;
-        bottomWhiteBlock.add(bracket3);
+        for (let i = 0; i < 3; i++) {
+            const bracket = new THREE.Mesh(new THREE.BoxGeometry(4, 1.5, 3), bracketRedMaterial);
+            bracket.position.y = i * bracketSpacing + 1;
+            verticalBracketGroup.add(bracket);
+        }
+        
+        bottomWhiteBlock.add(verticalBracketGroup);
     });
 
     
