@@ -3,14 +3,72 @@ import * as THREE from 'three';
 import { createKitsuneStatue } from './japanese-temple/kitsune-statue';
 import { createNorenCurtain } from './japanese-temple/noren-curtain';
 import { createPlaque } from './japanese-temple/plaque';
-import { createDougong, createGreenRailing, createOrangeRailing, createLatticePanel } from './japanese-temple/helpers';
+import { createGreenRailing, createOrangeRailing, createLatticePanel } from './japanese-temple/helpers';
 import { createHippedRoof } from './japanese-temple/roof';
 
-function createSupportBracket(material: THREE.Material) {
-    const bracketGroup = new THREE.Group();
-    const mainArm = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 2), material);
-    bracketGroup.add(mainArm);
-    return bracketGroup;
+// Helper to create detailed Dougong (bracket sets) based on the image
+function createDougong(size: number, redMaterial: THREE.Material, goldMaterial: THREE.Material) {
+    const dougong = new THREE.Group();
+    const dougongRed = redMaterial as THREE.MeshStandardMaterial;
+
+    const baseSize = size * 0.6;
+    const armWidth = size * 1.5;
+    const armHeight = size * 0.3;
+    const armDepth = size * 0.5;
+
+    // Base block (dou)
+    const baseBlock = new THREE.Mesh(new THREE.BoxGeometry(baseSize, armHeight, baseSize), dougongRed);
+    dougong.add(baseBlock);
+
+    // First layer of arms (gong)
+    const arm1 = new THREE.Mesh(new THREE.BoxGeometry(armWidth, armHeight, armDepth), dougongRed);
+    arm1.position.y = armHeight;
+    dougong.add(arm1);
+
+    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(armDepth, armHeight, armWidth), dougongRed);
+    arm2.position.y = armHeight;
+    dougong.add(arm2);
+
+    // Second layer block
+    const block2 = new THREE.Mesh(new THREE.BoxGeometry(baseSize, armHeight, baseSize), dougongRed);
+    block2.position.y = armHeight * 2;
+    dougong.add(block2);
+
+    // Golden decorative plates
+    for (let i = 0; i < 3; i++) {
+        const goldPlate = new THREE.Mesh(new THREE.CylinderGeometry(size * 0.15, size * 0.15, armDepth + 0.1, 16), goldMaterial as THREE.Material);
+        goldPlate.rotation.x = Math.PI / 2;
+        goldPlate.position.y = armHeight + (i * armHeight);
+        dougong.add(goldPlate);
+    }
+    
+    // Top curved arms
+    const topArmShape = new THREE.Shape();
+    const topArmWidth = armWidth * 1.2;
+    const topArmHeight = armHeight * 2;
+    topArmShape.moveTo(-topArmWidth / 2, 0);
+    topArmShape.lineTo(-topArmWidth/2, topArmHeight * 0.6);
+    topArmShape.quadraticCurveTo(-topArmWidth/2, topArmHeight, -topArmWidth/2 + topArmHeight * 0.4, topArmHeight);
+    topArmShape.lineTo(topArmWidth/2 - topArmHeight * 0.4, topArmHeight);
+    topArmShape.quadraticCurveTo(topArmWidth/2, topArmHeight, topArmWidth/2, topArmHeight * 0.6);
+    topArmShape.lineTo(topArmWidth/2, 0);
+    topArmShape.closePath();
+
+    const extrudeSettings = { depth: armDepth * 0.8, bevelEnabled: false };
+    const topArmGeom = new THREE.ExtrudeGeometry(topArmShape, extrudeSettings);
+    
+    const topArm1 = new THREE.Mesh(topArmGeom, dougongRed);
+    topArm1.position.set(0, armHeight * 3, -armDepth * 0.4);
+    dougong.add(topArm1);
+    
+    const topArm2 = new THREE.Mesh(topArmGeom, dougongRed);
+    topArm2.rotation.y = Math.PI;
+    topArm2.position.set(0, armHeight * 3, armDepth * 0.4);
+    dougong.add(topArm2);
+
+
+    dougong.scale.set(1.5, 1.5, 1.5);
+    return dougong;
 }
 
 
@@ -121,8 +179,8 @@ export function createJapaneseTemple() {
     mainBuilding.add(mainStructureGroup);
 
     const structureWidth = 120;
-    const firstFloorHeight = 34.5;
-    const outerPillarHeight = 40;
+    const firstFloorHeight = 35; // Set pillar height to 35
+    const outerPillarHeight = 35; // Set pillar height to 35
     const pillarDiameter = 3.5;
     const centerBayWidth = 60;
     const sideBayWidth = (structureWidth - centerBayWidth) / 2;
@@ -150,7 +208,7 @@ export function createJapaneseTemple() {
         pillar.position.set(pos.x, pillarYPosition, pos.z);
         mainStructureGroup.add(pillar);
 
-        const dougong = createDougong(5, vermilionRed, goldMaterial);
+        const dougong = createDougong(3, vermilionRed, goldMaterial);
         const dougongY = isOuter ? outerPillarHeight : firstFloorHeight;
         dougong.position.set(pos.x, dougongY, pos.z);
         dougong.rotation.y = pos.rotation;
@@ -384,20 +442,6 @@ export function createJapaneseTemple() {
     rightRailing.position.set(frontRailingWidth / 2, railingY, 0);
     mainStructureGroup.add(rightRailing);
     
-    // Add support brackets from side pillars to the roof
-    const bracketY = outerPillarHeight;
-    const bracketZ = 20;
-    
-    const leftBracket = createSupportBracket(vermilionRed);
-    leftBracket.position.set(-structureWidth / 2, bracketY, bracketZ);
-    leftBracket.lookAt(new THREE.Vector3(-frontRailingWidth / 2, railingY, bracketZ));
-    mainStructureGroup.add(leftBracket);
-    
-    const rightBracket = createSupportBracket(vermilionRed);
-    rightBracket.position.set(structureWidth / 2, bracketY, bracketZ);
-    rightBracket.lookAt(new THREE.Vector3(frontRailingWidth / 2, railingY, bracketZ));
-    mainStructureGroup.add(rightBracket);
-
 
     // --- Second Floor ---
     const secondFloorY = orangeRoofY + orangeRoofHeight / 2 + 1.5 / 2;
@@ -568,7 +612,8 @@ export function createJapaneseTemple() {
         cornerFlick: 8,
         material: darkBrownRoof
     });
-    topRoof.position.y = secondFloorY + secondFloorHeight + 5;
+    const topRoofY = secondFloorY + secondFloorHeight + 5;
+    topRoof.position.y = topRoofY;
     mainStructureGroup.add(topRoof);
     
     // Golden ornaments on roof ridge
@@ -578,7 +623,7 @@ export function createJapaneseTemple() {
         const ornamentGeom = new THREE.SphereGeometry(2.5, 16, 8);
         const ornament = new THREE.Mesh(ornamentGeom, goldMaterial);
         const xPos = -ridgeLength / 2 + i * (ridgeLength / (numOrnaments - 1));
-        ornament.position.set(xPos, topRoof.position.y + roofHeight + gabledRoofHeight, 0);
+        ornament.position.set(xPos, topRoofY + roofHeight + gabledRoofHeight, 0);
         mainStructureGroup.add(ornament);
     }
 
@@ -606,7 +651,7 @@ export function createJapaneseTemple() {
         lanternGroup.add(post);
         
         const lightGeom = new THREE.BoxGeometry(8, 10, 8);
-        const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
+        const light = new THREE.Mesh(new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
         light.position.y = 20;
         lanternGroup.add(light);
         
