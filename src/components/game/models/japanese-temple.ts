@@ -385,15 +385,16 @@ export function createJapaneseTemple() {
     
     // Add support brackets from side pillars to the roof
     const bracketY = outerPillarHeight;
+    const bracketZ = 20;
     
     const leftBracket = createSupportBracket(vermilionRed);
-    leftBracket.position.set(-structureWidth / 2, bracketY, 0);
-    leftBracket.lookAt(new THREE.Vector3(-frontRailingWidth / 2, railingY, 0));
+    leftBracket.position.set(-structureWidth / 2, bracketY, bracketZ);
+    leftBracket.lookAt(new THREE.Vector3(-frontRailingWidth / 2, railingY, bracketZ));
     mainStructureGroup.add(leftBracket);
     
     const rightBracket = createSupportBracket(vermilionRed);
-    rightBracket.position.set(structureWidth / 2, bracketY, 0);
-    rightBracket.lookAt(new THREE.Vector3(frontRailingWidth / 2, railingY, 0));
+    rightBracket.position.set(structureWidth / 2, bracketY, bracketZ);
+    rightBracket.lookAt(new THREE.Vector3(frontRailingWidth / 2, railingY, bracketZ));
     mainStructureGroup.add(rightBracket);
 
 
@@ -557,8 +558,8 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(structureWidth, 80 , 25, darkBrownRoof);
-    topRoof.position.y = secondFloorY + secondFloorHeight + 1; // Position on top of second floor
+    const topRoof = createHippedRoof(structureWidth, 80 , 15, darkBrownRoof);
+    topRoof.position.y = secondFloorY + secondFloorHeight / 2 + whiteBlockHeight / 2 + stripeHeight / 2; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
 
@@ -624,8 +625,6 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
-    
-
     
 
     
