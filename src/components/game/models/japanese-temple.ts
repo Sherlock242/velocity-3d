@@ -558,9 +558,36 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(structureWidth + 15, 80, 15, darkBrownRoof);
-    topRoof.position.y = secondFloorY + secondFloorHeight / 2 + whiteBlockHeight / 2 + stripeHeight / 2; // Position on top of second floor
+    const roofWidth = structureWidth + 30;
+    const roofDepth = 80;
+    const roofHeight = 25;
+    const gabledRoofHeight = 15;
+    const gabledRoofDepth = 50;
+
+    const topRoof = createHippedRoof({
+        width: roofWidth,
+        depth: roofDepth,
+        height: roofHeight,
+        gableHeight: gabledRoofHeight,
+        gableDepth: gabledRoofDepth,
+        eaveCurve: 4,
+        cornerFlick: 8,
+        material: darkBrownRoof
+    });
+    topRoof.position.y = secondFloorY + secondFloorHeight + 5;
     mainStructureGroup.add(topRoof);
+    
+    // Golden ornaments on roof ridge
+    const ridgeLength = roofWidth - roofDepth;
+    const numOrnaments = 7;
+    for (let i = 0; i < numOrnaments; i++) {
+        const ornamentGeom = new THREE.SphereGeometry(2.5, 16, 8);
+        const ornament = new THREE.Mesh(ornamentGeom, goldMaterial);
+        const xPos = -ridgeLength / 2 + i * (ridgeLength / (numOrnaments - 1));
+        ornament.position.set(xPos, topRoof.position.y + roofHeight + gabledRoofHeight, 0);
+        mainStructureGroup.add(ornament);
+    }
+
 
 
     // --- Kitsune Statues ---
@@ -585,7 +612,7 @@ export function createJapaneseTemple() {
         lanternGroup.add(post);
         
         const lightGeom = new THREE.BoxGeometry(8, 10, 8);
-        const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
+        const light = new THREE.Mesh(new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
         light.position.y = 20;
         lanternGroup.add(light);
         
