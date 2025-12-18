@@ -552,13 +552,13 @@ export function createJapaneseTemple() {
 
     // --- Plaque (Gaku) ---
     const plaqueGroup = createPlaque(blackAccent);
-    plaqueGroup.position.y = 22;
+    plaqueGroup.position.y = 20;
     plaqueGroup.position.z = secondFloorDepth / 2 + 1; // Place it on the front of the block
     secondFloorGroup.add(plaqueGroup);
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(structureWidth, 80 , 15, darkBrownRoof);
+    const topRoof = createHippedRoof(structureWidth, 120 , 15, darkBrownRoof);
     topRoof.position.y = secondFloorY + secondFloorHeight / 2 + whiteBlockHeight / 2 + stripeHeight / 2; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
