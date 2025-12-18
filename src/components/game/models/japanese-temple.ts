@@ -187,8 +187,8 @@ export function createJapaneseTemple() {
 
 
     // Main Pillars
-    const innerPillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, firstFloorHeight, 16);
-    const outerPillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, outerPillarHeight, 16);
+    const innerPillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, 35, 16);
+    const outerPillarGeom = new THREE.CylinderGeometry(pillarDiameter, pillarDiameter, 35, 16);
 
     const pillarPositions = [
       // Center bay pillars (front are outer)
@@ -204,13 +204,13 @@ export function createJapaneseTemple() {
     pillarPositions.forEach(pos => {
         const isOuter = pos.outer;
         const pillar = new THREE.Mesh(isOuter ? outerPillarGeom : innerPillarGeom, vermilionRed);
-        const pillarYPosition = isOuter ? outerPillarHeight / 2 : firstFloorHeight / 2;
+        const pillarYPosition = 35 / 2; // isOuter ? outerPillarHeight / 2 : firstFloorHeight / 2;
         pillar.position.set(pos.x, pillarYPosition, pos.z);
         mainStructureGroup.add(pillar);
 
         const dougong = createDougong(3, vermilionRed, goldMaterial);
-        const dougongY = isOuter ? outerPillarHeight : firstFloorHeight;
-        dougong.position.set(pos.x, dougongY, pos.z);
+        const dougongY = 35;
+        dougong.position.set(pos.x, dougongY, pos.z + 5);
         dougong.rotation.y = pos.rotation;
         mainStructureGroup.add(dougong);
     });
