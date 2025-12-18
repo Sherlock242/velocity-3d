@@ -83,6 +83,7 @@ export function createJapaneseTemple() {
     walkableGroup.name = 'FushimiInariGatehouse_Walkable';
 
     const vermilionRed = new THREE.MeshStandardMaterial({ color: 0xdc4405, roughness: 0.6 });
+    const bracketRedMaterial = new THREE.MeshStandardMaterial({ color: 0xcc2222, roughness: 0.6 });
     const blackAccent = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.1, roughness: 0.7 });
     const darkBrownRoof = new THREE.MeshStandardMaterial({ color: 0x3f2a1d, roughness: 0.9 });
     const whitePlaster = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
@@ -208,7 +209,7 @@ export function createJapaneseTemple() {
         pillar.position.set(pos.x, pillarYPosition, pos.z);
         mainStructureGroup.add(pillar);
 
-        const dougong = createDougong(3, vermilionRed, goldMaterial);
+        const dougong = createDougong(3, bracketRedMaterial, goldMaterial);
         const dougongY = 35;
         dougong.position.set(pos.x, dougongY, pos.z + 5);
         dougong.rotation.y = pos.rotation;
