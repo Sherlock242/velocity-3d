@@ -30,10 +30,24 @@ export function createDougong(size: number, redMaterial: THREE.Material, goldMat
     arm3.position.y = size * 0.7;
     dougong.add(arm3);
     
-    // Top block
-    const block2 = new THREE.Mesh(new THREE.BoxGeometry(size*0.6, size*0.3, size*0.6), redMaterial);
-    block2.position.y = size * 0.9;
+    // Top block (made taller)
+    const block2 = new THREE.Mesh(new THREE.BoxGeometry(size*0.6, size*0.6, size*0.6), redMaterial);
+    block2.position.y = size * 1.0;
     dougong.add(block2);
+    
+    // Third layer of arms to connect to the roof
+    const arm4 = new THREE.Mesh(new THREE.BoxGeometry(size * 1.4, size * 0.3, size * 0.3), redMaterial);
+    arm4.position.y = size * 1.4;
+    dougong.add(arm4);
+    
+    const arm5 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.3, size * 0.3, size * 1.4), redMaterial);
+    arm5.position.y = size * 1.4;
+    dougong.add(arm5);
+
+    // Final top block
+    const block3 = new THREE.Mesh(new THREE.BoxGeometry(size * 0.7, size * 0.3, size * 0.7), redMaterial);
+    block3.position.y = size * 1.6;
+    dougong.add(block3);
     
     return dougong;
 }

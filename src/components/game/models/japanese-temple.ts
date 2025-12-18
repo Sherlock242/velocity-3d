@@ -151,7 +151,7 @@ export function createJapaneseTemple() {
         mainStructureGroup.add(pillar);
 
         const dougong = createDougong(5, vermilionRed, goldMaterial);
-        dougong.position.set(pos.x, (isOuter ? outerPillarHeight : firstFloorHeight) + 1.5, pos.z + (isOuter ? 2 : 0));
+        dougong.position.set(pos.x, (isOuter ? outerPillarHeight : firstFloorHeight), pos.z);
         dougong.rotation.y = pos.rotation;
         mainStructureGroup.add(dougong);
     });
@@ -472,7 +472,7 @@ export function createJapaneseTemple() {
         bottomWhiteBlock.add(pillar);
 
         const dougong = createDougong(3.5, vermilionRed, goldMaterial);
-        dougong.position.set(pos.x, whiteBlockHeight / 2 + 1, pos.z);
+        dougong.position.set(pos.x, whiteBlockHeight / 2, pos.z);
         if (pos.x === -secondFloorWidth / 2 || pos.x === secondFloorWidth / 2) {
             dougong.rotation.y = Math.PI / 2;
         }
