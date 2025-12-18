@@ -9,65 +9,36 @@ import { createHippedRoof } from './japanese-temple/roof';
 // Helper to create detailed Dougong (bracket sets) based on the image
 function createDougong(size: number, redMaterial: THREE.Material, goldMaterial: THREE.Material) {
     const dougong = new THREE.Group();
-    const dougongRed = redMaterial as THREE.MeshStandardMaterial;
-
-    const baseSize = size * 0.6;
-    const armWidth = size * 1.5;
-    const armHeight = size * 0.3;
-    const armDepth = size * 0.5;
 
     // Base block (dou)
-    const baseBlock = new THREE.Mesh(new THREE.BoxGeometry(baseSize, armHeight, baseSize), dougongRed);
+    const baseBlock = new THREE.Mesh(new THREE.BoxGeometry(size * 0.8, size * 0.3, size * 0.8), redMaterial);
     dougong.add(baseBlock);
 
-    // First layer of arms (gong)
-    const arm1 = new THREE.Mesh(new THREE.BoxGeometry(armWidth, armHeight, armDepth), dougongRed);
-    arm1.position.y = armHeight;
+    // First level arms (gong)
+    const arm1 = new THREE.Mesh(new THREE.BoxGeometry(size * 1.5, size * 0.3, size * 0.5), redMaterial);
+    arm1.position.y = size * 0.3;
     dougong.add(arm1);
-
-    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(armDepth, armHeight, armWidth), dougongRed);
-    arm2.position.y = armHeight;
+    
+    // Middle supporting block
+    const midBlock = new THREE.Mesh(new THREE.BoxGeometry(size * 0.6, size * 0.4, size * 0.6), redMaterial);
+    midBlock.position.y = size * 0.6;
+    dougong.add(midBlock);
+    
+    // Second level arms (gong) - connecting to the middle
+    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(size * 2.0, size * 0.3, size * 0.4), redMaterial);
+    arm2.position.y = size * 0.9;
     dougong.add(arm2);
-
-    // Second layer block
-    const block2 = new THREE.Mesh(new THREE.BoxGeometry(baseSize, armHeight, baseSize), dougongRed);
-    block2.position.y = armHeight * 2;
-    dougong.add(block2);
-
-    // Golden decorative plates
-    for (let i = 0; i < 3; i++) {
-        const goldPlate = new THREE.Mesh(new THREE.CylinderGeometry(size * 0.15, size * 0.15, armDepth + 0.1, 16), goldMaterial as THREE.Material);
-        goldPlate.rotation.x = Math.PI / 2;
-        goldPlate.position.y = armHeight + (i * armHeight);
-        dougong.add(goldPlate);
-    }
     
-    // Top curved arms
-    const topArmShape = new THREE.Shape();
-    const topArmWidth = armWidth * 1.2;
-    const topArmHeight = armHeight * 2;
-    topArmShape.moveTo(-topArmWidth / 2, 0);
-    topArmShape.lineTo(-topArmWidth/2, topArmHeight * 0.6);
-    topArmShape.quadraticCurveTo(-topArmWidth/2, topArmHeight, -topArmWidth/2 + topArmHeight * 0.4, topArmHeight);
-    topArmShape.lineTo(topArmWidth/2 - topArmHeight * 0.4, topArmHeight);
-    topArmShape.quadraticCurveTo(topArmWidth/2, topArmHeight, topArmWidth/2, topArmHeight * 0.6);
-    topArmShape.lineTo(topArmWidth/2, 0);
-    topArmShape.closePath();
-
-    const extrudeSettings = { depth: armDepth * 0.8, bevelEnabled: false };
-    const topArmGeom = new THREE.ExtrudeGeometry(topArmShape, extrudeSettings);
+    // Top block (dou)
+    const topBlock = new THREE.Mesh(new THREE.BoxGeometry(size * 0.7, size * 0.5, size * 0.7), redMaterial);
+    topBlock.position.y = size * 1.3;
+    dougong.add(topBlock);
     
-    const topArm1 = new THREE.Mesh(topArmGeom, dougongRed);
-    topArm1.position.set(0, armHeight * 3, -armDepth * 0.4);
-    dougong.add(topArm1);
+    // Vertical line passing through
+    const verticalLine = new THREE.Mesh(new THREE.BoxGeometry(size * 0.2, size * 1.8, size * 0.2), redMaterial);
+    verticalLine.position.y = size * 0.9;
+    dougong.add(verticalLine);
     
-    const topArm2 = new THREE.Mesh(topArmGeom, dougongRed);
-    topArm2.rotation.y = Math.PI;
-    topArm2.position.set(0, armHeight * 3, armDepth * 0.4);
-    dougong.add(topArm2);
-
-
-    dougong.scale.set(1.5, 1.5, 1.5);
     return dougong;
 }
 
