@@ -337,7 +337,7 @@ export function createJapaneseTemple() {
     // --- Railing on Golden Roof ---
     const orangeRoofHeight = 1.5;
     const orangeRoofY = stripedBoxY + stripedBoxHeight / 2 + orangeRoofHeight / 2;
-    const orangeRoofGeom = new THREE.BoxGeometry(structureWidth, orangeRoofHeight, 55);
+    const orangeRoofGeom = new THREE.BoxGeometry(structureWidth + 12, orangeRoofHeight, 55);
     const orangeRoof = new THREE.Mesh(orangeRoofGeom, vermilionRed);
     orangeRoof.position.y = orangeRoofY;
     mainStructureGroup.add(orangeRoof);
@@ -345,7 +345,7 @@ export function createJapaneseTemple() {
     // New golden roof layer
     const goldRoofHeight = 1.5;
     const goldRoofY = orangeRoofY + orangeRoofHeight / 2 + goldRoofHeight / 2;
-    const goldRoofGeom = new THREE.BoxGeometry(structureWidth + 0.5, goldRoofHeight, 55.5);
+    const goldRoofGeom = new THREE.BoxGeometry(structureWidth + 12.5, goldRoofHeight, 55.5);
     const goldRoof = new THREE.Mesh(goldRoofGeom, goldMaterial);
     goldRoof.position.y = goldRoofY;
     mainStructureGroup.add(goldRoof);
@@ -354,22 +354,22 @@ export function createJapaneseTemple() {
     const railingHeight = 4;
     const railingY = goldRoofY + goldRoofHeight / 2;
     
-    const frontRailing = createOrangeRailing(structureWidth + 0.5, railingHeight, vermilionRed);
+    const frontRailing = createOrangeRailing(structureWidth + 12.5, railingHeight, vermilionRed);
     frontRailing.position.set(0, railingY, (55.5) / 2);
     mainStructureGroup.add(frontRailing);
     
-    const backRailing = createOrangeRailing(structureWidth + 0.5, railingHeight, vermilionRed);
+    const backRailing = createOrangeRailing(structureWidth + 12.5, railingHeight, vermilionRed);
     backRailing.position.set(0, railingY, -(55.5) / 2);
     mainStructureGroup.add(backRailing);
     
     const leftRailing = createOrangeRailing(55.5, railingHeight, vermilionRed);
     leftRailing.rotation.y = Math.PI / 2;
-    leftRailing.position.set(-(structureWidth + 0.5) / 2, railingY, 0);
+    leftRailing.position.set(-(structureWidth + 12.5) / 2, railingY, 0);
     mainStructureGroup.add(leftRailing);
     
     const rightRailing = createOrangeRailing(55.5, railingHeight, vermilionRed);
     rightRailing.rotation.y = Math.PI / 2;
-    rightRailing.position.set((structureWidth + 0.5) / 2, railingY, 0);
+    rightRailing.position.set((structureWidth + 12.5) / 2, railingY, 0);
     mainStructureGroup.add(rightRailing);
 
 
