@@ -379,7 +379,7 @@ export function createJapaneseTemple() {
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
 
-    const secondFloorWidth = 100;
+    const secondFloorWidth = structureWidth;
     const secondFloorHeight = 30;
     const secondFloorDepth = 20;
     const whiteBlockHeight = 12.25;
