@@ -517,7 +517,7 @@ export function createJapaneseTemple() {
         pillar.position.set(pos.x, 0, pos.z);
         bottomWhiteBlock.add(pillar);
 
-        const bracketY = secondFloorPillarHeight / 2;
+        const bracketY = secondFloorPillarHeight - 1;
 
         // Add 3 brackets in a cluster on top of each pillar
         const bracket1 = createDougong(1.5, bracketRedMaterial, goldMaterial);
@@ -669,7 +669,7 @@ export function createJapaneseTemple() {
         lanternGroup.add(post);
         
         const lightGeom = new THREE.BoxGeometry(8, 10, 8);
-        const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
+        const light = new THREE.Mesh(new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
         light.position.y = 20;
         lanternGroup.add(light);
         
@@ -716,4 +716,3 @@ export function createJapaneseTemple() {
     
 
     
-
