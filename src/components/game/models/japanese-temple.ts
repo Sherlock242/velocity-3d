@@ -308,27 +308,10 @@ export function createJapaneseTemple() {
     const lineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 }); // Dark Red
     const hLineGeom = new THREE.BoxGeometry(structureWidth, 0.4, 35.2);
     
-    const topHLine1 = new THREE.Mesh(hLineGeom, lineMaterial);
-    topHLine1.position.y = stripedBoxHeight / 4;
-    topHLine1.position.z = 0.1;
-    stripedBox.add(topHLine1);
-
-    const topHLine2 = new THREE.Mesh(hLineGeom, lineMaterial);
-    topHLine2.position.y = -(stripedBoxHeight / 4);
-    topHLine2.position.z = 0.1;
-    stripedBox.add(topHLine2);
-
     const topHLine3 = new THREE.Mesh(hLineGeom, lineMaterial);
     topHLine3.position.y = 0; // In the middle
     topHLine3.position.z = 0.1;
     stripedBox.add(topHLine3);
-
-    for (let i = 0; i < 6; i++) {
-        const vLine = new THREE.Mesh(new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.2), lineMaterial);
-        vLine.position.x = (i - 2.5) * (structureWidth / 6);
-        vLine.position.z = 0.1;
-        stripedBox.add(vLine);
-    }
 
 
     // --- Railing on Golden Roof ---
@@ -590,6 +573,8 @@ export function createJapaneseTemple() {
 
     return { templeContainer, mainBuilding, walkableGroup };
 }
+    
+
     
 
     
