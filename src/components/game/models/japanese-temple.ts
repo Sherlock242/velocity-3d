@@ -31,7 +31,7 @@ export function createJapaneseTemple() {
     const stoneBaseMaterial = new THREE.MeshStandardMaterial({ color: 0x9fa8a3, roughness: 0.9 });
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const greenLatticeMaterial = new THREE.MeshStandardMaterial({color: 0x2E8B57});
-    const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x3f2a1d });
+    const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x966F33 });
     const yellowPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFDD0 });
     const orangeCircleMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500 });
 
@@ -86,7 +86,7 @@ export function createJapaneseTemple() {
     const totalStairHeight = baseHeight + secondTierHeight;
     const numStairs = 10;
     const stairHeight = totalStairHeight / numStairs;
-    const stairDepth = 4.5;
+    const stairDepth = 3.5;
     const lightGrayMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc });
     const darkGrayMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
 
@@ -186,21 +186,21 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(bottomOrangeStrip2);
 
 
-    // Function to create the brown panel with red stripes
+    // Function to create the brown panel with gray lines
     function createStripedPanel(width: number) {
       const panelGroup = new THREE.Group();
       const panelHeight = 5;
       const panelGeom = new THREE.BoxGeometry(width, panelHeight, 1);
-      const panel = new THREE.Mesh(panelGeom, woodMaterial);
+      const panel = new THREE.Mesh(panelGeom, woodMaterial); // Light brown
       panel.position.y = panelHeight / 2;
       panelGroup.add(panel);
 
-      const redStripeMaterial = vermilionRed;
+      const grayStripeMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
       const stripeHeight = panelHeight;
       const stripeGeom = new THREE.BoxGeometry(0.3, stripeHeight, 1.1);
-      for (let i = 0; i < 3; i++) {
-        const stripe = new THREE.Mesh(stripeGeom, redStripeMaterial);
-        stripe.position.x = (i - 1) * (width / 4);
+      for (let i = 0; i < 2; i++) {
+        const stripe = new THREE.Mesh(stripeGeom, grayStripeMaterial);
+        stripe.position.x = (i - 0.5) * (width / 2); // Positioned at -width/4 and width/4
         stripe.position.y = panelHeight / 2;
         panelGroup.add(stripe);
       }
@@ -362,7 +362,7 @@ export function createJapaneseTemple() {
     const railingHeight = 4;
     const railingY = goldRoofY + goldRoofHeight / 2;
     
-    const frontRailingWidth = structureWidth + 12;
+    const frontRailingWidth = structureWidth + 10;
     const sideRailingWidth = 55.5;
 
     const frontRailing = createOrangeRailing(frontRailingWidth, railingHeight, vermilionRed);
@@ -385,7 +385,6 @@ export function createJapaneseTemple() {
     
     // Add support brackets from side pillars to the roof
     const bracketY = outerPillarHeight;
-    const bracketZ = sideRailingWidth / 2;
     
     const leftBracket = createSupportBracket(vermilionRed);
     leftBracket.position.set(-structureWidth / 2, bracketY, 0);
@@ -559,7 +558,7 @@ export function createJapaneseTemple() {
 
     // --- Main Top Roof ---
     const topRoof = createHippedRoof(structureWidth, 80 , 25, darkBrownRoof);
-    topRoof.position.y = secondFloorY + secondFloorHeight; // Position on top of second floor
+    topRoof.position.y = secondFloorY + secondFloorHeight + 1; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
 
