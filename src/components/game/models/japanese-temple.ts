@@ -100,8 +100,8 @@ export function createJapaneseTemple() {
     mainBuilding.add(mainStructureGroup);
 
     const structureWidth = 120;
-    const firstFloorHeight = 37.0;
-    const outerPillarHeight = 40.0;
+    const firstFloorHeight = 34.5;
+    const outerPillarHeight = 37.5;
     const pillarDiameter = 3.5;
     const centerBayWidth = stairWidth + 10;
     const sideBayWidth = (structureWidth - centerBayWidth) / 2;
@@ -296,7 +296,7 @@ export function createJapaneseTemple() {
     
     // White Box with Red lines
     const stripedBoxHeight = 5;
-    const stripedBoxY = firstFloorHeight + 1.5 / 2 + stripedBoxHeight / 2;
+    const stripedBoxY = firstFloorHeight + 1.5 / 2;
     const stripedBox = new THREE.Group();
     stripedBox.position.y = stripedBoxY;
     mainStructureGroup.add(stripedBox);
@@ -312,6 +312,13 @@ export function createJapaneseTemple() {
     topHLine3.position.y = 0; // In the middle
     topHLine3.position.z = 0.1;
     stripedBox.add(topHLine3);
+    
+    for (let i = 0; i < 6; i++) {
+        const vLine = new THREE.Mesh(new THREE.BoxGeometry(0.4, stripedBoxHeight, 35.2), lineMaterial);
+        vLine.position.x = (i - 2.5) * (structureWidth / 6);
+        vLine.position.z = 0.1;
+        stripedBox.add(vLine);
+    }
 
 
     // --- Railing on Golden Roof ---
@@ -354,7 +361,7 @@ export function createJapaneseTemple() {
 
 
     // --- Second Floor ---
-    const secondFloorY = railingY + railingHeight + 1.5;
+    const secondFloorY = railingY + railingHeight + 1.5 - 10;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
