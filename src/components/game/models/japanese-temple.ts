@@ -124,7 +124,7 @@ export function createJapaneseTemple() {
     const firstFloorHeight = 34.5;
     const outerPillarHeight = 37.5;
     const pillarDiameter = 3.5;
-    const centerBayWidth = stairWidth + 10;
+    const centerBayWidth = 60;
     const sideBayWidth = (structureWidth - centerBayWidth) / 2;
 
 
@@ -399,7 +399,7 @@ export function createJapaneseTemple() {
 
 
     // --- Second Floor ---
-    const secondFloorY = railingY + railingHeight;
+    const secondFloorY = orangeRoofY + orangeRoofHeight / 2 + 1.5 / 2;
     const secondFloorGroup = new THREE.Group();
     secondFloorGroup.position.y = secondFloorY;
     mainStructureGroup.add(secondFloorGroup);
