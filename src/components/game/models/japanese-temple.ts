@@ -558,7 +558,7 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const topRoof = createHippedRoof(structureWidth, 120 , 15, darkBrownRoof);
+    const topRoof = createHippedRoof(structureWidth, 120, 30, darkBrownRoof);
     topRoof.position.y = secondFloorY + secondFloorHeight / 2 + whiteBlockHeight / 2 + stripeHeight / 2; // Position on top of second floor
     mainStructureGroup.add(topRoof);
 
