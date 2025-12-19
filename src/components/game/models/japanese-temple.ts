@@ -646,7 +646,7 @@ export function createJapaneseTemple() {
     mainStructureGroup.add(topRoof);
     
     // Golden ornaments on roof ridge
-    const ridgeLength = roofWidth - roofDepth;
+    const ridgeLength = roofWidth - gabledRoofDepth;
     const numOrnaments = 7;
     for (let i = 0; i < numOrnaments; i++) {
         const ornamentGeom = new THREE.SphereGeometry(2.5, 16, 8);
