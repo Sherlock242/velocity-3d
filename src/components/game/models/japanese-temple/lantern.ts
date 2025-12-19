@@ -35,7 +35,6 @@ export function createLantern(
 
     // --- Materials ---
     const greenRoofMaterial = new THREE.MeshStandardMaterial({ color: 0x2a5543, roughness: 0.7 });
-    const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
     const grayLightMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, emissive: 0x555555, emissiveIntensity: 0.3 });
 
     // --- Base ---
