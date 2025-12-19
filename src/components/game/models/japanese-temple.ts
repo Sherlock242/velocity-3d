@@ -467,7 +467,7 @@ export function createJapaneseTemple() {
     secondFloorGroup.add(bottomWhiteBlock);
 
     // --- Add pillars to the bottom block of the second floor ---
-    const secondFloorPillarHeight = whiteBlockHeight + 2;
+    const secondFloorPillarHeight = whiteBlockHeight;
     const secondFloorPillarDiameter = 2.5;
     const secondFloorPillarGeom = new THREE.CylinderGeometry(secondFloorPillarDiameter, secondFloorPillarDiameter, secondFloorPillarHeight, 12);
     
@@ -500,7 +500,7 @@ export function createJapaneseTemple() {
         verticalBracketGroup.add(verticalLine);
 
         for (let i = 0; i < 3; i++) {
-            const bracket = new THREE.Mesh(new THREE.BoxGeometry(6, 1.5, 3), bracketRedMaterial);
+            const bracket = new THREE.Mesh(new THREE.BoxGeometry(4, 1.5, 3), bracketRedMaterial);
             let zPos = 0;
             if (i === 1) { // Middle bracket
                 zPos += 2;
@@ -591,6 +591,39 @@ export function createJapaneseTemple() {
     secondFloorGroup.add(plaqueGroup);
 
 
+    // --- Third Floor ---
+    const thirdFloorGroup = new THREE.Group();
+    const thirdFloorY = secondFloorY + secondFloorHeight;
+    thirdFloorGroup.position.y = thirdFloorY;
+    mainStructureGroup.add(thirdFloorGroup);
+
+    const thirdFloorOrangeRoofHeight = 1.5;
+    const thirdFloorOrangeRoofGeom = new THREE.BoxGeometry(secondFloorWidth + 2, thirdFloorOrangeRoofHeight, secondFloorDepth + 2);
+    const thirdFloorOrangeRoof = new THREE.Mesh(thirdFloorOrangeRoofGeom, vermilionRed);
+    thirdFloorOrangeRoof.position.y = thirdFloorOrangeRoofHeight / 2;
+    thirdFloorGroup.add(thirdFloorOrangeRoof);
+
+    const thirdFloorWhiteBoxHeight = 10;
+    const thirdFloorWhiteBoxY = thirdFloorOrangeRoofHeight + thirdFloorWhiteBoxHeight / 2;
+    const thirdFloorWhiteBox = new THREE.Group();
+    thirdFloorWhiteBox.position.y = thirdFloorWhiteBoxY;
+    thirdFloorGroup.add(thirdFloorWhiteBox);
+
+    const thirdFloorWhiteBoxGeom = new THREE.BoxGeometry(secondFloorWidth, thirdFloorWhiteBoxHeight, secondFloorDepth);
+    const thirdFloorWhiteBoxMesh = new THREE.Mesh(thirdFloorWhiteBoxGeom, whitePlaster);
+    thirdFloorWhiteBox.add(thirdFloorWhiteBoxMesh);
+
+    const numRedLines = 20;
+    const redLineMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000 });
+    const redLineGeom = new THREE.BoxGeometry(0.4, thirdFloorWhiteBoxHeight, 0.2);
+    for (let i = 0; i < numRedLines; i++) {
+        const vLine = new THREE.Mesh(redLineGeom, redLineMaterial);
+        vLine.position.x = (i - (numRedLines - 1) / 2) * (secondFloorWidth / numRedLines);
+        vLine.position.z = secondFloorDepth / 2 + 0.1;
+        thirdFloorWhiteBox.add(vLine);
+    }
+    const thirdFloorHeight = thirdFloorOrangeRoofHeight + thirdFloorWhiteBoxHeight;
+
     // --- Main Top Roof ---
     const roofWidth = structureWidth + 40;
     const roofDepth = 80;
@@ -608,7 +641,7 @@ export function createJapaneseTemple() {
         cornerFlick: 8,
         material: darkBrownRoof
     });
-    const topRoofY = secondFloorY + secondFloorHeight + 10;
+    const topRoofY = thirdFloorY + thirdFloorHeight;
     topRoof.position.y = topRoofY;
     mainStructureGroup.add(topRoof);
     
@@ -694,3 +727,4 @@ export function createJapaneseTemple() {
     
 
     
+
