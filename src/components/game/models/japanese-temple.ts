@@ -490,7 +490,6 @@ export function createJapaneseTemple() {
 
         const totalBracketHeight = 12;
         const verticalBracketGroup = new THREE.Group();
-        const bracketY = secondFloorPillarHeight - 1;
         verticalBracketGroup.position.set(pos.x, totalBracketHeight / 2, pos.z + 3);
 
         const bracketSpacing = totalBracketHeight / 2; // Brackets at top, middle, bottom of the line
@@ -501,7 +500,7 @@ export function createJapaneseTemple() {
         verticalBracketGroup.add(verticalLine);
 
         for (let i = 0; i < 3; i++) {
-            const bracket = new THREE.Mesh(new THREE.BoxGeometry(4, 1.5, 3), bracketRedMaterial);
+            const bracket = new THREE.Mesh(new THREE.BoxGeometry(6, 1.5, 3), bracketRedMaterial);
             let zPos = 0;
             if (i === 1) { // Middle bracket
                 zPos += 2;
@@ -520,12 +519,12 @@ export function createJapaneseTemple() {
     const frontPanelWidth = sideBayPillarDistance - secondFloorPillarDiameter;
 
     const leftFrontPanel = createSidePanel(frontPanelWidth);
-    leftFrontPanel.position.set(-(centerBayWidth / 2 + (sideBayPillarDistance / 2)), 0, secondFloorDepth / 2 + 6.0);
+    leftFrontPanel.position.set(-(centerBayWidth / 2 + (sideBayPillarDistance / 2)), 0, secondFloorDepth / 2 + 1);
     leftFrontPanel.rotation.y = Math.PI;
     bottomWhiteBlock.add(leftFrontPanel);
     
     const rightFrontPanel = createSidePanel(frontPanelWidth);
-    rightFrontPanel.position.set((centerBayWidth / 2 + (sideBayPillarDistance / 2)), 0, secondFloorDepth / 2 + 6.0);
+    rightFrontPanel.position.set((centerBayWidth / 2 + (sideBayPillarDistance / 2)), 0, secondFloorDepth / 2 + 1);
     rightFrontPanel.rotation.y = Math.PI;
     bottomWhiteBlock.add(rightFrontPanel);
     
@@ -593,9 +592,9 @@ export function createJapaneseTemple() {
 
 
     // --- Main Top Roof ---
-    const roofWidth = structureWidth + 30;
+    const roofWidth = structureWidth + 40;
     const roofDepth = 80;
-    const roofHeight = 15;
+    const roofHeight = 20;
     const gabledRoofHeight = 10;
     const gabledRoofDepth = 30;
 
@@ -609,7 +608,7 @@ export function createJapaneseTemple() {
         cornerFlick: 8,
         material: darkBrownRoof
     });
-    const topRoofY = secondFloorY + secondFloorHeight + 5;
+    const topRoofY = secondFloorY + secondFloorHeight - 30;
     topRoof.position.y = topRoofY;
     mainStructureGroup.add(topRoof);
     
