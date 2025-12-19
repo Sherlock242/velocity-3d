@@ -43,18 +43,18 @@ export function createSector21({
   // Since the temple is rotated, width and depth are swapped for positioning
   const leftLantern = createLantern(vermilionRed, blackAccent);
   leftLantern.position.set(
-    cellCenterX - templeBaseDepth / 2 - 30,
+    cellCenterX + 120,
     0,
-    cellCenterZ + templeBaseWidth / 2 + 25
+    cellCenterZ - 60
   );
   leftLantern.rotation.y = -Math.PI / 2;
   sectorGroup.add(leftLantern);
 
   const rightLantern = createLantern(vermilionRed, blackAccent);
   rightLantern.position.set(
-    cellCenterX + templeBaseDepth / 2 + 30,
+    cellCenterX + 120,
     0,
-    cellCenterZ + templeBaseWidth / 2 + 25
+    cellCenterZ + 60
   );
   rightLantern.rotation.y = -Math.PI / 2;
   sectorGroup.add(rightLantern);
