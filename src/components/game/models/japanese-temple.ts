@@ -3,8 +3,9 @@ import * as THREE from 'three';
 import { createKitsuneStatue } from './japanese-temple/kitsune-statue';
 import { createNorenCurtain } from './japanese-temple/noren-curtain';
 import { createPlaque } from './japanese-temple/plaque';
-import { createGreenRailing, createOrangeRailing, createLatticePanel } from './japanese-temple/helpers';
+import { createGreenRailing, createOrangeRailing } from './japanese-temple/helpers';
 import { createHippedRoof } from './japanese-temple/roof';
+import { createLantern } from './japanese-temple/lantern';
 
 // Helper to create detailed Dougong (bracket sets) based on the image
 function createDougong(size: number, redMaterial: THREE.Material, goldMaterial: THREE.Material) {
@@ -659,39 +660,11 @@ export function createJapaneseTemple() {
     mainBuilding.add(rightStatue);
     
     // --- Side Lanterns ---
-    function createLantern() {
-        const lanternGroup = new THREE.Group();
-        const tealRoofMaterial = new THREE.MeshStandardMaterial({ color: 0x008080 }); // Teal color
-
-        const postGeom = new THREE.BoxGeometry(4, 25, 4);
-        const post = new THREE.Mesh(postGeom, vermilionRed);
-        post.position.y = 12.5;
-        lanternGroup.add(post);
-        
-        const lightGeom = new THREE.BoxGeometry(8, 10, 8);
-        const light = new THREE.Mesh(lightGeom, new THREE.MeshStandardMaterial({color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.5}));
-        light.position.y = 20;
-        lanternGroup.add(light);
-        
-        const lanternRoofGeom = new THREE.ConeGeometry(8, 8, 4);
-        const lanternRoof = new THREE.Mesh(lanternRoofGeom, tealRoofMaterial);
-        lanternRoof.position.y = 25 + 4; // On top of the light
-        lanternRoof.rotation.y = Math.PI / 4;
-        lanternGroup.add(lanternRoof);
-
-        const roofTopGeom = new THREE.BoxGeometry(10, 2, 10);
-        const roofTop = new THREE.Mesh(roofTopGeom, blackAccent);
-        roofTop.position.y = 25;
-        lanternGroup.add(roofTop);
-
-        return lanternGroup;
-    }
-    
-    const leftLantern = createLantern();
+    const leftLantern = createLantern(vermilionRed, blackAccent);
     leftLantern.position.set(-baseWidth/2 - 15, 0, baseDepth / 2 + 25);
     mainBuilding.add(leftLantern);
 
-    const rightLantern = createLantern();
+    const rightLantern = createLantern(vermilionRed, blackAccent);
     rightLantern.position.set(baseWidth/2 + 15, 0, baseDepth / 2 + 25);
     mainBuilding.add(rightLantern);
 

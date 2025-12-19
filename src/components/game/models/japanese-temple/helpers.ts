@@ -107,35 +107,3 @@ export function createOrangeRailing(width: number, height: number, material: THR
     
     return railing;
 }
-
-export function createLatticePanel(width: number, height: number, redMaterial: THREE.Material, whiteMaterial: THREE.Material) {
-    const panel = new THREE.Group();
-    const frameThickness = 1.5;
-
-    // Frame
-    const topFrame = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 2), redMaterial);
-    topFrame.position.y = height / 2 - frameThickness / 2;
-    panel.add(topFrame);
-    const bottomFrame = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 2), redMaterial);
-    bottomFrame.position.y = -height / 2 + frameThickness / 2;
-    panel.add(bottomFrame);
-    const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(frameThickness, height, 2), redMaterial);
-    leftFrame.position.x = -width / 2 + frameThickness / 2;
-    panel.add(leftFrame);
-    const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(frameThickness, height, 2), redMaterial);
-    rightFrame.position.x = width / 2 - frameThickness / 2;
-    panel.add(rightFrame);
-
-    // Lattice
-    const latticeGeom = new THREE.BoxGeometry(width - frameThickness * 2, height - frameThickness * 2, 1);
-    const lattice = new THREE.Mesh(latticeGeom, whiteMaterial);
-    panel.add(lattice);
-    
-    const hBar = new THREE.Mesh(new THREE.BoxGeometry(width - frameThickness * 2, 0.5, 1.2), redMaterial);
-    panel.add(hBar);
-    
-    const vBar = new THREE.Mesh(new THREE.BoxGeometry(0.5, height - frameThickness * 2, 1.2), redMaterial);
-    panel.add(vBar);
-
-    return panel;
-}
