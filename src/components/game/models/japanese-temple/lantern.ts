@@ -106,12 +106,6 @@ export function createLantern(
     const roofMesh = new THREE.Mesh(roofGeom, greenRoofMaterial);
     roofMesh.position.y = 1.5;
     roofGroup.add(roofMesh);
-    
-    // Golden Finial (Top Sphere)
-    const finialGeom = new THREE.SphereGeometry(1.2, 16, 8);
-    const finial = new THREE.Mesh(finialGeom, goldMaterial);
-    finial.position.y = 1.5 + roofHeight + 0.5;
-    roofGroup.add(finial);
 
     return lanternGroup;
 }
