@@ -45,7 +45,7 @@ export function createSector21({
   leftLantern.position.set(
     cellCenterX + 120,
     0,
-    cellCenterZ - 80
+    cellCenterZ - 107.5
   );
   leftLantern.rotation.y = -Math.PI / 2;
   sectorGroup.add(leftLantern);
@@ -54,7 +54,7 @@ export function createSector21({
   rightLantern.position.set(
     cellCenterX + 120,
     0,
-    cellCenterZ + 80
+    cellCenterZ + 107.5
   );
   rightLantern.rotation.y = -Math.PI / 2;
   sectorGroup.add(rightLantern);
