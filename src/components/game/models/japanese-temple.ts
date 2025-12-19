@@ -230,9 +230,9 @@ export function createJapaneseTemple() {
       const grayStripeMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
       const stripeHeight = panelHeight;
       const stripeGeom = new THREE.BoxGeometry(0.3, stripeHeight, 1.1);
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 3; i++) {
         const stripe = new THREE.Mesh(stripeGeom, grayStripeMaterial);
-        stripe.position.x = (i - 0.5) * (width / 2); // Positioned at -width/4 and width/4
+        stripe.position.x = (i - 1) * (width / 3);
         stripe.position.y = panelHeight / 2;
         panelGroup.add(stripe);
       }

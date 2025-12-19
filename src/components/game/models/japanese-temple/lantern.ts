@@ -27,31 +27,57 @@ function createLanternBase() {
     return baseGroup;
 }
 
-// Helper for lattice panels on the light box
-function createLatticePanel(width: number, height: number, frameMaterial: THREE.Material, lightMaterial: THREE.Material) {
+
+// Helper for the parallelogram light box panel
+function createLightPanel(width: number, height: number, frameMaterial: THREE.Material, lightMaterial: THREE.Material, yellowCircleMaterial: THREE.Material) {
     const panel = new THREE.Group();
-    const frameThickness = 0.5;
+    
+    // Gray parallelogram shape for the light box
+    const shape = new THREE.Shape();
+    const slant = 2; // How much the sides are slanted
+    shape.moveTo(0, 0);
+    shape.lineTo(width, 0);
+    shape.lineTo(width - slant, height);
+    shape.lineTo(-slant, height);
+    shape.closePath();
 
-    // Light-emitting part
-    const lightBox = new THREE.Mesh(
-        new THREE.BoxGeometry(width - frameThickness, height - frameThickness, 0.5),
-        lightMaterial
-    );
-    panel.add(lightBox);
+    const geometry = new THREE.ShapeGeometry(shape);
+    const grayPanel = new THREE.Mesh(geometry, lightMaterial);
+    grayPanel.position.set(-width / 2 + slant, -height / 2, 0);
+    panel.add(grayPanel);
 
-    // Frame
-    const topFrame = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 1), frameMaterial);
-    topFrame.position.y = height / 2 - frameThickness / 2;
-    panel.add(topFrame);
-    const bottomFrame = new THREE.Mesh(new THREE.BoxGeometry(width, frameThickness, 1), frameMaterial);
-    bottomFrame.position.y = -height / 2 + frameThickness / 2;
-    panel.add(bottomFrame);
-    const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(frameThickness, height, 1), frameMaterial);
-    leftFrame.position.x = -width / 2 + frameThickness / 2;
-    panel.add(leftFrame);
-    const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(frameThickness, height, 1), frameMaterial);
-    rightFrame.position.x = width / 2 - frameThickness / 2;
-    panel.add(rightFrame);
+    // Orange border
+    const borderThickness = 0.8;
+    const borderTop = new THREE.Mesh(new THREE.BoxGeometry(width - slant, borderThickness, 0.5), frameMaterial);
+    borderTop.position.set(0, height / 2 - borderThickness / 2, 0.3);
+    panel.add(borderTop);
+
+    const borderBottom = new THREE.Mesh(new THREE.BoxGeometry(width - slant, borderThickness, 0.5), frameMaterial);
+    borderBottom.position.set(0, -height / 2 + borderThickness / 2, 0.3);
+    panel.add(borderBottom);
+
+    const borderLeftGeom = new THREE.BoxGeometry(borderThickness, height, 0.5);
+    const borderLeft = new THREE.Mesh(borderLeftGeom, frameMaterial);
+    borderLeft.position.set(-width/2, 0, 0.3);
+    borderLeft.rotation.z = Math.atan(slant / height);
+    panel.add(borderLeft);
+    
+    const borderRight = new THREE.Mesh(borderLeftGeom, frameMaterial);
+    borderRight.position.set(width/2, 0, 0.3);
+    borderRight.rotation.z = Math.atan(-slant / height);
+    panel.add(borderRight);
+    
+    // Yellow circle marks
+    const circleRadius = 0.3;
+    const circleGeom = new THREE.CircleGeometry(circleRadius, 8);
+    
+    const circle1 = new THREE.Mesh(circleGeom, yellowCircleMaterial);
+    circle1.position.set(-width/2 + borderThickness, height/2 - borderThickness/2, 0.6);
+    panel.add(circle1);
+
+    const circle2 = new THREE.Mesh(circleGeom, yellowCircleMaterial);
+    circle2.position.set(width/2 - borderThickness, height/2 - borderThickness/2, 0.6);
+    panel.add(circle2);
 
     return panel;
 }
@@ -65,7 +91,8 @@ export function createLantern(
     // --- Materials ---
     const greenRoofMaterial = new THREE.MeshStandardMaterial({ color: 0x2a5543, roughness: 0.7 });
     const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
-    const lightMaterial = new THREE.MeshStandardMaterial({ color: 0xfffde8, emissive: 0xffa500, emissiveIntensity: 0.4 });
+    const grayLightMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, emissive: 0x555555, emissiveIntensity: 0.3 });
+    const yellowCircleMaterial = new THREE.MeshStandardMaterial({color: 0xffd700});
 
     // --- Base ---
     const base = createLanternBase();
@@ -91,10 +118,10 @@ export function createLantern(
     // Hexagonal light box frame and panels
     for (let i = 0; i < 6; i++) {
         const angle = (i / 6) * Math.PI * 2;
-        const panelWidth = 6;
+        const panelWidth = 7;
         const panelHeight = 8;
         
-        const panel = createLatticePanel(panelWidth, panelHeight, vermilionRed, lightMaterial);
+        const panel = createLightPanel(panelWidth, panelHeight, vermilionRed, grayLightMaterial, yellowCircleMaterial);
         
         panel.position.x = Math.sin(angle) * (lightBoxRadius * 0.8);
         panel.position.z = Math.cos(angle) * (lightBoxRadius * 0.8);
