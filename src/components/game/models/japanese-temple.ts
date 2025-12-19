@@ -629,7 +629,7 @@ export function createJapaneseTemple() {
     const roofDepth = 80;
     const roofHeight = 20;
     const gabledRoofHeight = 10;
-    const gabledRoofDepth = 30;
+    const gabledRoofDepth = roofWidth - 0.1;
 
     const topRoof = createHippedRoof({
         width: roofWidth,
