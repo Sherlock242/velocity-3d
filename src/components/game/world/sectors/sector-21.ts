@@ -1,5 +1,5 @@
 
-import * as THREE from 'react';
+import * as THREE from 'three';
 import type { MutableRefObject } from 'react';
 import { createJapaneseTemple } from '../../models/japanese-temple';
 import { createToriiGate } from '../../models/torii-gate';
