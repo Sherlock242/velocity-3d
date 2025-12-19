@@ -1,8 +1,9 @@
 
-import * as THREE from 'three';
+import * as THREE from 'react';
 import type { MutableRefObject } from 'react';
 import { createJapaneseTemple } from '../../models/japanese-temple';
 import { createToriiGate } from '../../models/torii-gate';
+import { createLantern } from '../../models/japanese-temple/lantern';
 import { CELL_SIZE } from '@/lib/game-constants';
 import { DOME_HEIGHT } from '@/lib/dome-constants';
 
@@ -25,11 +26,36 @@ export function createSector21({
 
   // Add the temple
   const { templeContainer, mainBuilding, walkableGroup } = createJapaneseTemple();
-  templeContainer.scale.set(1.5, 1.5, 1.5);
+  const templeScale = 1.5;
+  templeContainer.scale.set(templeScale, templeScale, templeScale);
   templeContainer.position.set(cellCenterX, 0, cellCenterZ);
   templeContainer.rotation.y = Math.PI / 2;
   sectorGroup.add(templeContainer);
   walkableSurfacesRef.current.push(walkableGroup);
+
+  // --- Add Lanterns to the Sector ---
+  const vermilionRed = new THREE.MeshStandardMaterial({ color: 0xdc4405, roughness: 0.6 });
+  const blackAccent = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.1, roughness: 0.7 });
+
+  const templeBaseWidth = 150 * templeScale;
+  const templeBaseDepth = 70 * templeScale;
+
+  // Since the temple is rotated, width and depth are swapped for positioning
+  const leftLantern = createLantern(vermilionRed, blackAccent);
+  leftLantern.position.set(
+    cellCenterX - templeBaseDepth / 2 - 30,
+    0,
+    cellCenterZ + templeBaseWidth / 2 + 25
+  );
+  sectorGroup.add(leftLantern);
+
+  const rightLantern = createLantern(vermilionRed, blackAccent);
+  rightLantern.position.set(
+    cellCenterX + templeBaseDepth / 2 + 30,
+    0,
+    cellCenterZ + templeBaseWidth / 2 + 25
+  );
+  sectorGroup.add(rightLantern);
   
   // Add the entrance gate to the right side
   const entranceGate = createToriiGate();

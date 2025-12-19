@@ -5,7 +5,6 @@ import { createNorenCurtain } from './japanese-temple/noren-curtain';
 import { createPlaque } from './japanese-temple/plaque';
 import { createGreenRailing, createOrangeRailing } from './japanese-temple/helpers';
 import { createHippedRoof } from './japanese-temple/roof';
-import { createLantern } from './japanese-temple/lantern';
 
 // Helper to create detailed Dougong (bracket sets) based on the image
 function createDougong(size: number, redMaterial: THREE.Material, goldMaterial: THREE.Material) {
@@ -659,15 +658,6 @@ export function createJapaneseTemple() {
     rightStatue.rotation.y = -Math.PI / 6;
     mainBuilding.add(rightStatue);
     
-    // --- Side Lanterns ---
-    const leftLantern = createLantern(vermilionRed, blackAccent);
-    leftLantern.position.set(-baseWidth/2 - 15, 0, baseDepth / 2 + 25);
-    mainBuilding.add(leftLantern);
-
-    const rightLantern = createLantern(vermilionRed, blackAccent);
-    rightLantern.position.set(baseWidth/2 + 15, 0, baseDepth / 2 + 25);
-    mainBuilding.add(rightLantern);
-
 
     mainBuilding.castShadow = true;
     mainBuilding.receiveShadow = true;
@@ -689,3 +679,4 @@ export function createJapaneseTemple() {
     
 
     
+
