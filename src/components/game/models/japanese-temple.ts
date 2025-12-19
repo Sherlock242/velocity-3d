@@ -99,7 +99,7 @@ export function createJapaneseTemple() {
 
     // Tiered bases for statues
     const statueBaseWidth = 25;
-    const statueBaseHeight = 18;
+    const statueBaseHeight = 24;
     const statueBaseDepth = 25;
     const leftStatueBase = new THREE.Mesh(new THREE.BoxGeometry(statueBaseWidth, statueBaseHeight, statueBaseDepth), stoneBaseMaterial);
     leftStatueBase.position.set(-baseWidth/2 + statueBaseWidth/2, statueBaseHeight/2, baseDepth/2 - 0);
@@ -679,4 +679,3 @@ export function createJapaneseTemple() {
     
 
     
-
