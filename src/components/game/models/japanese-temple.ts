@@ -641,17 +641,18 @@ export function createJapaneseTemple() {
         cornerFlick: 8,
         material: darkBrownRoof
     });
-    const topRoofY = thirdFloorY + thirdFloorHeight;
+    const topRoofY = thirdFloorY + thirdFloorHeight - 5;
     topRoof.position.y = topRoofY;
     mainStructureGroup.add(topRoof);
     
     // Golden ornaments on roof ridge
-    const ridgeLength = gabledRoofDepth;
+    const ridgeLengthOnGable = roofWidth - gabledRoofDepth;
+    
     const numOrnaments = 7;
     for (let i = 0; i < numOrnaments; i++) {
         const ornamentGeom = new THREE.SphereGeometry(1.5, 16, 8);
         const ornament = new THREE.Mesh(ornamentGeom, goldMaterial);
-        const xPos = -ridgeLength / 2 + i * (ridgeLength / (numOrnaments - 1));
+        const xPos = -ridgeLengthOnGable / 2 + i * (ridgeLengthOnGable / (numOrnaments - 1));
         ornament.position.set(xPos, topRoofY + roofHeight + gabledRoofHeight, 0);
         mainStructureGroup.add(ornament);
     }
