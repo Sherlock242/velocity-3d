@@ -315,43 +315,20 @@ export function createGridAndScenery(
   const gateWidth = 40;
 
   // Top Railing (+Z)
-  const topRailingLength = (flatTopWidth - gateWidth) / 2;
-  const topRailing1 = createRailing(topRailingLength);
-  topRailing1.position.set(tilePlaneX - (gateWidth / 2 + topRailingLength / 2), railingY, tilePlaneZ + flatTopDepth / 2 - railingOffset);
-  gridGroup.add(topRailing1);
-  const topRailing2 = createRailing(topRailingLength);
-  topRailing2.position.set(tilePlaneX + (gateWidth / 2 + topRailingLength / 2), railingY, tilePlaneZ + flatTopDepth / 2 - railingOffset);
-  gridGroup.add(topRailing2);
-  const topGate = createToriiGate();
-  topGate.position.set(tilePlaneX, tilePlaneY, tilePlaneZ + flatTopDepth / 2 - railingOffset);
-  gridGroup.add(topGate);
+  const topRailing = createRailing(flatTopWidth);
+  topRailing.position.set(tilePlaneX, railingY, tilePlaneZ + flatTopDepth / 2 - railingOffset);
+  gridGroup.add(topRailing);
 
   // Bottom Railing (-Z)
-  const bottomRailingLength = (flatTopWidth - gateWidth) / 2;
-  const bottomRailing1 = createRailing(bottomRailingLength);
-  bottomRailing1.position.set(tilePlaneX - (gateWidth / 2 + bottomRailingLength / 2), railingY, tilePlaneZ - flatTopDepth / 2 + railingOffset);
-  gridGroup.add(bottomRailing1);
-  const bottomRailing2 = createRailing(bottomRailingLength);
-  bottomRailing2.position.set(tilePlaneX + (gateWidth / 2 + bottomRailingLength / 2), railingY, tilePlaneZ - flatTopDepth / 2 + railingOffset);
-  gridGroup.add(bottomRailing2);
-  const bottomGate = createToriiGate();
-  bottomGate.position.set(tilePlaneX, tilePlaneY, tilePlaneZ - flatTopDepth / 2 + railingOffset);
-  gridGroup.add(bottomGate);
+  const bottomRailing = createRailing(flatTopWidth);
+  bottomRailing.position.set(tilePlaneX, railingY, tilePlaneZ - flatTopDepth / 2 + railingOffset);
+  gridGroup.add(bottomRailing);
   
   // Left Railing (-X)
-  const leftRailingLength = (flatTopDepth - gateWidth) / 2;
-  const leftRailing1 = createRailing(leftRailingLength);
-  leftRailing1.rotation.y = Math.PI / 2;
-  leftRailing1.position.set(tilePlaneX - flatTopWidth / 2 + railingOffset, railingY, tilePlaneZ - (gateWidth / 2 + leftRailingLength / 2));
-  gridGroup.add(leftRailing1);
-  const leftRailing2 = createRailing(leftRailingLength);
-  leftRailing2.rotation.y = Math.PI / 2;
-  leftRailing2.position.set(tilePlaneX - flatTopWidth / 2 + railingOffset, railingY, tilePlaneZ + (gateWidth / 2 + leftRailingLength / 2));
-  gridGroup.add(leftRailing2);
-  const leftGate = createToriiGate();
-  leftGate.rotation.y = Math.PI / 2;
-  leftGate.position.set(tilePlaneX - flatTopWidth / 2 + railingOffset, tilePlaneY, tilePlaneZ);
-  gridGroup.add(leftGate);
+  const leftRailing = createRailing(flatTopDepth);
+  leftRailing.rotation.y = Math.PI / 2;
+  leftRailing.position.set(tilePlaneX - flatTopWidth / 2 + railingOffset, railingY, tilePlaneZ);
+  gridGroup.add(leftRailing);
   
   // Right Railing (+X)
   const rightRailingLength = (flatTopDepth - gateWidth) / 2;
