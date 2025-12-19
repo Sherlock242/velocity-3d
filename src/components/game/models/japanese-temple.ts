@@ -490,6 +490,7 @@ export function createJapaneseTemple() {
 
         const totalBracketHeight = 12;
         const verticalBracketGroup = new THREE.Group();
+        const bracketY = secondFloorPillarHeight - 1;
         verticalBracketGroup.position.set(pos.x, totalBracketHeight / 2, pos.z + 3);
 
         const bracketSpacing = totalBracketHeight / 2; // Brackets at top, middle, bottom of the line
@@ -501,10 +502,12 @@ export function createJapaneseTemple() {
 
         for (let i = 0; i < 3; i++) {
             const bracket = new THREE.Mesh(new THREE.BoxGeometry(4, 1.5, 3), bracketRedMaterial);
-            bracket.position.y = i * bracketSpacing;
+            let zPos = 0;
             if (i === 1) { // Middle bracket
-                bracket.position.z += 2;
+                zPos += 2;
             }
+            bracket.position.y = i * bracketSpacing;
+            bracket.position.z = zPos;
             verticalBracketGroup.add(bracket);
         }
         
