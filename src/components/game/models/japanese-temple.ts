@@ -649,7 +649,7 @@ export function createJapaneseTemple() {
     const ridgeLength = roofWidth - gabledRoofDepth;
     const numOrnaments = 7;
     for (let i = 0; i < numOrnaments; i++) {
-        const ornamentGeom = new THREE.SphereGeometry(2.5, 16, 8);
+        const ornamentGeom = new THREE.SphereGeometry(1.5, 16, 8);
         const ornament = new THREE.Mesh(ornamentGeom, goldMaterial);
         const xPos = -ridgeLength / 2 + i * (ridgeLength / (numOrnaments - 1));
         ornament.position.set(xPos, topRoofY + roofHeight + gabledRoofHeight, 0);
