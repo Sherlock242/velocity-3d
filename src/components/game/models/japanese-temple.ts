@@ -608,7 +608,7 @@ export function createJapaneseTemple() {
         cornerFlick: 8,
         material: darkBrownRoof
     });
-    const topRoofY = secondFloorY + secondFloorHeight - 30;
+    const topRoofY = secondFloorY + secondFloorHeight + 10;
     topRoof.position.y = topRoofY;
     mainStructureGroup.add(topRoof);
     
