@@ -55,25 +55,48 @@ export function createLantern(
     const lightBoxHeight = 10;
     const lightBoxRadius = 7;
     const lightBoxGroup = new THREE.Group();
-    lightBoxGroup.position.y = lightBoxY + lightBoxHeight / 2;
+    lightBoxGroup.position.y = lightBoxY; // Position group at the bottom of the box
     lanternGroup.add(lightBoxGroup);
-    
-    // Single hexagonal box
-    const lightBoxGeom = new THREE.CylinderGeometry(lightBoxRadius, lightBoxRadius, lightBoxHeight, 6);
-    const lightBoxMesh = new THREE.Mesh(lightBoxGeom, vermilionRed);
-    lightBoxGroup.add(lightBoxMesh);
 
-    // Add glass panels to each face
-    const panelWidth = lightBoxRadius * 0.9;
-    const panelHeight = lightBoxHeight * 0.7;
-    const panelGeom = new THREE.PlaneGeometry(panelWidth, panelHeight);
+    // Main frame of the light box
+    const frameThickness = 0.5;
+    const hFrameGeom = new THREE.TorusGeometry(lightBoxRadius, frameThickness, 6, 6);
     
+    // Top Frame
+    const topFrame = new THREE.Mesh(hFrameGeom, vermilionRed);
+    topFrame.rotation.x = Math.PI / 2;
+    topFrame.position.y = lightBoxHeight;
+    lightBoxGroup.add(topFrame);
+    
+    // Bottom Frame
+    const bottomFrame = new THREE.Mesh(hFrameGeom, vermilionRed);
+    bottomFrame.rotation.x = Math.PI / 2;
+    lightBoxGroup.add(bottomFrame);
+
+    // Corner pillars
     for (let i = 0; i < 6; i++) {
         const angle = (i / 6) * Math.PI * 2;
+        
+        const pillarGeom = new THREE.CylinderGeometry(frameThickness, frameThickness, lightBoxHeight, 4);
+        const pillar = new THREE.Mesh(pillarGeom, vermilionRed);
+        pillar.position.x = Math.sin(angle) * lightBoxRadius;
+        pillar.position.z = Math.cos(angle) * lightBoxRadius;
+        pillar.position.y = lightBoxHeight / 2;
+        lightBoxGroup.add(pillar);
+    }
+    
+    // Glass panels for each face
+    const panelWidth = lightBoxRadius * Math.sin(Math.PI / 6) * 2;
+    const panelHeight = lightBoxHeight;
+    const panelGeom = new THREE.PlaneGeometry(panelWidth, panelHeight);
+
+    for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2 + Math.PI / 6;
         const panel = new THREE.Mesh(panelGeom, grayLightMaterial);
         
-        panel.position.x = Math.sin(angle) * (lightBoxRadius * 0.8);
-        panel.position.z = Math.cos(angle) * (lightBoxRadius * 0.8);
+        panel.position.x = Math.sin(angle) * (lightBoxRadius - frameThickness);
+        panel.position.z = Math.cos(angle) * (lightBoxRadius - frameThickness);
+        panel.position.y = lightBoxHeight / 2;
         panel.rotation.y = angle;
         
         lightBoxGroup.add(panel);
