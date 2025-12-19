@@ -47,6 +47,7 @@ export function createSector21({
     0,
     cellCenterZ + templeBaseWidth / 2 + 25
   );
+  leftLantern.rotation.y = -Math.PI / 2;
   sectorGroup.add(leftLantern);
 
   const rightLantern = createLantern(vermilionRed, blackAccent);
@@ -55,6 +56,7 @@ export function createSector21({
     0,
     cellCenterZ + templeBaseWidth / 2 + 25
   );
+  rightLantern.rotation.y = -Math.PI / 2;
   sectorGroup.add(rightLantern);
   
   // Add the entrance gate to the right side
