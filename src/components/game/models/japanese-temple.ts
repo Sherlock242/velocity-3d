@@ -645,22 +645,6 @@ export function createJapaneseTemple() {
     const topRoofY = thirdFloorY + thirdFloorHeight - 5;
     topRoof.position.y = topRoofY;
     mainStructureGroup.add(topRoof);
-    
-    // Golden ornaments on front top face
-    const ornamentRidgeLength = roofWidth - gabledRoofDepth;
-    
-    const numOrnaments = 5; // Reduced from 7
-    for (let i = 0; i < numOrnaments; i++) {
-        const ornamentGeom = new THREE.SphereGeometry(1.5, 16, 8);
-        const ornament = new THREE.Mesh(ornamentGeom, goldMaterial);
-        const xPos = -ornamentRidgeLength / 2 + i * (ornamentRidgeLength / (numOrnaments - 1));
-        
-        // Position on the front gable ridge
-        const ornamentZ = (roofDepth - gabledRoofDepth) / 2;
-        ornament.position.set(xPos, topRoofY + roofHeight, ornamentZ);
-        mainStructureGroup.add(ornament);
-    }
-
 
 
     // --- Kitsune Statues ---
