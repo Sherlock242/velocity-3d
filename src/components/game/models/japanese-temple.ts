@@ -112,7 +112,7 @@ export function createJapaneseTemple() {
     
     // --- Stairs ---
     const stairsGroup = new THREE.Group();
-    const stairWidth = 80; // Widened
+    const stairWidth = 120;
     const totalStairHeight = baseHeight + secondTierHeight;
     const numStairs = 10;
     const stairHeight = totalStairHeight / numStairs;
