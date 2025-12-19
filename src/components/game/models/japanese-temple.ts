@@ -727,4 +727,3 @@ export function createJapaneseTemple() {
     
 
     
-
