@@ -63,50 +63,64 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const face = new THREE.Mesh(faceGeo, skinMaterial);
   head.add(face);
   
-  // Shaggy Hair
+  // Crescent Moon Hair
   const hairGroup = new THREE.Group();
-  const numLayers = 4;
-  const spikesPerLayer = 12;
-  
-  for (let layer = 0; layer < numLayers; layer++) {
-      for (let i = 0; i < spikesPerLayer; i++) {
-          const spikeHeight = Math.random() * 0.5 + 0.3;
-          const spikeRadius = Math.random() * 0.08 + 0.04;
-          const spikeGeo = new THREE.ConeGeometry(spikeRadius, spikeHeight, 4);
-          const spike = new THREE.Mesh(spikeGeo, hairMaterial);
-          
-          const angle = (i / spikesPerLayer) * Math.PI * 2 + (layer * 0.3);
-          const radius = headRadius * (0.85 + layer * 0.15);
-          
-          spike.position.set(
-              Math.cos(angle) * radius * 0.9,
-              (layer * 0.05) + Math.random() * 0.15,
-              Math.sin(angle) * radius * 0.9
-          );
-          
-          spike.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 1.2;
-          spike.rotation.y = Math.random() * Math.PI;
-          spike.rotation.z = (Math.random() - 0.5) * 0.5;
-          
-          hairGroup.add(spike);
-      }
-  }
 
+  function createCrescentHairShape(size: number) {
+    const shape = new THREE.Shape();
+    const outerRadius = size;
+    const innerRadius = size * 0.7;
+    const offset = size * 0.4;
+  
+    shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+  
+    const hole = new THREE.Path();
+    hole.absarc(offset, 0, innerRadius, 0, Math.PI * 2, true);
+    shape.holes.push(hole);
+  
+    return shape;
+  }
+  
+  const extrudeSettings = { depth: 0.05, bevelEnabled: false };
+  
+  // Main hair mass
+  for (let i = 0; i < 25; i++) {
+    const size = Math.random() * 0.2 + 0.2;
+    const crescentShape = createCrescentHairShape(size);
+    const crescentGeo = new THREE.ExtrudeGeometry(crescentShape, extrudeSettings);
+    const crescent = new THREE.Mesh(crescentGeo, hairMaterial);
+  
+    // Distribute around the top/back of the head
+    const phi = Math.random() * (Math.PI / 2.5); // Angle from top
+    const theta = Math.random() * Math.PI * 2; // Angle around
+  
+    crescent.position.setFromSphericalCoords(headRadius * 0.95, phi, theta);
+    
+    // Point the crescent away from the head
+    const lookAtPos = crescent.position.clone().multiplyScalar(0.8);
+    crescent.lookAt(lookAtPos);
+    crescent.rotation.y += Math.random() * Math.PI; // Randomize yaw
+  
+    hairGroup.add(crescent);
+  }
+  
   // Fringe/Bangs
-  const numBangs = 7;
-  for (let i = 0; i < numBangs; i++) {
-      const spikeHeight = Math.random() * 0.4 + 0.4;
-      const spikeRadius = Math.random() * 0.08 + 0.04;
-      const spikeGeo = new THREE.ConeGeometry(spikeRadius, spikeHeight, 4);
-      const spike = new THREE.Mesh(spikeGeo, hairMaterial);
-      
-      const x = (i - (numBangs - 1) / 2) * 0.12;
-      const y = -0.15 - Math.random() * 0.1;
-      const z = headRadius * 0.85;
-      
-      spike.position.set(x, y, z);
-      spike.rotation.x = -Math.PI / 4 - Math.random() * 0.3;
-      hairGroup.add(spike);
+  for (let i = 0; i < 7; i++) {
+    const size = Math.random() * 0.15 + 0.2;
+    const crescentShape = createCrescentHairShape(size);
+    const crescentGeo = new THREE.ExtrudeGeometry(crescentShape, extrudeSettings);
+    const crescent = new THREE.Mesh(crescentGeo, hairMaterial);
+  
+    const angle = (i / 6 - 0.5) * (Math.PI / 2);
+    
+    crescent.position.setFromSphericalCoords(headRadius * 1.1, Math.PI / 2.5, angle);
+    crescent.position.y -= 0.1; // Lower the bangs
+    
+    crescent.lookAt(0,0,0);
+    crescent.rotation.x += Math.PI / 2; // Adjust pitch
+    crescent.rotation.y += Math.PI / 2;
+  
+    hairGroup.add(crescent);
   }
 
   hairGroup.position.y = headHeight/2 - 0.2;
@@ -135,13 +149,13 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   torsoShape.lineTo(-shoulderWidth, shoulderHeight); // 5 Left shoulder
   torsoShape.closePath();
 
-  const extrudeSettings = {
+  const torsoExtrudeSettings = {
     steps: 2,
     depth: chestDepth - backDepth,
     bevelEnabled: false,
   };
 
-  const torsoGeo = new THREE.ExtrudeGeometry(torsoShape, extrudeSettings);
+  const torsoGeo = new THREE.ExtrudeGeometry(torsoShape, torsoExtrudeSettings);
   torsoGeo.translate(0, 0, backDepth); // Center the depth
   const torsoMesh = new THREE.Mesh(torsoGeo, shirtMaterial);
   torso.add(torsoMesh);
