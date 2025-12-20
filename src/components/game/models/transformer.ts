@@ -345,6 +345,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   character.add(head, torso, neck, leftLeg, rightLeg, leftArmGroup, rightArmGroup, beltGroup);
   // Re-position head to be on top of the neck
   head.position.y = neck.position.y + neckHeight/2 + headHeight/2; 
+  head.rotation.y = Math.PI; // Rotate head to face forward
   character.position.y = -totalLegHeight; // Center the model vertically
 
   character.userData.parts = {
