@@ -85,9 +85,10 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const hairGroup = new THREE.Group();
 
   // Create the clean, tapered undercut for the back
-  const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16, Math.PI / 2, Math.PI, 0, Math.PI);
+  const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16, 0, Math.PI, 0, Math.PI);
   const hairCap = new THREE.Mesh(hairCapGeom, hairMaterial);
   hairCap.position.y = -0.15; // Lower the undercut
+  hairCap.rotation.x = Math.PI / 2;
   hairCap.scale.set(1.15, 1.1, 1.1); // Make it fit the head shape
   hairGroup.add(hairCap);
 
