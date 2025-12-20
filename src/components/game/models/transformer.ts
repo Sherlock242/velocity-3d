@@ -116,7 +116,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const torso = new THREE.Group();
   torso.position.y = totalLegHeight + torsoHeight / 2;
 
-  const shoulderWidth = 0.5;
+  const shoulderWidth = 0.55;
   const waistWidth = 0.35;
   const backDepth = -0.225;
   const chestDepth = 0.225;
