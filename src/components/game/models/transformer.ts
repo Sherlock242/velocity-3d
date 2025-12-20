@@ -196,16 +196,20 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const leftArmGroup = new THREE.Group();
   const leftUpperArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius, upperArmLength, 8), shirtMaterial);
   leftUpperArm.position.y = -upperArmLength / 2;
+  
   const leftForearm = new THREE.Mesh(new THREE.CylinderGeometry(forearmRadius, forearmRadius, forearmLength, 8), skinMaterial);
-  leftForearm.position.y = -upperArmLength - forearmLength / 2;
-  leftUpperArm.add(leftForearm); // Attach forearm to upper arm
+  // Position forearm at the end of the upper arm
+  leftForearm.position.y = -upperArmLength / 2 - forearmLength / 2;
   
   const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.3, 0.1), skinMaterial);
-  leftHand.position.y = -forearmLength/2 - 0.15;
-  leftForearm.add(leftHand); // Attach hand to forearm
+  // Position hand at the end of the forearm
+  leftHand.position.y = -forearmLength / 2 - 0.15;
 
+  leftForearm.add(leftHand); // Attach hand to forearm
+  leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   leftArmGroup.add(leftUpperArm);
-  leftArmGroup.position.set(0.6, torso.position.y + torsoHeight/2, 0);
+  leftArmGroup.position.set(0.6, torso.position.y + torsoHeight / 2, 0);
+
 
   // Right Arm (with armor)
   const rightArmGroup = new THREE.Group();
