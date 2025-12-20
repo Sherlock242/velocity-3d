@@ -179,7 +179,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
 
   // Legs and Pants (Tapered)
   const legTopRadius = 0.22;
-  const legBottomRadius = 0.18;
+  const legBottomRadius = 0.15;
   const legGeo = new THREE.CylinderGeometry(legTopRadius, legBottomRadius, legHeight, 8);
 
   const leftLeg = new THREE.Group();
