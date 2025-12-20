@@ -85,7 +85,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   
   // Main hair mass
   for (let i = 0; i < 25; i++) {
-    const size = Math.random() * 0.2 + 0.2;
+    const size = Math.random() * 0.1 + 0.15;
     const crescentShape = createCrescentHairShape(size);
     const crescentGeo = new THREE.ExtrudeGeometry(crescentShape, extrudeSettings);
     const crescent = new THREE.Mesh(crescentGeo, hairMaterial);
@@ -106,7 +106,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   
   // Fringe/Bangs
   for (let i = 0; i < 7; i++) {
-    const size = Math.random() * 0.15 + 0.2;
+    const size = Math.random() * 0.1 + 0.18;
     const crescentShape = createCrescentHairShape(size);
     const crescentGeo = new THREE.ExtrudeGeometry(crescentShape, extrudeSettings);
     const crescent = new THREE.Mesh(crescentGeo, hairMaterial);
