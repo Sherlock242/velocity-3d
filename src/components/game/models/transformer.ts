@@ -41,7 +41,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const shirtMaterial = new THREE.MeshStandardMaterial({ color: shirtColor });
   const pantsMaterial = new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.7 });
   const beltMaterial = new THREE.MeshStandardMaterial({ color: beltColor });
-  const metalMaterial = new THREE.MeshStandardMaterial({ metalness: 0.5, roughness: 0.5 });
+  const metalMaterial = new THREE.MeshStandardMaterial({ color: metalColor, metalness: 0.5, roughness: 0.5 });
   const pauldronMaterial = new THREE.MeshStandardMaterial({ color: pauldronColor, roughness: 0.8 });
   const bootsMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 });
 
@@ -470,11 +470,11 @@ export function updateTransformerAnimation(
 
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
-      const lArmPersonPos = new THREE.Vector3(0.75, torsoPersonPos.y, 0);
+      const lArmPersonPos = new THREE.Vector3(0.65, torsoPersonPos.y - 0.1, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-0.75, torsoPersonPos.y, 0);
+      const rArmPersonPos = new THREE.Vector3(-0.65, torsoPersonPos.y - 0.1, 0);
       personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
 
       // Legs from back wheels
@@ -504,5 +504,3 @@ export function updateTransformerAnimation(
       }
   }
 }
-
-    
