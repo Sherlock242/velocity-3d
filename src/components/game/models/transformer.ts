@@ -112,18 +112,37 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   hairGroup.position.y = headHeight/2 - 0.2;
   head.add(hairGroup);
 
-  // Torso and Shirt with waist taper
+  // Torso and Shirt with hexagonal shape
   const torso = new THREE.Group();
   torso.position.y = totalLegHeight + torsoHeight / 2;
-  const torsoGeo = new THREE.BoxGeometry(0.9, torsoHeight, 0.45);
-  // Add waist taper
-  const positions = torsoGeo.attributes.position;
-  for (let i = 0; i < positions.count; i++) {
-      const y = positions.getY(i);
-      if (Math.abs(y) < torsoHeight * 0.1) { // Middle section
-          positions.setX(i, positions.getX(i) * 0.9);
-      }
-  }
+
+  const shoulderWidth = 0.5;
+  const waistWidth = 0.35;
+  const backDepth = -0.225;
+  const chestDepth = 0.225;
+  const shoulderHeight = torsoHeight * 0.45;
+  const trapeziusHeight = torsoHeight * 0.5;
+  const neckWidth = 0.18;
+  const neckDepth = 0.05;
+
+  const torsoShape = new THREE.Shape();
+  // Start from bottom center
+  torsoShape.moveTo(-waistWidth, -torsoHeight / 2); // 0 Bottom left
+  torsoShape.lineTo(waistWidth, -torsoHeight / 2); // 1 Bottom right
+  torsoShape.lineTo(shoulderWidth, shoulderHeight); // 2 Right shoulder
+  torsoShape.lineTo(neckWidth, trapeziusHeight); // 3 Right neck point
+  torsoShape.lineTo(-neckWidth, trapeziusHeight); // 4 Left neck point
+  torsoShape.lineTo(-shoulderWidth, shoulderHeight); // 5 Left shoulder
+  torsoShape.closePath();
+
+  const extrudeSettings = {
+    steps: 2,
+    depth: chestDepth - backDepth,
+    bevelEnabled: false,
+  };
+
+  const torsoGeo = new THREE.ExtrudeGeometry(torsoShape, extrudeSettings);
+  torsoGeo.translate(0, 0, backDepth); // Center the depth
   const torsoMesh = new THREE.Mesh(torsoGeo, shirtMaterial);
   torso.add(torsoMesh);
 
@@ -135,39 +154,27 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   collarVNeck.closePath();
   const collarVNeckGeom = new THREE.ShapeGeometry(collarVNeck);
   const collarVNeckMesh = new THREE.Mesh(collarVNeckGeom, skinMaterial);
-  collarVNeckMesh.position.z = 0.23; // Bring it forward
+  collarVNeckMesh.position.z = chestDepth + 0.01; // Bring it forward from the chest
   torso.add(collarVNeckMesh);
 
   const leftLapel = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.35, 0.1), shirtMaterial);
-  leftLapel.position.set(-0.2, torsoHeight / 2 - 0.15, 0.24);
+  leftLapel.position.set(-0.2, torsoHeight / 2 - 0.15, chestDepth + 0.02);
   leftLapel.rotation.z = Math.PI / 8;
   torso.add(leftLapel);
 
   const rightLapel = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.35, 0.1), shirtMaterial);
-  rightLapel.position.set(0.2, torsoHeight / 2 - 0.15, 0.24);
+  rightLapel.position.set(0.2, torsoHeight / 2 - 0.15, chestDepth + 0.02);
   rightLapel.rotation.z = -Math.PI / 8;
   torso.add(rightLapel);
 
 
   // Neck
   const neck = new THREE.Group();
-  const neckGeo = new THREE.CylinderGeometry(0.18, 0.18, neckHeight, 8);
+  const neckGeo = new THREE.CylinderGeometry(neckWidth * 0.8, neckWidth * 0.8, neckHeight, 8);
   const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
   neck.add(neckMesh);
-  neck.position.y = totalLegHeight + torsoHeight;
-
-  // Lateral Neck Sides (Trapezius)
-  const trapGeo = new THREE.BoxGeometry(0.3, 0.3, 0.2);
-  
-  const leftTrap = new THREE.Mesh(trapGeo, skinMaterial);
-  leftTrap.position.set(-0.25, torsoHeight / 2 - 0.1, 0);
-  leftTrap.rotation.z = Math.PI / 4;
-  torso.add(leftTrap);
-
-  const rightTrap = new THREE.Mesh(trapGeo, skinMaterial);
-  rightTrap.position.set(0.25, torsoHeight / 2 - 0.1, 0);
-  rightTrap.rotation.z = -Math.PI / 4;
-  torso.add(rightTrap);
+  // Position neck on top of the torso's neck flat
+  neck.position.y = totalLegHeight + torsoHeight / 2 + trapeziusHeight;
 
 
   // Legs and Pants (Tapered)
@@ -178,12 +185,12 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const leftLeg = new THREE.Group();
   const leftLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
   leftLeg.add(leftLegMesh);
-  leftLeg.position.set(0.25, (legHeight / 2) + shoeHeight, 0);
+  leftLeg.position.set(waistWidth, (legHeight / 2) + shoeHeight, 0);
 
   const rightLeg = new THREE.Group();
   const rightLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
   rightLeg.add(rightLegMesh);
-  rightLeg.position.set(-0.25, (legHeight / 2) + shoeHeight, 0);
+  rightLeg.position.set(-waistWidth, (legHeight / 2) + shoeHeight, 0);
 
   // Shoes/Boots
   const shoeGeo = new THREE.BoxGeometry(0.38, shoeHeight, 0.5);
@@ -221,7 +228,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   leftForearm.add(leftHand); // Attach hand to forearm
   leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   leftArmGroup.add(leftUpperArm);
-  leftArmGroup.position.set(0.6, torso.position.y + torsoHeight / 2, 0);
+  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderHeight, 0);
 
 
   // Right Arm (with armor)
@@ -234,7 +241,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   rightArm.add(rightHand);
   
   rightArmGroup.add(rightArm);
-  rightArmGroup.position.set(-0.6, torso.position.y + torsoHeight/2, 0);
+  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderHeight, 0);
   
   // Pauldron (Shoulder armor)
   const pauldronGeo = new THREE.BoxGeometry(0.4, 0.5, 0.45);
@@ -251,23 +258,23 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   // Belt & Holster
   const beltGroup = new THREE.Group();
   beltGroup.position.y = totalLegHeight;
-  const beltGeo = new THREE.BoxGeometry(0.95, 0.25, 0.5);
+  const beltGeo = new THREE.BoxGeometry(waistWidth * 2 + 0.05, 0.25, chestDepth - backDepth + 0.05);
   const belt = new THREE.Mesh(beltGeo, beltMaterial);
   beltGroup.add(belt);
   
   const buckleGeo = new THREE.BoxGeometry(0.2, 0.3, 0.1);
   const buckle = new THREE.Mesh(buckleGeo, metalMaterial);
-  buckle.position.z = 0.25;
+  buckle.position.z = chestDepth + 0.05;
   belt.add(buckle);
 
   const holsterGeo = new THREE.BoxGeometry(0.15, 0.4, 0.3);
   const holster = new THREE.Mesh(holsterGeo, beltMaterial);
-  holster.position.set(-0.45, -0.1, 0);
+  holster.position.set(-(waistWidth + 0.05), -0.1, 0);
   holster.rotation.z = Math.PI / 8;
   beltGroup.add(holster);
 
   const hangingStrap = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.5, 0.08), beltMaterial);
-  hangingStrap.position.set(0.3, -0.3, 0.25);
+  hangingStrap.position.set(waistWidth - 0.1, -0.3, chestDepth);
   hangingStrap.rotation.z = -Math.PI / 16;
   belt.add(hangingStrap);
   
@@ -530,21 +537,24 @@ export function updateTransformerAnimation(
 
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
-      const lArmPersonPos = new THREE.Vector3(0.6, totalLegHeight + torsoHeight, 0);
+      const shoulderHeight = torsoHeight * 0.45;
+      const shoulderWidth = 0.5;
+      const lArmPersonPos = new THREE.Vector3(shoulderWidth, totalLegHeight + torsoHeight / 2 + shoulderHeight, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-0.6, totalLegHeight + torsoHeight, 0);
+      const rArmPersonPos = new THREE.Vector3(-shoulderWidth, totalLegHeight + torsoHeight / 2 + shoulderHeight, 0);
       personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
 
       // Legs from back wheels
       const carWheels = carModel.userData.parts.wheels;
       const lLegCarPos = carWheels[2].position.clone();
-      const lLegPersonPos = new THREE.Vector3(0.25, legHeight / 2 + shoeHeight, 0);
+      const waistWidth = 0.35;
+      const lLegPersonPos = new THREE.Vector3(waistWidth, legHeight / 2 + shoeHeight, 0);
       personParts.leftLeg.position.lerpVectors(lLegCarPos, lLegPersonPos, p);
 
       const rLegCarPos = carWheels[3].position.clone();
-      const rLegPersonPos = new THREE.Vector3(-0.25, legHeight / 2 + shoeHeight, 0);
+      const rLegPersonPos = new THREE.Vector3(-waistWidth, legHeight / 2 + shoeHeight, 0);
       personParts.rightLeg.position.lerpVectors(rLegCarPos, rLegPersonPos, p);
       
       personModel.position.y = THREE.MathUtils.lerp(0, -totalLegHeight, p);
