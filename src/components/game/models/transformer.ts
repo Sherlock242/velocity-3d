@@ -85,11 +85,11 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const hairGroup = new THREE.Group();
 
   // Create the clean, tapered undercut for the back
-  const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16, 0, Math.PI, 0, Math.PI);
+  const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI);
   const hairCap = new THREE.Mesh(hairCapGeom, hairMaterial);
   hairCap.position.y = -0.15; // Lower the undercut
-  hairCap.rotation.x = Math.PI / 2;
-  hairCap.scale.set(1.15, 1.1, 1.1); // Make it fit the head shape
+  hairCap.rotation.x = -Math.PI / 2;
+  hairCap.scale.set(1.06, 1.05, 1.06); // Make it fit the head shape
   hairGroup.add(hairCap);
 
 
@@ -125,10 +125,10 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   }
   
   // Voluminous, messy top
-  const topClumpCount = 35;
+  const topClumpCount = 70;
   for (let i = 0; i < topClumpCount; i++) {
-    const size = Math.random() * 0.15 + 0.15;
-    const length = Math.random() * 0.3 + 0.25;
+    const size = Math.random() * 0.2 + 0.2;
+    const length = Math.random() * 0.35 + 0.3;
     const clumpGeo = createHairClump(size, length);
     const clump = new THREE.Mesh(clumpGeo, hairMaterial);
   
@@ -147,17 +147,17 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   }
   
   // Long, jagged bangs
-  const bangsCount = 10;
+  const bangsCount = 15;
   for (let i = 0; i < bangsCount; i++) {
-    const size = Math.random() * 0.1 + 0.18; 
-    const length = Math.random() * 0.2 + 0.35; // Longer bangs
+    const size = Math.random() * 0.15 + 0.2; 
+    const length = Math.random() * 0.25 + 0.4; // Longer bangs
     const clumpGeo = createHairClump(size, length);
     const clump = new THREE.Mesh(clumpGeo, hairMaterial);
   
-    const angle = (i / (bangsCount - 1) - 0.5) * (Math.PI / 1.5); // Spread across the front
+    const angle = (i / (bangsCount - 1) - 0.5) * (Math.PI / 1.4); // Spread across the front
     
     // Position them lower on the forehead
-    const phi = Math.PI / 2.2;
+    const phi = Math.PI / 2.1;
     clump.position.setFromSphericalCoords(headRadius, phi, angle);
     clump.position.y -= 0.1;
     
