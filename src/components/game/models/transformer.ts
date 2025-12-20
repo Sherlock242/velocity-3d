@@ -116,7 +116,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const torso = new THREE.Group();
   torso.position.y = totalLegHeight + torsoHeight / 2;
 
-  const shoulderWidth = 0.55;
+  const shoulderWidth = 0.5;
   const waistWidth = 0.35;
   const backDepth = -0.225;
   const chestDepth = 0.225;
@@ -538,7 +538,7 @@ export function updateTransformerAnimation(
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
       const shoulderHeight = torsoHeight * 0.45;
-      const shoulderWidth = 0.55;
+      const shoulderWidth = 0.5;
       const lArmPersonPos = new THREE.Vector3(shoulderWidth, totalLegHeight + torsoHeight / 2 + shoulderHeight, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
