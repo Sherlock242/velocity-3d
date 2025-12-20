@@ -29,7 +29,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
 
   // Materials
   const skinTone = 0xffdbac;
-  const hairColor = 0x111111;
+  const hairColor = 0x080808; // Raven-black
   const shirtColor = 0x222a4d;
   const pantsColor = 0x1a1a1a;
   const beltColor = 0x5d4037;
@@ -81,14 +81,24 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const face = new THREE.Mesh(faceGeo, skinMaterial);
   head.add(face);
   
-  // Crescent Moon Hair
+  // --- New Hair ---
   const hairGroup = new THREE.Group();
 
-  function createCrescentHairShape(size: number) {
+  // Create the clean, tapered undercut for the back
+  const hairCapGeom = new THREE.SphereGeometry(headRadius * 0.9, 32, 16, 0, Math.PI, Math.PI / 2, Math.PI);
+  const hairCap = new THREE.Mesh(hairCapGeom, hairMaterial);
+  hairCap.rotation.x = -Math.PI / 2;
+  hairCap.position.y = -0.15; // Lower the undercut
+  hairCap.scale.set(1.1, 0.8, 1); // Make it fit the head shape
+  hairGroup.add(hairCap);
+
+
+  // Helper function for sharp, tapered clumps (crescents)
+  function createCrescentHairShape(size: number, sharpness: number = 0.7) {
     const shape = new THREE.Shape();
     const outerRadius = size;
-    const innerRadius = size * 0.7;
-    const offset = size * 0.4;
+    const innerRadius = size * sharpness;
+    const offset = size * (1 - sharpness);
   
     shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
   
@@ -101,42 +111,44 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   
   const extrudeSettings = { depth: 0.05, bevelEnabled: false };
   
-  // Main hair mass
-  for (let i = 0; i < 25; i++) {
-    const size = Math.random() * 0.1 + 0.15;
-    const crescentShape = createCrescentHairShape(size);
+  // Voluminous, messy top
+  for (let i = 0; i < 35; i++) {
+    const size = Math.random() * 0.15 + 0.15;
+    const crescentShape = createCrescentHairShape(size, 0.6);
     const crescentGeo = new THREE.ExtrudeGeometry(crescentShape, extrudeSettings);
     const crescent = new THREE.Mesh(crescentGeo, hairMaterial);
   
-    // Distribute around the top/back of the head
-    const phi = Math.random() * (Math.PI / 2.5); // Angle from top
+    // Distribute around the top/front of the head
+    const phi = Math.random() * (Math.PI / 2); // Angle from top (0 to 90 degrees)
     const theta = Math.random() * Math.PI * 2; // Angle around
   
-    crescent.position.setFromSphericalCoords(headRadius * 0.95, phi, theta);
+    crescent.position.setFromSphericalCoords(headRadius * 0.90, phi, theta);
     
-    // Point the crescent away from the head
+    // Point the crescent outward
     const lookAtPos = crescent.position.clone().multiplyScalar(0.8);
     crescent.lookAt(lookAtPos);
-    crescent.rotation.y += Math.random() * Math.PI; // Randomize yaw
+    crescent.rotation.y += Math.random() * Math.PI - (Math.PI / 2);
   
     hairGroup.add(crescent);
   }
   
-  // Fringe/Bangs
-  for (let i = 0; i < 7; i++) {
-    const size = Math.random() * 0.1 + 0.18;
-    const crescentShape = createCrescentHairShape(size);
+  // Long, jagged bangs
+  for (let i = 0; i < 10; i++) {
+    const size = Math.random() * 0.1 + 0.22; // Longer bangs
+    const crescentShape = createCrescentHairShape(size, 0.7);
     const crescentGeo = new THREE.ExtrudeGeometry(crescentShape, extrudeSettings);
     const crescent = new THREE.Mesh(crescentGeo, hairMaterial);
   
-    const angle = (i / 6 - 0.5) * (Math.PI / 2);
+    const angle = (i / 9 - 0.5) * (Math.PI / 1.5); // Spread across the front
     
-    crescent.position.setFromSphericalCoords(headRadius * 1.1, Math.PI / 2.5, angle);
-    crescent.position.y -= 0.1; // Lower the bangs
+    // Position them lower on the forehead
+    crescent.position.setFromSphericalCoords(headRadius, Math.PI / 2.2, angle);
+    crescent.position.y -= 0.05;
     
     crescent.lookAt(0,0,0);
-    crescent.rotation.x += Math.PI / 2; // Adjust pitch
+    crescent.rotation.x += Math.PI / 2.5; // Adjust pitch to fall over face
     crescent.rotation.y += Math.PI / 2;
+    crescent.rotation.z += (Math.random() - 0.5) * 0.2; // Add jaggedness
   
     hairGroup.add(crescent);
   }
@@ -607,7 +619,7 @@ export function updateTransformerAnimation(
       const headCarPos = torsoCarPos.clone().setY(2);
       const neckHeight = 0.2;
       const headHeight = 0.5;
-      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + neckHeight + headHeight / 2, 0);
+      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight / 2 + (torsoHeight * 0.5) + neckHeight + headHeight / 2, 0);
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
 
       // Arms
