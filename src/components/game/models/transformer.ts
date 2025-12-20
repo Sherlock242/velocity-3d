@@ -37,7 +37,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const pauldronColor = 0x6d4c41;
 
   const skinMaterial = new THREE.MeshStandardMaterial({ color: skinTone });
-  const hairMaterial = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.6 });
+  const hairMaterial = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.8 });
   const shirtMaterial = new THREE.MeshStandardMaterial({ color: shirtColor });
   const pantsMaterial = new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.7 });
   const beltMaterial = new THREE.MeshStandardMaterial({ color: beltColor });
@@ -47,175 +47,186 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
 
 
   const headHeight = 0.5;
-  const torsoHeight = 1.2;
-  const legHeight = 1.4;
-  const shoeHeight = 0.2;
+  const torsoHeight = 1.4; // Taller
+  const legHeight = 1.6; // Taller
+  const shoeHeight = 0.3; // Proportionate shoes
   const totalLegHeight = legHeight + shoeHeight;
   const neckHeight = 0.2;
   const headRadius = 0.4;
   
-  // Base position to align with old model's center
-  const yOffset = totalLegHeight + torsoHeight / 2;
-
   // Head
   const head = new THREE.Group();
-  head.position.y = totalLegHeight + torsoHeight + neckHeight + headHeight / 2;
+  head.position.y = totalLegHeight + torsoHeight + neckHeight;
   
   const faceGeo = new THREE.SphereGeometry(headRadius, 16, 12);
+  // Elongate and narrow the face
+  faceGeo.scale(0.85, 1.15, 0.85);
   const face = new THREE.Mesh(faceGeo, skinMaterial);
-  face.scale.y = 1.2; // Elongate for anime style
   head.add(face);
   
-  // Spiky Hair
+  // Shaggy Hair
   const hairGroup = new THREE.Group();
-  const numLayers = 3;
-  const spikesPerLayer = 10;
+  const numLayers = 4;
+  const spikesPerLayer = 12;
   
   for (let layer = 0; layer < numLayers; layer++) {
       for (let i = 0; i < spikesPerLayer; i++) {
-          const spikeHeight = Math.random() * 0.4 + 0.4;
-          const spikeRadius = Math.random() * 0.1 + 0.08;
-          const spikeGeo = new THREE.ConeGeometry(spikeRadius, spikeHeight, 5);
+          const spikeHeight = Math.random() * 0.5 + 0.3;
+          const spikeRadius = Math.random() * 0.08 + 0.04;
+          const spikeGeo = new THREE.ConeGeometry(spikeRadius, spikeHeight, 4);
           const spike = new THREE.Mesh(spikeGeo, hairMaterial);
           
           const angle = (i / spikesPerLayer) * Math.PI * 2 + (layer * 0.3);
-          const radius = headRadius * (0.9 + layer * 0.1);
+          const radius = headRadius * (0.85 + layer * 0.15);
           
           spike.position.set(
-              Math.cos(angle) * radius,
-              (layer * 0.1) + Math.random() * 0.1,
-              Math.sin(angle) * radius
+              Math.cos(angle) * radius * 0.9,
+              (layer * 0.05) + Math.random() * 0.15,
+              Math.sin(angle) * radius * 0.9
           );
           
-          spike.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.8;
+          spike.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 1.2;
           spike.rotation.y = Math.random() * Math.PI;
-          spike.rotation.z = Math.random() * Math.PI;
+          spike.rotation.z = (Math.random() - 0.5) * 0.5;
           
           hairGroup.add(spike);
       }
   }
 
   // Fringe/Bangs
-  const numBangs = 5;
+  const numBangs = 7;
   for (let i = 0; i < numBangs; i++) {
-      const spikeHeight = Math.random() * 0.4 + 0.5;
-      const spikeRadius = Math.random() * 0.1 + 0.05;
+      const spikeHeight = Math.random() * 0.4 + 0.4;
+      const spikeRadius = Math.random() * 0.08 + 0.04;
       const spikeGeo = new THREE.ConeGeometry(spikeRadius, spikeHeight, 4);
       const spike = new THREE.Mesh(spikeGeo, hairMaterial);
       
-      const x = (i - (numBangs - 1) / 2) * 0.15;
-      const y = -0.1 - Math.random() * 0.1;
-      const z = headRadius * 0.9;
+      const x = (i - (numBangs - 1) / 2) * 0.12;
+      const y = -0.15 - Math.random() * 0.1;
+      const z = headRadius * 0.85;
       
       spike.position.set(x, y, z);
-      spike.rotation.x = -Math.PI / 6 - Math.random() * 0.2;
+      spike.rotation.x = -Math.PI / 4 - Math.random() * 0.3;
       hairGroup.add(spike);
   }
 
-  hairGroup.position.y = headHeight/2 - 0.1;
+  hairGroup.position.y = headHeight/2 - 0.2;
   head.add(hairGroup);
 
-  // Torso and Shirt
+  // Torso and Shirt with waist taper
   const torso = new THREE.Group();
   torso.position.y = totalLegHeight + torsoHeight / 2;
-  const torsoGeo = new THREE.BoxGeometry(1.0, torsoHeight, 0.5);
+  const torsoGeo = new THREE.BoxGeometry(0.9, torsoHeight, 0.45);
+  // Add waist taper
+  const positions = torsoGeo.attributes.position;
+  for (let i = 0; i < positions.count; i++) {
+      const y = positions.getY(i);
+      if (Math.abs(y) < torsoHeight * 0.1) { // Middle section
+          positions.setX(i, positions.getX(i) * 0.9);
+      }
+  }
   const torsoMesh = new THREE.Mesh(torsoGeo, shirtMaterial);
   torso.add(torsoMesh);
 
   // Shirt collar
-  const collarGeo = new THREE.BoxGeometry(0.8, 0.2, 0.6);
+  const collarGeo = new THREE.BoxGeometry(0.7, 0.2, 0.55);
   const collar = new THREE.Mesh(collarGeo, shirtMaterial);
   collar.position.y = torsoHeight / 2 - 0.05;
   torso.add(collar);
 
   // Neck
   const neck = new THREE.Group();
-  neck.position.y = totalLegHeight + torsoHeight + neckHeight / 2;
-  const neckGeo = new THREE.CylinderGeometry(0.2, 0.2, neckHeight, 8);
+  neck.position.y = totalLegHeight + torsoHeight;
+  const neckGeo = new THREE.CylinderGeometry(0.18, 0.18, neckHeight, 8);
   const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
   neck.add(neckMesh);
 
 
-  // Legs and Pants
-  const legGeo = new THREE.BoxGeometry(0.4, legHeight, 0.4);
+  // Legs and Pants (Tapered)
+  const legTopRadius = 0.22;
+  const legBottomRadius = 0.18;
+  const legGeo = new THREE.CylinderGeometry(legBottomRadius, legTopRadius, legHeight, 8);
 
   const leftLeg = new THREE.Group();
   const leftLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
   leftLeg.add(leftLegMesh);
-  leftLeg.position.set(0.3, (legHeight / 2) + shoeHeight, 0);
+  leftLeg.position.set(0.25, (legHeight / 2) + shoeHeight, 0);
 
   const rightLeg = new THREE.Group();
   const rightLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
   rightLeg.add(rightLegMesh);
-  rightLeg.position.set(-0.3, (legHeight / 2) + shoeHeight, 0);
+  rightLeg.position.set(-0.25, (legHeight / 2) + shoeHeight, 0);
 
-  // Shoes
-  const shoeGeo = new THREE.BoxGeometry(0.4, shoeHeight, 0.6);
+  // Shoes/Boots
+  const shoeGeo = new THREE.BoxGeometry(0.38, shoeHeight, 0.5);
   const leftShoe = new THREE.Mesh(shoeGeo, bootsMaterial);
-  leftShoe.position.y = (-legHeight / 2);
+  leftShoe.position.y = (-legHeight / 2) - (shoeHeight / 2);
   leftShoe.position.z = 0.05;
   leftLeg.add(leftShoe);
 
   const rightShoe = new THREE.Mesh(shoeGeo, bootsMaterial);
-  rightShoe.position.y = (-legHeight / 2);
+  rightShoe.position.y = (-legHeight / 2) - (shoeHeight / 2);
   rightShoe.position.z = 0.05;
   rightLeg.add(rightShoe);
 
 
-  // Arms
-  const armLength = 1.1;
-  const armGeo = new THREE.BoxGeometry(0.3, armLength, 0.3);
+  // Arms (Slimmer)
+  const armLength = 1.3;
+  const armRadius = 0.15;
+  const armGeo = new THREE.CylinderGeometry(armRadius, armRadius, armLength, 8);
   
   // Left Arm
   const leftArmGroup = new THREE.Group();
   const leftArm = new THREE.Mesh(armGeo, shirtMaterial);
-  const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.2, 0.3), skinMaterial);
+  leftArm.position.y = -armLength / 2;
+  const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.25, 0.25), skinMaterial);
   leftHand.position.y = -armLength / 2 - 0.1;
   leftArm.add(leftHand);
   leftArmGroup.add(leftArm);
-  leftArmGroup.position.set(0.65, torso.position.y - 0.1, 0);
+  leftArmGroup.position.set(0.6, torso.position.y + torsoHeight/2, 0);
 
   // Right Arm (with armor)
   const rightArmGroup = new THREE.Group();
   const rightArm = new THREE.Mesh(armGeo, shirtMaterial);
-  const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.2, 0.3), skinMaterial);
+  rightArm.position.y = -armLength / 2;
+  const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.25, 0.25), skinMaterial);
   rightHand.position.y = -armLength / 2 - 0.1;
   rightArm.add(rightHand);
   rightArmGroup.add(rightArm);
-  rightArmGroup.position.set(-0.65, torso.position.y - 0.1, 0);
+  rightArmGroup.position.set(-0.6, torso.position.y + torsoHeight/2, 0);
   
   // Pauldron (Shoulder armor)
-  const pauldronGeo = new THREE.BoxGeometry(0.4, 0.3, 0.4);
+  const pauldronGeo = new THREE.BoxGeometry(0.35, 0.4, 0.35);
   const pauldron = new THREE.Mesh(pauldronGeo, pauldronMaterial);
-  pauldron.position.y = armLength / 2 - 0.1;
+  pauldron.position.y = armLength/2 - 0.1;
   rightArm.add(pauldron);
   
   // Bracer (Forearm armor)
-  const bracerGeo = new THREE.CylinderGeometry(0.2, 0.25, 0.6, 8);
+  const bracerGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.6, 8);
   const bracer = new THREE.Mesh(bracerGeo, metalMaterial);
-  bracer.position.y = -0.1;
+  bracer.position.y = -0.3;
   rightArm.add(bracer);
 
   // Belt & Holster
   const beltGroup = new THREE.Group();
   beltGroup.position.y = totalLegHeight;
-  const beltGeo = new THREE.BoxGeometry(1.05, 0.2, 0.55);
+  const beltGeo = new THREE.BoxGeometry(0.95, 0.25, 0.5);
   const belt = new THREE.Mesh(beltGeo, beltMaterial);
   beltGroup.add(belt);
   
-  const buckleGeo = new THREE.BoxGeometry(0.2, 0.25, 0.1);
+  const buckleGeo = new THREE.BoxGeometry(0.2, 0.3, 0.1);
   const buckle = new THREE.Mesh(buckleGeo, metalMaterial);
-  buckle.position.z = 0.3;
+  buckle.position.z = 0.25;
   belt.add(buckle);
 
-  const holsterGeo = new THREE.BoxGeometry(0.15, 0.3, 0.3);
+  const holsterGeo = new THREE.BoxGeometry(0.15, 0.4, 0.3);
   const holster = new THREE.Mesh(holsterGeo, beltMaterial);
-  holster.position.set(-0.5, 0, 0);
-  holster.rotation.z = Math.PI / 6;
+  holster.position.set(-0.45, -0.1, 0);
+  holster.rotation.z = Math.PI / 8;
   beltGroup.add(holster);
   
   // Sword hilt
-  const hiltGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.5, 6);
+  const hiltGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.6, 6);
   const hilt = new THREE.Mesh(hiltGeo, new THREE.MeshStandardMaterial({color: 0x333333}));
   hilt.position.y = 0.2;
   hilt.rotation.x = Math.PI / 4;
@@ -223,6 +234,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
 
 
   character.add(head, torso, neck, leftLeg, rightLeg, leftArmGroup, rightArmGroup, beltGroup);
+  character.position.y = -totalLegHeight; // Center the model vertically
 
   character.userData.parts = {
       head: head,
@@ -447,45 +459,46 @@ export function updateTransformerAnimation(
       carModel.visible = !isPersonVisible;
   }
 
-  // Animate Lego Person parts based on car's state if we are transforming into person
+  // Animate Person parts based on car's state if we are transforming into person
   if (p > 0) {
       const carChassis = carModel.userData.parts.chassis;
       const personParts = personModel.userData.parts;
-
-      const legHeight = 1.4;
-      const shoeHeight = 0.2;
-      const torsoHeight = 1.2;
+      
+      const torsoHeight = 1.4;
+      const legHeight = 1.6;
+      const shoeHeight = 0.3;
       const totalLegHeight = legHeight + shoeHeight;
-      const neckHeight = 0.2;
-      const headHeight = 0.5;
 
 
       const torsoCarPos = carChassis.position.clone().set(0, 1, 0);
-      const torsoPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight / 2, 0);
-      personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos, p);
+      const torsoPersonPos = new THREE.Vector3(0, 0, 0); // Torso is root of person model
+      personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos.clone().setY(totalLegHeight + torsoHeight / 2), p);
 
       const headCarPos = torsoCarPos.clone().setY(2);
-      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + neckHeight + headHeight / 2, 0);
-      personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
+      const headPersonPos = new THREE.Vector3(0, torsoHeight + 0.2, 0);
+      personParts.head.position.lerpVectors(headCarPos, headPersonPos.clone().setY(totalLegHeight + torsoHeight + 0.2), p);
 
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
-      const lArmPersonPos = new THREE.Vector3(0.65, torsoPersonPos.y - 0.1, 0);
-      personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
+      const lArmPersonPos = new THREE.Vector3(0.6, torsoHeight / 2, 0);
+      personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos.clone().setY(totalLegHeight + torsoHeight), p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-0.65, torsoPersonPos.y - 0.1, 0);
-      personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
+      const rArmPersonPos = new THREE.Vector3(-0.6, torsoHeight / 2, 0);
+      personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos.clone().setY(totalLegHeight + torsoHeight), p);
 
       // Legs from back wheels
       const carWheels = carModel.userData.parts.wheels;
       const lLegCarPos = carWheels[2].position.clone();
-      const lLegPersonPos = new THREE.Vector3(0.3, (legHeight / 2) + shoeHeight, 0);
+      const lLegPersonPos = new THREE.Vector3(0.25, legHeight / 2 + shoeHeight, 0);
       personParts.leftLeg.position.lerpVectors(lLegCarPos, lLegPersonPos, p);
 
       const rLegCarPos = carWheels[3].position.clone();
-      const rLegPersonPos = new THREE.Vector3(-0.3, (legHeight / 2) + shoeHeight, 0);
+      const rLegPersonPos = new THREE.Vector3(-0.25, legHeight / 2 + shoeHeight, 0);
       personParts.rightLeg.position.lerpVectors(rLegCarPos, rLegPersonPos, p);
+      
+      personModel.position.y = THREE.MathUtils.lerp(0, -totalLegHeight, p);
+
 
       // Simple walk animation for person, only when fully transformed and moving
       if (p >= 1 && speed > 0.1) {
