@@ -156,6 +156,19 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   neck.add(neckMesh);
   neck.position.y = totalLegHeight + torsoHeight;
 
+  // Lateral Neck Sides (Trapezius)
+  const trapGeo = new THREE.BoxGeometry(0.3, 0.3, 0.2);
+  
+  const leftTrap = new THREE.Mesh(trapGeo, skinMaterial);
+  leftTrap.position.set(-0.25, torsoHeight / 2 - 0.1, 0);
+  leftTrap.rotation.z = Math.PI / 4;
+  torso.add(leftTrap);
+
+  const rightTrap = new THREE.Mesh(trapGeo, skinMaterial);
+  rightTrap.position.set(0.25, torsoHeight / 2 - 0.1, 0);
+  rightTrap.rotation.z = -Math.PI / 4;
+  torso.add(rightTrap);
+
 
   // Legs and Pants (Tapered)
   const legTopRadius = 0.22;
