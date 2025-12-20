@@ -24,147 +24,191 @@ const HAIR_COLORS = [
 ];
 
 
-export function createLegoPerson(isPlayer = false, gender: 'male' | 'female' = 'male') {
-  const legoPerson = new THREE.Group();
+export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female' = 'male') {
+  const character = new THREE.Group();
 
-  const headRadius = 0.4;
-  const headHeight = 0.5;
+  // Materials
   const skinTone = 0xffdbac;
-  
-  const hairColor = isPlayer ? 0x080808 : HAIR_COLORS[Math.floor(Math.random() * HAIR_COLORS.length)];
+  const hairColor = 0x111111;
+  const shirtColor = 0x222a4d;
+  const pantsColor = 0x1a1a1a;
+  const beltColor = 0x5d4037;
+  const metalColor = 0x9e9e9e;
+  const pauldronColor = 0x6d4c41;
+
+  const skinMaterial = new THREE.MeshStandardMaterial({ color: skinTone });
+  const hairMaterial = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.6 });
+  const shirtMaterial = new THREE.MeshStandardMaterial({ color: shirtColor });
+  const pantsMaterial = new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.7 });
+  const beltMaterial = new THREE.MeshStandardMaterial({ color: beltColor });
+  const metalMaterial = new THREE.MeshStandardMaterial({ color: metalColor, metalness: 0.5, roughness: 0.5 });
+  const pauldronMaterial = new THREE.MeshStandardMaterial({ color: pauldronColor, roughness: 0.8 });
+  const bootsMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 });
 
 
-  // Head
-  const head = new THREE.Group();
-
-  // Face (Front Half)
-  const faceGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, -Math.PI / 2, Math.PI);
-  const faceMat = new THREE.MeshStandardMaterial({ color: skinTone });
-  const face = new THREE.Mesh(faceGeo, faceMat);
-  head.add(face);
-
-  // Hair (Back Half)
-  const hairGeo = new THREE.CylinderGeometry(headRadius, headRadius, headHeight, 16, 1, false, Math.PI / 2, Math.PI);
-  const hairMat = new THREE.MeshStandardMaterial({ color: hairColor });
-  const hair = new THREE.Mesh(hairGeo, hairMat);
-  head.add(hair);
-
-  // Hair Top to show volume
-  const hairTopGeo = new THREE.CylinderGeometry(headRadius, headRadius, 0.1, 16);
-  const hairTopMat = new THREE.MeshStandardMaterial({ color: hairColor });
-  const hairTop = new THREE.Mesh(hairTopGeo, hairTopMat);
-  hairTop.position.y = headHeight / 2 + 0.01; // Position it slightly above to avoid z-fighting
-  head.add(hairTop);
-  
-    // Female long hair style
-  if (gender === 'female') {
-    const longHairGeom = new THREE.BoxGeometry(0.8, 1, 0.2);
-    const longHair = new THREE.Mesh(longHairGeom, hairMat);
-    longHair.position.set(0, -0.4, -headRadius);
-    head.add(longHair);
-  }
-
-
+  const headHeight = 0.5;
   const torsoHeight = 1.2;
   const legHeight = 1.4;
   const shoeHeight = 0.2;
   const totalLegHeight = legHeight + shoeHeight;
   const neckHeight = 0.2;
+  const headRadius = 0.4;
+  
+  // Base position to align with old model's center
+  const yOffset = totalLegHeight + torsoHeight / 2;
 
-  const torsoColor = isPlayer
-    ? 0x111111
-    : CLOTHING_COLORS[Math.floor(Math.random() * CLOTHING_COLORS.length)];
-  const legColor = isPlayer
-    ? 0x0055aa
-    : CLOTHING_COLORS[Math.floor(Math.random() * CLOTHING_COLORS.length)];
+  // Head
+  const head = new THREE.Group();
+  head.position.y = totalLegHeight + torsoHeight + neckHeight + headHeight / 2;
+  
+  const faceGeo = new THREE.SphereGeometry(headRadius, 16, 12);
+  const face = new THREE.Mesh(faceGeo, skinMaterial);
+  face.scale.y = 1.2; // Elongate for anime style
+  head.add(face);
+  
+  // Spiky Hair
+  const hairGroup = new THREE.Group();
+  const numSpikes = 15;
+  for (let i = 0; i < numSpikes; i++) {
+    const spikeHeight = Math.random() * 0.5 + 0.3;
+    const spikeRadius = Math.random() * 0.1 + 0.05;
+    const spikeGeo = new THREE.ConeGeometry(spikeRadius, spikeHeight, 4);
+    const spike = new THREE.Mesh(spikeGeo, hairMaterial);
+    
+    const angle = (i / numSpikes) * Math.PI * 2;
+    const radius = headRadius * (1 + (Math.random()-0.2));
+    
+    spike.position.set(
+        Math.cos(angle) * radius,
+        Math.random() * 0.3 + 0.1,
+        Math.sin(angle) * radius
+    );
+    spike.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+    spike.rotation.z = Math.random() * Math.PI;
+    hairGroup.add(spike);
+  }
+  hairGroup.position.y = headHeight/2 - 0.2;
+  head.add(hairGroup);
 
-  const torsoGeo = new THREE.BoxGeometry(1.2, torsoHeight, 0.6);
-  const torsoMat = new THREE.MeshStandardMaterial({ color: torsoColor }); // Black Hoodie
-  const torso = new THREE.Mesh(torsoGeo, torsoMat);
+  // Torso and Shirt
+  const torso = new THREE.Group();
+  torso.position.y = totalLegHeight + torsoHeight / 2;
+  const torsoGeo = new THREE.BoxGeometry(1.0, torsoHeight, 0.5);
+  const torsoMesh = new THREE.Mesh(torsoGeo, shirtMaterial);
+  torso.add(torsoMesh);
+
+  // Shirt collar
+  const collarGeo = new THREE.BoxGeometry(0.8, 0.2, 0.6);
+  const collar = new THREE.Mesh(collarGeo, shirtMaterial);
+  collar.position.y = torsoHeight / 2 - 0.05;
+  torso.add(collar);
 
   // Neck
-  const neckGeo = new THREE.CylinderGeometry(0.2, 0.2, neckHeight, 8);
-  const neckMat = new THREE.MeshStandardMaterial({ color: skinTone });
-  const neck = new THREE.Mesh(neckGeo, neckMat);
-
-
-  // Position torso above legs
-  torso.position.y = totalLegHeight + torsoHeight / 2;
-
-  // Position neck on top of torso
+  const neck = new THREE.Group();
   neck.position.y = totalLegHeight + torsoHeight + neckHeight / 2;
-
-  // Position head on top of neck
-  head.position.y = totalLegHeight + torsoHeight + neckHeight + headHeight / 2;
-
-  const armGeo = new THREE.BoxGeometry(0.3, 1.1, 0.3);
-  const armMat = new THREE.MeshStandardMaterial({ color: torsoColor }); // Sleeves match torso
-
-  const handGeo = new THREE.BoxGeometry(0.3, 0.2, 0.3);
-  const handMat = new THREE.MeshStandardMaterial({ color: 0xffdbac }); // Skin tone
-
-  const leftArmGroup = new THREE.Group();
-  const leftArm = new THREE.Mesh(armGeo, armMat);
-  const leftHand = new THREE.Mesh(handGeo, handMat);
-  leftHand.position.y = -0.65; // Position at the end of the sleeve
-  leftArmGroup.add(leftArm);
-  leftArmGroup.add(leftHand);
-  // Position arms relative to torso
-  leftArmGroup.position.set(0.75, torso.position.y, 0);
-  legoPerson.add(leftArmGroup);
-
-  const rightArmGroup = new THREE.Group();
-  const rightArm = new THREE.Mesh(armGeo, armMat);
-  const rightHand = new THREE.Mesh(handGeo, handMat);
-  rightHand.position.y = -0.65;
-  rightArmGroup.add(rightArm);
-  rightArmGroup.add(rightHand);
-  rightArmGroup.position.set(-0.75, torso.position.y, 0);
-  legoPerson.add(rightArmGroup);
+  const neckGeo = new THREE.CylinderGeometry(0.2, 0.2, neckHeight, 8);
+  const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
+  neck.add(neckMesh);
 
 
-  // --- LEGS & SHOES ---
-  const legGeo = new THREE.BoxGeometry(0.5, legHeight, 0.5);
-  const legMat = new THREE.MeshStandardMaterial({ color: legColor }); // Blue Jeans
+  // Legs and Pants
+  const legGeo = new THREE.BoxGeometry(0.4, legHeight, 0.4);
 
-  // Left Leg
   const leftLeg = new THREE.Group();
-  const leftLegMesh = new THREE.Mesh(legGeo, legMat);
+  const leftLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
   leftLeg.add(leftLegMesh);
   leftLeg.position.set(0.3, (legHeight / 2) + shoeHeight, 0);
 
-  // Right Leg
   const rightLeg = new THREE.Group();
-  const rightLegMesh = new THREE.Mesh(legGeo, legMat);
+  const rightLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
   rightLeg.add(rightLegMesh);
   rightLeg.position.set(-0.3, (legHeight / 2) + shoeHeight, 0);
 
   // Shoes
-  const shoeGeo = new THREE.BoxGeometry(0.5, shoeHeight, 0.6); // a bit longer
-  const shoeMat = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White
-
-  const leftShoe = new THREE.Mesh(shoeGeo, shoeMat);
+  const shoeGeo = new THREE.BoxGeometry(0.4, shoeHeight, 0.6);
+  const leftShoe = new THREE.Mesh(shoeGeo, bootsMaterial);
   leftShoe.position.y = (-legHeight / 2);
-  leftShoe.position.z = 0.05; // a bit forward
+  leftShoe.position.z = 0.05;
   leftLeg.add(leftShoe);
 
-  const rightShoe = new THREE.Mesh(shoeGeo, shoeMat);
+  const rightShoe = new THREE.Mesh(shoeGeo, bootsMaterial);
   rightShoe.position.y = (-legHeight / 2);
-  rightShoe.position.z = 0.05; // a bit forward
+  rightShoe.position.z = 0.05;
   rightLeg.add(rightShoe);
 
-  legoPerson.add(head, torso, neck, leftLeg, rightLeg);
 
-  legoPerson.userData.parts = {
+  // Arms
+  const armLength = 1.1;
+  const armGeo = new THREE.BoxGeometry(0.3, armLength, 0.3);
+  
+  // Left Arm
+  const leftArmGroup = new THREE.Group();
+  const leftArm = new THREE.Mesh(armGeo, shirtMaterial);
+  const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.2, 0.3), skinMaterial);
+  leftHand.position.y = -armLength / 2 - 0.1;
+  leftArm.add(leftHand);
+  leftArmGroup.add(leftArm);
+  leftArmGroup.position.set(0.65, torso.position.y - 0.1, 0);
+
+  // Right Arm (with armor)
+  const rightArmGroup = new THREE.Group();
+  const rightArm = new THREE.Mesh(armGeo, shirtMaterial);
+  const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.2, 0.3), skinMaterial);
+  rightHand.position.y = -armLength / 2 - 0.1;
+  rightArm.add(rightHand);
+  rightArmGroup.add(rightArm);
+  rightArmGroup.position.set(-0.65, torso.position.y - 0.1, 0);
+  
+  // Pauldron (Shoulder armor)
+  const pauldronGeo = new THREE.BoxGeometry(0.4, 0.3, 0.4);
+  const pauldron = new THREE.Mesh(pauldronGeo, pauldronMaterial);
+  pauldron.position.y = armLength / 2 - 0.1;
+  rightArm.add(pauldron);
+  
+  // Bracer (Forearm armor)
+  const bracerGeo = new THREE.CylinderGeometry(0.2, 0.25, 0.6, 8);
+  const bracer = new THREE.Mesh(bracerGeo, metalMaterial);
+  bracer.position.y = -0.1;
+  rightArm.add(bracer);
+
+  // Belt & Holster
+  const beltGroup = new THREE.Group();
+  beltGroup.position.y = totalLegHeight;
+  const beltGeo = new THREE.BoxGeometry(1.05, 0.2, 0.55);
+  const belt = new THREE.Mesh(beltGeo, beltMaterial);
+  beltGroup.add(belt);
+  
+  const buckleGeo = new THREE.BoxGeometry(0.2, 0.25, 0.1);
+  const buckle = new THREE.Mesh(buckleGeo, metalMaterial);
+  buckle.position.z = 0.3;
+  belt.add(buckle);
+
+  const holsterGeo = new THREE.BoxGeometry(0.15, 0.3, 0.3);
+  const holster = new THREE.Mesh(holsterGeo, beltMaterial);
+  holster.position.set(-0.5, 0, 0);
+  holster.rotation.z = Math.PI / 6;
+  beltGroup.add(holster);
+  
+  // Sword hilt
+  const hiltGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.5, 6);
+  const hilt = new THREE.Mesh(hiltGeo, new THREE.MeshStandardMaterial({color: 0x333333}));
+  hilt.position.y = 0.2;
+  hilt.rotation.x = Math.PI / 4;
+  holster.add(hilt);
+
+
+  character.add(head, torso, neck, leftLeg, rightLeg, leftArmGroup, rightArmGroup, beltGroup);
+
+  character.userData.parts = {
       head: head,
-      torso,
+      torso: torso,
       leftArm: leftArmGroup,
       rightArm: rightArmGroup,
-      leftLeg,
-      rightLeg,
+      leftLeg: leftLeg,
+      rightLeg: rightLeg,
   };
 
-  return legoPerson;
+  return character;
 }
 
 function createLamborghini() {
@@ -342,7 +386,7 @@ export function createTransformer() {
   transformer.position.y = 0.5;
 
   const carModel = createLamborghini();
-  const personModel = createLegoPerson(true, 'male'); // isPlayer = true
+  const personModel = createPlayerCharacter(true, 'male'); // isPlayer = true
   personModel.visible = false; // Start as car
 
   transformer.add(carModel);
