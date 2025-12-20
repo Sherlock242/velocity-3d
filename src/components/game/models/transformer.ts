@@ -180,17 +180,17 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   // Legs and Pants (Tapered)
   const legTopRadius = 0.22;
   const legBottomRadius = 0.18;
-  const legGeo = new THREE.CylinderGeometry(legBottomRadius, legTopRadius, legHeight, 8);
+  const legGeo = new THREE.CylinderGeometry(legTopRadius, legBottomRadius, legHeight, 8);
 
   const leftLeg = new THREE.Group();
   const leftLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
   leftLeg.add(leftLegMesh);
-  leftLeg.position.set(0.25, (legHeight / 2) + shoeHeight, 0);
+  leftLeg.position.set(0.22, (legHeight / 2) + shoeHeight, 0);
 
   const rightLeg = new THREE.Group();
   const rightLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
   rightLeg.add(rightLegMesh);
-  rightLeg.position.set(-0.25, (legHeight / 2) + shoeHeight, 0);
+  rightLeg.position.set(-0.22, (legHeight / 2) + shoeHeight, 0);
 
   // Shoes/Boots
   const shoeGeo = new THREE.BoxGeometry(0.38, shoeHeight, 0.5);
@@ -549,7 +549,7 @@ export function updateTransformerAnimation(
       // Legs from back wheels
       const carWheels = carModel.userData.parts.wheels;
       const lLegCarPos = carWheels[2].position.clone();
-      const waistWidth = 0.25;
+      const waistWidth = 0.22;
       const lLegPersonPos = new THREE.Vector3(waistWidth, legHeight / 2 + shoeHeight, 0);
       personParts.leftLeg.position.lerpVectors(lLegCarPos, lLegPersonPos, p);
 
