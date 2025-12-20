@@ -209,8 +209,8 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const armLength = 1.3;
   const armRadius = 0.15;
   const forearmRadius = 0.14;
-  const upperArmLength = armLength * 0.5;
-  const forearmLength = armLength * 0.5;
+  const upperArmLength = armLength * 0.6;
+  const forearmLength = armLength * 0.4;
   
   // Left Arm (rolled up sleeve)
   const leftArmGroup = new THREE.Group();
@@ -538,7 +538,7 @@ export function updateTransformerAnimation(
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
       const shoulderHeight = torsoHeight * 0.45;
-      const shoulderWidth = 0.5;
+      const shoulderWidth = 0.55;
       const lArmPersonPos = new THREE.Vector3(shoulderWidth, totalLegHeight + torsoHeight / 2 + shoulderHeight, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
