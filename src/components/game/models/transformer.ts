@@ -57,9 +57,27 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   // Head
   const head = new THREE.Group();
   
-  const faceGeo = new THREE.SphereGeometry(headRadius, 16, 12);
-  // Elongate and narrow the face
-  faceGeo.scale(0.85, 1.15, 0.85);
+  const faceGeo = new THREE.SphereGeometry(headRadius, 32, 16);
+  // Elongate and narrow the face, taper the chin
+  const positions = faceGeo.attributes.position;
+  for (let i = 0; i < positions.count; i++) {
+    const y = positions.getY(i);
+    // Apply overall scaling for a less round head
+    positions.setX(i, positions.getX(i) * 0.85);
+    positions.setZ(i, positions.getZ(i) * 0.85);
+    positions.setY(i, positions.getY(i) * 1.15);
+
+    // Taper the chin (for y < 0)
+    if (y < 0) {
+        // As y goes from 0 down to -radius, scaleFactor goes from 1 down to ~0.7
+        const scaleFactor = 1 + (y / headRadius) * 0.3;
+        positions.setX(i, positions.getX(i) * scaleFactor);
+        positions.setZ(i, positions.getZ(i) * scaleFactor);
+    }
+  }
+  positions.needsUpdate = true;
+  faceGeo.computeVertexNormals();
+
   const face = new THREE.Mesh(faceGeo, skinMaterial);
   head.add(face);
   
