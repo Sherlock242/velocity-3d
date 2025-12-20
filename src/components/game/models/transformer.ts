@@ -41,7 +41,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const shirtMaterial = new THREE.MeshStandardMaterial({ color: shirtColor });
   const pantsMaterial = new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.7 });
   const beltMaterial = new THREE.MeshStandardMaterial({ color: beltColor });
-  const metalMaterial = new THREE.MeshStandardMaterial({ color: metalColor, metalness: 0.5, roughness: 0.5 });
+  const metalMaterial = new THREE.MeshStandardMaterial({ metalness: 0.5, roughness: 0.5 });
   const pauldronMaterial = new THREE.MeshStandardMaterial({ color: pauldronColor, roughness: 0.8 });
   const bootsMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 });
 
@@ -68,26 +68,51 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   
   // Spiky Hair
   const hairGroup = new THREE.Group();
-  const numSpikes = 15;
-  for (let i = 0; i < numSpikes; i++) {
-    const spikeHeight = Math.random() * 0.5 + 0.3;
-    const spikeRadius = Math.random() * 0.1 + 0.05;
-    const spikeGeo = new THREE.ConeGeometry(spikeRadius, spikeHeight, 4);
-    const spike = new THREE.Mesh(spikeGeo, hairMaterial);
-    
-    const angle = (i / numSpikes) * Math.PI * 2;
-    const radius = headRadius * (1 + (Math.random()-0.2));
-    
-    spike.position.set(
-        Math.cos(angle) * radius,
-        Math.random() * 0.3 + 0.1,
-        Math.sin(angle) * radius
-    );
-    spike.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.5;
-    spike.rotation.z = Math.random() * Math.PI;
-    hairGroup.add(spike);
+  const numLayers = 3;
+  const spikesPerLayer = 10;
+  
+  for (let layer = 0; layer < numLayers; layer++) {
+      for (let i = 0; i < spikesPerLayer; i++) {
+          const spikeHeight = Math.random() * 0.4 + 0.4;
+          const spikeRadius = Math.random() * 0.1 + 0.08;
+          const spikeGeo = new THREE.ConeGeometry(spikeRadius, spikeHeight, 5);
+          const spike = new THREE.Mesh(spikeGeo, hairMaterial);
+          
+          const angle = (i / spikesPerLayer) * Math.PI * 2 + (layer * 0.3);
+          const radius = headRadius * (0.9 + layer * 0.1);
+          
+          spike.position.set(
+              Math.cos(angle) * radius,
+              (layer * 0.1) + Math.random() * 0.1,
+              Math.sin(angle) * radius
+          );
+          
+          spike.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.8;
+          spike.rotation.y = Math.random() * Math.PI;
+          spike.rotation.z = Math.random() * Math.PI;
+          
+          hairGroup.add(spike);
+      }
   }
-  hairGroup.position.y = headHeight/2 - 0.2;
+
+  // Fringe/Bangs
+  const numBangs = 5;
+  for (let i = 0; i < numBangs; i++) {
+      const spikeHeight = Math.random() * 0.4 + 0.5;
+      const spikeRadius = Math.random() * 0.1 + 0.05;
+      const spikeGeo = new THREE.ConeGeometry(spikeRadius, spikeHeight, 4);
+      const spike = new THREE.Mesh(spikeGeo, hairMaterial);
+      
+      const x = (i - (numBangs - 1) / 2) * 0.15;
+      const y = -0.1 - Math.random() * 0.1;
+      const z = headRadius * 0.9;
+      
+      spike.position.set(x, y, z);
+      spike.rotation.x = -Math.PI / 6 - Math.random() * 0.2;
+      hairGroup.add(spike);
+  }
+
+  hairGroup.position.y = headHeight/2 - 0.1;
   head.add(hairGroup);
 
   // Torso and Shirt
@@ -479,3 +504,5 @@ export function updateTransformerAnimation(
       }
   }
 }
+
+    
