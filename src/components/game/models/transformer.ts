@@ -128,11 +128,27 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const torsoMesh = new THREE.Mesh(torsoGeo, shirtMaterial);
   torso.add(torsoMesh);
 
-  // Shirt collar
-  const collarGeo = new THREE.BoxGeometry(0.7, 0.2, 0.55);
-  const collar = new THREE.Mesh(collarGeo, shirtMaterial);
-  collar.position.y = torsoHeight / 2 - 0.05;
-  torso.add(collar);
+  // Open Shirt Collar
+  const collarVNeck = new THREE.Shape();
+  collarVNeck.moveTo(-0.15, torsoHeight / 2);
+  collarVNeck.lineTo(0, torsoHeight / 2 - 0.3);
+  collarVNeck.lineTo(0.15, torsoHeight / 2);
+  collarVNeck.closePath();
+  const collarVNeckGeom = new THREE.ShapeGeometry(collarVNeck);
+  const collarVNeckMesh = new THREE.Mesh(collarVNeckGeom, skinMaterial);
+  collarVNeckMesh.position.z = 0.23; // Bring it forward
+  torso.add(collarVNeckMesh);
+
+  const leftLapel = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.35, 0.1), shirtMaterial);
+  leftLapel.position.set(-0.2, torsoHeight / 2 - 0.15, 0.24);
+  leftLapel.rotation.z = Math.PI / 8;
+  torso.add(leftLapel);
+
+  const rightLapel = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.35, 0.1), shirtMaterial);
+  rightLapel.position.set(0.2, torsoHeight / 2 - 0.15, 0.24);
+  rightLapel.rotation.z = -Math.PI / 8;
+  torso.add(rightLapel);
+
 
   // Neck
   const neck = new THREE.Group();
@@ -173,32 +189,41 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   // Arms (Slimmer)
   const armLength = 1.3;
   const armRadius = 0.15;
-  const armGeo = new THREE.CylinderGeometry(armRadius, armRadius, armLength, 8);
+  const forearmRadius = 0.14;
+  const upperArmLength = armLength * 0.5;
+  const forearmLength = armLength * 0.5;
   
-  // Left Arm
+  // Left Arm (rolled up sleeve)
   const leftArmGroup = new THREE.Group();
-  const leftArm = new THREE.Mesh(armGeo, shirtMaterial);
-  leftArm.position.y = -armLength / 2;
-  const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.25, 0.25), skinMaterial);
-  leftHand.position.y = -armLength / 2 - 0.1;
-  leftArm.add(leftHand);
-  leftArmGroup.add(leftArm);
+  const leftUpperArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius, upperArmLength, 8), shirtMaterial);
+  leftUpperArm.position.y = -upperArmLength / 2;
+  const leftForearm = new THREE.Mesh(new THREE.CylinderGeometry(forearmRadius, forearmRadius, forearmLength, 8), skinMaterial);
+  leftForearm.position.y = -upperArmLength - forearmLength / 2;
+  leftUpperArm.add(leftForearm);
+  
+  const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.3, 0.1), skinMaterial);
+  leftHand.position.y = -forearmLength/2 - 0.15;
+  leftForearm.add(leftHand);
+
+  leftArmGroup.add(leftUpperArm);
   leftArmGroup.position.set(0.6, torso.position.y + torsoHeight/2, 0);
 
   // Right Arm (with armor)
   const rightArmGroup = new THREE.Group();
-  const rightArm = new THREE.Mesh(armGeo, shirtMaterial);
+  const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius, armLength, 8), shirtMaterial);
   rightArm.position.y = -armLength / 2;
-  const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.25, 0.25), skinMaterial);
-  rightHand.position.y = -armLength / 2 - 0.1;
+  
+  const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.3, 0.1), skinMaterial);
+  rightHand.position.y = -armLength / 2 - 0.15;
   rightArm.add(rightHand);
+  
   rightArmGroup.add(rightArm);
   rightArmGroup.position.set(-0.6, torso.position.y + torsoHeight/2, 0);
   
   // Pauldron (Shoulder armor)
-  const pauldronGeo = new THREE.BoxGeometry(0.35, 0.4, 0.35);
+  const pauldronGeo = new THREE.BoxGeometry(0.4, 0.5, 0.45);
   const pauldron = new THREE.Mesh(pauldronGeo, pauldronMaterial);
-  pauldron.position.y = armLength/2 - 0.1;
+  pauldron.position.y = armLength/2 - 0.15;
   rightArm.add(pauldron);
   
   // Bracer (Forearm armor)
@@ -224,6 +249,11 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   holster.position.set(-0.45, -0.1, 0);
   holster.rotation.z = Math.PI / 8;
   beltGroup.add(holster);
+
+  const hangingStrap = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.5, 0.08), beltMaterial);
+  hangingStrap.position.set(0.3, -0.3, 0.25);
+  hangingStrap.rotation.z = -Math.PI / 16;
+  belt.add(hangingStrap);
   
   // Sword hilt
   const hiltGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.6, 6);
