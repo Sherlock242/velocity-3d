@@ -56,7 +56,6 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   
   // Head
   const head = new THREE.Group();
-  head.position.y = totalLegHeight + torsoHeight + neckHeight;
   
   const faceGeo = new THREE.SphereGeometry(headRadius, 16, 12);
   // Elongate and narrow the face
@@ -152,10 +151,10 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
 
   // Neck
   const neck = new THREE.Group();
-  neck.position.y = totalLegHeight + torsoHeight;
   const neckGeo = new THREE.CylinderGeometry(0.18, 0.18, neckHeight, 8);
   const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
   neck.add(neckMesh);
+  neck.position.y = totalLegHeight + torsoHeight;
 
 
   // Legs and Pants (Tapered)
@@ -199,11 +198,11 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   leftUpperArm.position.y = -upperArmLength / 2;
   const leftForearm = new THREE.Mesh(new THREE.CylinderGeometry(forearmRadius, forearmRadius, forearmLength, 8), skinMaterial);
   leftForearm.position.y = -upperArmLength - forearmLength / 2;
-  leftUpperArm.add(leftForearm);
+  leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   
   const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.3, 0.1), skinMaterial);
   leftHand.position.y = -forearmLength/2 - 0.15;
-  leftForearm.add(leftHand);
+  leftForearm.add(leftHand); // Attach hand to forearm
 
   leftArmGroup.add(leftUpperArm);
   leftArmGroup.position.set(0.6, torso.position.y + torsoHeight/2, 0);
@@ -264,6 +263,8 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
 
 
   character.add(head, torso, neck, leftLeg, rightLeg, leftArmGroup, rightArmGroup, beltGroup);
+  // Re-position head to be on top of the neck
+  head.position.y = neck.position.y + neckHeight/2 + headHeight/2; 
   character.position.y = -totalLegHeight; // Center the model vertically
 
   character.userData.parts = {
@@ -505,17 +506,19 @@ export function updateTransformerAnimation(
       personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos.clone().setY(totalLegHeight + torsoHeight / 2), p);
 
       const headCarPos = torsoCarPos.clone().setY(2);
-      const headPersonPos = new THREE.Vector3(0, torsoHeight + 0.2, 0);
-      personParts.head.position.lerpVectors(headCarPos, headPersonPos.clone().setY(totalLegHeight + torsoHeight + 0.2), p);
+      const neckHeight = 0.2;
+      const headHeight = 0.5;
+      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + neckHeight + headHeight / 2, 0);
+      personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
 
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
-      const lArmPersonPos = new THREE.Vector3(0.6, torsoHeight / 2, 0);
-      personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos.clone().setY(totalLegHeight + torsoHeight), p);
+      const lArmPersonPos = new THREE.Vector3(0.6, totalLegHeight + torsoHeight, 0);
+      personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-0.6, torsoHeight / 2, 0);
-      personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos.clone().setY(totalLegHeight + torsoHeight), p);
+      const rArmPersonPos = new THREE.Vector3(-0.6, totalLegHeight + torsoHeight, 0);
+      personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
 
       // Legs from back wheels
       const carWheels = carModel.userData.parts.wheels;
