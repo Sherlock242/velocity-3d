@@ -92,8 +92,8 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
   }, []);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-background text-foreground flex flex-col justify-center items-center">
-      <div className="absolute top-16 text-center">
+    <div className="relative w-screen h-screen overflow-hidden bg-background text-foreground">
+      <div className="absolute top-8 left-8 text-left">
         <h1 className="text-5xl font-bold text-primary">Velocity 3D</h1>
         <p className="text-muted-foreground mt-2">
           The futuristic racing experience.
@@ -105,7 +105,7 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
         className="w-full h-full absolute inset-0 z-0"
       ></div>
       
-      <div className="absolute bottom-10 z-10">
+      <div className="absolute bottom-16 right-8 z-10">
         <Button
           onClick={onStartGame}
           size="lg"
