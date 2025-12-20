@@ -45,7 +45,7 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
     // Character model
     const character = createLegoPerson(true, 'male');
     character.scale.set(1.5, 1.5, 1.5);
-    character.position.y = -2; // Adjust position to center it
+    character.position.y = 0; // Adjust position to center it
     scene.add(character);
     characterRef.current = character;
 
