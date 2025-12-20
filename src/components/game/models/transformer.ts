@@ -81,79 +81,92 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const face = new THREE.Mesh(faceGeo, skinMaterial);
   head.add(face);
   
-  // --- New Hair ---
+  // --- New Hair using volumetric clumps ---
   const hairGroup = new THREE.Group();
 
   // Create the clean, tapered undercut for the back
-  const hairCapGeom = new THREE.SphereGeometry(headRadius * 0.9, 32, 16, 0, Math.PI, Math.PI / 2, Math.PI);
+  const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16, Math.PI / 2, Math.PI, 0, Math.PI);
   const hairCap = new THREE.Mesh(hairCapGeom, hairMaterial);
-  hairCap.rotation.x = -Math.PI / 2;
   hairCap.position.y = -0.15; // Lower the undercut
-  hairCap.scale.set(1.1, 0.8, 1); // Make it fit the head shape
+  hairCap.scale.set(1.15, 1.1, 1.1); // Make it fit the head shape
   hairGroup.add(hairCap);
 
 
-  // Helper function for sharp, tapered clumps (crescents)
-  function createCrescentHairShape(size: number, sharpness: number = 0.7) {
-    const shape = new THREE.Shape();
-    const outerRadius = size;
-    const innerRadius = size * sharpness;
-    const offset = size * (1 - sharpness);
-  
-    shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
-  
-    const hole = new THREE.Path();
-    hole.absarc(offset, 0, innerRadius, 0, Math.PI * 2, true);
-    shape.holes.push(hole);
-  
-    return shape;
+  // Helper function for sharp, tapered hair clumps
+  function createHairClump(size: number, length: number) {
+      const geometry = new THREE.BufferGeometry();
+      
+      const vertices = new Float32Array( [
+          // Base
+          -size/2, 0, -size/2,  // 0
+           size/2, 0, -size/2,  // 1
+           size/2, 0,  size/2,  // 2
+          -size/2, 0,  size/2,  // 3
+          // Tip
+           0, -length, 0, // 4
+      ] );
+
+      const indices = [
+          // Sides
+          0, 1, 4,
+          1, 2, 4,
+          2, 3, 4,
+          3, 0, 4,
+          // Base
+          0, 3, 2,
+          0, 2, 1,
+      ];
+
+      geometry.setIndex( indices );
+      geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+      geometry.computeVertexNormals();
+      return geometry;
   }
   
-  const extrudeSettings = { depth: 0.05, bevelEnabled: false };
-  
   // Voluminous, messy top
-  for (let i = 0; i < 35; i++) {
+  const topClumpCount = 35;
+  for (let i = 0; i < topClumpCount; i++) {
     const size = Math.random() * 0.15 + 0.15;
-    const crescentShape = createCrescentHairShape(size, 0.6);
-    const crescentGeo = new THREE.ExtrudeGeometry(crescentShape, extrudeSettings);
-    const crescent = new THREE.Mesh(crescentGeo, hairMaterial);
+    const length = Math.random() * 0.3 + 0.25;
+    const clumpGeo = createHairClump(size, length);
+    const clump = new THREE.Mesh(clumpGeo, hairMaterial);
   
     // Distribute around the top/front of the head
-    const phi = Math.random() * (Math.PI / 2); // Angle from top (0 to 90 degrees)
+    const phi = Math.random() * (Math.PI / 2.2); // Angle from top (0 to ~80 degrees)
     const theta = Math.random() * Math.PI * 2; // Angle around
   
-    crescent.position.setFromSphericalCoords(headRadius * 0.90, phi, theta);
+    clump.position.setFromSphericalCoords(headRadius * 0.90, phi, theta);
     
-    // Point the crescent outward
-    const lookAtPos = crescent.position.clone().multiplyScalar(0.8);
-    crescent.lookAt(lookAtPos);
-    crescent.rotation.y += Math.random() * Math.PI - (Math.PI / 2);
+    // Point the clump outward with some randomness
+    const lookAtPos = clump.position.clone().multiplyScalar(0.8);
+    lookAtPos.y += (Math.random() - 0.5) * 0.2; // Add vertical variation
+    clump.lookAt(lookAtPos);
   
-    hairGroup.add(crescent);
+    hairGroup.add(clump);
   }
   
   // Long, jagged bangs
-  for (let i = 0; i < 10; i++) {
-    const size = Math.random() * 0.1 + 0.22; // Longer bangs
-    const crescentShape = createCrescentHairShape(size, 0.7);
-    const crescentGeo = new THREE.ExtrudeGeometry(crescentShape, extrudeSettings);
-    const crescent = new THREE.Mesh(crescentGeo, hairMaterial);
+  const bangsCount = 10;
+  for (let i = 0; i < bangsCount; i++) {
+    const size = Math.random() * 0.1 + 0.18; 
+    const length = Math.random() * 0.2 + 0.35; // Longer bangs
+    const clumpGeo = createHairClump(size, length);
+    const clump = new THREE.Mesh(clumpGeo, hairMaterial);
   
-    const angle = (i / 9 - 0.5) * (Math.PI / 1.5); // Spread across the front
+    const angle = (i / (bangsCount - 1) - 0.5) * (Math.PI / 1.5); // Spread across the front
     
     // Position them lower on the forehead
-    crescent.position.setFromSphericalCoords(headRadius, Math.PI / 2.2, angle);
-    crescent.position.y -= 0.05;
+    const phi = Math.PI / 2.2;
+    clump.position.setFromSphericalCoords(headRadius, phi, angle);
+    clump.position.y -= 0.1;
     
-    crescent.lookAt(0,0,0);
-    crescent.rotation.x += Math.PI / 2.5; // Adjust pitch to fall over face
-    crescent.rotation.y += Math.PI / 2;
-    crescent.rotation.z += (Math.random() - 0.5) * 0.2; // Add jaggedness
+    clump.lookAt(0, -0.3, 0.5); // Aim slightly down and forward
+    clump.rotation.z += (Math.random() - 0.5) * 0.2; // Add jaggedness
   
-    hairGroup.add(crescent);
+    hairGroup.add(clump);
   }
 
-  hairGroup.position.y = headHeight/2 - 0.2;
+  hairGroup.position.y = headHeight/2 - 0.15;
   head.add(hairGroup);
 
   // Torso and Shirt with hexagonal shape
