@@ -192,17 +192,59 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   rightLeg.add(rightLegMesh);
   rightLeg.position.set(-0.22, (legHeight / 2) + shoeHeight, 0);
 
-  // Shoes/Boots
-  const shoeGeo = new THREE.BoxGeometry(0.38, shoeHeight, 0.5);
-  const leftShoe = new THREE.Mesh(shoeGeo, bootsMaterial);
-  leftShoe.position.y = (-legHeight / 2) - (shoeHeight / 2);
-  leftShoe.position.z = 0.05;
-  leftLeg.add(leftShoe);
+  // Helper function to create a boot
+  const createBoot = () => {
+    const bootGroup = new THREE.Group();
+    const soleHeight = 0.1;
+    const mainBootHeight = shoeHeight - soleHeight;
+    
+    // Main boot shape
+    const bootBody = new THREE.Mesh(
+      new THREE.BoxGeometry(0.35, mainBootHeight, 0.4),
+      bootsMaterial
+    );
+    bootBody.position.y = mainBootHeight / 2;
+    
+    // Rounded toe
+    const toe = new THREE.Mesh(
+        new THREE.SphereGeometry(0.175, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2),
+        bootsMaterial
+    );
+    toe.position.set(0, 0, 0.2); // Position at the front
+    toe.rotation.x = Math.PI / 2;
+    bootBody.add(toe);
 
-  const rightShoe = new THREE.Mesh(shoeGeo, bootsMaterial);
-  rightShoe.position.y = (-legHeight / 2) - (shoeHeight / 2);
-  rightShoe.position.z = 0.05;
-  rightLeg.add(rightShoe);
+    bootGroup.add(bootBody);
+
+    // Sole
+    const sole = new THREE.Mesh(
+      new THREE.BoxGeometry(0.38, soleHeight, 0.55),
+      bootsMaterial
+    );
+    sole.position.y = -mainBootHeight/2 - soleHeight/2;
+    bootBody.add(sole);
+
+    // Laces (simple representation)
+    const laceMaterial = new THREE.MeshBasicMaterial({ color: 0x444444 });
+    for (let i = 0; i < 5; i++) {
+      const lace = new THREE.Mesh(
+        new THREE.BoxGeometry(0.25, 0.02, 0.02),
+        laceMaterial
+      );
+      lace.position.set(0, (i * 0.05) - 0.05, 0.18);
+      bootBody.add(lace);
+    }
+    
+    return bootGroup;
+  }
+
+  const leftBoot = createBoot();
+  leftBoot.position.y = (-legHeight / 2);
+  leftLeg.add(leftBoot);
+
+  const rightBoot = createBoot();
+  rightBoot.position.y = (-legHeight / 2);
+  rightLeg.add(rightBoot);
 
 
   // Arms (Slimmer)
