@@ -4,19 +4,18 @@ import * as THREE from 'three';
 // Helper function to create a single "chunky" hair clump
 function createHairClump(length: number, width: number, material: THREE.Material) {
     const shape = new THREE.Shape();
-    // A more tapered, sharp shape
+    const curveAmount = length * 0.3;
     shape.moveTo(-width / 2, 0);
-    shape.quadraticCurveTo(0, length * 0.8, width / 2, 0);
-    shape.lineTo(width * 0.4, -length * 0.1);
-    shape.quadraticCurveTo(0, length * 0.7, -width * 0.4, -length * 0.1);
+    shape.quadraticCurveTo(0, length, width / 2, 0);
+    shape.quadraticCurveTo(0, -curveAmount, -width / 2, 0);
     shape.closePath();
 
     const extrudeSettings = {
         steps: 1,
-        depth: width * 0.5,
+        depth: width * 0.6,
         bevelEnabled: true,
-        bevelThickness: 0.05,
-        bevelSize: 0.05,
+        bevelThickness: 0.03,
+        bevelSize: 0.03,
         bevelSegments: 1,
     };
 
@@ -29,20 +28,19 @@ function createHairClump(length: number, width: number, material: THREE.Material
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     const hairGroup = new THREE.Group();
     
-    // Layers defined from bottom to top
     const layers = [
-        // Sides and Back - shorter and flatter
-        { count: 300, length: 0.2, width: 0.05, radialOffset: 0.0, yRange: [-0.5, 0.2], zRange: [-1.0, 0.2] },
-        // Main volume layer
-        { count: 400, length: 0.4, width: 0.07, radialOffset: 0.1, yRange: [-0.2, 0.6], zRange: [-0.8, 1.0] },
-        // Top messy layer
-        { count: 350, length: 0.3, width: 0.06, radialOffset: 0.2, yRange: [0.3, 1.0], zRange: [-0.5, 1.0] },
+        // Base layer for sides and back
+        { count: 120, length: 0.25, width: 0.1, yRange: [-0.4, 0.4], zRange: [-1.0, 0.1], xRange: [-1.0, 1.0], rotX: 1.0 },
+        // Main volume on top and upper back
+        { count: 150, length: 0.4, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2 },
+        // Fringe/bangs layer
+        { count: 80, length: 0.35, width: 0.12, yRange: [0.3, 0.7], zRange: [0.4, 1.0], xRange: [-0.9, 0.9], rotX: 1.5 },
     ];
 
     layers.forEach(layer => {
         for (let i = 0; i < layer.count; i++) {
-            const length = layer.length * (1 + (Math.random() - 0.5) * 0.2);
-            const width = layer.width * (1 + (Math.random() - 0.5) * 0.2);
+            const length = layer.length * (1 + (Math.random() - 0.5) * 0.3);
+            const width = layer.width * (1 + (Math.random() - 0.5) * 0.3);
             const clump = createHairClump(length, width, hairMaterial);
 
             // Position on a sphere
@@ -50,12 +48,13 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
                 (Math.random() - 0.5) * 2,
                 (Math.random() - 0.5) * 2,
                 (Math.random() - 0.5) * 2
-            ).normalize().multiplyScalar(headRadius + layer.radialOffset);
+            ).normalize().multiplyScalar(headRadius);
             
-            // Constrain to Y and Z ranges to shape the hair
+            // Constrain to Y, Z, and X ranges to shape the hair
             pos.y = THREE.MathUtils.clamp(pos.y, layer.yRange[0], layer.yRange[1]);
             pos.z = THREE.MathUtils.clamp(pos.z, layer.zRange[0], layer.zRange[1]);
-            
+            pos.x = THREE.MathUtils.clamp(pos.x, layer.xRange[0], layer.xRange[1]);
+
             clump.position.copy(pos);
 
             // Orient the clump to flow away from the origin
@@ -64,8 +63,8 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
             clump.quaternion.copy(quaternion);
 
             // Add extra downward rotation for gravity and styling
-            let rotX = Math.PI * 0.8; 
-            rotX += (Math.random() - 0.5) * 0.3; // Randomize flow
+            let rotX = layer.rotX * Math.PI; 
+            rotX += (Math.random() - 0.5) * 0.4; // Randomize flow
 
             clump.rotateX(rotX);
             
