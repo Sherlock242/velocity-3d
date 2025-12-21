@@ -30,7 +30,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     // Layers are defined to control hair placement, size, and flow
     const layers = [
         // Merged and expanded base layer for full, random coverage on sides and back
-        { count: 2500, length: 0.2, width: 0.1, yRange: [-0.8, 0.4], zRange: [-1.0, 0.2], xRange: [-1.0, 1.0], rotX: 1.0 },
+        { count: 2500, length: 0.2, width: 0.1, yRange: [-1.0, 0.4], zRange: [-1.0, 0.2], xRange: [-1.0, 1.0], rotX: 1.0 },
         // Main volume on top and upper back
         { count: 150, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2 },
         // Fringe/bangs layer
