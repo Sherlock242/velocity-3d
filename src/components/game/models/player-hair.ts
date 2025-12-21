@@ -51,9 +51,8 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
   const hairGroup = new THREE.Group();
 
   // Create the clean, tapered undercut for the back
-  const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16, 0, Math.PI);
+  const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16);
   const hairCap = new THREE.Mesh(hairCapGeom, hairMaterial);
-  hairCap.rotation.x = -Math.PI / 2;
   hairCap.scale.set(1.06, 1.05, 1.06); // Make it fit the head shape
   hairGroup.add(hairCap);
 
