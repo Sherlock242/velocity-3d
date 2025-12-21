@@ -64,7 +64,6 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
   );
   const hairCap = new THREE.Mesh(hairCapGeom, hairMaterial);
   hairCap.scale.set(1.06, 1.05, 1.06); // Make it fit the head shape
-  hairCap.rotation.x = Math.PI / 8; // Tilt it forward slightly
   hairCap.position.y += 0.1;
   hairGroup.add(hairCap);
 
@@ -105,6 +104,29 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
 
     clump.lookAt(0, -0.4, 0.5);
     clump.rotation.z += (random() - 0.5) * 0.3;
+
+    hairGroup.add(clump);
+  }
+
+  // Nape hair to cover the back and break the spherical shape
+  const napeClumpCount = 15;
+  for (let i = 0; i < napeClumpCount; i++) {
+    const size = random() * 0.18 + 0.22;
+    const length = random() * 0.5 + 0.6;
+    const clumpGeo = createHairClump(size, length);
+    const clump = new THREE.Mesh(clumpGeo, hairMaterial);
+
+    // Position these clumps at the back bottom of the head
+    const theta = Math.PI + (random() - 0.5) * (Math.PI / 1.5); // Back of the head
+    const phi = Math.PI / 1.6; // Lower down on the sphere
+
+    clump.position.setFromSphericalCoords(headRadius * 0.95, phi, theta);
+    clump.position.y -= 0.3;
+
+    // Aim them downwards
+    clump.lookAt(clump.position.x, clump.position.y - 1, clump.position.z);
+    clump.rotation.z += (random() - 0.5) * 0.2;
+    clump.rotation.x += (random() - 0.5) * 0.2;
 
     hairGroup.add(clump);
   }
