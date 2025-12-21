@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 // Helper function to create a single "chunky" hair clump
@@ -28,14 +29,12 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     
     // Layers are defined to control hair placement, size, and flow
     const layers = [
-        // Merged base layer for sides and back, now with more coverage
-        { count: 1500, length: 0.2, width: 0.1, yRange: [-0.8, 0.4], zRange: [-1.0, 0.2], xRange: [-1.0, 1.0], rotX: 1.2 },
+        // Merged and expanded base layer for full, random coverage on sides and back
+        { count: 1200, length: 0.2, width: 0.1, yRange: [-0.8, 0.4], zRange: [-1.0, 0.2], xRange: [-1.0, 1.0], rotX: 0.8 },
         // Main volume on top and upper back
         { count: 150, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2 },
         // Fringe/bangs layer
         { count: 80, length: 0.3, width: 0.12, yRange: [0.3, 0.7], zRange: [0.4, 1.0], xRange: [-0.9, 0.9], rotX: 1.5 },
-        // Dedicated layer for lower back and sides
-        { count: 400, length: 0.2, width: 0.1, yRange: [-0.9, -0.4], zRange: [-1.0, 0.0], xRange: [-0.8, 0.8], rotX: 1.1 },
     ];
 
     layers.forEach(layer => {
