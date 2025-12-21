@@ -14,8 +14,8 @@ function random() {
 function createHairClump(size: number, length: number) {
   const geometry = new THREE.BufferGeometry();
 
-  const bladeThickness = size * 0.2; // Make it much thinner
-  const curveFactor = -size * 0.4; // How much the tip curves inward
+  const bladeThickness = size * 0.2;
+  const curveFactor = -size * 0.4;
 
   const vertices = new Float32Array([
     // Base
@@ -53,10 +53,9 @@ function createHairClump(size: number, length: number) {
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
   const hairGroup = new THREE.Group();
 
-  // Create the clean, tapered undercut for the back
   const hairCapGeom = new THREE.SphereGeometry(
-    headRadius, 
-    32, 
+    headRadius,
+    32,
     16,
     0, // phiStart
     Math.PI * 2, // phiLength
@@ -69,45 +68,43 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
   hairCap.position.y += 0.1;
   hairGroup.add(hairCap);
 
-  // Voluminous, messy top
-  const topClumpCount = 120; // Increased density
+  // Voluminous, messy top (now only on front/sides)
+  const topClumpCount = 120;
   for (let i = 0; i < topClumpCount; i++) {
-    const size = random() * 0.2 + 0.25; // Slightly larger base
+    const size = random() * 0.2 + 0.25;
     const length = random() * 0.35 + 0.4;
     const clumpGeo = createHairClump(size, length);
     const clump = new THREE.Mesh(clumpGeo, hairMaterial);
 
-    // Distribute around the top/front of the head
     const phi = random() * (Math.PI / 2.0); // Angle from top (0 to 90 degrees)
-    const theta = random() * Math.PI * 2; // Angle around
+    // Restrict theta to front and sides (-90 to 90 degrees, or -PI/2 to PI/2)
+    const theta = (random() - 0.5) * Math.PI;
 
     clump.position.setFromSphericalCoords(headRadius * 0.9, phi, theta);
 
-    // Point the clump outward with some randomness
     const lookAtPos = clump.position.clone().multiplyScalar(0.8);
-    lookAtPos.y += (random() - 0.4) * 0.3; // Add vertical variation, lean forward slightly
+    lookAtPos.y += (random() - 0.4) * 0.3;
     clump.lookAt(lookAtPos);
 
     hairGroup.add(clump);
   }
 
   // Long, jagged bangs
-  const bangsCount = 25; // Increased density
+  const bangsCount = 25;
   for (let i = 0; i < bangsCount; i++) {
     const size = random() * 0.15 + 0.2;
-    const length = random() * 0.3 + 0.5; // Longer bangs
+    const length = random() * 0.3 + 0.5;
     const clumpGeo = createHairClump(size, length);
     const clump = new THREE.Mesh(clumpGeo, hairMaterial);
 
-    const angle = (i / (bangsCount - 1) - 0.5) * (Math.PI / 1.3); // Spread across the front
+    const angle = (i / (bangsCount - 1) - 0.5) * (Math.PI / 1.3);
 
-    // Position them lower on the forehead
     const phi = Math.PI / 1.9;
     clump.position.setFromSphericalCoords(headRadius * 1.05, phi, angle);
     clump.position.y -= 0.15;
 
-    clump.lookAt(0, -0.4, 0.5); // Aim more sharply down and forward
-    clump.rotation.z += (random() - 0.5) * 0.3; // Add jaggedness
+    clump.lookAt(0, -0.4, 0.5);
+    clump.rotation.z += (random() - 0.5) * 0.3;
 
     hairGroup.add(clump);
   }
