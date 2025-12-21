@@ -284,7 +284,7 @@ export function createPlayerCharacter(
   leftForearm.add(leftHand); // Attach hand to forearm
   leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   leftArmGroup.add(leftUpperArm);
-  leftArmGroup.position.set(shoulderWidth + 0.2, torso.position.y + shoulderHeight - 0.15, 0);
+  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderHeight, 0);
   leftArmGroup.rotation.z = Math.PI / 8;
 
   // Right Arm (with armor)
@@ -303,7 +303,7 @@ export function createPlayerCharacter(
   rightArm.add(rightHand);
 
   rightArmGroup.add(rightArm);
-  rightArmGroup.position.set(-(shoulderWidth + 0.2), torso.position.y + shoulderHeight - 0.15, 0);
+  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderHeight, 0);
   rightArmGroup.rotation.z = -Math.PI / 8;
 
   // Pauldron (Shoulder armor)
