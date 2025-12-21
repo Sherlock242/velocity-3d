@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import { createPlayerCharacter } from '@/components/game/models/player-character';
 import { Button } from '@/components/ui/button';
 import { Car } from 'lucide-react';
-import { TWEEN } from 'three/examples/jsm/libs/tween.module.js';
 
 type GameLobbyProps = {
   onStartGame: () => void;
@@ -82,10 +81,8 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
         if (!isDraggingRef.current || !characterRef.current) return;
         isDraggingRef.current = false;
 
-        new TWEEN.Tween(characterRef.current.position)
-            .to({ z: 0 }, 300)
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .start();
+        // Snap back to original position
+        characterRef.current.position.z = 0;
         
         // Store the end rotation and reset for idle animation
         initialRotationY.current = characterRef.current.rotation.y;
@@ -117,7 +114,6 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
     let animationFrameId: number;
     const animate = (time: number) => {
       animationFrameId = requestAnimationFrame(animate);
-      TWEEN.update(time);
       if (characterRef.current && !isDraggingRef.current) {
         characterRef.current.rotation.y = initialRotationY.current + time * 0.0001; // Slow rotation
       }
