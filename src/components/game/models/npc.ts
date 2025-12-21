@@ -176,7 +176,7 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
 
   // Arms
-  const armLength = 1.3;
+  const armLength = 1.2;
   const armRadius = 0.12;
 
   const leftArmGroup = new THREE.Group();
