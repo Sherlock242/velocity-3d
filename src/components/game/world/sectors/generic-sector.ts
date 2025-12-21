@@ -1,7 +1,6 @@
-
 import * as THREE from 'three';
 import { createBuilding } from '../../models/building';
-import { createPlayerCharacter } from '../../models/transformer';
+import { createNpc } from '../../models/npc';
 import { TRACK_THEMES, CELL_SIZE, ROAD_WIDTH } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
 import type { MutableRefObject } from 'react';
@@ -66,7 +65,7 @@ export function createGenericSector({
     const numNpcs = 5;
     for (let k = 0; k < numNpcs; k++) {
       const gender = Math.random() > 0.5 ? 'male' : 'female';
-      const npc = createPlayerCharacter(false, gender);
+      const npc = createNpc(false, gender);
       npc.scale.set(1.5, 1.5, 1.5);
       const safeArea = (CELL_SIZE - ROAD_WIDTH) / 2 - 20; // Stay away from roads
       const x = cellCenterX + (Math.random() - 0.5) * safeArea;

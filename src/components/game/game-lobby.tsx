@@ -1,9 +1,8 @@
-
 'use client';
 
 import * as React from 'react';
 import * as THREE from 'three';
-import { createPlayerCharacter } from '@/components/game/models/transformer';
+import { createPlayerCharacter } from '@/components/game/models/player-character';
 import { Button } from '@/components/ui/button';
 import { Car } from 'lucide-react';
 

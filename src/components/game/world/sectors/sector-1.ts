@@ -1,7 +1,6 @@
-
 import * as THREE from 'three';
 import { createRockGarden } from '../../models/rock-garden';
-import { createPlayerCharacter } from '../../models/transformer';
+import { createNpc } from '../../models/npc';
 import type { MutableRefObject } from 'react';
 
 type Sector1Props = {
@@ -36,7 +35,7 @@ export function createSector1({
 
   npcPositions.forEach(pos => {
     const gender = Math.random() > 0.5 ? 'male' : 'female';
-    const npc = createPlayerCharacter(false, gender);
+    const npc = createNpc(false, gender);
     npc.scale.set(1.5,1.5,1.5);
     npc.position.set(cellCenterX + pos.x, 1, cellCenterZ + pos.z);
     npc.rotation.y = Math.random() * Math.PI * 2;
