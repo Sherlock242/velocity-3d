@@ -6,12 +6,12 @@ function createHairClump(length: number, width: number, material: THREE.Material
     const shape = new THREE.Shape();
     // A more blade-like, tapered shape
     shape.moveTo(0, 0);
-    shape.bezierCurveTo(width / 2, length * 0.5, width / 4, length * 0.8, 0, length);
-    shape.bezierCurveTo(-width / 4, length * 0.8, -width / 2, length * 0.5, 0, 0);
+    shape.bezierCurveTo(width / 3, length * 0.4, width / 4, length * 0.8, 0, length);
+    shape.bezierCurveTo(-width / 4, length * 0.8, -width / 3, length * 0.4, 0, 0);
 
     const extrudeSettings = {
         steps: 1,
-        depth: width * 0.3, // Give clumps some thickness
+        depth: width * 0.2, // Give clumps some thickness
         bevelEnabled: false,
     };
 
@@ -24,13 +24,6 @@ function createHairClump(length: number, width: number, material: THREE.Material
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     const hairGroup = new THREE.Group();
 
-    // --- Base Hair Cap for coverage ---
-    const capGeom = new THREE.SphereGeometry(headRadius * 1.01, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.5);
-    const hairCap = new THREE.Mesh(capGeom, hairMaterial);
-    hairCap.position.y = -0.1;
-    hairCap.rotation.x = 0.1; // Tilt slightly forward
-    hairGroup.add(hairCap);
-
     const clumps: {
       length: number;
       width: number;
@@ -42,71 +35,94 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
       rotZ: number;
     }[] = [];
 
-    // --- Back Layer ---
-    for (let i = 0; i < 15; i++) {
+    // --- Base Layer for Coverage ---
+    for (let i = 0; i < 60; i++) {
+        const phi = Math.PI / 2 - 0.2 + (Math.random() * 1.0);
+        const isBack = phi > 1.8;
         clumps.push({
-            length: Math.random() * 0.5 + 0.6,
-            width: 0.25,
-            radius: headRadius * 1.0,
-            phi: Math.PI / 2 + Math.random() * 0.4,
-            theta: Math.PI * 0.7 + Math.random() * Math.PI * 0.6,
-            rotX: -0.5 - Math.random() * 0.3, rotY: 0, rotZ: (Math.random() - 0.5) * 0.2
+            length: isBack ? 0.6 : 1.0,
+            width: 0.4,
+            radius: headRadius * 0.95,
+            phi: phi,
+            theta: Math.random() * Math.PI * 2,
+            rotX: -0.6,
+            rotY: 0,
+            rotZ: (Math.random() - 0.5) * 0.4
         });
     }
 
-    // --- Side Layers (swept back) ---
-     for (let i = 0; i < 10; i++) {
+    // --- Mid Layer for Volume ---
+    for (let i = 0; i < 40; i++) {
+        clumps.push({
+            length: Math.random() * 0.5 + 1.0,
+            width: 0.35,
+            radius: headRadius * 1.0,
+            phi: Math.PI / 2 + (Math.random() - 0.5) * 1.2,
+            theta: Math.random() * Math.PI * 2,
+            rotX: -0.7, rotY: 0, rotZ: (Math.random() - 0.5) * 0.5
+        });
+    }
+
+    // --- Top Messy Spikes ---
+    for (let i = 0; i < 30; i++) {
+        clumps.push({
+            length: Math.random() * 0.6 + 1.2,
+            width: 0.4,
+            radius: headRadius * (0.4 + Math.random() * 0.6),
+            phi: Math.PI / 4 + Math.random() * 0.4,
+            theta: (Math.random() - 0.5) * Math.PI * 2,
+            rotX: -1.0 + (Math.random() - 0.5) * 0.5,
+            rotY: (Math.random() - 0.5) * 0.3,
+            rotZ: (Math.random() - 0.5) * 1.0
+        });
+    }
+    
+    // --- Sideburns and Side Hair ---
+    for (let i = 0; i < 8; i++) {
         // Left Side
         clumps.push({
-            length: Math.random() * 0.4 + 0.8,
-            width: 0.3,
-            radius: headRadius * 1.0,
-            phi: Math.PI / 2 - 0.1 + Math.random() * 0.2,
-            theta: Math.PI * 0.5 + Math.random() * 0.5,
-            rotX: -0.3, rotY: 0, rotZ: -0.8 - Math.random() * 0.3
+            length: 1.0, width: 0.25, radius: headRadius * 1.0,
+            phi: Math.PI / 2 + 0.3, theta: Math.PI * 0.6 + (Math.random() - 0.5) * 0.2,
+            rotX: -0.3, rotY: 0.2, rotZ: -0.8
         });
         // Right Side
         clumps.push({
-            length: Math.random() * 0.4 + 0.8,
-            width: 0.3,
-            radius: headRadius * 1.0,
-            phi: Math.PI / 2 - 0.1 + Math.random() * 0.2,
-            theta: -Math.PI * 0.5 - Math.random() * 0.5,
-            rotX: -0.3, rotY: 0, rotZ: 0.8 + Math.random() * 0.3
+            length: 1.0, width: 0.25, radius: headRadius * 1.0,
+            phi: Math.PI / 2 + 0.3, theta: -Math.PI * 0.6 + (Math.random() - 0.5) * 0.2,
+            rotX: -0.3, rotY: -0.2, rotZ: 0.8
         });
     }
 
-    // --- Top Messy Layer ---
-    for (let i = 0; i < 20; i++) {
+
+    // --- Bangs Layer (more defined) ---
+    // Right side of part (longer)
+    for (let i = 0; i < 6; i++) {
         clumps.push({
-            length: Math.random() * 0.4 + 0.9,
-            width: 0.4,
-            radius: headRadius * (0.3 + Math.random() * 0.7),
-            phi: Math.PI / 4 + Math.random() * 0.3,
-            theta: (Math.random() - 0.5) * Math.PI * 1.8,
-            rotX: -0.9 + (Math.random() - 0.5) * 0.4, rotY: 0, rotZ: (Math.random() - 0.5) * 0.8
+            length: 1.3, width: 0.35, radius: headRadius,
+            phi: Math.PI / 2 - 0.4, theta: Math.PI * 1.6 - i * 0.12,
+            rotX: -0.9, rotY: 0.1, rotZ: 0.6
+        });
+    }
+    // Left side of part (shorter)
+    for (let i = 0; i < 4; i++) {
+        clumps.push({
+            length: 1.1, width: 0.3, radius: headRadius,
+            phi: Math.PI / 2 - 0.4, theta: Math.PI * 1.7 + i * 0.1,
+            rotX: -0.8, rotY: -0.1, rotZ: -0.5
         });
     }
 
-    // --- Bangs Layer ---
-    for (let i = 0; i < 12; i++) {
-        const theta = Math.PI * 1.8 - (i / 11) * 1.6; // Angle for bangs
-        clumps.push({
-            length: Math.random() * 0.3 + 0.8,
-            width: 0.3,
-            radius: headRadius * 1.0,
-            phi: Math.PI / 2 - 0.35,
-            theta: theta,
-            rotX: -0.8, rotY: 0, rotZ: 0.3 + Math.random() * 0.3
-        });
-    }
 
     // --- Create and position all clumps ---
     clumps.forEach(c => {
         const clump = createHairClump(c.length, c.width, hairMaterial);
         clump.position.setFromSphericalCoords(c.radius, c.phi, c.theta);
-        clump.lookAt(0, 0, 0);
+        
+        // Orient clump to point away from the center
+        const lookAtTarget = clump.position.clone().multiplyScalar(0.5);
+        clump.lookAt(lookAtTarget);
 
+        // Apply additional rotations for styling
         clump.rotation.x += c.rotX;
         clump.rotation.y += c.rotY;
         clump.rotation.z += c.rotZ;
