@@ -32,11 +32,11 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     // Layers defined from bottom to top
     const layers = [
         // Sides and Back - shorter and flatter
-        { count: 60, length: 0.4, width: 0.1, radialOffset: 0.0, yRange: [-0.5, 0.2], zRange: [-1.0, 0.2] },
+        { count: 120, length: 0.2, width: 0.05, radialOffset: 0.0, yRange: [-0.5, 0.2], zRange: [-1.0, 0.2] },
         // Main volume layer
-        { count: 50, length: 0.8, width: 0.15, radialOffset: 0.1, yRange: [-0.2, 0.6], zRange: [-0.8, 1.0] },
+        { count: 100, length: 0.4, width: 0.07, radialOffset: 0.1, yRange: [-0.2, 0.6], zRange: [-0.8, 1.0] },
         // Top messy layer - Reduced length and width
-        { count: 40, length: 0.6, width: 0.13, radialOffset: 0.2, yRange: [0.3, 1.0], zRange: [-0.5, 1.0] },
+        { count: 80, length: 0.3, width: 0.06, radialOffset: 0.2, yRange: [0.3, 1.0], zRange: [-0.5, 1.0] },
     ];
 
     layers.forEach(layer => {
