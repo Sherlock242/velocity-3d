@@ -60,7 +60,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     0, // phiStart
     Math.PI * 2, // phiLength
     0, // thetaStart
-    Math.PI / 1.2 // thetaLength - Extend this to cover more of the back
+    Math.PI // thetaLength - Extend this to cover more of the back
   );
   const hairCap = new THREE.Mesh(hairCapGeom, hairMaterial);
   hairCap.scale.set(1.06, 1.05, 1.06); // Make it fit the head shape
