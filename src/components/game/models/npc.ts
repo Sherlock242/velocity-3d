@@ -181,21 +181,27 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
   const leftArmGroup = new THREE.Group();
   const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), shirtMaterial);
-  leftArm.position.y = -armLength / 2;
+  leftArm.position.y = -armLength / 2 + 0.1; // Raise arm to embed into shoulder cap
   const leftHand = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), skinMaterial);
   leftHand.position.y = -armLength/2;
   leftArm.add(leftHand);
-  leftArmGroup.add(leftArm);
+  const leftShoulderCap = new THREE.Mesh(new THREE.SphereGeometry(shoulderWidth * 0.5, 12, 8), shirtMaterial);
+  leftShoulderCap.scale.y = 0.6; // Flatten the sphere
+  leftShoulderCap.position.y = -0.05; // Lower shoulder cap to overlap torso
+  leftArmGroup.add(leftShoulderCap, leftArm);
   leftArmGroup.position.set(shoulderWidth, torso.position.y + torsoHeight/2, 0);
 
 
   const rightArmGroup = new THREE.Group();
   const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), shirtMaterial);
-  rightArm.position.y = -armLength / 2;
+  rightArm.position.y = -armLength / 2 + 0.1; // Raise arm to embed into shoulder cap
   const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), skinMaterial);
   rightHand.position.y = -armLength/2;
   rightArm.add(rightHand);
-  rightArmGroup.add(rightArm);
+  const rightShoulderCap = new THREE.Mesh(new THREE.SphereGeometry(shoulderWidth * 0.5, 12, 8), shirtMaterial);
+  rightShoulderCap.scale.y = 0.6; // Flatten the sphere
+  rightShoulderCap.position.y = -0.05; // Lower shoulder cap to overlap torso
+  rightArmGroup.add(rightShoulderCap, rightArm);
   rightArmGroup.position.set(-shoulderWidth, torso.position.y + torsoHeight/2, 0);
 
   
