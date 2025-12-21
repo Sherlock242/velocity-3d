@@ -16,6 +16,7 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
   const isDraggingRef = React.useRef(false);
   const previousMousePositionRef = React.useRef({ x: 0, y: 0 });
   const initialRotationY = React.useRef(0);
+  const initialRotationX = React.useRef(0);
 
   React.useEffect(() => {
     if (!mountRef.current) return;
@@ -30,8 +31,8 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
       0.1,
       1000
     );
-    camera.position.z = 15;
-    camera.position.y = 4;
+    camera.position.z = 20;
+    camera.position.y = 8;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(mountNode.clientWidth, mountNode.clientHeight);
@@ -52,6 +53,7 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
     scene.add(character);
     characterRef.current = character;
     initialRotationY.current = character.rotation.y;
+    initialRotationX.current = character.rotation.x;
 
 
     const handleMouseDown = (event: MouseEvent | TouchEvent) => {
@@ -71,7 +73,7 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
         const deltaY = clientY - previousMousePositionRef.current.y;
 
         characterRef.current.rotation.y += deltaX * 0.01;
-        characterRef.current.position.z += deltaY * 0.01;
+        characterRef.current.rotation.x += deltaY * 0.01;
 
         previousMousePositionRef.current = { x: clientX, y: clientY };
     };
@@ -80,8 +82,8 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
         if (!isDraggingRef.current || !characterRef.current) return;
         isDraggingRef.current = false;
 
-        // Snap back to original position
-        characterRef.current.position.z = 0;
+        // Snap back to original rotation
+        characterRef.current.rotation.x = initialRotationX.current;
         
         // Store the end rotation and reset for idle animation
         initialRotationY.current = characterRef.current.rotation.y;
