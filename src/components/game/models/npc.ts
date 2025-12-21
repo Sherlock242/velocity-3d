@@ -126,7 +126,23 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
   const shoulderWidth = gender === 'male' ? 0.5 : 0.45;
   const waistWidth = gender === 'male' ? 0.35 : 0.3;
-  const torsoGeo = new THREE.CylinderGeometry(shoulderWidth, waistWidth, torsoHeight, 8);
+  const shoulderY = torsoHeight / 2 - 0.2;
+  const neckY = torsoHeight / 2;
+  const neckWidth = 0.15;
+  const chestDepth = 0.3;
+
+  const torsoShape = new THREE.Shape();
+  torsoShape.moveTo(-waistWidth, -torsoHeight / 2); // Bottom-left
+  torsoShape.lineTo(waistWidth, -torsoHeight / 2); // Bottom-right
+  torsoShape.lineTo(shoulderWidth, shoulderY); // Right shoulder point
+  torsoShape.lineTo(neckWidth, neckY); // Right neck point
+  torsoShape.lineTo(-neckWidth, neckY); // Left neck point
+  torsoShape.lineTo(-shoulderWidth, shoulderY); // Left shoulder point
+  torsoShape.closePath();
+
+  const extrudeSettings = { depth: chestDepth, bevelEnabled: false };
+  const torsoGeo = new THREE.ExtrudeGeometry(torsoShape, extrudeSettings);
+  torsoGeo.translate(0, 0, -chestDepth / 2); // Center the depth
   const torsoMesh = new THREE.Mesh(torsoGeo, shirtMaterial);
   torso.add(torsoMesh);
   
@@ -142,8 +158,8 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
   // Neck
   const neck = new THREE.Group();
-  const neckWidth = 0.18;
-  const neckGeo = new THREE.CylinderGeometry(neckWidth * 0.8, neckWidth * 0.8, neckHeight, 8);
+  const neckGeoWidth = 0.18;
+  const neckGeo = new THREE.CylinderGeometry(neckGeoWidth * 0.8, neckGeoWidth * 0.8, neckHeight, 8);
   const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
   neck.add(neckMesh);
   neck.position.y = torso.position.y + torsoHeight/2;
@@ -180,24 +196,24 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   const armRadius = 0.12;
 
   const leftArmGroup = new THREE.Group();
-  const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), shirtMaterial);
+  const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), skinMaterial);
   leftArm.position.y = -armLength / 2;
   const leftHand = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), skinMaterial);
   leftHand.position.y = -armLength/2;
-  leftArm.add(leftHand);
+  // leftArm.add(leftHand); // Hand is merged with arm for simplicity
   leftArmGroup.add(leftArm);
-  leftArmGroup.position.set(shoulderWidth, torso.position.y + torsoHeight/2 - 0.1, 0);
+  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY - 0.1, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
 
 
   const rightArmGroup = new THREE.Group();
-  const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), shirtMaterial);
+  const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), skinMaterial);
   rightArm.position.y = -armLength / 2;
   const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), skinMaterial);
   rightHand.position.y = -armLength/2;
-  rightArm.add(rightHand);
+  // rightArm.add(rightHand);
   rightArmGroup.add(rightArm);
-  rightArmGroup.position.set(-shoulderWidth, torso.position.y + torsoHeight/2 - 0.1, 0);
+  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY - 0.1, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 
   

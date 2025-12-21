@@ -78,45 +78,38 @@ export function createPlayerCharacter(
   hair.position.y = headHeight/2 - 0.1;
   head.add(hair);
 
-  // Torso and Shirt with hexagonal shape
+  // Torso and Shirt with integrated shoulders
   const torso = new THREE.Group();
   torso.position.y = totalLegHeight + torsoHeight / 2;
 
-  const shoulderWidth = 0.55;
+  const shoulderWidth = 0.65; // Made wider for a more heroic build
   const waistWidth = 0.4;
-  const backDepth = -0.2;
-  const chestDepth = 0.2;
-  const shoulderHeight = torsoHeight * 0.4;
-  const trapeziusHeight = torsoHeight * 0.5;
+  const shoulderY = torsoHeight / 2 - 0.2; // Y position of the shoulder peak
+  const neckY = torsoHeight / 2;
   const neckWidth = 0.2;
-  const neckDepth = 0.1;
+  const torsoDepth = 0.5;
 
   const torsoShape = new THREE.Shape();
   // Start from bottom center
-  torsoShape.moveTo(-waistWidth, -torsoHeight / 2); // 0 Bottom left
-  torsoShape.lineTo(waistWidth, -torsoHeight / 2); // 1 Bottom right
-  torsoShape.lineTo(shoulderWidth, shoulderHeight); // 2 Right shoulder
-  torsoShape.lineTo(neckWidth, trapeziusHeight); // 3 Right neck point
-  torsoShape.lineTo(-neckWidth, trapeziusHeight); // 4 Left neck point
-  torsoShape.lineTo(-shoulderWidth, shoulderHeight); // 5 Left shoulder
+  torsoShape.moveTo(-waistWidth, -torsoHeight / 2); // Bottom left
+  torsoShape.lineTo(waistWidth, -torsoHeight / 2); // Bottom right
+  torsoShape.lineTo(shoulderWidth, shoulderY); // Right shoulder point
+  torsoShape.lineTo(neckWidth, neckY); // Right neck point
+  torsoShape.lineTo(-neckWidth, neckY); // Left neck point
+  torsoShape.lineTo(-shoulderWidth, shoulderY); // Left shoulder point
   torsoShape.closePath();
 
-  const extrudePath = new THREE.Shape();
-  extrudePath.moveTo(0, backDepth);
-  extrudePath.lineTo(0, chestDepth - neckDepth);
-  extrudePath.lineTo(0, chestDepth); // Tapered front
-  extrudePath.lineTo(0, chestDepth - neckDepth);
-
   const torsoExtrudeSettings = {
-    steps: 2,
-    depth: chestDepth - backDepth,
+    steps: 1,
+    depth: torsoDepth,
     bevelEnabled: false,
   };
 
   const torsoGeo = new THREE.ExtrudeGeometry(torsoShape, torsoExtrudeSettings);
-  torsoGeo.translate(0, 0, backDepth); // Center the depth
+  torsoGeo.translate(0, 0, -torsoDepth / 2); // Center the depth
   const torsoMesh = new THREE.Mesh(torsoGeo, shirtMaterial);
   torso.add(torsoMesh);
+
 
   // Open Shirt Collar
   const collarVNeck = new THREE.Shape();
@@ -126,14 +119,14 @@ export function createPlayerCharacter(
   collarVNeck.closePath();
   const collarVNeckGeom = new THREE.ShapeGeometry(collarVNeck);
   const collarVNeckMesh = new THREE.Mesh(collarVNeckGeom, skinMaterial);
-  collarVNeckMesh.position.z = chestDepth + 0.01; // Bring it forward from the chest
+  collarVNeckMesh.position.z = torsoDepth/2 + 0.01; // Bring it forward from the chest
   torso.add(collarVNeckMesh);
 
   const leftLapel = new THREE.Mesh(
     new THREE.BoxGeometry(0.15, 0.35, 0.1),
     shirtMaterial
   );
-  leftLapel.position.set(-0.2, torsoHeight / 2 - 0.15, chestDepth + 0.02);
+  leftLapel.position.set(-0.2, torsoHeight / 2 - 0.15, torsoDepth/2 + 0.02);
   leftLapel.rotation.z = Math.PI / 8;
   torso.add(leftLapel);
 
@@ -141,35 +134,36 @@ export function createPlayerCharacter(
     new THREE.BoxGeometry(0.15, 0.35, 0.1),
     shirtMaterial
   );
-  rightLapel.position.set(0.2, torsoHeight / 2 - 0.15, chestDepth + 0.02);
+  rightLapel.position.set(0.2, torsoHeight / 2 - 0.15, torsoDepth/2 + 0.02);
   rightLapel.rotation.z = -Math.PI / 8;
   torso.add(rightLapel);
 
   // Neck
   const neck = new THREE.Group();
+  const neckGeoWidth = 0.18;
   const neckGeo = new THREE.CylinderGeometry(
-    neckWidth * 0.8,
-    neckWidth * 0.8,
+    neckGeoWidth * 0.8,
+    neckGeoWidth * 0.8,
     neckHeight,
     8
   );
   const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
   neck.add(neckMesh);
   // Position neck on top of the torso's neck flat
-  neck.position.y = totalLegHeight + torsoHeight / 2 + trapeziusHeight;
+  neck.position.y = totalLegHeight + torsoHeight / 2 + (torsoHeight/2);
   
   // Add lateral collar pieces
   const collarPieceGeo = new THREE.BoxGeometry(0.1, neckHeight, 0.25);
   const leftCollarPiece = new THREE.Mesh(collarPieceGeo, shirtMaterial);
-  leftCollarPiece.position.x = -neckWidth;
+  leftCollarPiece.position.x = -neckGeoWidth;
   neck.add(leftCollarPiece);
   
   const rightCollarPiece = new THREE.Mesh(collarPieceGeo, shirtMaterial);
-  rightCollarPiece.position.x = neckWidth;
+  rightCollarPiece.position.x = neckGeoWidth;
   neck.add(rightCollarPiece);
 
   // Add back collar piece
-  const backCollarPieceGeom = new THREE.BoxGeometry(neckWidth * 2, neckHeight, 0.1);
+  const backCollarPieceGeom = new THREE.BoxGeometry(neckGeoWidth * 2, neckHeight, 0.1);
   const backCollarPiece = new THREE.Mesh(backCollarPieceGeom, shirtMaterial);
   backCollarPiece.position.z = -0.15;
   neck.add(backCollarPiece);
@@ -285,7 +279,7 @@ export function createPlayerCharacter(
   leftForearm.add(leftHand); // Attach hand to forearm
   leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   leftArmGroup.add(leftUpperArm);
-  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderHeight, 0);
+  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
   
   // Right Arm (with armor)
@@ -304,15 +298,17 @@ export function createPlayerCharacter(
   rightHand.position.y = -armLength / 2 - 0.15;
   rightArm.add(rightHand);
   
-  const rightShoulderCap = new THREE.Mesh(new THREE.SphereGeometry(shoulderWidth * 0.5, 12, 8), pauldronMaterial);
-  rightShoulderCap.scale.y = 0.6; // Flatten the sphere
-  rightShoulderCap.position.y = 0.05; // Lower the cap to overlap the torso
-
-  rightArmGroup.add(rightShoulderCap, rightArm);
-  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderHeight, 0);
+  rightArmGroup.add(rightArm);
+  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 
-  // Pauldron (Shoulder armor) is now the shoulder cap
+  // Pauldron (Shoulder armor)
+  const pauldronGeo = new THREE.CylinderGeometry(0.3, 0.4, 0.7, 6);
+  const pauldron = new THREE.Mesh(pauldronGeo, pauldronMaterial);
+  pauldron.position.y = -0.1; // Overlap with arm
+  pauldron.rotation.x = Math.PI/12;
+  rightArmGroup.add(pauldron);
+
   const bracerGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.6, 8);
   const bracer = new THREE.Mesh(bracerGeo, metalMaterial);
   bracer.position.y = -0.3;
@@ -324,14 +320,14 @@ export function createPlayerCharacter(
   const beltGeo = new THREE.BoxGeometry(
     waistWidth * 2 + 0.05,
     0.25,
-    chestDepth - backDepth + 0.05
+    torsoDepth + 0.05
   );
   const belt = new THREE.Mesh(beltGeo, beltMaterial);
   beltGroup.add(belt);
 
   const buckleGeo = new THREE.BoxGeometry(0.2, 0.3, 0.1);
   const buckle = new THREE.Mesh(buckleGeo, metalMaterial);
-  buckle.position.z = chestDepth + 0.05;
+  buckle.position.z = torsoDepth/2 + 0.05;
   belt.add(buckle);
 
   const holsterGeo = new THREE.BoxGeometry(0.15, 0.4, 0.3);
@@ -344,7 +340,7 @@ export function createPlayerCharacter(
     new THREE.BoxGeometry(0.08, 0.5, 0.08),
     beltMaterial
   );
-  hangingStrap.position.set(waistWidth - 0.1, -0.3, chestDepth);
+  hangingStrap.position.set(waistWidth - 0.1, -0.3, torsoDepth/2);
   hangingStrap.rotation.z = -Math.PI / 16;
   belt.add(hangingStrap);
 
@@ -369,7 +365,7 @@ export function createPlayerCharacter(
     beltGroup
   );
   // Re-position head to be on top of the neck
-  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.35;
+  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2;
   head.rotation.y = Math.PI; // Rotate head to face forward
   character.position.y = -totalLegHeight; // Center the model vertically
 
