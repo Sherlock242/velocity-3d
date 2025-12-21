@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 // --- START: Seeded PRNG ---
@@ -54,7 +55,7 @@ export function createPlayerCharacter(
   const legHeight = 1.6; // Taller
   const shoeHeight = 0.3; // Proportionate shoes
   const totalLegHeight = legHeight + shoeHeight;
-  const neckHeight = 0.2;
+  const neckHeight = 0.3; // Increased neck height
   const headRadius = 0.45;
 
   // Head
@@ -251,6 +252,17 @@ export function createPlayerCharacter(
   neck.add(neckMesh);
   // Position neck on top of the torso's neck flat
   neck.position.y = torso.position.y + trapeziusHeight;
+  
+  // Add lateral collar pieces
+  const collarPieceGeo = new THREE.BoxGeometry(0.1, neckHeight, 0.25);
+  const leftCollarPiece = new THREE.Mesh(collarPieceGeo, shirtMaterial);
+  leftCollarPiece.position.x = -neckWidth;
+  neck.add(leftCollarPiece);
+  
+  const rightCollarPiece = new THREE.Mesh(collarPieceGeo, shirtMaterial);
+  rightCollarPiece.position.x = neckWidth;
+  neck.add(rightCollarPiece);
+
 
   // Legs and Pants (Tapered)
   const legTopRadius = 0.22;
@@ -441,7 +453,7 @@ export function createPlayerCharacter(
     beltGroup
   );
   // Re-position head to be on top of the neck
-  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.1;
+  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2;
   head.rotation.y = Math.PI; // Rotate head to face forward
   character.position.y = -totalLegHeight; // Center the model vertically
 
