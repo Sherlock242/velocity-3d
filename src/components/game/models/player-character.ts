@@ -84,8 +84,8 @@ export function createPlayerCharacter(
 
   const shoulderWidth = 0.55;
   const waistWidth = 0.4;
-  const backDepth = -0.225;
-  const chestDepth = 0.225;
+  const backDepth = -0.2;
+  const chestDepth = 0.2;
   const shoulderHeight = torsoHeight * 0.45;
   const trapeziusHeight = torsoHeight * 0.5;
   const neckWidth = 0.2;
@@ -96,8 +96,8 @@ export function createPlayerCharacter(
   torsoShape.moveTo(-waistWidth, -torsoHeight / 2); // 0 Bottom left
   torsoShape.lineTo(waistWidth, -torsoHeight / 2); // 1 Bottom right
   torsoShape.lineTo(shoulderWidth, shoulderHeight); // 2 Right shoulder
-  torsoShape.lineTo(neckWidth - neckDepth, trapeziusHeight); // 3 Right neck point
-  torsoShape.lineTo(-neckWidth + neckDepth, trapeziusHeight); // 4 Left neck point
+  torsoShape.lineTo(neckWidth, trapeziusHeight); // 3 Right neck point
+  torsoShape.lineTo(-neckWidth, trapeziusHeight); // 4 Left neck point
   torsoShape.lineTo(-shoulderWidth, shoulderHeight); // 5 Left shoulder
   torsoShape.closePath();
 
