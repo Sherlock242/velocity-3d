@@ -11,105 +11,110 @@ function createHairClump(length: number, width: number, material: THREE.Material
 
     const extrudeSettings = {
         steps: 1,
-        depth: width * 0.2,
+        depth: width * 0.3, // Give clumps some thickness
         bevelEnabled: false,
     };
 
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    return new THREE.Mesh(geometry, material);
+    const clump = new THREE.Mesh(geometry, material);
+    clump.geometry.center(); // Center the geometry for easier rotation
+    return clump;
 }
 
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     const hairGroup = new THREE.Group();
-    hairGroup.rotation.y = Math.PI;
 
-    // Base hair cap for coverage
-    const capGeom = new THREE.SphereGeometry(headRadius * 1.01, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.8);
+    // --- Base Hair Cap for coverage ---
+    const capGeom = new THREE.SphereGeometry(headRadius * 1.01, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.5);
     const hairCap = new THREE.Mesh(capGeom, hairMaterial);
     hairCap.position.y = -0.1;
+    hairCap.rotation.x = 0.1; // Tilt slightly forward
     hairGroup.add(hairCap);
 
-    const mainClumps = 10;
-    const backClumps = 6;
-    const sideClumps = 5;
-    const bangsClumps = 8;
-    
-    // --- Back Layer (Undercut) ---
-    for (let i = 0; i < backClumps; i++) {
-        const clump = createHairClump(0.6, 0.25, hairMaterial);
-        // Position these lower and more spread out at the nape
-        const angle = Math.PI * 0.85 + (i / (backClumps - 1)) * Math.PI * 0.3;
-        
-        clump.position.setFromSphericalCoords(headRadius * 0.98, Math.PI / 2 + 0.5, angle);
-        clump.lookAt(clump.position.clone().multiplyScalar(1.2));
-        clump.rotation.z += (Math.random() - 0.5) * 0.2; // slight random rotation
-        clump.rotation.x += -0.7; // point downwards more
-        
-        hairGroup.add(clump);
-    }
-    
-    // --- Side Layers ---
-    for (let i = 0; i < sideClumps; i++) {
-        const clump = createHairClump(0.8, 0.3, hairMaterial);
-        // Right side
-        const angleRight = Math.PI * 1.35 - (i / (sideClumps - 1)) * 0.5;
-        clump.position.setFromSphericalCoords(headRadius * 1.0, Math.PI / 2 - 0.1, angleRight);
-        clump.lookAt(clump.position.clone().multiplyScalar(1.2));
-        clump.rotation.z += 0.3;
-        clump.rotation.x -= 0.3;
-        hairGroup.add(clump);
+    const clumps: {
+      length: number;
+      width: number;
+      radius: number;
+      phi: number;
+      theta: number;
+      rotX: number;
+      rotY: number;
+      rotZ: number;
+    }[] = [];
 
-        // Left side
-        const clumpLeft = createHairClump(0.8, 0.3, hairMaterial);
-        const angleLeft = Math.PI * 0.65 + (i / (sideClumps - 1)) * 0.5;
-        clumpLeft.position.setFromSphericalCoords(headRadius * 1.0, Math.PI / 2 - 0.1, angleLeft);
-        clumpLeft.lookAt(clumpLeft.position.clone().multiplyScalar(1.2));
-        clumpLeft.rotation.z -= 0.3;
-        clumpLeft.rotation.x -= 0.3;
-        hairGroup.add(clumpLeft);
+    // --- Back Layer ---
+    for (let i = 0; i < 15; i++) {
+        clumps.push({
+            length: Math.random() * 0.5 + 0.6,
+            width: 0.25,
+            radius: headRadius * 1.0,
+            phi: Math.PI / 2 + Math.random() * 0.4,
+            theta: Math.PI * 0.7 + Math.random() * Math.PI * 0.6,
+            rotX: -0.5 - Math.random() * 0.3, rotY: 0, rotZ: (Math.random() - 0.5) * 0.2
+        });
     }
 
-    // --- Top Main Volume (Spikes) ---
-    for (let i = 0; i < mainClumps; i++) {
-        const clump = createHairClump(1.0, 0.35, hairMaterial);
-        
-        const angle = (i / (mainClumps-1)) * Math.PI * 1.8 - Math.PI * 0.9;
-        const radius = headRadius * (0.4 + Math.random() * 0.5);
-
-        // Position higher up on the head
-        clump.position.setFromSphericalCoords(radius, Math.PI / 4.5 + (Math.random() - 0.5) * 0.2, angle);
-        
-        // Make them point more upwards and outwards
-        clump.lookAt(new THREE.Vector3(0, 1.5, 0)); // Point towards a higher point
-        clump.rotation.z += (Math.random() - 0.5) * 0.5;
-        clump.rotation.x += -0.9 + (Math.random() - 0.5) * 0.3;
-
-        hairGroup.add(clump);
+    // --- Side Layers (swept back) ---
+     for (let i = 0; i < 10; i++) {
+        // Left Side
+        clumps.push({
+            length: Math.random() * 0.4 + 0.8,
+            width: 0.3,
+            radius: headRadius * 1.0,
+            phi: Math.PI / 2 - 0.1 + Math.random() * 0.2,
+            theta: Math.PI * 0.5 + Math.random() * 0.5,
+            rotX: -0.3, rotY: 0, rotZ: -0.8 - Math.random() * 0.3
+        });
+        // Right Side
+        clumps.push({
+            length: Math.random() * 0.4 + 0.8,
+            width: 0.3,
+            radius: headRadius * 1.0,
+            phi: Math.PI / 2 - 0.1 + Math.random() * 0.2,
+            theta: -Math.PI * 0.5 - Math.random() * 0.5,
+            rotX: -0.3, rotY: 0, rotZ: 0.8 + Math.random() * 0.3
+        });
     }
 
-    // --- Bangs ---
-    for(let i = 0; i < bangsClumps; i++) {
-        const clump = createHairClump(0.9, 0.25, hairMaterial);
-        
-        // Distribute bangs across the front, concentrated on the character's right
-        const angle = Math.PI * 1.7 - (i / (bangsClumps - 1)) * 1.4;
-        
-        clump.position.setFromSphericalCoords(headRadius * 1.02, Math.PI / 2 - 0.25, angle);
-        clump.lookAt(clump.position.clone().multiplyScalar(1.2));
-        // Make them sweep to the side and down
-        clump.rotation.z += 0.3 + (Math.random() * 0.3); 
-        clump.rotation.x -= 0.7;
-        hairGroup.add(clump);
+    // --- Top Messy Layer ---
+    for (let i = 0; i < 20; i++) {
+        clumps.push({
+            length: Math.random() * 0.4 + 0.9,
+            width: 0.4,
+            radius: headRadius * (0.3 + Math.random() * 0.7),
+            phi: Math.PI / 4 + Math.random() * 0.3,
+            theta: (Math.random() - 0.5) * Math.PI * 1.8,
+            rotX: -0.9 + (Math.random() - 0.5) * 0.4, rotY: 0, rotZ: (Math.random() - 0.5) * 0.8
+        });
     }
-    
-    // Add one larger sweeping bang for the distinct part
-    const bigBang = createHairClump(1.1, 0.4, hairMaterial);
-    bigBang.position.setFromSphericalCoords(headRadius * 0.95, Math.PI / 2 - 0.2, Math.PI * 1.75);
-    bigBang.lookAt(bigBang.position.clone().multiplyScalar(1.2));
-    bigBang.rotation.z += 0.9; // More dramatic sweep
-    bigBang.rotation.x -= 0.6;
-    hairGroup.add(bigBang);
 
+    // --- Bangs Layer ---
+    for (let i = 0; i < 12; i++) {
+        const theta = Math.PI * 1.8 - (i / 11) * 1.6; // Angle for bangs
+        clumps.push({
+            length: Math.random() * 0.3 + 0.8,
+            width: 0.3,
+            radius: headRadius * 1.0,
+            phi: Math.PI / 2 - 0.35,
+            theta: theta,
+            rotX: -0.8, rotY: 0, rotZ: 0.3 + Math.random() * 0.3
+        });
+    }
 
-  return hairGroup;
+    // --- Create and position all clumps ---
+    clumps.forEach(c => {
+        const clump = createHairClump(c.length, c.width, hairMaterial);
+        clump.position.setFromSphericalCoords(c.radius, c.phi, c.theta);
+        clump.lookAt(0, 0, 0);
+
+        clump.rotation.x += c.rotX;
+        clump.rotation.y += c.rotY;
+        clump.rotation.z += c.rotZ;
+
+        hairGroup.add(clump);
+    });
+
+    hairGroup.rotation.y = Math.PI; // Orient hair correctly on head
+
+    return hairGroup;
 }
