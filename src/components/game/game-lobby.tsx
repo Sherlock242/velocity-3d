@@ -15,7 +15,6 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
   const characterRef = React.useRef<THREE.Group>();
   const isDraggingRef = React.useRef(false);
   const previousMousePositionRef = React.useRef({ x: 0, y: 0 });
-  const characterRotationRef = React.useRef({ y: 0 });
   const initialRotationY = React.useRef(0);
 
   React.useEffect(() => {
@@ -31,8 +30,8 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
       0.1,
       1000
     );
-    camera.position.z = 12;
-    camera.position.y = 2;
+    camera.position.z = 15;
+    camera.position.y = 4;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(mountNode.clientWidth, mountNode.clientHeight);
