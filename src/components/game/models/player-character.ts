@@ -38,11 +38,11 @@ export function createPlayerCharacter(
   });
 
   const headHeight = 0.5;
-  const torsoHeight = 1.8; // Increased from 1.6
-  const legHeight = 2.0; // Increased from 1.8
-  const shoeHeight = 0.3; // Proportionate shoes
+  const torsoHeight = 1.8;
+  const legHeight = 2.0;
+  const shoeHeight = 0.3;
   const totalLegHeight = legHeight + shoeHeight;
-  const neckHeight = 0.3; // Increased neck height
+  const neckHeight = 0.3;
   const headRadius = 0.45;
 
   // Head
@@ -250,7 +250,7 @@ export function createPlayerCharacter(
   rightLeg.add(rightBoot);
 
   // Arms (Slimmer)
-  const armLength = 1.7; // Increased from 1.3
+  const armLength = 1.7;
   const armRadius = 0.18;
   const forearmRadius = 0.16;
   const upperArmLength = armLength * 0.6;
@@ -270,6 +270,8 @@ export function createPlayerCharacter(
   );
   // Position forearm at the end of the upper arm
   leftForearm.position.y = -upperArmLength / 2 - forearmLength / 2;
+  leftForearm.rotation.z = Math.PI / 12; // Slight bend
+  leftForearm.rotation.y = -Math.PI / 6; // Turn hand outwards
 
   const leftHand = new THREE.Mesh(
     new THREE.BoxGeometry(0.25, 0.3, 0.1),
@@ -277,11 +279,13 @@ export function createPlayerCharacter(
   );
   // Position hand at the end of the forearm
   leftHand.position.y = -forearmLength / 2 - 0.15;
+  leftHand.rotation.z = Math.PI / 8;
 
   leftForearm.add(leftHand); // Attach hand to forearm
   leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   leftArmGroup.add(leftUpperArm);
   leftArmGroup.position.set(shoulderWidth + 0.2, torso.position.y + shoulderHeight - 0.15, 0);
+  leftArmGroup.rotation.z = Math.PI / 8;
 
   // Right Arm (with armor)
   const rightArmGroup = new THREE.Group();
@@ -300,6 +304,7 @@ export function createPlayerCharacter(
 
   rightArmGroup.add(rightArm);
   rightArmGroup.position.set(-(shoulderWidth + 0.2), torso.position.y + shoulderHeight - 0.15, 0);
+  rightArmGroup.rotation.z = -Math.PI / 8;
 
   // Pauldron (Shoulder armor)
   const pauldronGeo = new THREE.BoxGeometry(0.4, 0.5, 0.45);
