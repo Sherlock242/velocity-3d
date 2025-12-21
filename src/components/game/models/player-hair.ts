@@ -5,8 +5,9 @@ import * as THREE from 'three';
 function createHairClump(length: number, width: number, material: THREE.Material) {
     const shape = new THREE.Shape();
     shape.moveTo(0, 0);
-    shape.bezierCurveTo(width / 3, length * 0.4, width / 4, length * 0.8, 0, length);
-    shape.bezierCurveTo(-width / 4, length * 0.8, -width / 3, length * 0.4, 0, 0);
+    // Create a gentle curve for the hair clump
+    shape.bezierCurveTo(width / 4, length * 0.5, width / 4, length, 0, length);
+    shape.bezierCurveTo(-width / 4, length, -width / 4, length * 0.5, 0, 0);
 
     const extrudeSettings = {
         steps: 1,
@@ -23,47 +24,38 @@ function createHairClump(length: number, width: number, material: THREE.Material
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     const hairGroup = new THREE.Group();
 
-    const clumps: {
-      length: number;
-      width: number;
-      radius: number;
-      phi: number;
-      theta: number;
-      rotX: number;
-      rotY: number;
-      rotZ: number;
-    }[] = [];
+    const numLayers = 4;
+    const numClumpsPerLayer = 100;
+    const crownPoint = new THREE.Vector3(0, headRadius * 1.2, 0);
 
-    // --- Spiky Layer ---
-    for (let i = 0; i < 250; i++) { // Increased count for full coverage
-        clumps.push({
-            length: Math.random() * 0.4 + 0.5, // Randomized spike length
-            width: 0.15,
-            radius: headRadius * (0.8 + Math.random() * 0.2), // Place spikes over the surface
-            phi: Math.random() * (Math.PI / 2), // Top hemisphere
-            theta: Math.random() * Math.PI * 2, // All around the head
-            rotX: -1.0 + (Math.random() - 0.5) * 0.8, // Varying upward angle
-            rotY: (Math.random() - 0.5) * 0.5,
-            rotZ: (Math.random() - 0.5) * 1.5, // Varying side tilt
-        });
+    for (let layer = 0; layer < numLayers; layer++) {
+        for (let i = 0; i < numClumpsPerLayer; i++) {
+            const progress = i / numClumpsPerLayer;
+            
+            const length = 1.0 + Math.random() * 0.4;
+            const width = 0.2 + Math.random() * 0.1;
+
+            const clump = createHairClump(length, width, hairMaterial);
+
+            // Position clumps in rings flowing from the top
+            const phi = (progress * 0.6 + 0.1 + layer * 0.05) * Math.PI; // Latitude
+            const theta = (i % (10 + layer * 5)) * (Math.PI * 2) / (10 + layer * 5) + (layer * 0.1); // Longitude
+
+            clump.position.setFromSphericalCoords(headRadius + layer * 0.05, phi, theta);
+            
+            // Orient the clump to flow away from the crown
+            const direction = clump.position.clone().sub(crownPoint).normalize();
+            const quaternion = new THREE.Quaternion();
+            quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+            clump.quaternion.copy(quaternion);
+
+            // Add extra downward rotation for gravity effect, especially at the front
+            const frontFactor = Math.max(0, clump.position.clone().normalize().z);
+            clump.rotateX(Math.PI * 0.4 * (1 - progress) + frontFactor * 0.5); // More rotation for clumps higher up
+            
+            hairGroup.add(clump);
+        }
     }
-
-    // --- Create and position all clumps ---
-    clumps.forEach(c => {
-        const clump = createHairClump(c.length, c.width, hairMaterial);
-        clump.position.setFromSphericalCoords(c.radius, c.phi, c.theta);
-        
-        // Orient clump to point away from the center
-        const lookAtTarget = clump.position.clone().multiplyScalar(0.5);
-        clump.lookAt(lookAtTarget);
-
-        // Apply additional rotations for styling
-        clump.rotation.x += c.rotX;
-        clump.rotation.y += c.rotY;
-        clump.rotation.z += c.rotZ;
-
-        hairGroup.add(clump);
-    });
 
     hairGroup.rotation.y = Math.PI; // Orient hair correctly on head
 
