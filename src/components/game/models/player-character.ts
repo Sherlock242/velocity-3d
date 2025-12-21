@@ -1,20 +1,11 @@
 
 import * as THREE from 'three';
-
-// --- START: Seeded PRNG ---
-// A simple pseudo-random number generator to ensure the hair is consistent
-let seed = 1;
-function random() {
-  const x = Math.sin(seed++) * 10000;
-  return x - Math.floor(x);
-}
-// --- END: Seeded PRNG ---
+import { createHair } from './player-hair';
 
 export function createPlayerCharacter(
   isPlayer = false,
   gender: 'male' | 'female' = 'male'
 ) {
-
   const character = new THREE.Group();
 
   // Materials
@@ -80,6 +71,12 @@ export function createPlayerCharacter(
 
   const face = new THREE.Mesh(faceGeo, skinMaterial);
   head.add(face);
+
+  // Hair
+  const hairMaterial = new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 0.8 });
+  const hair = createHair(headRadius, hairMaterial);
+  hair.position.y = headHeight/2 + 0.1;
+  head.add(hair);
 
   // Torso and Shirt with hexagonal shape
   const torso = new THREE.Group();
