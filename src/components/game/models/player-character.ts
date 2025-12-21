@@ -1,6 +1,5 @@
 
 import * as THREE from 'three';
-import { createHair } from './player-hair';
 
 // --- START: Seeded PRNG ---
 // A simple pseudo-random number generator to ensure the hair is consistent
@@ -20,7 +19,6 @@ export function createPlayerCharacter(
 
   // Materials
   const skinTone = 0xffdbac;
-  const hairColor = 0x080808; // Raven-black
   const shirtColor = 0x222a4d;
   const pantsColor = 0x1a1a1a;
   const beltColor = 0x5d4037;
@@ -28,10 +26,6 @@ export function createPlayerCharacter(
   const pauldronColor = 0x6d4c41;
 
   const skinMaterial = new THREE.MeshStandardMaterial({ color: skinTone });
-  const hairMaterial = new THREE.MeshStandardMaterial({
-    color: hairColor,
-    roughness: 0.8,
-  });
   const shirtMaterial = new THREE.MeshStandardMaterial({ color: shirtColor });
   const pantsMaterial = new THREE.MeshStandardMaterial({
     color: pantsColor,
@@ -86,11 +80,6 @@ export function createPlayerCharacter(
 
   const face = new THREE.Mesh(faceGeo, skinMaterial);
   head.add(face);
-
-  const hairGroup = createHair(headRadius, hairMaterial);
-  hairGroup.position.y = headHeight / 2;
-  hairGroup.rotation.y = Math.PI; // Rotate hair to face forward
-  head.add(hairGroup);
 
   // Torso and Shirt with hexagonal shape
   const torso = new THREE.Group();
