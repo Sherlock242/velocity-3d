@@ -5,17 +5,18 @@ import * as THREE from 'three';
 function createHairClump(length: number, width: number, material: THREE.Material) {
     const shape = new THREE.Shape();
     const curveAmount = length * 0.3;
+    // Make the base slightly wider and the tip pointier
     shape.moveTo(-width / 2, 0);
     shape.quadraticCurveTo(0, length, width / 2, 0);
-    shape.quadraticCurveTo(0, -curveAmount, -width / 2, 0);
-    shape.closePath();
+    // Soften the bottom curve
+    shape.quadraticCurveTo(0, -curveAmount * 0.5, -width / 2, 0);
 
     const extrudeSettings = {
         steps: 1,
         depth: width * 0.6,
         bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.03,
+        bevelThickness: 0.02,
+        bevelSize: 0.02,
         bevelSegments: 1,
     };
 
@@ -28,13 +29,14 @@ function createHairClump(length: number, width: number, material: THREE.Material
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     const hairGroup = new THREE.Group();
     
+    // Layers are defined to control hair placement, size, and flow
     const layers = [
-        // Base layer for sides and back
-        { count: 120, length: 0.25, width: 0.1, yRange: [-0.4, 0.4], zRange: [-1.0, 0.1], xRange: [-1.0, 1.0], rotX: 1.0 },
-        // Main volume on top and upper back
-        { count: 150, length: 0.4, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2 },
+        // Base layer for sides and back (extended coverage)
+        { count: 350, length: 0.2, width: 0.1, yRange: [-0.6, 0.4], zRange: [-1.0, 0.2], xRange: [-1.0, 1.0], rotX: 1.0 },
+        // Main volume on top and upper back (shorter)
+        { count: 150, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2 },
         // Fringe/bangs layer
-        { count: 80, length: 0.35, width: 0.12, yRange: [0.3, 0.7], zRange: [0.4, 1.0], xRange: [-0.9, 0.9], rotX: 1.5 },
+        { count: 80, length: 0.3, width: 0.12, yRange: [0.3, 0.7], zRange: [0.4, 1.0], xRange: [-0.9, 0.9], rotX: 1.5 },
     ];
 
     layers.forEach(layer => {
@@ -65,6 +67,12 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
             // Add extra downward rotation for gravity and styling
             let rotX = layer.rotX * Math.PI; 
             rotX += (Math.random() - 0.5) * 0.4; // Randomize flow
+            
+            // Add a slight forward sweep for the fringe
+            if (layer === layers[2]) {
+                clump.rotateY((Math.random() - 0.5) * 0.2); // Less side-to-side randomness
+            }
+
 
             clump.rotateX(rotX);
             
