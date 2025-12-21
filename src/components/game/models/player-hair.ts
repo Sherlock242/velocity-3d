@@ -35,8 +35,8 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
         { count: 60, length: 0.6, width: 0.15, radialOffset: 0.0, yRange: [-0.5, 0.2], zRange: [-1.0, 0.2] },
         // Main volume layer
         { count: 50, length: 1.0, width: 0.2, radialOffset: 0.1, yRange: [-0.2, 0.6], zRange: [-0.8, 1.0] },
-        // Top messy layer
-        { count: 40, length: 1.2, width: 0.22, radialOffset: 0.2, yRange: [0.3, 1.0], zRange: [-0.5, 1.0] },
+        // Top messy layer - Reduced length and width
+        { count: 40, length: 0.8, width: 0.18, radialOffset: 0.2, yRange: [0.3, 1.0], zRange: [-0.5, 1.0] },
     ];
 
     layers.forEach(layer => {
@@ -56,13 +56,6 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
             pos.y = THREE.MathUtils.clamp(pos.y, layer.yRange[0], layer.yRange[1]);
             pos.z = THREE.MathUtils.clamp(pos.z, layer.zRange[0], layer.zRange[1]);
             
-            // Asymmetry: Taper the character's right side (viewer's left)
-            if (pos.x < 0) { // Character's right
-                 pos.x *= 0.7; // Pull it in closer
-            } else { // Character's left
-                 pos.x *= 1.2; // Push it out slightly
-            }
-
             clump.position.copy(pos);
 
             // Orient the clump to flow away from the origin
@@ -73,20 +66,6 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
             // Add extra downward rotation for gravity and styling
             let rotX = Math.PI * 0.8; 
             rotX += (Math.random() - 0.5) * 0.3; // Randomize flow
-
-            // Make the front bangs hang down more, and sweep left
-            const isFront = pos.z > headRadius * 0.5 && pos.y < 0.6;
-            if (isFront) {
-                rotX += Math.PI * 0.1; // Extra downward rotation for bangs
-                clump.rotateY(-Math.PI / 8); // Sweep to the side
-            }
-            
-            // Taper the back
-            const isBack = pos.z < -headRadius * 0.3;
-            if (isBack) {
-                rotX -= Math.PI * 0.1; // Less downward rotation at back
-                clump.scale.set(0.8, 0.8, 0.8);
-            }
 
             clump.rotateX(rotX);
             
