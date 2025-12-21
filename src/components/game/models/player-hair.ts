@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 // --- START: Seeded PRNG ---
@@ -9,11 +10,13 @@ function random() {
 }
 // --- END: Seeded PRNG ---
 
-// Helper function for sharp, tapered hair clumps
+// Helper function for sharp, tapered hair clumps with a curve
 function createHairClump(size: number, length: number) {
   const geometry = new THREE.BufferGeometry();
 
   const bladeThickness = size * 0.2; // Make it much thinner
+  const curveFactor = -size * 0.4; // How much the tip curves inward
+
   const vertices = new Float32Array([
     // Base
     -size / 2,
@@ -28,8 +31,8 @@ function createHairClump(size: number, length: number) {
     -size / 2,
     0,
     bladeThickness / 2, // 3
-    // Tip
-    0,
+    // Tip (curved inward)
+    curveFactor,
     -length,
     0, // 4
   ]);
