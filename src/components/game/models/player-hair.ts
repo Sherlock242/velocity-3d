@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 
 // Helper function to create a single "chunky" hair clump
@@ -29,59 +28,65 @@ function createHairClump(length: number, width: number, material: THREE.Material
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     const hairGroup = new THREE.Group();
     
+    // Layers defined from bottom to top
     const layers = [
-        // Base layer for volume
-        { count: 50, length: 1.8, width: 0.4, radialOffset: 0, verticalOffset: 0, random: 0.2 },
-        // Main voluminous layer
-        { count: 40, length: 2.2, width: 0.5, radialOffset: 0.1, verticalOffset: -0.1, random: 0.3 },
+        // Sides and Back - shorter and flatter
+        { count: 60, length: 1.5, width: 0.4, radialOffset: 0.0, yRange: [-0.5, 0.2], zRange: [-1.0, 0.2] },
+        // Main volume layer
+        { count: 50, length: 2.2, width: 0.5, radialOffset: 0.1, yRange: [-0.2, 0.6], zRange: [-0.8, 1.0] },
         // Top messy layer
-        { count: 30, length: 2.5, width: 0.6, radialOffset: 0.2, verticalOffset: -0.2, random: 0.4 },
-        // Bangs layer
-        { count: 20, length: 2.0, width: 0.4, radialOffset: 0.1, verticalOffset: -0.2, random: 0.2, bangs: true },
+        { count: 40, length: 2.5, width: 0.6, radialOffset: 0.2, yRange: [0.3, 1.0], zRange: [-0.5, 1.0] },
     ];
 
     layers.forEach(layer => {
         for (let i = 0; i < layer.count; i++) {
-            const length = layer.length * (1 + (Math.random() - 0.5) * layer.random);
-            const width = layer.width * (1 + (Math.random() - 0.5) * layer.random);
+            const length = layer.length * (1 + (Math.random() - 0.5) * 0.2);
+            const width = layer.width * (1 + (Math.random() - 0.5) * 0.2);
             const clump = createHairClump(length, width, hairMaterial);
 
-            // Restrict placement to front, top, and sides
-            const phi = (Math.random() * 0.45 + 0.1) * Math.PI; // Upper hemisphere, avoiding the very top and back
-            let theta = Math.random() * Math.PI * 1.4 - (Math.PI * 0.2); // Longitude (front and sides)
+            // Position on a sphere
+            const pos = new THREE.Vector3(
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2
+            ).normalize().multiplyScalar(headRadius + layer.radialOffset);
+            
+            // Constrain to Y and Z ranges to shape the hair
+            pos.y = THREE.MathUtils.clamp(pos.y, layer.yRange[0], layer.yRange[1]);
+            pos.z = THREE.MathUtils.clamp(pos.z, layer.zRange[0], layer.zRange[1]);
 
-            const isRightSide = Math.random() > 0.4; // create a part
-
-            if (isRightSide) {
-                // Character's right side (viewer's left), shorter hair, swept back
-                theta = Math.random() * Math.PI * 0.4 - (Math.PI * 0.2); // Less angle range
-            } else {
-                // Character's left side (viewer's right), longer hair, falls forward
-                theta = Math.random() * Math.PI * 1.0 + (Math.PI * 0.1);
+            // Asymmetry: Taper the character's right side (viewer's left)
+            if (pos.x < 0) { // Character's right
+                 pos.x *= 0.7; // Pull it in closer
+            } else { // Character's left
+                 pos.x *= 1.2; // Push it out slightly
             }
 
+            clump.position.copy(pos);
 
-            clump.position.setFromSphericalCoords(headRadius + layer.radialOffset, phi, theta);
-            clump.position.y += layer.verticalOffset;
-            
-            const isBack = clump.position.z < -headRadius * 0.5;
-            if(isBack) continue;
-
-            // Orient the clump to flow away from the crown
+            // Orient the clump to flow away from the origin
             const direction = clump.position.clone().normalize();
             const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
             clump.quaternion.copy(quaternion);
 
             // Add extra downward rotation for gravity and styling
-            let rotX = Math.PI * 0.4; // Base downward rotation
-            rotX += (Math.random() - 0.5) * 0.4;
+            let rotX = Math.PI * 0.3; // Base downward rotation
+            rotX += (Math.random() - 0.5) * 0.3; // Randomize flow
 
-            // Make the front bangs hang down more
-            const isFront = clump.position.z > headRadius * 0.6 && Math.abs(clump.position.x) < headRadius * 0.8 && !isRightSide;
-            if (layer.bangs || isFront) {
-                rotX += Math.PI * 0.25; // Extra downward rotation for bangs
+            // Make the front bangs hang down more, and sweep left
+            const isFront = pos.z > headRadius * 0.5 && pos.y < 0.6;
+            if (isFront) {
+                rotX += Math.PI * 0.3; // Extra downward rotation for bangs
+                clump.rotateY(-Math.PI / 8); // Sweep to the side
             }
             
+            // Taper the back
+            const isBack = pos.z < -headRadius * 0.3;
+            if (isBack) {
+                rotX -= Math.PI * 0.1; // Less downward rotation at back
+                clump.scale.set(0.8, 0.8, 0.8);
+            }
+
             clump.rotateX(rotX);
             
             hairGroup.add(clump);
