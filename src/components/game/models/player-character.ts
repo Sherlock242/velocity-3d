@@ -162,6 +162,12 @@ export function createPlayerCharacter(
   rightCollarPiece.position.x = neckWidth;
   neck.add(rightCollarPiece);
 
+  // Add back collar piece
+  const backCollarPieceGeom = new THREE.BoxGeometry(neckWidth * 2, neckHeight, 0.1);
+  const backCollarPiece = new THREE.Mesh(backCollarPieceGeom, shirtMaterial);
+  backCollarPiece.position.z = -0.15;
+  neck.add(backCollarPiece);
+
 
   // Legs and Pants (Tapered)
   const legTopRadius = 0.22;
