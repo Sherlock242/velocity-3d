@@ -1,6 +1,5 @@
 
 import * as THREE from 'three';
-import { createNpc } from './npc';
 
 // --- START: Seeded PRNG ---
 // A simple pseudo-random number generator to ensure the hair is consistent
@@ -15,9 +14,6 @@ export function createPlayerCharacter(
   isPlayer = false,
   gender: 'male' | 'female' = 'male'
 ) {
-  if (!isPlayer) {
-    return createNpc(false, gender);
-  }
 
   const character = new THREE.Group();
 
