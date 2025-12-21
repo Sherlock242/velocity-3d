@@ -38,8 +38,8 @@ export function createPlayerCharacter(
   });
 
   const headHeight = 0.5;
-  const torsoHeight = 1.6; // Increased from 1.4
-  const legHeight = 1.8; // Increased from 1.6
+  const torsoHeight = 1.8; // Increased from 1.6
+  const legHeight = 2.0; // Increased from 1.8
   const shoeHeight = 0.3; // Proportionate shoes
   const totalLegHeight = legHeight + shoeHeight;
   const neckHeight = 0.3; // Increased neck height
@@ -250,7 +250,7 @@ export function createPlayerCharacter(
   rightLeg.add(rightBoot);
 
   // Arms (Slimmer)
-  const armLength = 1.3;
+  const armLength = 1.5; // Increased from 1.3
   const armRadius = 0.15;
   const forearmRadius = 0.14;
   const upperArmLength = armLength * 0.6;
@@ -364,7 +364,7 @@ export function createPlayerCharacter(
     beltGroup
   );
   // Re-position head to be on top of the neck
-  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.2;
+  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.3;
   head.rotation.y = Math.PI; // Rotate head to face forward
   character.position.y = -totalLegHeight; // Center the model vertically
 
