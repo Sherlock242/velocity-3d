@@ -29,17 +29,6 @@ function createHairClump(length: number, width: number, material: THREE.Material
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     const hairGroup = new THREE.Group();
     
-    const creamMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFDD0, roughness: 0.8 });
-
-    // Plain oval back section
-    const backHairGeom = new THREE.SphereGeometry(headRadius * 1.05, 32, 16, 0, Math.PI * 2, Math.PI * 0.45, Math.PI * 0.55);
-    const backHair = new THREE.Mesh(backHairGeom, creamMaterial);
-    backHair.scale.z = 0.7; // make it more oval
-    backHair.position.y = -0.1;
-    backHair.position.z = -0.1;
-    hairGroup.add(backHair);
-
-
     const layers = [
         // Base layer for volume
         { count: 50, length: 1.8, width: 0.4, radialOffset: 0, verticalOffset: 0, random: 0.2 },
