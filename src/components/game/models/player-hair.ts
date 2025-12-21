@@ -24,34 +24,48 @@ function createHairClump(length: number, width: number, material: THREE.Material
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     const hairGroup = new THREE.Group();
 
-    const numLayers = 4;
-    const numClumpsPerLayer = 100;
+    // Define a "crown" point from which hair flows
     const crownPoint = new THREE.Vector3(0, headRadius * 1.2, 0);
+
+    const numLayers = 5;
+    const numClumpsPerLayer = 120;
 
     for (let layer = 0; layer < numLayers; layer++) {
         for (let i = 0; i < numClumpsPerLayer; i++) {
             const progress = i / numClumpsPerLayer;
             
-            const length = 1.0 + Math.random() * 0.4;
-            const width = 0.2 + Math.random() * 0.1;
+            const length = 1.0 + Math.random() * 0.4 - layer * 0.1;
+            const width = 0.2 + Math.random() * 0.1 - layer * 0.02;
 
             const clump = createHairClump(length, width, hairMaterial);
 
             // Position clumps in rings flowing from the top
             const phi = (progress * 0.6 + 0.1 + layer * 0.05) * Math.PI; // Latitude
-            const theta = (i % (10 + layer * 5)) * (Math.PI * 2) / (10 + layer * 5) + (layer * 0.1); // Longitude
+            
+            let theta = (i % (10 + layer * 5)) * (Math.PI * 2) / (10 + layer * 5) + (layer * 0.1); // Longitude
 
             clump.position.setFromSphericalCoords(headRadius + layer * 0.05, phi, theta);
             
+            // Part the hair: create a gap at the front
+            const isFront = clump.position.z > 0 && Math.abs(clump.position.x) < headRadius * 0.5;
+            if (isFront && phi > Math.PI * 0.5) { // Only part the hair that would fall over the face
+                continue; // Skip creating clumps in the very front
+            }
+
             // Orient the clump to flow away from the crown
             const direction = clump.position.clone().sub(crownPoint).normalize();
             const quaternion = new THREE.Quaternion();
             quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
             clump.quaternion.copy(quaternion);
 
-            // Add extra downward rotation for gravity effect, especially at the front
-            const frontFactor = Math.max(0, clump.position.clone().normalize().z);
-            clump.rotateX(Math.PI * 0.4 * (1 - progress) + frontFactor * 0.5); // More rotation for clumps higher up
+            // Add extra downward rotation for gravity effect
+            let rotX = Math.PI * 0.4 * (1 - progress); 
+            
+            // Make the bangs hang down more
+            if (isFront) {
+                rotX += Math.PI * 0.3;
+            }
+            clump.rotateX(rotX);
             
             hairGroup.add(clump);
         }
