@@ -42,7 +42,7 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   const pantsColor = CLOTHING_COLORS[Math.floor(random() * CLOTHING_COLORS.length)];
   
   const skinMaterial = new THREE.MeshStandardMaterial({ color: skinTone });
-  const hairMaterial = new THREE.MeshStandardMaterial({ color: hairColor, roughness: 0.8 });
+  const hairMaterial = new THREE.MeshPhongMaterial({ color: hairColor, shininess: 5 });
   const shirtMaterial = new THREE.MeshStandardMaterial({ color: shirtColor });
   const pantsMaterial = new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.7 });
   const bootsMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 });

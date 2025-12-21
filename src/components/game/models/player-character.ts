@@ -73,7 +73,7 @@ export function createPlayerCharacter(
   head.add(face);
 
   // Hair
-  const hairMaterial = new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 0.8 });
+  const hairMaterial = new THREE.MeshPhongMaterial({ color: 0x080808, shininess: 5 });
   const hair = createHair(headRadius, hairMaterial);
   hair.position.y = headHeight/2 - 0.1;
   head.add(hair);
