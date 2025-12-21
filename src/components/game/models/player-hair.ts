@@ -36,12 +36,12 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     }[] = [];
 
     // --- Base Layer for Coverage ---
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 80; i++) {
         const phi = Math.PI / 2 - 0.2 + (Math.random() * 1.0);
         const isBack = phi > 1.8;
         clumps.push({
-            length: isBack ? 0.6 : 1.0,
-            width: 0.4,
+            length: isBack ? 0.5 : 0.8,
+            width: 0.3,
             radius: headRadius * 0.95,
             phi: phi,
             theta: Math.random() * Math.PI * 2,
@@ -52,10 +52,10 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     }
 
     // --- Mid Layer for Volume ---
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 50; i++) {
         clumps.push({
-            length: Math.random() * 0.5 + 1.0,
-            width: 0.35,
+            length: Math.random() * 0.4 + 0.8,
+            width: 0.25,
             radius: headRadius * 1.0,
             phi: Math.PI / 2 + (Math.random() - 0.5) * 1.2,
             theta: Math.random() * Math.PI * 2,
@@ -64,10 +64,10 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     }
 
     // --- Top Messy Spikes ---
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 40; i++) {
         clumps.push({
-            length: Math.random() * 0.6 + 1.2,
-            width: 0.4,
+            length: Math.random() * 0.5 + 1.0,
+            width: 0.3,
             radius: headRadius * (0.4 + Math.random() * 0.6),
             phi: Math.PI / 4 + Math.random() * 0.4,
             theta: (Math.random() - 0.5) * Math.PI * 2,
@@ -78,16 +78,16 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     }
     
     // --- Sideburns and Side Hair ---
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 10; i++) {
         // Left Side
         clumps.push({
-            length: 1.0, width: 0.25, radius: headRadius * 1.0,
+            length: 0.8, width: 0.2, radius: headRadius * 1.0,
             phi: Math.PI / 2 + 0.3, theta: Math.PI * 0.6 + (Math.random() - 0.5) * 0.2,
             rotX: -0.3, rotY: 0.2, rotZ: -0.8
         });
         // Right Side
         clumps.push({
-            length: 1.0, width: 0.25, radius: headRadius * 1.0,
+            length: 0.8, width: 0.2, radius: headRadius * 1.0,
             phi: Math.PI / 2 + 0.3, theta: -Math.PI * 0.6 + (Math.random() - 0.5) * 0.2,
             rotX: -0.3, rotY: -0.2, rotZ: 0.8
         });
@@ -96,17 +96,17 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
 
     // --- Bangs Layer (more defined) ---
     // Right side of part (longer)
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 8; i++) {
         clumps.push({
-            length: 1.3, width: 0.35, radius: headRadius,
+            length: 1.1, width: 0.25, radius: headRadius,
             phi: Math.PI / 2 - 0.4, theta: Math.PI * 1.6 - i * 0.12,
             rotX: -0.9, rotY: 0.1, rotZ: 0.6
         });
     }
     // Left side of part (shorter)
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
         clumps.push({
-            length: 1.1, width: 0.3, radius: headRadius,
+            length: 0.9, width: 0.2, radius: headRadius,
             phi: Math.PI / 2 - 0.4, theta: Math.PI * 1.7 + i * 0.1,
             rotX: -0.8, rotY: -0.1, rotZ: -0.5
         });
