@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 // Helper function to create a single "chunky" hair clump
@@ -31,11 +32,11 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     // Layers defined from bottom to top
     const layers = [
         // Sides and Back - shorter and flatter
-        { count: 60, length: 1.5, width: 0.4, radialOffset: 0.0, yRange: [-0.5, 0.2], zRange: [-1.0, 0.2] },
+        { count: 60, length: 1.2, width: 0.3, radialOffset: 0.0, yRange: [-0.5, 0.2], zRange: [-1.0, 0.2] },
         // Main volume layer
-        { count: 50, length: 2.2, width: 0.5, radialOffset: 0.1, yRange: [-0.2, 0.6], zRange: [-0.8, 1.0] },
+        { count: 50, length: 1.8, width: 0.4, radialOffset: 0.1, yRange: [-0.2, 0.6], zRange: [-0.8, 1.0] },
         // Top messy layer
-        { count: 40, length: 2.5, width: 0.6, radialOffset: 0.2, yRange: [0.3, 1.0], zRange: [-0.5, 1.0] },
+        { count: 40, length: 2.0, width: 0.5, radialOffset: 0.2, yRange: [0.3, 1.0], zRange: [-0.5, 1.0] },
     ];
 
     layers.forEach(layer => {
@@ -54,7 +55,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
             // Constrain to Y and Z ranges to shape the hair
             pos.y = THREE.MathUtils.clamp(pos.y, layer.yRange[0], layer.yRange[1]);
             pos.z = THREE.MathUtils.clamp(pos.z, layer.zRange[0], layer.zRange[1]);
-
+            
             // Asymmetry: Taper the character's right side (viewer's left)
             if (pos.x < 0) { // Character's right
                  pos.x *= 0.7; // Pull it in closer
@@ -70,7 +71,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
             clump.quaternion.copy(quaternion);
 
             // Add extra downward rotation for gravity and styling
-            let rotX = Math.PI * 0.8; // Changed from 0.3 to make spikes point down
+            let rotX = Math.PI * 0.8; 
             rotX += (Math.random() - 0.5) * 0.3; // Randomize flow
 
             // Make the front bangs hang down more, and sweep left
