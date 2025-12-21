@@ -89,6 +89,7 @@ export function createPlayerCharacter(
 
   const hairGroup = createHair(headRadius, hairMaterial);
   hairGroup.position.y = headHeight / 2;
+  hairGroup.rotation.y = Math.PI; // Rotate hair to face forward
   head.add(hairGroup);
 
   // Torso and Shirt with hexagonal shape
