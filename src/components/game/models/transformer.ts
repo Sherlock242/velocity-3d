@@ -52,7 +52,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const shoeHeight = 0.3; // Proportionate shoes
   const totalLegHeight = legHeight + shoeHeight;
   const neckHeight = 0.2;
-  const headRadius = 0.4;
+  const headRadius = 0.45;
   
   // Head
   const head = new THREE.Group();
@@ -87,7 +87,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   // Create the clean, tapered undercut for the back
   const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16, 0, Math.PI, Math.PI / 2, Math.PI);
   const hairCap = new THREE.Mesh(hairCapGeom, hairMaterial);
-  hairCap.position.y = -0.1;
+  hairCap.position.y = -0.05;
   hairCap.rotation.x = -Math.PI / 2;
   hairCap.scale.set(1.06, 1.05, 1.06); // Make it fit the head shape
   hairGroup.add(hairCap);
@@ -97,12 +97,13 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   function createHairClump(size: number, length: number) {
       const geometry = new THREE.BufferGeometry();
       
+      const bladeThickness = size * 0.2; // Make it much thinner
       const vertices = new Float32Array( [
           // Base
-          -size/2, 0, -size/2,  // 0
-           size/2, 0, -size/2,  // 1
-           size/2, 0,  size/2,  // 2
-          -size/2, 0,  size/2,  // 3
+          -size/2, 0, -bladeThickness/2,  // 0
+           size/2, 0, -bladeThickness/2,  // 1
+           size/2, 0,  bladeThickness/2,  // 2
+          -size/2, 0,  bladeThickness/2,  // 3
           // Tip
            0, -length, 0, // 4
       ] );
@@ -125,44 +126,44 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   }
   
   // Voluminous, messy top
-  const topClumpCount = 70;
+  const topClumpCount = 120; // Increased density
   for (let i = 0; i < topClumpCount; i++) {
-    const size = Math.random() * 0.2 + 0.2;
-    const length = Math.random() * 0.35 + 0.3;
+    const size = Math.random() * 0.2 + 0.25; // Slightly larger base
+    const length = Math.random() * 0.35 + 0.4;
     const clumpGeo = createHairClump(size, length);
     const clump = new THREE.Mesh(clumpGeo, hairMaterial);
   
     // Distribute around the top/front of the head
-    const phi = Math.random() * (Math.PI / 2.2); // Angle from top (0 to ~80 degrees)
+    const phi = Math.random() * (Math.PI / 2.0); // Angle from top (0 to 90 degrees)
     const theta = Math.random() * Math.PI * 2; // Angle around
   
     clump.position.setFromSphericalCoords(headRadius * 0.90, phi, theta);
     
     // Point the clump outward with some randomness
     const lookAtPos = clump.position.clone().multiplyScalar(0.8);
-    lookAtPos.y += (Math.random() - 0.5) * 0.2; // Add vertical variation
+    lookAtPos.y += (Math.random() - 0.4) * 0.3; // Add vertical variation, lean forward slightly
     clump.lookAt(lookAtPos);
   
     hairGroup.add(clump);
   }
   
   // Long, jagged bangs
-  const bangsCount = 15;
+  const bangsCount = 25; // Increased density
   for (let i = 0; i < bangsCount; i++) {
     const size = Math.random() * 0.15 + 0.2; 
-    const length = Math.random() * 0.25 + 0.4; // Longer bangs
+    const length = Math.random() * 0.3 + 0.5; // Longer bangs
     const clumpGeo = createHairClump(size, length);
     const clump = new THREE.Mesh(clumpGeo, hairMaterial);
   
-    const angle = (i / (bangsCount - 1) - 0.5) * (Math.PI / 1.4); // Spread across the front
+    const angle = (i / (bangsCount - 1) - 0.5) * (Math.PI / 1.3); // Spread across the front
     
     // Position them lower on the forehead
-    const phi = Math.PI / 2.1;
-    clump.position.setFromSphericalCoords(headRadius, phi, angle);
-    clump.position.y -= 0.1;
+    const phi = Math.PI / 1.9;
+    clump.position.setFromSphericalCoords(headRadius * 1.05, phi, angle);
+    clump.position.y -= 0.15;
     
-    clump.lookAt(0, -0.3, 0.5); // Aim slightly down and forward
-    clump.rotation.z += (Math.random() - 0.5) * 0.2; // Add jaggedness
+    clump.lookAt(0, -0.4, 0.5); // Aim more sharply down and forward
+    clump.rotation.z += (Math.random() - 0.5) * 0.3; // Add jaggedness
   
     hairGroup.add(clump);
   }
@@ -232,7 +233,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
   neck.add(neckMesh);
   // Position neck on top of the torso's neck flat
-  neck.position.y = totalLegHeight + torsoHeight / 2 + trapeziusHeight;
+  neck.position.y = torso.position.y + trapeziusHeight;
 
 
   // Legs and Pants (Tapered)
@@ -633,7 +634,7 @@ export function updateTransformerAnimation(
       const headCarPos = torsoCarPos.clone().setY(2);
       const neckHeight = 0.2;
       const headHeight = 0.5;
-      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight / 2 + (torsoHeight * 0.5) + neckHeight + headHeight / 2, 0);
+      const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + neckHeight + headHeight, 0);
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
 
       // Arms
@@ -678,3 +679,5 @@ export function updateTransformerAnimation(
       }
   }
 }
+
+    
