@@ -70,13 +70,13 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
             clump.quaternion.copy(quaternion);
 
             // Add extra downward rotation for gravity and styling
-            let rotX = Math.PI * 0.3; // Base downward rotation
+            let rotX = Math.PI * 0.8; // Changed from 0.3 to make spikes point down
             rotX += (Math.random() - 0.5) * 0.3; // Randomize flow
 
             // Make the front bangs hang down more, and sweep left
             const isFront = pos.z > headRadius * 0.5 && pos.y < 0.6;
             if (isFront) {
-                rotX += Math.PI * 0.3; // Extra downward rotation for bangs
+                rotX += Math.PI * 0.1; // Extra downward rotation for bangs
                 clump.rotateY(-Math.PI / 8); // Sweep to the side
             }
             
