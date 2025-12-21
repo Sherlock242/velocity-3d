@@ -6,8 +6,8 @@ function createHairClump(length: number, width: number, material: THREE.Material
     const shape = new THREE.Shape();
     // A more stylized, tapered clump
     shape.moveTo(-width / 2, 0);
-    shape.quadraticCurveTo(0, length, width / 2, 0);
-    shape.quadraticCurveTo(0, -length * 0.2, -width / 2, 0);
+    shape.quadraticCurveTo(0, -length, width / 2, 0); // Flipped curve direction for downward point
+    shape.quadraticCurveTo(0, length * 0.2, -width / 2, 0); // Small curve at the top
 
     const extrudeSettings = {
         steps: 1,
