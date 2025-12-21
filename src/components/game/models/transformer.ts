@@ -95,7 +95,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   const hairGroup = new THREE.Group();
 
   // Create the clean, tapered undercut for the back
-  const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16, Math.PI / 2, Math.PI);
+  const hairCapGeom = new THREE.SphereGeometry(headRadius, 32, 16, 0, Math.PI);
   const hairCap = new THREE.Mesh(hairCapGeom, hairMaterial);
   hairCap.rotation.x = -Math.PI / 2;
   hairCap.scale.set(1.06, 1.05, 1.06); // Make it fit the head shape
@@ -394,8 +394,7 @@ export function createPlayerCharacter(isPlayer = false, gender: 'male' | 'female
   hilt.position.y = 0.2;
   hilt.rotation.x = Math.PI / 4;
   holster.add(hilt);
-
-
+  
   character.add(head, torso, neck, leftLeg, rightLeg, leftArmGroup, rightArmGroup, beltGroup);
   // Re-position head to be on top of the neck
   head.position.y = neck.position.y + neckHeight/2 + headHeight/2 + 0.1; 
