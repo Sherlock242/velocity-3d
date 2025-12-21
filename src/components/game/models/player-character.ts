@@ -291,7 +291,7 @@ export function createPlayerCharacter(
   leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   leftArmGroup.add(leftUpperArm);
   leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderHeight, 0);
-  leftArmGroup.rotation.z = Math.PI / 8;
+  leftArmGroup.rotation.z = Math.PI / 16;
 
   // Right Arm (with armor)
   const rightArmGroup = new THREE.Group();
@@ -315,7 +315,7 @@ export function createPlayerCharacter(
 
   rightArmGroup.add(rightArm);
   rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderHeight, 0);
-  rightArmGroup.rotation.z = -Math.PI / 8;
+  rightArmGroup.rotation.z = -Math.PI / 16;
 
   // Pauldron (Shoulder armor) is now the shoulder cap
   const bracerGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.6, 8);
