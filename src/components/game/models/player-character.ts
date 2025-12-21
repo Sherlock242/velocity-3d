@@ -82,13 +82,13 @@ export function createPlayerCharacter(
   const torso = new THREE.Group();
   torso.position.y = totalLegHeight + torsoHeight / 2;
 
-  const shoulderWidth = 0.5;
-  const waistWidth = 0.35;
+  const shoulderWidth = 0.55;
+  const waistWidth = 0.4;
   const backDepth = -0.225;
   const chestDepth = 0.225;
   const shoulderHeight = torsoHeight * 0.45;
   const trapeziusHeight = torsoHeight * 0.5;
-  const neckWidth = 0.18;
+  const neckWidth = 0.2;
   const neckDepth = 0.3;
 
   const torsoShape = new THREE.Shape();
@@ -176,8 +176,8 @@ export function createPlayerCharacter(
 
 
   // Legs and Pants (Tapered)
-  const legTopRadius = 0.22;
-  const legBottomRadius = 0.15;
+  const legTopRadius = 0.25;
+  const legBottomRadius = 0.18;
   const legGeo = new THREE.CylinderGeometry(
     legTopRadius,
     legBottomRadius,
@@ -250,9 +250,9 @@ export function createPlayerCharacter(
   rightLeg.add(rightBoot);
 
   // Arms (Slimmer)
-  const armLength = 1.5; // Increased from 1.3
-  const armRadius = 0.15;
-  const forearmRadius = 0.14;
+  const armLength = 1.7; // Increased from 1.3
+  const armRadius = 0.18;
+  const forearmRadius = 0.16;
   const upperArmLength = armLength * 0.6;
   const forearmLength = armLength * 0.4;
 
@@ -364,7 +364,7 @@ export function createPlayerCharacter(
     beltGroup
   );
   // Re-position head to be on top of the neck
-  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.3;
+  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.35;
   head.rotation.y = Math.PI; // Rotate head to face forward
   character.position.y = -totalLegHeight; // Center the model vertically
 
