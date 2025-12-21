@@ -89,7 +89,7 @@ export function createPlayerCharacter(
   const shoulderHeight = torsoHeight * 0.45;
   const trapeziusHeight = torsoHeight * 0.5;
   const neckWidth = 0.18;
-  const neckDepth = 0.2;
+  const neckDepth = 0.3;
 
   const torsoShape = new THREE.Shape();
   // Start from bottom center
@@ -104,8 +104,7 @@ export function createPlayerCharacter(
   const extrudePath = new THREE.Shape();
   extrudePath.moveTo(0, backDepth);
   extrudePath.lineTo(0, chestDepth - neckDepth);
-  extrudePath.lineTo(0.2, chestDepth); // Tapered front
-  extrudePath.lineTo(-0.2, chestDepth);
+  extrudePath.lineTo(0, chestDepth); // Tapered front
   extrudePath.lineTo(0, chestDepth - neckDepth);
 
   const torsoExtrudeSettings = {
