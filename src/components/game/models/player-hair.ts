@@ -35,6 +35,8 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
         { count: 150, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2 },
         // Fringe/bangs layer
         { count: 80, length: 0.3, width: 0.12, yRange: [0.3, 0.7], zRange: [0.4, 1.0], xRange: [-0.9, 0.9], rotX: 1.5 },
+        // New layer for lower back and sides
+        { count: 600, length: 0.18, width: 0.09, yRange: [-1.2, -0.5], zRange: [-1.5, 0.0], xRange: [-1.0, 1.0], rotX: 0.8 },
     ];
 
     layers.forEach(layer => {
