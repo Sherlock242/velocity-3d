@@ -263,7 +263,7 @@ export function createPlayerCharacter(
     new THREE.CylinderGeometry(armRadius, armRadius, upperArmLength, 8),
     shirtMaterial
   );
-  leftUpperArm.position.y = -upperArmLength / 2 + 0.1;
+  leftUpperArm.position.y = -upperArmLength / 2;
 
   const leftForearm = new THREE.Mesh(
     new THREE.CylinderGeometry(forearmRadius, forearmRadius, forearmLength, 8),
@@ -282,13 +282,9 @@ export function createPlayerCharacter(
   leftHand.position.y = -forearmLength / 2 - 0.15;
   leftHand.rotation.z = Math.PI / 8;
 
-  const leftShoulderCap = new THREE.Mesh(new THREE.SphereGeometry(shoulderWidth * 0.5, 12, 8), shirtMaterial);
-  leftShoulderCap.scale.y = 0.6; // Flatten the sphere
-  leftShoulderCap.position.y = -0.05; // Lower the cap to overlap the torso
-
   leftForearm.add(leftHand); // Attach hand to forearm
   leftUpperArm.add(leftForearm); // Attach forearm to upper arm
-  leftArmGroup.add(leftShoulderCap, leftUpperArm);
+  leftArmGroup.add(leftUpperArm);
   leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderHeight, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
 
@@ -299,7 +295,7 @@ export function createPlayerCharacter(
     new THREE.CylinderGeometry(armRadius, armRadius, armLength, 8),
     shirtMaterial
   );
-  rightArm.position.y = -armLength / 2 + 0.1;
+  rightArm.position.y = -armLength / 2;
 
   const rightHand = new THREE.Mesh(
     new THREE.BoxGeometry(0.25, 0.3, 0.1),
@@ -310,7 +306,7 @@ export function createPlayerCharacter(
   
   const rightShoulderCap = new THREE.Mesh(new THREE.SphereGeometry(shoulderWidth * 0.5, 12, 8), pauldronMaterial);
   rightShoulderCap.scale.y = 0.6; // Flatten the sphere
-  rightShoulderCap.position.y = -0.05; // Lower the cap to overlap the torso
+  rightShoulderCap.position.y = 0.05; // Lower the cap to overlap the torso
 
   rightArmGroup.add(rightShoulderCap, rightArm);
   rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderHeight, 0);
