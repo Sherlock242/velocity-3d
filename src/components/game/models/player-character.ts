@@ -89,7 +89,7 @@ export function createPlayerCharacter(
   const shoulderHeight = torsoHeight * 0.45;
   const trapeziusHeight = torsoHeight * 0.5;
   const neckWidth = 0.18;
-  const neckDepth = 0.05;
+  const neckDepth = 0.2;
 
   const torsoShape = new THREE.Shape();
   // Start from bottom center
@@ -100,6 +100,13 @@ export function createPlayerCharacter(
   torsoShape.lineTo(-neckWidth, trapeziusHeight); // 4 Left neck point
   torsoShape.lineTo(-shoulderWidth, shoulderHeight); // 5 Left shoulder
   torsoShape.closePath();
+
+  const extrudePath = new THREE.Shape();
+  extrudePath.moveTo(0, backDepth);
+  extrudePath.lineTo(0, chestDepth - neckDepth);
+  extrudePath.lineTo(0.2, chestDepth); // Tapered front
+  extrudePath.lineTo(-0.2, chestDepth);
+  extrudePath.lineTo(0, chestDepth - neckDepth);
 
   const torsoExtrudeSettings = {
     steps: 2,
@@ -358,7 +365,7 @@ export function createPlayerCharacter(
     beltGroup
   );
   // Re-position head to be on top of the neck
-  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.2;
+  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2;
   head.rotation.y = Math.PI; // Rotate head to face forward
   character.position.y = -totalLegHeight; // Center the model vertically
 
