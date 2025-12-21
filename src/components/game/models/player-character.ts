@@ -281,7 +281,7 @@ export function createPlayerCharacter(
   leftForearm.add(leftHand); // Attach hand to forearm
   leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   leftArmGroup.add(leftUpperArm);
-  leftArmGroup.position.set(shoulderWidth + 0.2, torso.position.y + shoulderHeight - 0.3, 0);
+  leftArmGroup.position.set(shoulderWidth + 0.2, torso.position.y + shoulderHeight - 0.15, 0);
 
   // Right Arm (with armor)
   const rightArmGroup = new THREE.Group();
@@ -299,7 +299,7 @@ export function createPlayerCharacter(
   rightArm.add(rightHand);
 
   rightArmGroup.add(rightArm);
-  rightArmGroup.position.set(-(shoulderWidth + 0.2), torso.position.y + shoulderHeight - 0.3, 0);
+  rightArmGroup.position.set(-(shoulderWidth + 0.2), torso.position.y + shoulderHeight - 0.15, 0);
 
   // Pauldron (Shoulder armor)
   const pauldronGeo = new THREE.BoxGeometry(0.4, 0.5, 0.45);
