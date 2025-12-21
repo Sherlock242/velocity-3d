@@ -454,7 +454,7 @@ export function createPlayerCharacter(
     beltGroup
   );
   // Re-position head to be on top of the neck
-  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2;
+  head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.1;
   head.rotation.y = Math.PI; // Rotate head to face forward
   character.position.y = -totalLegHeight; // Center the model vertically
 
