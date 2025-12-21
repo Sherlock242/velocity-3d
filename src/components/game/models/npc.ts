@@ -186,7 +186,9 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   leftHand.position.y = -armLength/2;
   leftArm.add(leftHand);
   leftArmGroup.add(leftArm);
-  leftArmGroup.position.set(shoulderWidth, torso.position.y + torsoHeight/2, 0);
+  leftArmGroup.position.set(shoulderWidth, torso.position.y + torsoHeight/2 - 0.1, 0);
+  leftArmGroup.rotation.z = Math.PI / 16;
+
 
   const rightArmGroup = new THREE.Group();
   const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), shirtMaterial);
@@ -195,21 +197,8 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   rightHand.position.y = -armLength/2;
   rightArm.add(rightHand);
   rightArmGroup.add(rightArm);
-  rightArmGroup.position.set(-shoulderWidth, torso.position.y + torsoHeight/2, 0);
-
-  // Shoulder caps
-  const shoulderCapGeom = new THREE.SphereGeometry(shoulderWidth * 0.5, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2);
-  shoulderCapGeom.scale(1, 0.5, 1); // Flatten the sphere
-
-  const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
-  leftShoulderCap.position.y = 0.1;
-  leftShoulderCap.rotation.z = -Math.PI / 16;
-  leftArmGroup.add(leftShoulderCap);
-  
-  const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
-  rightShoulderCap.position.y = 0.1;
-  rightShoulderCap.rotation.z = Math.PI / 16;
-  rightArmGroup.add(rightShoulderCap);
+  rightArmGroup.position.set(-shoulderWidth, torso.position.y + torsoHeight/2 - 0.1, 0);
+  rightArmGroup.rotation.z = -Math.PI / 16;
 
   
   character.add(head, torso, neck, leftLeg, rightLeg, leftArmGroup, rightArmGroup);

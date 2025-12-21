@@ -288,14 +288,6 @@ export function createPlayerCharacter(
   leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderHeight, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
   
-  // Left shoulder cap
-  const leftShoulderCap = new THREE.Mesh(new THREE.SphereGeometry(shoulderWidth * 0.5, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), shirtMaterial);
-  leftShoulderCap.scale.y = 0.6;
-  leftShoulderCap.position.y = 0.1;
-  leftShoulderCap.rotation.z = -Math.PI / 16;
-  leftArmGroup.add(leftShoulderCap);
-
-
   // Right Arm (with armor)
   const rightArmGroup = new THREE.Group();
   
