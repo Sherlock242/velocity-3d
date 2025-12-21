@@ -38,8 +38,8 @@ export function createPlayerCharacter(
   });
 
   const headHeight = 0.5;
-  const torsoHeight = 1.4; // Taller
-  const legHeight = 1.6; // Taller
+  const torsoHeight = 1.6; // Increased from 1.4
+  const legHeight = 1.8; // Increased from 1.6
   const shoeHeight = 0.3; // Proportionate shoes
   const totalLegHeight = legHeight + shoeHeight;
   const neckHeight = 0.3; // Increased neck height
@@ -96,8 +96,8 @@ export function createPlayerCharacter(
   torsoShape.moveTo(-waistWidth, -torsoHeight / 2); // 0 Bottom left
   torsoShape.lineTo(waistWidth, -torsoHeight / 2); // 1 Bottom right
   torsoShape.lineTo(shoulderWidth, shoulderHeight); // 2 Right shoulder
-  torsoShape.lineTo(neckWidth, trapeziusHeight); // 3 Right neck point
-  torsoShape.lineTo(-neckWidth, trapeziusHeight); // 4 Left neck point
+  torsoShape.lineTo(neckWidth - neckDepth, trapeziusHeight); // 3 Right neck point
+  torsoShape.lineTo(-neckWidth + neckDepth, trapeziusHeight); // 4 Left neck point
   torsoShape.lineTo(-shoulderWidth, shoulderHeight); // 5 Left shoulder
   torsoShape.closePath();
 
