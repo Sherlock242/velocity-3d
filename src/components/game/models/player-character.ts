@@ -89,7 +89,7 @@ export function createPlayerCharacter(
   const shoulderHeight = torsoHeight * 0.45;
   const trapeziusHeight = torsoHeight * 0.5;
   const neckWidth = 0.2;
-  const neckDepth = 0.3;
+  const neckDepth = 0.1;
 
   const torsoShape = new THREE.Shape();
   // Start from bottom center
