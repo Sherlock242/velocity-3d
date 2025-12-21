@@ -86,7 +86,7 @@ export function createPlayerCharacter(
   const waistWidth = 0.4;
   const backDepth = -0.2;
   const chestDepth = 0.2;
-  const shoulderHeight = torsoHeight * 0.45;
+  const shoulderHeight = torsoHeight * 0.4;
   const trapeziusHeight = torsoHeight * 0.5;
   const neckWidth = 0.2;
   const neckDepth = 0.1;
@@ -255,9 +255,15 @@ export function createPlayerCharacter(
   const forearmRadius = 0.16;
   const upperArmLength = armLength * 0.6;
   const forearmLength = armLength * 0.4;
+  const shoulderCapRadius = 0.25;
 
   // Left Arm (rolled up sleeve)
   const leftArmGroup = new THREE.Group();
+  const leftShoulderCap = new THREE.Mesh(new THREE.SphereGeometry(shoulderCapRadius, 8, 6), shirtMaterial);
+  leftShoulderCap.scale.y = 1.2; // Elongate it slightly
+  leftShoulderCap.position.y = 0;
+  leftArmGroup.add(leftShoulderCap);
+
   const leftUpperArm = new THREE.Mesh(
     new THREE.CylinderGeometry(armRadius, armRadius, upperArmLength, 8),
     shirtMaterial
@@ -289,6 +295,11 @@ export function createPlayerCharacter(
 
   // Right Arm (with armor)
   const rightArmGroup = new THREE.Group();
+  const rightShoulderCap = new THREE.Mesh(new THREE.SphereGeometry(shoulderCapRadius, 8, 6), pauldronMaterial);
+  rightShoulderCap.scale.y = 1.2;
+  rightShoulderCap.position.y = 0;
+  rightArmGroup.add(rightShoulderCap);
+
   const rightArm = new THREE.Mesh(
     new THREE.CylinderGeometry(armRadius, armRadius, armLength, 8),
     shirtMaterial
@@ -306,13 +317,7 @@ export function createPlayerCharacter(
   rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderHeight, 0);
   rightArmGroup.rotation.z = -Math.PI / 8;
 
-  // Pauldron (Shoulder armor)
-  const pauldronGeo = new THREE.BoxGeometry(0.4, 0.5, 0.45);
-  const pauldron = new THREE.Mesh(pauldronGeo, pauldronMaterial);
-  pauldron.position.y = armLength / 2 - 0.15;
-  rightArm.add(pauldron);
-
-  // Bracer (Forearm armor)
+  // Pauldron (Shoulder armor) is now the shoulder cap
   const bracerGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.6, 8);
   const bracer = new THREE.Mesh(bracerGeo, metalMaterial);
   bracer.position.y = -0.3;
