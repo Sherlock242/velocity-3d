@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 
 // Helper function to create a single "chunky" hair clump
@@ -35,6 +34,8 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
         { count: 150, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2 },
         // Fringe/bangs layer
         { count: 80, length: 0.3, width: 0.12, yRange: [0.3, 0.7], zRange: [0.4, 1.0], xRange: [-0.9, 0.9], rotX: 1.5 },
+        // Dedicated layer for lower back and sides
+        { count: 400, length: 0.2, width: 0.1, yRange: [-0.9, -0.4], zRange: [-1.0, 0.0], xRange: [-0.8, 0.8], rotX: 1.1 },
     ];
 
     layers.forEach(layer => {
