@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 import type { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { MutableRefObject } from 'react';
@@ -9,6 +10,7 @@ type Sector4Props = {
   walkableSurfacesRef: MutableRefObject<(THREE.Group | THREE.Mesh)[]>;
   gltfLoader: GLTFLoader;
   forestGroundRef: MutableRefObject<THREE.Mesh | undefined>;
+  isSector4LoadedRef: MutableRefObject<boolean>;
 };
 
 export function createSector4({
@@ -18,6 +20,7 @@ export function createSector4({
   walkableSurfacesRef,
   gltfLoader,
   forestGroundRef,
+  isSector4LoadedRef,
 }: Sector4Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -38,7 +41,8 @@ export function createSector4({
           }
         }
       });
-
+      
+      isSector4LoadedRef.current = true;
       sectorGroup.add(model);
     },
     undefined,
