@@ -244,6 +244,10 @@ export function createPlayerCharacter(
   const forearmRadius = 0.16;
   const upperArmLength = armLength * 0.6;
   const forearmLength = armLength * 0.4;
+  const armYOffset = -0.15; // Lower the arms slightly
+  
+  const shoulderCapGeom = new THREE.SphereGeometry(0.5, 16, 8);
+  shoulderCapGeom.scale(1.2, 0.7, 1); // Flatten the sphere to make a cap
   
   // Left Arm (rolled up sleeve)
   const leftArmGroup = new THREE.Group();
@@ -271,12 +275,16 @@ export function createPlayerCharacter(
   leftHand.position.y = -forearmLength / 2 - 0.15;
   leftHand.rotation.z = Math.PI / 8;
 
+  const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
+  leftShoulderCap.position.y = 0.1;
+  leftArmGroup.add(leftShoulderCap);
+
   leftForearm.add(leftHand); // Attach hand to forearm
   leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   leftArmGroup.add(leftUpperArm);
 
 
-  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY, 0);
+  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY + armYOffset, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
   
   // Right Arm (with armor)
@@ -297,7 +305,11 @@ export function createPlayerCharacter(
   
   rightArmGroup.add(rightArm);
   
-  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY, 0);
+  const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
+  rightShoulderCap.position.y = 0.1;
+  rightArmGroup.add(rightShoulderCap);
+
+  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY + armYOffset, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 
   const bracerGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.6, 8);
