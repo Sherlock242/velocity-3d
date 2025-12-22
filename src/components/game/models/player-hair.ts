@@ -1,26 +1,11 @@
 
 import * as THREE from 'three';
 
-// Helper function to create a single "chunky" hair clump
+// Helper function to create a single "chunky" hair clump, now as a cone
 function createHairClump(length: number, width: number, material: THREE.Material) {
-    const shape = new THREE.Shape();
-    // A more stylized, tapered clump
-    shape.moveTo(-width / 2, 0);
-    shape.quadraticCurveTo(0, length, width / 2, 0);
-    shape.quadraticCurveTo(0, -length * 0.2, -width / 2, 0);
-
-    const extrudeSettings = {
-        steps: 1,
-        depth: width * 0.6,
-        bevelEnabled: true,
-        bevelThickness: 0.02,
-        bevelSize: 0.02,
-        bevelSegments: 1,
-    };
-
-    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    const geometry = new THREE.ConeGeometry(width * 0.5, length, 4, 1);
     const clump = new THREE.Mesh(geometry, material);
-    clump.geometry.center();
+    clump.geometry.translate(0, length / 2, 0); // Position pivot at the base
     return clump;
 }
 
@@ -45,8 +30,8 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
         }
 
         for (let i = 0; i < layer.count; i++) {
-            const length = layer.length * (1 + (random() - 0.5) * 0.3);
-            const width = layer.width * (1 + (random() - 0.5) * 0.3);
+            const length = layer.length;
+            const width = layer.width;
             const clump = createHairClump(length, width, hairMaterial);
 
             // Position on a sphere
@@ -65,7 +50,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
 
             // Orient the clump to flow away from the origin
             const direction = clump.position.clone().normalize();
-            const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, -1, 0), direction);
+            const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
             clump.quaternion.copy(quaternion);
 
             // Add extra downward rotation for gravity and styling
@@ -83,6 +68,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
 
     return hairGroup;
 }
+
 
 
 
