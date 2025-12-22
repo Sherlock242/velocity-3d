@@ -28,10 +28,6 @@ export function createPlayerCharacter(
     metalness: 0.5,
     roughness: 0.5,
   });
-  const pauldronMaterial = new THREE.MeshStandardMaterial({
-    color: pauldronColor,
-    roughness: 0.8,
-  });
   const bootsMaterial = new THREE.MeshStandardMaterial({
     color: 0x222222,
     roughness: 0.8,
@@ -87,7 +83,8 @@ export function createPlayerCharacter(
   const shoulderY = torsoHeight / 2 - 0.2; // Y position of the shoulder peak
   const neckY = torsoHeight / 2;
   const neckWidth = 0.2;
-  const torsoDepth = 0.25;
+  const armRadius = 0.18;
+  const torsoDepth = armRadius * 2;
 
   const torsoShape = new THREE.Shape();
   // Start from bottom center
@@ -245,7 +242,6 @@ export function createPlayerCharacter(
 
   // Arms (Slimmer)
   const armLength = 1.3;
-  const armRadius = 0.18;
   const forearmRadius = 0.16;
   const upperArmLength = armLength * 0.6;
   const forearmLength = armLength * 0.4;

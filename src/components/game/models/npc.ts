@@ -129,7 +129,8 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   const shoulderY = torsoHeight / 2 - 0.2;
   const neckY = torsoHeight / 2;
   const neckWidth = 0.15;
-  const chestDepth = 0.2;
+  const armRadius = 0.12;
+  const chestDepth = armRadius * 2;
 
   const torsoShape = new THREE.Shape();
   torsoShape.moveTo(-waistWidth, -torsoHeight / 2); // Bottom-left
@@ -193,7 +194,6 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
   // Arms
   const armLength = 1.0;
-  const armRadius = 0.12;
 
   const leftArmGroup = new THREE.Group();
   const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), skinMaterial);
