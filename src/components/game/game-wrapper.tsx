@@ -52,14 +52,16 @@ export default function GameWrapper() {
 
   const gameState = useGameState();
 
-  const handleToggleControlMode = () => {
+  const handleToggleControlMode = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (gameState.isTransformingRef.current) return;
     gameState.isTransformingRef.current = true;
     gameState.controlModeRef.current = gameState.controlModeRef.current === 'car' ? 'person' : 'car';
     setGameData(prev => ({ ...prev, controlMode: gameState.controlModeRef.current }));
   };
 
-  const handleGearChange = () => {
+  const handleGearChange = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     let newGear = (gameState.gearRef.current + 1) as Gear;
     if (newGear > 3) newGear = 1;
     gameState.gearRef.current = newGear;

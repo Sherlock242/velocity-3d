@@ -8,6 +8,7 @@ type Sector4Props = {
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
   walkableSurfacesRef: MutableRefObject<(THREE.Group | THREE.Mesh)[]>;
   gltfLoader: GLTFLoader;
+  forestGroundRef: MutableRefObject<THREE.Mesh | undefined>;
 };
 
 export function createSector4({
@@ -15,7 +16,8 @@ export function createSector4({
   cellCenterZ,
   staticCollidersRef,
   walkableSurfacesRef,
-  gltfLoader
+  gltfLoader,
+  forestGroundRef,
 }: Sector4Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -31,11 +33,8 @@ export function createSector4({
           child.castShadow = true;
           child.receiveShadow = true;
           
-          // Add only the ground mesh of the forest to the walkable surfaces
           if (child.name === 'forest_ground') { 
-            walkableSurfacesRef.current.push(child);
-          } else {
-            // Other objects in the forest won't be collidable
+            forestGroundRef.current = child;
           }
         }
       });
