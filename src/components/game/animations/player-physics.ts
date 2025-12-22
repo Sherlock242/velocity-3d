@@ -38,6 +38,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
 
     if (!onRamp) {
         if (playerRef.current.position.y > playerHeight) {
+            // Apply gravity only when airborne and not on a ramp
             velocityRef.current.y -= 9.8 * delta * 2;
         } else {
              playerRef.current.position.y = playerHeight;
@@ -58,23 +59,22 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
                 }
             }
         }
-    } else {
-         if (velocityRef.current.y < 0) {
+    }
+
+    if (onGround) {
+        if (velocityRef.current.y < 0) {
             velocityRef.current.y = 0;
         }
-        onGround = true; // If on a ramp, we are on the ground
+        if (jumpCooldownRef.current > 0) {
+            jumpCooldownRef.current -= delta;
+        }
+        if (inputRef.current.jump && jumpCooldownRef.current <= 0 && controlModeRef.current === 'person') {
+            velocityRef.current.y = 18;
+            jumpCooldownRef.current = 1; // 1 second cooldown
+        }
     }
 
-    if (jumpCooldownRef.current > 0) {
-        jumpCooldownRef.current -= delta;
-    }
-
-    if (inputRef.current.jump && onGround && jumpCooldownRef.current <= 0 && controlModeRef.current === 'person') {
-        velocityRef.current.y = 18;
-        jumpCooldownRef.current = 1; // 1 second cooldown
-    }
-
-    // Apply vertical velocity from jumping
+    // Apply vertical velocity from jumping or gravity
     playerRef.current.position.y += velocityRef.current.y * delta;
 
 
