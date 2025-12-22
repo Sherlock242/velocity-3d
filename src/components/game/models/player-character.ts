@@ -246,7 +246,7 @@ export function createPlayerCharacter(
   const forearmLength = armLength * 0.4;
   const armYOffset = -0.15; // Lower the arms slightly
   
-  const shoulderCapGeom = new THREE.SphereGeometry(0.4, 16, 8);
+  const shoulderCapGeom = new THREE.SphereGeometry(0.2, 16, 8);
   shoulderCapGeom.scale(1, 0.6, 1); // Flatten the sphere to make a cap
   
   // Left Arm (rolled up sleeve)
