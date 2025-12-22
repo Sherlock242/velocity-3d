@@ -4,80 +4,81 @@ import { TOTAL_GRID_WIDTH } from '@/lib/game-constants';
 import type { GameState } from '../core/state';
 
 export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
-    const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp, tilePlaneRef, staticCollidersRef, walkableSurfacesRef, inputRef, jumpCooldownRef } = gameState;
+    const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp, tilePlaneRef, staticCollidersRef, walkableSurfacesRef, inputRef, jumpCooldownRef, isSector4LoadedRef, forestGroundRef } = gameState;
     if (!playerRef.current) return;
 
     const playerHeight = controlModeRef.current === 'car' ? 2.5 : 3.5;
-    let onRamp = false;
     let onGround = false;
-    const raycaster = new THREE.Raycaster();
+    let groundY = 0;
+    const raycaster = new THREE.Raycaster(playerRef.current.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));
     
-    // The university ramp was missing from this check, causing gravity to be incorrectly applied.
+    const walkableMeshes = [...walkableSurfacesRef.current];
+    if(isSector4LoadedRef.current && forestGroundRef.current) {
+        walkableMeshes.push(forestGroundRef.current);
+    }
+    
     const rampObjects: (THREE.Mesh | THREE.Group)[] = [
         rampMeshRef.current, 
         collegeRampMeshRef.current, 
         universityRamp.current, 
         tilePlaneRef.current,
-        ...walkableSurfacesRef.current
+        ...walkableMeshes
     ].filter(Boolean) as (THREE.Mesh | THREE.Group)[];
 
     if (rampObjects.length > 0) {
-        raycaster.set(playerRef.current.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));
         const intersects = raycaster.intersectObjects(rampObjects, true);
         const validIntersects = intersects.filter(i => i.point.y < playerRef.current!.position.y + 1);
+        
         if (validIntersects.length > 0) {
-            const groundY = validIntersects.sort((a, b) => b.point.y - a.point.y)[0].point.y;
-            if (playerRef.current.position.y <= groundY + playerHeight + 0.5) {
-                playerRef.current.position.y = groundY + playerHeight;
-                velocityRef.current.y = Math.max(0, velocityRef.current.y); // Prevent accumulating downward velocity
-                onRamp = true;
-                onGround = true;
-            }
+            groundY = validIntersects.sort((a, b) => b.point.y - a.point.y)[0].point.y;
+            onGround = true;
         }
     }
 
-    if (!onRamp) {
-        if (playerRef.current.position.y > playerHeight) {
-            // Apply gravity only when airborne and not on a ramp
-            velocityRef.current.y -= 9.8 * delta * 2;
-        } else {
-             playerRef.current.position.y = playerHeight;
-             velocityRef.current.y = Math.max(0, velocityRef.current.y);
-             onGround = true;
-        }
-
-        // Safeguard to ensure player is always above the main dome
-        if (rampMeshRef.current) {
-            raycaster.set(playerRef.current.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));
-            const domeIntersects = raycaster.intersectObject(rampMeshRef.current);
-            if (domeIntersects.length > 0) {
-                const domeGroundY = domeIntersects[0].point.y;
-                if (playerRef.current.position.y < domeGroundY + playerHeight) {
-                    playerRef.current.position.y = domeGroundY + playerHeight;
-                    velocityRef.current.y = 0; // Stop any downward velocity
-                    onGround = true;
-                }
-            }
+    if (!onGround) {
+        // Use the main ground plane height if no other surface is detected
+        groundY = 0;
+        const mainGroundIntersects = raycaster.intersectObject(ground);
+        if (mainGroundIntersects.length > 0) {
+            groundY = mainGroundIntersects[0].point.y;
         }
     }
 
-    if (onGround) {
+    // --- Physics Logic ---
+
+    // 1. Handle landing on a surface
+    if (onGround && playerRef.current.position.y < groundY + playerHeight + 0.1) {
+        playerRef.current.position.y = groundY + playerHeight;
         if (velocityRef.current.y < 0) {
             velocityRef.current.y = 0;
         }
         if (jumpCooldownRef.current > 0) {
             jumpCooldownRef.current -= delta;
         }
-        if (inputRef.current.jump && jumpCooldownRef.current <= 0 && controlModeRef.current === 'person') {
-            velocityRef.current.y = 18;
-            jumpCooldownRef.current = 1; // 1 second cooldown
-        }
+    } 
+    // 2. Handle being airborne
+    else {
+        velocityRef.current.y -= 9.8 * delta * 2; // Apply gravity
+        onGround = false; // Ensure onGround is false if airborne
+    }
+    
+    // 3. Handle jumping
+    if (onGround && inputRef.current.jump && jumpCooldownRef.current <= 0 && controlModeRef.current === 'person') {
+        velocityRef.current.y = 18;
+        jumpCooldownRef.current = 1; // 1 second cooldown
+    }
+    
+    // 4. Apply final vertical velocity
+    playerRef.current.position.y += velocityRef.current.y * delta;
+    
+    // 5. Check for falling through the world as a fallback
+    if (playerRef.current.position.y < groundY + playerHeight) {
+        playerRef.current.position.y = groundY + playerHeight;
+        velocityRef.current.y = Math.max(0, velocityRef.current.y);
     }
 
-    // Apply vertical velocity from jumping or gravity
-    playerRef.current.position.y += velocityRef.current.y * delta;
 
-
+    // --- Boundary Logic ---
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
     playerRef.current.position.x = Math.max(-halfTotalWidth, Math.min(halfTotalWidth, playerRef.current.position.x));
     playerRef.current.position.z = Math.max(-halfTotalWidth, Math.min(halfTotalWidth, playerRef.current.position.z));
