@@ -67,7 +67,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     }
 
     if (inputRef.current.jump && onGround && jumpCooldownRef.current <= 0 && controlModeRef.current === 'person') {
-        velocityRef.current.y = 14;
+        velocityRef.current.y = 18;
         jumpCooldownRef.current = 1; // 1 second cooldown
     }
 
