@@ -26,6 +26,7 @@ export type GameState = {
         backward: boolean;
         left: boolean;
         right: boolean;
+        jump: boolean;
     }>;
     wasOffTrackRef: React.MutableRefObject<boolean>;
     penaltyCheckCooldownRef: React.MutableRefObject<boolean>;
@@ -58,6 +59,7 @@ export type GameState = {
     faceRotationStepRef: React.MutableRefObject<number>;
     electricSparksRef: React.MutableRefObject<THREE.Line[]>;
     tilePlaneRef: React.MutableRefObject<THREE.Mesh | undefined>;
+    jumpCooldownRef: React.MutableRefObject<number>;
 };
 
 export function useGameState(): GameState {
@@ -70,6 +72,7 @@ export function useGameState(): GameState {
         backward: false,
         left: false,
         right: false,
+        jump: false,
     });
     const wasOffTrackRef = React.useRef(false);
     const penaltyCheckCooldownRef = React.useRef(false);
@@ -102,6 +105,7 @@ export function useGameState(): GameState {
     const faceRotationStepRef = React.useRef(0);
     const electricSparksRef = React.useRef<THREE.Line[]>([]);
     const tilePlaneRef = React.useRef<THREE.Mesh>();
+    const jumpCooldownRef = React.useRef(0);
 
 
     return {
@@ -141,5 +145,6 @@ export function useGameState(): GameState {
         faceRotationStepRef,
         electricSparksRef,
         tilePlaneRef,
+        jumpCooldownRef,
     };
 }

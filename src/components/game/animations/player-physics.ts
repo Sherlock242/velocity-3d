@@ -4,11 +4,12 @@ import { TOTAL_GRID_WIDTH } from '@/lib/game-constants';
 import type { GameState } from '../core/state';
 
 export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
-    const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp, tilePlaneRef, staticCollidersRef, walkableSurfacesRef } = gameState;
+    const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp, tilePlaneRef, staticCollidersRef, walkableSurfacesRef, inputRef, jumpCooldownRef } = gameState;
     if (!playerRef.current) return;
 
     const playerHeight = controlModeRef.current === 'car' ? 2.5 : 3.5; // Increased from 1.5/2.5
     let onRamp = false;
+    let onGround = false;
     const raycaster = new THREE.Raycaster();
     
     // The university ramp was missing from this check, causing gravity to be incorrectly applied.
@@ -29,6 +30,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
             if (playerRef.current.position.y < groundY + playerHeight + 0.5) {
                 playerRef.current.position.y = groundY + playerHeight;
                 onRamp = true;
+                onGround = true;
             }
         }
     }
@@ -41,6 +43,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
         if (playerRef.current.position.y < playerHeight) {
             playerRef.current.position.y = playerHeight;
             velocityRef.current.y = 0;
+            onGround = true;
         }
 
         // Safeguard to ensure player is always above the main dome
@@ -52,12 +55,22 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
                 if (playerRef.current.position.y < domeGroundY + playerHeight) {
                     playerRef.current.position.y = domeGroundY + playerHeight;
                     velocityRef.current.y = 0; // Stop any downward velocity
+                    onGround = true;
                 }
             }
         }
 
     } else {
         velocityRef.current.y = 0;
+    }
+
+    if (jumpCooldownRef.current > 0) {
+        jumpCooldownRef.current -= delta;
+    }
+
+    if (inputRef.current.jump && onGround && jumpCooldownRef.current <= 0) {
+        velocityRef.current.y = 5;
+        jumpCooldownRef.current = 1; // 1 second cooldown
     }
 
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;

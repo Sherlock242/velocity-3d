@@ -139,6 +139,9 @@ export default function GameWrapper() {
       if (e.key === 'ArrowDown' || e.key === 's') gameState.inputRef.current.backward = true;
       if (e.key === 'ArrowLeft' || e.key === 'a') gameState.inputRef.current.left = true;
       if (e.key === 'ArrowRight' || e.key === 'd') gameState.inputRef.current.right = true;
+      if (e.code === 'Space' && !e.repeat) {
+        gameState.inputRef.current.jump = true;
+      }
       if ((e.key === 'e' || e.key === 'E') && !e.repeat) {
         handleToggleControlMode();
       }
@@ -153,6 +156,9 @@ export default function GameWrapper() {
       if (e.key === 'ArrowDown' || e.key === 's') gameState.inputRef.current.backward = false;
       if (e.key === 'ArrowLeft' || e.key === 'a') gameState.inputRef.current.left = false;
       if (e.key === 'ArrowRight' || e.key === 'd') gameState.inputRef.current.right = false;
+      if (e.code === 'Space') {
+        gameState.inputRef.current.jump = false;
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
@@ -315,6 +321,13 @@ export default function GameWrapper() {
               gameState.inputRef.current.right = true;
             }}
             onSteerRightRelease={() => (gameState.inputRef.current.right = false)}
+            onJumpPress={() => {
+              initAudioOnInteraction(gameState);
+              gameState.inputRef.current.jump = true;
+            }}
+            onJumpRelease={() => {
+              gameState.inputRef.current.jump = false;
+            }}
             isTopDownView={topDownSector !== null}
             onExitTopDownView={() => setTopDownSector(null)}
           />

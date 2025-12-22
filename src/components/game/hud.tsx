@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, ChevronUp, Zap, ToyBrick, Car, X, Cog } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronUp, Zap, ToyBrick, Car, X, Cog, ArrowUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import MiniMap from './mini-map';
 import { Button } from '../ui/button';
@@ -23,6 +23,8 @@ type HudProps = {
   onSteerLeftRelease: () => void;
   onSteerRightPress: () => void;
   onSteerRightRelease: () => void;
+  onJumpPress: () => void;
+  onJumpRelease: () => void;
   isTopDownView: boolean;
   onExitTopDownView: () => void;
 };
@@ -44,6 +46,8 @@ export default function Hud({
   onSteerLeftRelease,
   onSteerRightPress,
   onSteerRightRelease,
+  onJumpPress,
+  onJumpRelease,
   isTopDownView,
   onExitTopDownView,
 }: HudProps) {
@@ -137,6 +141,15 @@ export default function Hud({
         </button>
       </div>
       <div className="absolute bottom-4 right-4 flex items-end gap-2 pointer-events-auto">
+        <button
+          onMouseDown={onJumpPress}
+          onMouseUp={onJumpRelease}
+          onTouchStart={onJumpPress}
+          onTouchEnd={onJumpRelease}
+          className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+        >
+          <ArrowUp className="w-10 h-10" />
+        </button>
         <button
           onMouseDown={onAcceleratorPress}
           onMouseUp={onAcceleratorRelease}
