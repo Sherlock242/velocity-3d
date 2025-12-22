@@ -196,7 +196,7 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   const armLength = 1.0;
   const armYOffset = -0.15; // Lower the arms slightly to make room for shoulder cap
 
-  const shoulderCapGeom = new THREE.SphereGeometry(0.4, 16, 8);
+  const shoulderCapGeom = new THREE.SphereGeometry(0.3, 16, 8);
   shoulderCapGeom.scale(1, 0.6, 1); // Flatten the sphere to make a cap
 
   const leftArmGroup = new THREE.Group();
@@ -243,3 +243,5 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
   return character;
 }
+
+    
