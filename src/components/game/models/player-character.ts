@@ -127,9 +127,9 @@ export function createPlayerCharacter(
 
   // Open Shirt Collar
   const collarVNeck = new THREE.Shape();
-  collarVNeck.moveTo(-0.15, torsoHeight / 2);
+  collarVNeck.moveTo(-0.1, torsoHeight / 2);
   collarVNeck.lineTo(0, torsoHeight / 2 - 0.3);
-  collarVNeck.lineTo(0.15, torsoHeight / 2);
+  collarVNeck.lineTo(0.1, torsoHeight / 2);
   collarVNeck.closePath();
   const collarVNeckGeom = new THREE.ShapeGeometry(collarVNeck);
   const collarVNeckMesh = new THREE.Mesh(collarVNeckGeom, skinMaterial);
