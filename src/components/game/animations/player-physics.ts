@@ -38,12 +38,10 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     if (!onRamp) {
         if (playerRef.current.position.y > playerHeight) {
             velocityRef.current.y -= 9.8 * delta * 2;
-            playerRef.current.position.y += velocityRef.current.y * delta;
-        }
-        if (playerRef.current.position.y < playerHeight) {
-            playerRef.current.position.y = playerHeight;
-            velocityRef.current.y = 0;
-            onGround = true;
+        } else {
+             playerRef.current.position.y = playerHeight;
+             velocityRef.current.y = Math.max(0, velocityRef.current.y);
+             onGround = true;
         }
 
         // Safeguard to ensure player is always above the main dome
@@ -59,7 +57,6 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
                 }
             }
         }
-
     } else {
         velocityRef.current.y = 0;
         onGround = true; // If on a ramp, we are on the ground
@@ -74,10 +71,8 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
         jumpCooldownRef.current = 1; // 1 second cooldown
     }
 
-    // Apply vertical velocity from jumping if not on a ramp
-    if (!onRamp) {
-         playerRef.current.position.y += velocityRef.current.y * delta;
-    }
+    // Apply vertical velocity from jumping
+    playerRef.current.position.y += velocityRef.current.y * delta;
 
 
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
