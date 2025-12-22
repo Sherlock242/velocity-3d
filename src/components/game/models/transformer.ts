@@ -48,8 +48,8 @@ export function updateTransformerAnimation(
       const carChassis = carModel.userData.parts.chassis;
       const personParts = personModel.userData.parts;
       
-      const torsoHeight = 1.4;
-      const legHeight = 1.6;
+      const torsoHeight = 1.8;
+      const legHeight = 2.8;
       const shoeHeight = 0.3;
       const totalLegHeight = legHeight + shoeHeight;
 
@@ -59,7 +59,7 @@ export function updateTransformerAnimation(
       personParts.torso.position.lerpVectors(torsoCarPos, torsoPersonPos.clone().setY(totalLegHeight + torsoHeight / 2), p);
 
       const headCarPos = torsoCarPos.clone().setY(2);
-      const neckHeight = 0.2;
+      const neckHeight = 0.3;
       const headHeight = 0.5;
       const headPersonPos = new THREE.Vector3(0, totalLegHeight + torsoHeight + neckHeight + headHeight, 0);
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
@@ -67,12 +67,13 @@ export function updateTransformerAnimation(
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
       const shoulderHeight = torsoHeight * 0.45;
-      const shoulderWidth = 0.5;
-      const lArmPersonPos = new THREE.Vector3(shoulderWidth, totalLegHeight + torsoHeight / 2 + shoulderHeight, 0);
+      const shoulderWidth = 0.7;
+      const armYOffset = -0.15;
+      const lArmPersonPos = new THREE.Vector3(shoulderWidth, totalLegHeight + torsoHeight / 2 + shoulderHeight + armYOffset, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
       const rArmCarPos = new THREE.Vector3(-0.5, 1, 0.5);
-      const rArmPersonPos = new THREE.Vector3(-shoulderWidth, totalLegHeight + torsoHeight / 2 + shoulderHeight, 0);
+      const rArmPersonPos = new THREE.Vector3(-shoulderWidth, totalLegHeight + torsoHeight / 2 + shoulderHeight + armYOffset, 0);
       personParts.rightArm.position.lerpVectors(rArmCarPos, rArmPersonPos, p);
 
       // Legs from back wheels
