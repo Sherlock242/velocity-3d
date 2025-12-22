@@ -30,6 +30,10 @@ export function createSector4({
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          
+          // Add each mesh to the colliders for individual interaction
+          staticCollidersRef.current.push(child as any);
+
           // Add the ground mesh of the forest to the walkable surfaces if it's named correctly
           if (child.name === 'forest_ground') { 
             walkableSurfacesRef.current.push(child);
@@ -38,8 +42,6 @@ export function createSector4({
       });
 
       sectorGroup.add(model);
-      // Add the entire loaded model to the colliders to make it rigid
-      staticCollidersRef.current.push(model);
     },
     undefined,
     (error) => {
