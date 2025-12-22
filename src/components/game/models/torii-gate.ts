@@ -103,13 +103,13 @@ export function createToriiGate() {
   const kasagiExtrudeSettings = { depth: kasagiDepth, bevelEnabled: false };
   const kasagiGeom = new THREE.ExtrudeGeometry(kasagiShape, kasagiExtrudeSettings);
   kasagiGeom.translate(0, pillarHeight, -kasagiDepth / 2);
-  geometriesToMergeBlack.push(kasagiGeom);
+  geometriesToMergeBlack.push(kasagiGeom.toNonIndexed());
   
   // Bases
   const baseGeom = new THREE.CylinderGeometry(pillarRadius + 1, pillarRadius + 2, 8, 16);
   const leftBaseGeom = baseGeom.clone().translate(-pillarDistance / 2, 4, 0);
   const rightBaseGeom = baseGeom.clone().translate(pillarDistance / 2, 4, 0);
-  geometriesToMergeBlack.push(leftBaseGeom, rightBaseGeom);
+  geometriesToMergeBlack.push(leftBaseGeom.toNonIndexed(), rightBaseGeom.toNonIndexed());
 
   // --- Create final merged meshes ---
   const torii = new THREE.Group();
