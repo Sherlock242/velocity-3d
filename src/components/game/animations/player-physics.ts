@@ -13,7 +13,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     const raycaster = new THREE.Raycaster(playerRef.current.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));
     
     const walkableMeshes = [...walkableSurfacesRef.current];
-    if(isSector4LoadedRef && isSector4LoadedRef.current && forestGroundRef.current) {
+    if (forestGroundRef.current) {
         walkableMeshes.push(forestGroundRef.current);
     }
     
@@ -36,8 +36,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     }
 
     if (!onGround) {
-        // Use a default ground height if no other surface is detected
-        groundY = 0;
+        groundY = 0; // Default ground height if no surface is detected
     }
 
     // --- Physics Logic ---
@@ -48,20 +47,19 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
         if (velocityRef.current.y < 0) {
             velocityRef.current.y = 0;
         }
-        if (jumpCooldownRef.current > 0) {
-            jumpCooldownRef.current -= delta;
-        }
     } 
     // 2. Handle being airborne
     else {
         velocityRef.current.y -= 9.8 * delta * 2; // Apply gravity
-        onGround = false; // Ensure onGround is false if airborne
+        onGround = false;
     }
     
     // 3. Handle jumping
     if (onGround && inputRef.current.jump && jumpCooldownRef.current <= 0 && controlModeRef.current === 'person') {
         velocityRef.current.y = 18;
         jumpCooldownRef.current = 1; // 1 second cooldown
+    } else if (jumpCooldownRef.current > 0) {
+        jumpCooldownRef.current -= delta;
     }
     
     // 4. Apply final vertical velocity
