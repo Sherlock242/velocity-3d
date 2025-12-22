@@ -9,6 +9,8 @@ type Sector4Props = {
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
   walkableSurfacesRef: MutableRefObject<(THREE.Group | THREE.Mesh)[]>;
   gltfLoader: GLTFLoader;
+  isSector4LoadedRef: React.MutableRefObject<boolean>;
+  forestGroundRef: React.MutableRefObject<THREE.Mesh | undefined>;
 };
 
 export function createSector4({
@@ -17,6 +19,8 @@ export function createSector4({
   staticCollidersRef,
   walkableSurfacesRef,
   gltfLoader,
+  isSector4LoadedRef,
+  forestGroundRef,
 }: Sector4Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -27,18 +31,12 @@ export function createSector4({
       model.scale.set(10, 10, 10);
       model.position.set(cellCenterX, 0, cellCenterZ);
 
-      model.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          // Tag each mesh as part of the forest for the collision handler
-          child.userData.isForest = true; 
-          staticCollidersRef.current.push(child as any);
-        }
-      });
+      const ground = model.getObjectByName('forest_ground') as THREE.Mesh;
+      if (ground) {
+          forestGroundRef.current = ground;
+          isSector4LoadedRef.current = true;
+      }
       
-      // The entire model is added as a walkable surface for the ramp/raycaster logic.
-      walkableSurfacesRef.current.push(model);
       sectorGroup.add(model);
     },
     undefined,

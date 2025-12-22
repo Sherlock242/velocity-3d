@@ -13,7 +13,7 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     const raycaster = new THREE.Raycaster(playerRef.current.position.clone().add(new THREE.Vector3(0, 10, 0)), new THREE.Vector3(0, -1, 0));
     
     const walkableMeshes = [...walkableSurfacesRef.current];
-    if(isSector4LoadedRef.current && forestGroundRef.current) {
+    if(isSector4LoadedRef && isSector4LoadedRef.current && forestGroundRef.current) {
         walkableMeshes.push(forestGroundRef.current);
     }
     
