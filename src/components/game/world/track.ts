@@ -365,7 +365,7 @@ export function createGridAndScenery(
           sectorGroup = createSector3({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 4:
-          sectorGroup = createSector4({ cellCenterX, cellCenterZ, staticCollidersRef, gltfLoader: gltfLoaderRef.current! });
+          sectorGroup = createSector4({ cellCenterX, cellCenterZ, staticCollidersRef, walkableSurfacesRef, gltfLoader: gltfLoaderRef.current! });
           break;
         case 10:
           sectorGroup = createSector10({ cellCenterX, cellCenterZ, staticCollidersRef, collegeRampMeshRef });

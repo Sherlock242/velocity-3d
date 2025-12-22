@@ -182,11 +182,18 @@ export default function GameWrapper() {
 
     const animate = createAnimationLoop(scene, camera, renderer, gameState, toast, setGameData, topDownSector);
 
+    // A one-time check after a delay to ensure everything is loaded and ready
+    // This is a workaround for ensuring the GLTF model is loaded before we consider the game "ready"
+    const readyTimeout = setTimeout(() => {
+      setIsReady(true);
+    }, 2000);
+
+
     animate();
-    setIsReady(true);
 
     // --- CLEANUP ---
     return () => {
+      clearTimeout(readyTimeout);
       if (gameState.animationFrameIdRef.current) {
         cancelAnimationFrame(gameState.animationFrameIdRef.current);
       }
