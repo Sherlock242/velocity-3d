@@ -33,7 +33,8 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
             }
         }
 
-        const offset = new THREE.Vector3().setFromSphericalCoords(radius, phi, theta);
+        const combinedTheta = theta + playerRef.current.rotation.y;
+        const offset = new THREE.Vector3().setFromSphericalCoords(radius, phi, combinedTheta);
         camera.position.copy(lookAtTarget).add(offset);
         camera.lookAt(lookAtTarget);
     }
