@@ -29,11 +29,12 @@ export function createSector4({
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          // Add individual meshes as colliders instead of the whole model
+          staticCollidersRef.current.push(child as any);
         }
       });
 
       sectorGroup.add(model);
-      staticCollidersRef.current.push(model);
     },
     undefined,
     (error) => {
