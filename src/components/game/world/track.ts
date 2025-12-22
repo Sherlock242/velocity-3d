@@ -10,6 +10,7 @@ import {
 import { DOME_WIDTH, DOME_DEPTH, DOME_HEIGHT } from '@/lib/dome-constants';
 import type { TrackTheme } from '@/lib/types';
 import { createSector1 } from './sectors/sector-1';
+import { createSector3 } from './sectors/sector-3';
 import { createSector10 } from './sectors/sector-10';
 import { createSector11 } from './sectors/sector-11';
 import { createSector13 } from './sectors/sector-13';
@@ -358,6 +359,9 @@ export function createGridAndScenery(
       switch (sectorNumber) {
         case 1:
           sectorGroup = createSector1({ cellCenterX, cellCenterZ, staticCollidersRef, walkingNpcsRef });
+          break;
+        case 3:
+          sectorGroup = createSector3({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 10:
           sectorGroup = createSector10({ cellCenterX, cellCenterZ, staticCollidersRef, collegeRampMeshRef });
