@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -47,7 +48,7 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
     scene.add(directionalLight);
 
     // Character model
-    const character = createPlayerCharacter(true, 'male');
+    const character = createPlayerCharacter(true, 'male', true);
     character.scale.set(1.5, 1.5, 1.5);
     character.position.y = 6; // Adjust position to center it
     scene.add(character);

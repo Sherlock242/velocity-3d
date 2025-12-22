@@ -7,7 +7,7 @@ export function createTransformer() {
   transformer.position.y = 0.5;
 
   const carModel = createLamborghini();
-  const personModel = createPlayerCharacter(true, 'male'); // isPlayer = true
+  const personModel = createPlayerCharacter(true, 'male', false); // isPlayer = true, isLobby = false
   personModel.visible = false; // Start as car
 
   transformer.add(carModel);
@@ -68,7 +68,7 @@ export function updateTransformerAnimation(
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
       const shoulderHeight = torsoHeight * 0.45;
-      const shoulderWidth = 0.7;
+      const shoulderWidth = 0.55; // Use the in-game shoulder width
       const armYOffset = -0.15;
       const lArmPersonPos = new THREE.Vector3(shoulderWidth, totalLegHeight + torsoHeight / 2 + shoulderHeight + armYOffset, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);

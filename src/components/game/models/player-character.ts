@@ -4,7 +4,8 @@ import { createHair } from './player-hair';
 
 export function createPlayerCharacter(
   isPlayer = false,
-  gender: 'male' | 'female' = 'male'
+  gender: 'male' | 'female' = 'male',
+  isLobby = false
 ) {
   const character = new THREE.Group();
 
@@ -77,7 +78,7 @@ export function createPlayerCharacter(
   const torso = new THREE.Group();
   torso.position.y = totalLegHeight + torsoHeight / 2;
 
-  const shoulderWidth = 0.7; // Made wider for a more heroic build
+  const shoulderWidth = isLobby ? 0.7 : 0.55; // Wider in lobby, closer in game
   const waistWidth = 0.4;
   const shoulderY = torsoHeight / 2 - 0.2; // Y position of the shoulder peak
   const neckY = torsoHeight / 2;
