@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 import type { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { MutableRefObject } from 'react';
@@ -29,8 +28,6 @@ export function createSector4({
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          // Add individual meshes as colliders instead of the whole model
-          staticCollidersRef.current.push(child as any);
         }
       });
 
