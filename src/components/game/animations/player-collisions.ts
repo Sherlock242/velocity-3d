@@ -46,6 +46,12 @@ export function handleCollisions(gameState: GameState, delta: number) {
 
             const isSpecialBuilding = collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding';
             
+            // If the collider is part of the forest, only slow down, don't push.
+            if (collider.userData.isForest) {
+                velocityRef.current.multiplyScalar(0.9);
+                return;
+            }
+
             if (collider.parent?.name === 'compoundWall') {
                 velocityRef.current.multiplyScalar(0);
                 const intersection = new THREE.Box3();

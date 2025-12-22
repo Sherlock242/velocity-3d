@@ -31,9 +31,13 @@ export function createSector4({
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          // Tag each mesh as part of the forest for the collision handler
+          child.userData.isForest = true; 
+          staticCollidersRef.current.push(child as any);
         }
       });
       
+      // The entire model is added as a walkable surface for the ramp/raycaster logic.
       walkableSurfacesRef.current.push(model);
       sectorGroup.add(model);
     },
