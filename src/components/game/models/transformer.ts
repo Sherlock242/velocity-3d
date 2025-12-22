@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createNpc } from './npc';
+import { createPlayerCharacter } from './player-character';
 import { createLamborghini } from './player-car';
 
 export function createTransformer() {
@@ -7,7 +7,7 @@ export function createTransformer() {
   transformer.position.y = 0.5;
 
   const carModel = createLamborghini();
-  const personModel = createNpc(true, 'male'); // isPlayer = true
+  const personModel = createPlayerCharacter(true, 'male'); // isPlayer = true
   personModel.visible = false; // Start as car
 
   transformer.add(carModel);
