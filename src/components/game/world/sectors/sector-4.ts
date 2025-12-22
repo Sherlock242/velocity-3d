@@ -9,8 +9,6 @@ type Sector4Props = {
   staticCollidersRef: MutableRefObject<THREE.Group[]>;
   walkableSurfacesRef: MutableRefObject<(THREE.Group | THREE.Mesh)[]>;
   gltfLoader: GLTFLoader;
-  forestGroundRef: MutableRefObject<THREE.Mesh | undefined>;
-  isSector4LoadedRef: MutableRefObject<boolean>;
 };
 
 export function createSector4({
@@ -19,8 +17,6 @@ export function createSector4({
   staticCollidersRef,
   walkableSurfacesRef,
   gltfLoader,
-  forestGroundRef,
-  isSector4LoadedRef,
 }: Sector4Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
@@ -35,16 +31,10 @@ export function createSector4({
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          
-          if (child.name === 'forest_ground') { 
-            forestGroundRef.current = child;
-          } else {
-            // Other objects in the forest are now purely decorative and not added to colliders.
-          }
         }
       });
       
-      isSector4LoadedRef.current = true;
+      walkableSurfacesRef.current.push(model);
       sectorGroup.add(model);
     },
     undefined,

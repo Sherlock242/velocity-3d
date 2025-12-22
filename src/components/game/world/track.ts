@@ -147,7 +147,7 @@ export function createGridAndScenery(
   theme: TrackTheme,
   gameState: GameState
 ) {
-  const { walkingNpcsRef, staticCollidersRef, walkableSurfacesRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef, domeRef, universityRamp, electricSparksRef, tilePlaneRef, gltfLoaderRef, forestGroundRef, isSector4LoadedRef } = gameState;
+  const { walkingNpcsRef, staticCollidersRef, walkableSurfacesRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef, domeRef, universityRamp, electricSparksRef, tilePlaneRef, gltfLoaderRef } = gameState;
   
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
@@ -365,7 +365,7 @@ export function createGridAndScenery(
           sectorGroup = createSector3({ cellCenterX, cellCenterZ, staticCollidersRef });
           break;
         case 4:
-          sectorGroup = createSector4({ cellCenterX, cellCenterZ, staticCollidersRef, walkableSurfacesRef, gltfLoader: gltfLoaderRef.current!, forestGroundRef, isSector4LoadedRef });
+          sectorGroup = createSector4({ cellCenterX, cellCenterZ, staticCollidersRef, walkableSurfacesRef, gltfLoader: gltfLoaderRef.current! });
           break;
         case 10:
           sectorGroup = createSector10({ cellCenterX, cellCenterZ, staticCollidersRef, collegeRampMeshRef });

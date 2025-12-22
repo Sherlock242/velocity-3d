@@ -62,8 +62,6 @@ export type GameState = {
     tilePlaneRef: React.MutableRefObject<THREE.Mesh | undefined>;
     jumpCooldownRef: React.MutableRefObject<number>;
     gltfLoaderRef: React.MutableRefObject<GLTFLoader | undefined>;
-    forestGroundRef: React.MutableRefObject<THREE.Mesh | undefined>;
-    isSector4LoadedRef: React.MutableRefObject<boolean>;
 };
 
 export function useGameState(): GameState {
@@ -111,8 +109,6 @@ export function useGameState(): GameState {
     const tilePlaneRef = React.useRef<THREE.Mesh>();
     const jumpCooldownRef = React.useRef(0);
     const gltfLoaderRef = React.useRef<GLTFLoader>();
-    const forestGroundRef = React.useRef<THREE.Mesh>();
-    const isSector4LoadedRef = React.useRef(false);
 
 
     return {
@@ -154,7 +150,5 @@ export function useGameState(): GameState {
         tilePlaneRef,
         jumpCooldownRef,
         gltfLoaderRef,
-        forestGroundRef,
-        isSector4LoadedRef,
     };
 }
