@@ -192,23 +192,21 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
 
   // Arms
-  const armLength = 1.1;
+  const armLength = 1.0;
   const armRadius = 0.12;
 
-  // Shoulder Cap to match the drawing
-  const shoulderCapRadius = armRadius * 1.8;
-  const shoulderCapHeight = 0.3; // Make it a short cap
-  const shoulderCapGeom = new THREE.CylinderGeometry(shoulderCapRadius * 0.7, shoulderCapRadius, shoulderCapHeight, 16, 1, false, 0, Math.PI);
-  
   const leftArmGroup = new THREE.Group();
   const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), skinMaterial);
-  leftArm.position.y = -armLength / 2 - shoulderCapHeight;
+  leftArm.position.y = -armLength / 2;
   leftArmGroup.add(leftArm);
   
+  // Create and add the shoulder cap
+  const shoulderCapRadius = armRadius * 1.9;
+  const shoulderCapHeight = 0.4;
+  const shoulderCapGeom = new THREE.CylinderGeometry(shoulderCapRadius * 0.8, shoulderCapRadius, shoulderCapHeight, 16, 1, false, 0, Math.PI);
   const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   leftShoulderCap.rotation.y = Math.PI / 2;
   leftShoulderCap.rotation.x = Math.PI / 2;
-  leftShoulderCap.position.y = -0.1;
   leftArmGroup.add(leftShoulderCap);
 
   leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY, 0);
@@ -217,13 +215,12 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
   const rightArmGroup = new THREE.Group();
   const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), skinMaterial);
-  rightArm.position.y = -armLength / 2 - shoulderCapHeight;
+  rightArm.position.y = -armLength / 2;
   rightArmGroup.add(rightArm);
 
   const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   rightShoulderCap.rotation.y = -Math.PI / 2;
   rightShoulderCap.rotation.x = Math.PI / 2;
-  rightShoulderCap.position.y = -0.1;
   rightArmGroup.add(rightShoulderCap);
   
   rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY, 0);

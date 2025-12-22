@@ -244,16 +244,15 @@ export function createPlayerCharacter(
   rightLeg.add(rightBoot);
 
   // Arms (Slimmer)
-  const armLength = 1.4;
+  const armLength = 1.3;
   const armRadius = 0.18;
   const forearmRadius = 0.16;
   const upperArmLength = armLength * 0.6;
   const forearmLength = armLength * 0.4;
   
-  // Shoulder Cap
   const shoulderCapRadius = armRadius * 1.5;
-  const shoulderCapHeight = 0.3; // Make it a short cap
-  const shoulderCapGeom = new THREE.CylinderGeometry(shoulderCapRadius * 0.7, shoulderCapRadius, shoulderCapHeight, 16, 1, false, 0, Math.PI);
+  const shoulderCapHeight = 0.4;
+  const shoulderCapGeom = new THREE.CylinderGeometry(shoulderCapRadius * 0.8, shoulderCapRadius, shoulderCapHeight, 16, 1, false, 0, Math.PI);
 
   // Left Arm (rolled up sleeve)
   const leftArmGroup = new THREE.Group();
@@ -262,7 +261,7 @@ export function createPlayerCharacter(
     new THREE.CylinderGeometry(armRadius, armRadius, upperArmLength, 8),
     shirtMaterial
   );
-  leftUpperArm.position.y = -upperArmLength / 2 - shoulderCapHeight;
+  leftUpperArm.position.y = -upperArmLength / 2;
 
   const leftForearm = new THREE.Mesh(
     new THREE.CylinderGeometry(forearmRadius, forearmRadius, forearmLength, 8),
@@ -288,7 +287,6 @@ export function createPlayerCharacter(
   const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   leftShoulderCap.rotation.y = Math.PI / 2;
   leftShoulderCap.rotation.x = Math.PI / 2;
-  leftShoulderCap.position.y = -0.1;
   leftArmGroup.add(leftShoulderCap);
 
   leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY, 0);
@@ -315,7 +313,6 @@ export function createPlayerCharacter(
   const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   rightShoulderCap.rotation.y = -Math.PI / 2;
   rightShoulderCap.rotation.x = Math.PI / 2;
-  rightShoulderCap.position.y = -0.1;
   rightArmGroup.add(rightShoulderCap);
   
   rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY, 0);
