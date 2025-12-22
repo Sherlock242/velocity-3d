@@ -156,11 +156,24 @@ export function createPlayerCharacter(
   const neck = new THREE.Group();
   const neckGeoWidth = 0.18;
   const neckGeo = new THREE.CylinderGeometry(
-    neckGeoWidth * 0.8,
+    neckGeoWidth,
     neckGeoWidth * 0.8,
     neckHeight,
     8
   );
+
+  // Add a curve to the neck
+  const neckPositions = neckGeo.attributes.position;
+  for (let i = 0; i < neckPositions.count; i++) {
+    const y = neckPositions.getY(i);
+    // Apply a sine wave curve along the height of the neck
+    const curveFactor = Math.sin((y / neckHeight) * Math.PI);
+    neckPositions.setX(i, neckPositions.getX(i) * (1 - curveFactor * 0.1));
+    neckPositions.setZ(i, neckPositions.getZ(i) * (1 - curveFactor * 0.1));
+  }
+  neckPositions.needsUpdate = true;
+  neckGeo.computeVertexNormals();
+  
   const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
   neck.add(neckMesh);
   // Position neck on top of the torso's neck flat
