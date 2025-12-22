@@ -4,7 +4,7 @@ import { TOTAL_GRID_WIDTH, GRID_SIZE, CELL_SIZE } from '@/lib/game-constants';
 import type { GameState } from '../core/state';
 
 export function updateCameraPosition(gameState: GameState, camera: THREE.PerspectiveCamera, topDownSector: number | null) {
-    const { playerRef, controlModeRef, cameraOffsetRef } = gameState;
+    const { playerRef, controlModeRef, cameraOrbitRef } = gameState;
     if (!playerRef.current) return;
     
     if (topDownSector !== null) {
@@ -16,11 +16,25 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
         camera.position.set(sectorCenterX, 1200, sectorCenterZ);
         camera.lookAt(sectorCenterX, 0, sectorCenterZ);
     } else {
-        const offset = cameraOffsetRef.current.clone();
-        if (controlModeRef.current === 'person') offset.set(0, 4, -8);
+        const { radius, phi, theta } = cameraOrbitRef.current;
         
-        offset.applyQuaternion(playerRef.current.quaternion).add(playerRef.current.position);
-        camera.position.copy(offset);
-        camera.lookAt(playerRef.current.position);
+        let lookAtTarget = playerRef.current.position.clone();
+        
+        if (controlModeRef.current === 'person') {
+            const personModel = playerRef.current.userData.personModel as THREE.Group;
+            if (personModel && personModel.userData.parts.head) {
+                const head = personModel.userData.parts.head as THREE.Group;
+                const headPosition = new THREE.Vector3();
+                head.getWorldPosition(headPosition);
+                lookAtTarget = headPosition;
+            } else {
+                // Fallback if head is not available
+                lookAtTarget.y += 4;
+            }
+        }
+
+        const offset = new THREE.Vector3().setFromSphericalCoords(radius, phi, theta);
+        camera.position.copy(lookAtTarget).add(offset);
+        camera.lookAt(lookAtTarget);
     }
 }

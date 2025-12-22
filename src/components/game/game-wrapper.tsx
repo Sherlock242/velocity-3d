@@ -142,6 +142,43 @@ export default function GameWrapper() {
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
     gltfLoader.setDRACOLoader(dracoLoader);
     gameState.gltfLoaderRef.current = gltfLoader;
+    
+    // Camera drag controls
+    let isDragging = false;
+    let previousTouch: Touch | null = null;
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (event.touches.length === 1) {
+        isDragging = true;
+        previousTouch = event.touches[0];
+      }
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (!isDragging || event.touches.length !== 1 || !previousTouch) return;
+      
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - previousTouch.clientX;
+      const deltaY = touch.clientY - previousTouch.clientY;
+
+      gameState.cameraOrbitRef.current.theta -= deltaX * 0.01;
+      gameState.cameraOrbitRef.current.phi -= deltaY * 0.01;
+
+      // Clamp phi to prevent camera flipping
+      gameState.cameraOrbitRef.current.phi = THREE.MathUtils.clamp(
+        gameState.cameraOrbitRef.current.phi,
+        0.1,
+        Math.PI - 0.1
+      );
+
+      previousTouch = touch;
+    };
+
+    const handleTouchEnd = () => {
+      isDragging = false;
+      previousTouch = null;
+    };
+
 
     const onKeyDown = (e: KeyboardEvent) => {
       initAudioOnInteraction(gameState);
@@ -172,6 +209,12 @@ export default function GameWrapper() {
     };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+    
+    mountNode.addEventListener('touchstart', handleTouchStart, { passive: false });
+    mountNode.addEventListener('touchmove', handleTouchMove, { passive: false });
+    mountNode.addEventListener('touchend', handleTouchEnd);
+    mountNode.addEventListener('touchcancel', handleTouchEnd);
+
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -204,6 +247,10 @@ export default function GameWrapper() {
       window.removeEventListener('resize', onResize);
 
       if (mountNode) {
+        mountNode.removeEventListener('touchstart', handleTouchStart);
+        mountNode.removeEventListener('touchmove', handleTouchMove);
+        mountNode.removeEventListener('touchend', handleTouchEnd);
+        mountNode.removeEventListener('touchcancel', handleTouchEnd);
         if (renderer.domElement.parentNode === mountNode) {
           mountNode.removeChild(renderer.domElement);
         }

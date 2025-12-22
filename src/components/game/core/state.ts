@@ -46,6 +46,11 @@ export type GameState = {
     isTransformingRef: React.MutableRefObject<boolean>;
     transformProgressRef: React.MutableRefObject<number>;
     cameraOffsetRef: React.MutableRefObject<THREE.Vector3>;
+    cameraOrbitRef: React.MutableRefObject<{
+        radius: number;
+        phi: number;
+        theta: number;
+    }>;
     audioListenerRef: React.MutableRefObject<THREE.AudioListener | undefined>;
     engineSoundRef: React.MutableRefObject<THREE.Audio | undefined>;
     skidSoundRef: React.MutableRefObject<THREE.Audio | undefined>;
@@ -95,6 +100,12 @@ export function useGameState(): GameState {
     const isTransformingRef = React.useRef(false);
     const transformProgressRef = React.useRef(0);
     const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 2, -6));
+    const initialCameraOffset = new THREE.Vector3(0, 2, -6);
+    const cameraOrbitRef = React.useRef({
+        radius: initialCameraOffset.length(),
+        phi: Math.acos(initialCameraOffset.y / initialCameraOffset.length()),
+        theta: Math.atan2(initialCameraOffset.x, initialCameraOffset.z)
+    });
     const audioListenerRef = React.useRef<THREE.AudioListener>();
     const engineSoundRef = React.useRef<THREE.Audio>();
     const skidSoundRef = React.useRef<THREE.Audio>();
@@ -138,6 +149,7 @@ export function useGameState(): GameState {
         isTransformingRef,
         transformProgressRef,
         cameraOffsetRef,
+        cameraOrbitRef,
         audioListenerRef,
         engineSoundRef,
         skidSoundRef,
