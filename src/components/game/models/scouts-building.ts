@@ -23,7 +23,7 @@ export function createScoutsBuilding() {
   const mainGeom = new THREE.BoxGeometry(buildingWidth, buildingHeight, buildingDepth);
   const mainMesh = new THREE.Mesh(mainGeom, blueMaterial);
   mainMesh.position.y = buildingHeight / 2;
-  mainMesh.castShadow = true;
+  mainMesh.castShadow = false;
   building.add(mainMesh);
 
   // White base
@@ -49,8 +49,8 @@ export function createScoutsBuilding() {
   sign.position.set(0, baseHeight + buildingHeight - 10, buildingDepth / 2 + 0.6);
   building.add(sign);
 
-  building.castShadow = true;
-  building.receiveShadow = true;
+  building.castShadow = false;
+  building.receiveShadow = false;
 
   return building;
 }

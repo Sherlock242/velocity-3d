@@ -20,7 +20,7 @@ export function createSimpleHouse() {
     const bodyGeom = new THREE.BoxGeometry(houseWidth, houseHeight, houseDepth);
     const body = new THREE.Mesh(bodyGeom, bodyMaterial);
     body.position.y = houseHeight / 2;
-    body.castShadow = true;
+    body.castShadow = false;
     house.add(body);
 
     // Roof (Pyramid)
@@ -28,7 +28,7 @@ export function createSimpleHouse() {
     const roof = new THREE.Mesh(roofGeom, roofMaterial);
     roof.position.y = houseHeight + 5;
     roof.rotation.y = Math.PI / 4;
-    roof.castShadow = true;
+    roof.castShadow = false;
     house.add(roof);
 
     // Door
@@ -38,8 +38,8 @@ export function createSimpleHouse() {
     door.position.set(0, 4, houseDepth / 2 + 0.1);
     house.add(door);
 
-    house.castShadow = true;
-    house.receiveShadow = true;
+    house.castShadow = false;
+    house.receiveShadow = false;
     
     return house;
 }

@@ -20,7 +20,7 @@ export function createKaliMandir() {
     const stepGeom = new THREE.BoxGeometry(stepWidth, stepHeight, stepDepth);
     const step = new THREE.Mesh(stepGeom, pinkMaterial);
     step.position.y = stepHeight / 2 + i * stepHeight;
-    step.receiveShadow = true;
+    step.receiveShadow = false;
     mandir.add(step);
   }
 
@@ -31,7 +31,7 @@ export function createKaliMandir() {
   const mainGeom = new THREE.BoxGeometry(mainWidth, mainHeight, mainDepth);
   const mainStructure = new THREE.Mesh(mainGeom, pinkMaterial);
   mainStructure.position.y = platformHeight + mainHeight / 2;
-  mainStructure.castShadow = true;
+  mainStructure.castShadow = false;
   mandir.add(mainStructure);
 
   // Shikhara (Tower)
@@ -96,8 +96,8 @@ export function createKaliMandir() {
   arch.rotation.z = Math.PI;
   mandir.add(arch);
 
-  mandir.castShadow = true;
-  mandir.receiveShadow = true;
+  mandir.castShadow = false;
+  mandir.receiveShadow = false;
 
   return mandir;
 }

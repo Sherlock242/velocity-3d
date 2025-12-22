@@ -37,10 +37,8 @@ export function createShop(color: number) {
     sign.position.set(0, shopHeight - 3, shopDepth / 2 + 0.6);
     shop.add(sign);
 
-    shop.castShadow = true;
-    shop.receiveShadow = true;
+    shop.castShadow = false;
+    shop.receiveShadow = false;
 
     return shop;
 }
-
-    

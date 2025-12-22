@@ -15,7 +15,7 @@ export function createIndustrialBuilding() {
   const bodyGeom = new THREE.BoxGeometry(bodyWidth, bodyHeight, bodyDepth);
   const body = new THREE.Mesh(bodyGeom, concreteMaterial);
   body.position.y = bodyHeight / 2;
-  body.castShadow = true;
+  body.castShadow = false;
   building.add(body);
 
   // Corrugated-style roof
@@ -37,7 +37,7 @@ export function createIndustrialBuilding() {
   const stackGeom = new THREE.CylinderGeometry(stackRadius, stackRadius, stackHeight, 16);
   const stack = new THREE.Mesh(stackGeom, brickMaterial);
   stack.position.set(-bodyWidth / 2 + 15, stackHeight / 2, -bodyDepth / 2 + 15);
-  stack.castShadow = true;
+  stack.castShadow = false;
   building.add(stack);
   
   // Top ring on smokestack
@@ -46,8 +46,8 @@ export function createIndustrialBuilding() {
   ring.position.y = stackHeight - 1.5;
   stack.add(ring);
   
-  building.castShadow = true;
-  building.receiveShadow = true;
+  building.castShadow = false;
+  building.receiveShadow = false;
   
   return building;
 }

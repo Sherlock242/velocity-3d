@@ -44,8 +44,8 @@ export function createSchoolBuilding() {
       school.add(window);
   });
   
-  school.castShadow = true;
-  school.receiveShadow = true;
+  school.castShadow = false;
+  school.receiveShadow = false;
 
   return school;
 }

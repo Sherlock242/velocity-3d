@@ -174,7 +174,8 @@ export function createChandigarhHouse() {
     mainBuildingHeight - jaliHeight / 2,
     mainBuildingDepth / 2 - jaliDepth / 2 + 0.1
   );
-  jaliMesh.castShadow = true;
+  jaliMesh.castShadow = false;
+  jaliMesh.receiveShadow = false;
   house.add(jaliMesh);
 
   // Right side plain brick part
@@ -211,8 +212,8 @@ export function createChandigarhHouse() {
   rightDoor.position.set(20, 6, mainBuildingDepth / 2 + 0.5);
   house.add(rightDoor);
 
-  house.castShadow = true;
-  house.receiveShadow = true;
+  house.castShadow = false;
+  house.receiveShadow = false;
 
   return house;
 }

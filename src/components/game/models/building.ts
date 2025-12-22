@@ -19,7 +19,8 @@ export function createBuilding(colors: THREE.Color[]) {
   );
   const mainBuilding = new THREE.Mesh(buildingGeom, buildingMaterial);
   mainBuilding.position.y = buildingHeight / 2;
-  mainBuilding.castShadow = true;
+  mainBuilding.castShadow = false;
+  mainBuilding.receiveShadow = false;
   building.add(mainBuilding);
 
   // Add windows

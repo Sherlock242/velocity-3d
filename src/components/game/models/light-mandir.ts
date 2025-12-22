@@ -16,8 +16,8 @@ export function createLightMandir() {
   const baseGeom = new THREE.BoxGeometry(baseWidth, baseHeight, baseDepth);
   const baseMesh = new THREE.Mesh(baseGeom, yellowMaterial);
   baseMesh.position.y = baseHeight / 2;
-  baseMesh.castShadow = true;
-  baseMesh.receiveShadow = true;
+  baseMesh.castShadow = false;
+  baseMesh.receiveShadow = false;
   mandir.add(baseMesh);
 
   // Pink Borders
@@ -31,7 +31,7 @@ export function createLightMandir() {
   const towerBaseGeom = new THREE.BoxGeometry(baseWidth * 0.6, towerBaseHeight, baseDepth * 0.6);
   const towerBase = new THREE.Mesh(towerBaseGeom, yellowMaterial);
   towerBase.position.y = baseHeight + towerBaseHeight / 2;
-  towerBase.castShadow = true;
+  towerBase.castShadow = false;
   mandir.add(towerBase);
   
   // Tiered roof for the tower
@@ -90,8 +90,8 @@ export function createLightMandir() {
   door.position.set(0, 5, baseDepth / 2 + 0.1);
   mandir.add(door);
 
-  mandir.castShadow = true;
-  mandir.receiveShadow = true;
+  mandir.castShadow = false;
+  mandir.receiveShadow = false;
 
   return mandir;
 }

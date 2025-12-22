@@ -17,8 +17,8 @@ export function createCoachingClass() {
   const mainGeom = new THREE.BoxGeometry(buildingWidth, buildingHeight, buildingDepth);
   const mainMesh = new THREE.Mesh(mainGeom, mainMaterial);
   mainMesh.position.y = buildingHeight / 2;
-  mainMesh.castShadow = true;
-  mainMesh.receiveShadow = true;
+  mainMesh.castShadow = false;
+  mainMesh.receiveShadow = false;
   building.add(mainMesh);
 
   // --- Decorative Borders ---
@@ -101,8 +101,8 @@ export function createCoachingClass() {
   acUnit.add(fan);
   building.add(acUnit);
 
-  building.castShadow = true;
-  building.receiveShadow = true;
+  building.castShadow = false;
+  building.receiveShadow = false;
 
   return building;
 }

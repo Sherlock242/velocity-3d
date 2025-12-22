@@ -56,8 +56,8 @@ export function createGovtHouse() {
   window2.position.set(12, 12, mainBuildingDepth / 2 + 0.1);
   house.add(window2);
   
-  house.castShadow = true;
-  house.receiveShadow = true;
+  house.castShadow = false;
+  house.receiveShadow = false;
 
   return house;
 }

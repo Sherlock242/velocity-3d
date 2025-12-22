@@ -34,6 +34,8 @@ const HAIR_COLORS = [
 
 export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') {
   const character = new THREE.Group();
+  character.castShadow = false;
+  character.receiveShadow = false;
 
   // Materials
   const skinTone = 0xffdbac;
@@ -245,5 +247,3 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
   return character;
 }
-
-    

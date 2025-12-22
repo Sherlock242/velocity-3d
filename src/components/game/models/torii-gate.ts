@@ -149,8 +149,8 @@ export function createToriiGate() {
   gakuzuka.position.y = pillarHeight - 12;
   torii.add(gakuzuka);
 
-  torii.castShadow = true;
-  torii.receiveShadow = true;
+  torii.castShadow = false;
+  torii.receiveShadow = false;
 
   return torii;
 }

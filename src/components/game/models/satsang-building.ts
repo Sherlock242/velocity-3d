@@ -16,14 +16,14 @@ export function createSatsangBuilding() {
   const mainGeom = new THREE.BoxGeometry(buildingWidth, buildingHeight, buildingDepth);
   const mainMesh = new THREE.Mesh(mainGeom, yellowMaterial);
   mainMesh.position.y = buildingHeight / 2;
-  mainMesh.castShadow = true;
+  mainMesh.castShadow = false;
   building.add(mainMesh);
 
   // Roof overhang
   const roofGeom = new THREE.BoxGeometry(buildingWidth + 10, 4, buildingDepth + 10);
   const roof = new THREE.Mesh(roofGeom, roofMaterial);
   roof.position.y = buildingHeight + 2;
-  roof.castShadow = true;
+  roof.castShadow = false;
   building.add(roof);
 
   // --- Pillars along the front ---
@@ -35,7 +35,7 @@ export function createSatsangBuilding() {
     const pillar = new THREE.Mesh(pillarGeom, whitePillarMaterial);
     const xPos = -buildingWidth / 2 + i * pillarSpacing;
     pillar.position.set(xPos, buildingHeight / 2, buildingDepth / 2 + 2);
-    pillar.castShadow = true;
+    pillar.castShadow = false;
     building.add(pillar);
   }
 
@@ -67,8 +67,8 @@ export function createSatsangBuilding() {
   sign.position.set(0, buildingHeight + 6, 0);
   building.add(sign);
   
-  building.castShadow = true;
-  building.receiveShadow = true;
+  building.castShadow = false;
+  building.receiveShadow = false;
 
   return building;
 }
