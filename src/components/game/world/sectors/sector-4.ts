@@ -22,7 +22,7 @@ export function createSector4({
     '/forest.glb',
     (gltf) => {
       const model = gltf.scene;
-      model.scale.set(100, 100, 100);
+      model.scale.set(10, 10, 10);
       model.position.set(cellCenterX, 0, cellCenterZ);
 
       model.traverse((child) => {
