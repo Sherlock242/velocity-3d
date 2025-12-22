@@ -30,14 +30,16 @@ export function createSector4({
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          // Add the ground mesh of the forest to the walkable surfaces
-          if (child.name === 'forest_ground') { // Assuming the ground mesh is named 'forest_ground'
+          // Add the ground mesh of the forest to the walkable surfaces if it's named correctly
+          if (child.name === 'forest_ground') { 
             walkableSurfacesRef.current.push(child);
           }
         }
       });
 
       sectorGroup.add(model);
+      // Add the entire loaded model to the colliders to make it rigid
+      staticCollidersRef.current.push(model);
     },
     undefined,
     (error) => {
