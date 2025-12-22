@@ -244,7 +244,7 @@ export function createPlayerCharacter(
   rightLeg.add(rightBoot);
 
   // Arms (Slimmer)
-  const armLength = 1.5;
+  const armLength = 1.4;
   const armRadius = 0.18;
   const forearmRadius = 0.16;
   const upperArmLength = armLength * 0.6;
@@ -253,7 +253,7 @@ export function createPlayerCharacter(
   // Shoulder Cap
   const shoulderCapRadius = armRadius * 1.5;
   const shoulderCapHeight = 0.3; // Make it a short cap
-  const shoulderCapGeom = new THREE.CylinderGeometry(shoulderCapRadius, shoulderCapRadius, shoulderCapHeight, 16, 1, false, 0, Math.PI);
+  const shoulderCapGeom = new THREE.CylinderGeometry(shoulderCapRadius * 0.7, shoulderCapRadius, shoulderCapHeight, 16, 1, false, 0, Math.PI);
 
   // Left Arm (rolled up sleeve)
   const leftArmGroup = new THREE.Group();
@@ -262,7 +262,7 @@ export function createPlayerCharacter(
     new THREE.CylinderGeometry(armRadius, armRadius, upperArmLength, 8),
     shirtMaterial
   );
-  leftUpperArm.position.y = -upperArmLength / 2;
+  leftUpperArm.position.y = -upperArmLength / 2 - shoulderCapHeight;
 
   const leftForearm = new THREE.Mesh(
     new THREE.CylinderGeometry(forearmRadius, forearmRadius, forearmLength, 8),
@@ -287,10 +287,11 @@ export function createPlayerCharacter(
 
   const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   leftShoulderCap.rotation.y = Math.PI / 2;
-  leftShoulderCap.position.y = 0.1;
+  leftShoulderCap.rotation.x = Math.PI / 2;
+  leftShoulderCap.position.y = -0.1;
   leftArmGroup.add(leftShoulderCap);
 
-  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY - 0.2, 0);
+  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
   
   // Right Arm (with armor)
@@ -313,10 +314,11 @@ export function createPlayerCharacter(
   
   const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   rightShoulderCap.rotation.y = -Math.PI / 2;
-  rightShoulderCap.position.y = 0.1;
+  rightShoulderCap.rotation.x = Math.PI / 2;
+  rightShoulderCap.position.y = -0.1;
   rightArmGroup.add(rightShoulderCap);
   
-  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY - 0.2, 0);
+  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 
   // Pauldron (Shoulder armor)

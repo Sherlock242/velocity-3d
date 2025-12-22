@@ -192,39 +192,41 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
 
   // Arms
-  const armLength = 1.2;
+  const armLength = 1.1;
   const armRadius = 0.12;
 
-  // Shoulder Cap
-  const shoulderCapRadius = armRadius * 1.5;
-  const shoulderCapHeight = shoulderWidth - armRadius * 2;
-  const shoulderCapGeom = new THREE.CylinderGeometry(shoulderCapRadius, shoulderCapRadius, shoulderCapHeight, 16, 1, false, 0, Math.PI);
+  // Shoulder Cap to match the drawing
+  const shoulderCapRadius = armRadius * 1.8;
+  const shoulderCapHeight = 0.3; // Make it a short cap
+  const shoulderCapGeom = new THREE.CylinderGeometry(shoulderCapRadius * 0.7, shoulderCapRadius, shoulderCapHeight, 16, 1, false, 0, Math.PI);
   
   const leftArmGroup = new THREE.Group();
   const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), skinMaterial);
-  leftArm.position.y = -armLength / 2;
+  leftArm.position.y = -armLength / 2 - shoulderCapHeight;
   leftArmGroup.add(leftArm);
   
   const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   leftShoulderCap.rotation.y = Math.PI / 2;
-  leftShoulderCap.position.y = 0.1;
+  leftShoulderCap.rotation.x = Math.PI / 2;
+  leftShoulderCap.position.y = -0.1;
   leftArmGroup.add(leftShoulderCap);
 
-  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY - 0.2, 0);
+  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
 
 
   const rightArmGroup = new THREE.Group();
   const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(armRadius, armRadius * 0.8, armLength, 8), skinMaterial);
-  rightArm.position.y = -armLength / 2;
+  rightArm.position.y = -armLength / 2 - shoulderCapHeight;
   rightArmGroup.add(rightArm);
 
   const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   rightShoulderCap.rotation.y = -Math.PI / 2;
-  rightShoulderCap.position.y = 0.1;
+  rightShoulderCap.rotation.x = Math.PI / 2;
+  rightShoulderCap.position.y = -0.1;
   rightArmGroup.add(rightShoulderCap);
   
-  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY - 0.2, 0);
+  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 
   
