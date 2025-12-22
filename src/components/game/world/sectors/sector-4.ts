@@ -39,14 +39,7 @@ export function createSector4({
           if (child.name === 'forest_ground') { 
             forestGroundRef.current = child;
           } else {
-            // Treat every other mesh as a static collider
-            const groupWrapper = new THREE.Group();
-            // Important: Reparent the mesh to preserve its world transform
-            groupWrapper.add(child.clone());
-            groupWrapper.position.copy(child.getWorldPosition(new THREE.Vector3()));
-            groupWrapper.quaternion.copy(child.getWorldQuaternion(new THREE.Quaternion()));
-            groupWrapper.scale.copy(child.getWorldScale(new THREE.Vector3()));
-            staticCollidersRef.current.push(groupWrapper);
+            // Other objects in the forest are now purely decorative and not added to colliders.
           }
         }
       });
