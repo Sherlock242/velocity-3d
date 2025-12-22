@@ -146,6 +146,35 @@ export default function GameWrapper() {
     // Camera drag controls
     let isDragging = false;
     let previousTouch: Touch | null = null;
+    let previousMousePosition = { x: 0, y: 0 };
+
+    const handleMouseDown = (event: MouseEvent) => {
+      isDragging = true;
+      previousMousePosition = { x: event.clientX, y: event.clientY };
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+        if (!isDragging) return;
+
+        const deltaX = event.clientX - previousMousePosition.x;
+        const deltaY = event.clientY - previousMousePosition.y;
+
+        gameState.cameraOrbitRef.current.theta -= deltaX * 0.005;
+        gameState.cameraOrbitRef.current.phi -= deltaY * 0.005;
+
+        // Clamp phi to prevent camera flipping
+        gameState.cameraOrbitRef.current.phi = THREE.MathUtils.clamp(
+            gameState.cameraOrbitRef.current.phi,
+            0.1,
+            Math.PI - 0.1
+        );
+
+        previousMousePosition = { x: event.clientX, y: event.clientY };
+    };
+
+    const handleMouseUp = () => {
+        isDragging = false;
+    };
 
     const handleTouchStart = (event: TouchEvent) => {
       if (event.touches.length === 1) {
@@ -210,6 +239,9 @@ export default function GameWrapper() {
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     
+    mountNode.addEventListener('mousedown', handleMouseDown);
+    mountNode.addEventListener('mousemove', handleMouseMove);
+    mountNode.addEventListener('mouseup', handleMouseUp);
     mountNode.addEventListener('touchstart', handleTouchStart, { passive: false });
     mountNode.addEventListener('touchmove', handleTouchMove, { passive: false });
     mountNode.addEventListener('touchend', handleTouchEnd);
@@ -247,6 +279,9 @@ export default function GameWrapper() {
       window.removeEventListener('resize', onResize);
 
       if (mountNode) {
+        mountNode.removeEventListener('mousedown', handleMouseDown);
+        mountNode.removeEventListener('mousemove', handleMouseMove);
+        mountNode.removeEventListener('mouseup', handleMouseUp);
         mountNode.removeEventListener('touchstart', handleTouchStart);
         mountNode.removeEventListener('touchmove', handleTouchMove);
         mountNode.removeEventListener('touchend', handleTouchEnd);
