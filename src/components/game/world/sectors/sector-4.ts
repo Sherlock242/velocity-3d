@@ -31,12 +31,11 @@ export function createSector4({
           child.castShadow = true;
           child.receiveShadow = true;
           
-          // Add each mesh to the colliders for individual interaction
-          staticCollidersRef.current.push(child as any);
-
-          // Add the ground mesh of the forest to the walkable surfaces if it's named correctly
+          // Add only the ground mesh of the forest to the walkable surfaces
           if (child.name === 'forest_ground') { 
             walkableSurfacesRef.current.push(child);
+          } else {
+            // Other objects in the forest won't be collidable
           }
         }
       });
