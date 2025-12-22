@@ -141,15 +141,17 @@ export default function Hud({
         </button>
       </div>
       <div className="absolute bottom-4 right-4 flex items-end gap-2 pointer-events-auto">
-        <button
-          onMouseDown={onJumpPress}
-          onMouseUp={onJumpRelease}
-          onTouchStart={onJumpPress}
-          onTouchEnd={onJumpRelease}
-          className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
-        >
-          <ArrowUp className="w-10 h-10" />
-        </button>
+        {controlMode === 'person' && (
+          <button
+            onMouseDown={onJumpPress}
+            onMouseUp={onJumpRelease}
+            onTouchStart={onJumpPress}
+            onTouchEnd={onJumpRelease}
+            className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+          >
+            <ArrowUp className="w-10 h-10" />
+          </button>
+        )}
         <button
           onMouseDown={onAcceleratorPress}
           onMouseUp={onAcceleratorRelease}
