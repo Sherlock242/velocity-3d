@@ -202,6 +202,13 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   leftHand.position.y = -armLength/2;
   // leftArm.add(leftHand); // Hand is merged with arm for simplicity
   leftArmGroup.add(leftArm);
+  
+  const shoulderCapGeom = new THREE.CylinderGeometry(armRadius * 1.1, armRadius * 1.1, shoulderWidth - armRadius * 2, 16, 1, false, 0, Math.PI);
+  const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
+  leftShoulderCap.rotation.x = Math.PI / 2;
+  leftShoulderCap.rotation.z = Math.PI;
+  leftArmGroup.add(leftShoulderCap);
+
   leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY - 0.1, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
 
@@ -213,6 +220,11 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   rightHand.position.y = -armLength/2;
   // rightArm.add(rightHand);
   rightArmGroup.add(rightArm);
+  
+  const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
+  rightShoulderCap.rotation.x = -Math.PI / 2;
+  rightArmGroup.add(rightShoulderCap);
+
   rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY - 0.1, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 

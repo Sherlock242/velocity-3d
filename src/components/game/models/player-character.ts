@@ -303,10 +303,11 @@ export function createPlayerCharacter(
   rightArmGroup.rotation.z = -Math.PI / 16;
 
   // Pauldron (Shoulder armor)
-  const pauldronGeo = new THREE.CylinderGeometry(0.3, 0.4, 0.7, 6);
+  const pauldronGeo = new THREE.CylinderGeometry(0.4, 0.3, 0.7, 6, 1, false, 0, Math.PI);
   const pauldron = new THREE.Mesh(pauldronGeo, pauldronMaterial);
-  pauldron.position.y = -0.1; // Overlap with arm
-  pauldron.rotation.x = Math.PI/12;
+  pauldron.position.y = 0.1; // Overlap with arm
+  pauldron.rotation.x = Math.PI / 2;
+  pauldron.rotation.z = -Math.PI / 12;
   rightArmGroup.add(pauldron);
 
   const bracerGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.6, 8);
