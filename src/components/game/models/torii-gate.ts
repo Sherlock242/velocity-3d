@@ -1,5 +1,6 @@
 
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 // Function to create a texture with vertical text
 function createTextTexture(
@@ -42,8 +43,6 @@ function createTextTexture(
 }
 
 export function createToriiGate() {
-  const torii = new THREE.Group();
-
   const orangeMaterial = new THREE.MeshStandardMaterial({
     color: 0xff4500, // Bright orange-red
     roughness: 0.6,
@@ -66,16 +65,7 @@ export function createToriiGate() {
 
   const texture1 = createTextTexture(text1, pillarColor, textColor, 128, 1024);
   const texture2 = createTextTexture(text2, pillarColor, textColor, 128, 1024);
-
-  // --- Vertical Pillars ---
-  const pillarGeom = new THREE.CylinderGeometry(
-    pillarRadius,
-    pillarRadius * 0.9,
-    pillarHeight,
-    16
-  );
-
-  // Create two materials: one with text, one without
+  
   const pillarMaterialWithText1 = orangeMaterial.clone();
   if (texture1) {
     pillarMaterialWithText1.map = texture1;
@@ -86,68 +76,62 @@ export function createToriiGate() {
     pillarMaterialWithText2.map = texture2;
   }
 
-  const leftPillar = new THREE.Mesh(pillarGeom, pillarMaterialWithText1);
-  leftPillar.position.set(-pillarDistance / 2, pillarHeight / 2, 0);
-  torii.add(leftPillar);
+  // --- Geometries ---
+  const geometriesToMergeOrange = [];
+  const geometriesToMergeBlack = [];
+  
+  // Nuki (second beam)
+  const nukiGeom = new THREE.BoxGeometry(pillarDistance + 10, 8, 8);
+  nukiGeom.translate(0, pillarHeight - 30, 0);
+  geometriesToMergeOrange.push(nukiGeom);
 
-  const rightPillar = new THREE.Mesh(pillarGeom, pillarMaterialWithText2);
-  rightPillar.position.set(pillarDistance / 2, pillarHeight / 2, 0);
-  torii.add(rightPillar);
+  // Gakuzuka (center piece)
+  const gakuzukaGeom = new THREE.BoxGeometry(15, 12, 10);
+  gakuzukaGeom.translate(0, pillarHeight - 12, 0);
+  geometriesToMergeOrange.push(gakuzukaGeom);
 
-  // Base for pillars
-  const baseGeom = new THREE.CylinderGeometry(
-    pillarRadius + 1,
-    pillarRadius + 2,
-    8,
-    16
-  );
-  const leftBase = new THREE.Mesh(baseGeom, blackMaterial);
-  leftBase.position.set(-pillarDistance / 2, 4, 0);
-  torii.add(leftBase);
-
-  const rightBase = new THREE.Mesh(baseGeom, blackMaterial);
-  rightBase.position.set(pillarDistance / 2, 4, 0);
-  torii.add(rightBase);
-
-  // --- Horizontal Beams ---
-
-  // Top beam (Kasagi) with upward curve
+  // Kasagi (top beam)
   const kasagiLength = pillarDistance + 60;
   const kasagiHeight = 10;
   const kasagiDepth = 10;
-
   const kasagiShape = new THREE.Shape();
-  const halfLength = kasagiLength / 2;
-  kasagiShape.moveTo(-halfLength, 0);
-  kasagiShape.quadraticCurveTo(0, kasagiHeight / 2, halfLength, 0);
-  kasagiShape.lineTo(halfLength, -kasagiHeight);
-  kasagiShape.quadraticCurveTo(0, -kasagiHeight / 2, -halfLength, -kasagiHeight);
+  kasagiShape.moveTo(-kasagiLength / 2, 0);
+  kasagiShape.quadraticCurveTo(0, kasagiHeight / 2, kasagiLength / 2, 0);
+  kasagiShape.lineTo(kasagiLength / 2, -kasagiHeight);
+  kasagiShape.quadraticCurveTo(0, -kasagiHeight / 2, -kasagiLength / 2, -kasagiHeight);
   kasagiShape.closePath();
-
   const kasagiExtrudeSettings = { depth: kasagiDepth, bevelEnabled: false };
-  const kasagiGeom = new THREE.ExtrudeGeometry(
-    kasagiShape,
-    kasagiExtrudeSettings
-  );
+  const kasagiGeom = new THREE.ExtrudeGeometry(kasagiShape, kasagiExtrudeSettings);
+  kasagiGeom.translate(0, pillarHeight, -kasagiDepth / 2);
+  geometriesToMergeBlack.push(kasagiGeom);
+  
+  // Bases
+  const baseGeom = new THREE.CylinderGeometry(pillarRadius + 1, pillarRadius + 2, 8, 16);
+  const leftBaseGeom = baseGeom.clone().translate(-pillarDistance / 2, 4, 0);
+  const rightBaseGeom = baseGeom.clone().translate(pillarDistance / 2, 4, 0);
+  geometriesToMergeBlack.push(leftBaseGeom, rightBaseGeom);
 
-  const kasagi = new THREE.Mesh(kasagiGeom, blackMaterial);
-  kasagi.position.set(0, pillarHeight, -kasagiDepth / 2);
-  torii.add(kasagi);
+  // --- Create final merged meshes ---
+  const torii = new THREE.Group();
 
-  // Second beam (Nuki)
-  const nukiWidth = pillarDistance + 10;
-  const nukiHeight = 8;
-  const nukiDepth = 8;
-  const nukiGeom = new THREE.BoxGeometry(nukiWidth, nukiHeight, nukiDepth);
-  const nuki = new THREE.Mesh(nukiGeom, orangeMaterial);
-  nuki.position.set(0, pillarHeight - 30, 0);
-  torii.add(nuki);
+  const orangeMergedGeom = mergeGeometries(geometriesToMergeOrange);
+  const orangeMesh = new THREE.Mesh(orangeMergedGeom, orangeMaterial);
+  torii.add(orangeMesh);
+  
+  const blackMergedGeom = mergeGeometries(geometriesToMergeBlack);
+  const blackMesh = new THREE.Mesh(blackMergedGeom, blackMaterial);
+  torii.add(blackMesh);
 
-  // Small center piece (Gakuzuka)
-  const gakuzukaGeom = new THREE.BoxGeometry(15, 12, 10);
-  const gakuzuka = new THREE.Mesh(gakuzukaGeom, orangeMaterial);
-  gakuzuka.position.y = pillarHeight - 12;
-  torii.add(gakuzuka);
+  // Pillars are separate meshes to allow for unique textures
+  const pillarGeom = new THREE.CylinderGeometry(pillarRadius, pillarRadius * 0.9, pillarHeight, 16);
+  
+  const leftPillar = new THREE.Mesh(pillarGeom, pillarMaterialWithText1);
+  leftPillar.position.set(-pillarDistance / 2, pillarHeight / 2, 0);
+  torii.add(leftPillar);
+  
+  const rightPillar = new THREE.Mesh(pillarGeom, pillarMaterialWithText2);
+  rightPillar.position.set(pillarDistance / 2, pillarHeight / 2, 0);
+  torii.add(rightPillar);
 
   torii.castShadow = false;
   torii.receiveShadow = false;
