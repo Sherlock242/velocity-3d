@@ -124,6 +124,21 @@ export default function GameWrapper() {
     setIsLargeMapOpen(false);
   };
 
+  React.useEffect(() => {
+    const carOffset = new THREE.Vector3(0, 2, -6);
+    const personOffset = new THREE.Vector3(0, 4, -8);
+    
+    if (gameData.controlMode === 'person') {
+        gameState.cameraOrbitRef.current.radius = personOffset.length();
+        gameState.cameraOrbitRef.current.phi = Math.acos(personOffset.y / personOffset.length());
+        gameState.cameraOrbitRef.current.theta = Math.atan2(personOffset.x, personOffset.z);
+    } else {
+        gameState.cameraOrbitRef.current.radius = carOffset.length();
+        gameState.cameraOrbitRef.current.phi = Math.acos(carOffset.y / carOffset.length());
+        gameState.cameraOrbitRef.current.theta = Math.atan2(carOffset.x, carOffset.z);
+    }
+  }, [gameData.controlMode, gameState.cameraOrbitRef]);
+
 
   React.useEffect(() => {
     let mountNode: HTMLDivElement | null = null;
