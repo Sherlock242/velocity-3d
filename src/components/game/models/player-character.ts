@@ -286,8 +286,7 @@ export function createPlayerCharacter(
   leftArmGroup.add(leftUpperArm);
 
   const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
-  leftShoulderCap.rotation.x = Math.PI / 2;
-  leftShoulderCap.rotation.z = Math.PI / 2;
+  leftShoulderCap.rotation.y = Math.PI / 2;
   leftShoulderCap.position.y = 0.1;
   leftArmGroup.add(leftShoulderCap);
 
@@ -313,8 +312,7 @@ export function createPlayerCharacter(
   rightArmGroup.add(rightArm);
   
   const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
-  rightShoulderCap.rotation.x = -Math.PI / 2;
-  rightShoulderCap.rotation.z = -Math.PI / 2;
+  rightShoulderCap.rotation.y = -Math.PI / 2;
   rightShoulderCap.position.y = 0.1;
   rightArmGroup.add(rightShoulderCap);
   
