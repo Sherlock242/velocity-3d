@@ -34,7 +34,7 @@ export function createPlayerCharacter(
 
   const headHeight = 0.5;
   const torsoHeight = 1.8;
-  const legHeight = 2.0;
+  const legHeight = 2.4;
   const shoeHeight = 0.3;
   const totalLegHeight = legHeight + shoeHeight;
   const neckHeight = 0.3;

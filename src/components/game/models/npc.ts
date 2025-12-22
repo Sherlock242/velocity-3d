@@ -50,7 +50,7 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
   const headHeight = 0.5;
   const torsoHeight = gender === 'male' ? 1.4 : 1.3;
-  const legHeight = 1.6;
+  const legHeight = 2.0;
   const shoeHeight = 0.3;
   const totalLegHeight = legHeight + shoeHeight;
   const neckHeight = 0.2;
@@ -196,7 +196,7 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   const armLength = 1.0;
   const armYOffset = -0.15; // Lower the arms slightly to make room for shoulder cap
 
-  const shoulderCapGeom = new THREE.SphereGeometry(0.2, 16, 8);
+  const shoulderCapGeom = new THREE.SphereGeometry(0.1, 16, 8);
   shoulderCapGeom.scale(1, 0.6, 1); // Flatten the sphere to make a cap
 
   const leftArmGroup = new THREE.Group();
@@ -206,6 +206,7 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   
   const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   leftShoulderCap.position.y = -0.05;
+  leftShoulderCap.position.x = 0.05; // Slightly offset
   leftArmGroup.add(leftShoulderCap);
   
   leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY + armYOffset, 0);
@@ -219,6 +220,7 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   
   const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   rightShoulderCap.position.y = -0.05;
+  rightShoulderCap.position.x = -0.05; // Slightly offset
   rightArmGroup.add(rightShoulderCap);
 
   
