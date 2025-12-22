@@ -4,7 +4,7 @@ import * as THREE from 'three';
 // --- START: Seeded PRNG ---
 // A simple pseudo-random number generator to ensure the hair is consistent
 let seed = 1;
-function random() {
+function seededRandom() {
   const x = Math.sin(seed++) * 10000;
   return x - Math.floor(x);
 }
@@ -37,9 +37,9 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
 
   // Materials
   const skinTone = 0xffdbac;
-  const hairColor = HAIR_COLORS[Math.floor(random() * HAIR_COLORS.length)];
-  const shirtColor = CLOTHING_COLORS[Math.floor(random() * CLOTHING_COLORS.length)];
-  const pantsColor = CLOTHING_COLORS[Math.floor(random() * CLOTHING_COLORS.length)];
+  const hairColor = HAIR_COLORS[Math.floor(seededRandom() * HAIR_COLORS.length)];
+  const shirtColor = CLOTHING_COLORS[Math.floor(seededRandom() * CLOTHING_COLORS.length)];
+  const pantsColor = CLOTHING_COLORS[Math.floor(seededRandom() * CLOTHING_COLORS.length)];
   
   const skinMaterial = new THREE.MeshStandardMaterial({ color: skinTone });
   const hairMaterial = new THREE.MeshPhongMaterial({ color: hairColor, shininess: 5 });
@@ -84,7 +84,7 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   head.add(face);
   
   const hairGroup = new THREE.Group();
-  const hairStyle = Math.floor(random() * 3); // 3 different hair styles
+  const hairStyle = Math.floor(seededRandom() * 3); // 3 different hair styles
 
   if (hairStyle === 0) { // Spiky hair
     for (let i = 0; i < 50; i++) {
@@ -92,8 +92,8 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
         const hair = new THREE.Mesh(hairGeom, hairMaterial);
         hair.position.setFromSphericalCoords(
             headRadius * 1.1,
-            random() * Math.PI * 0.5,
-            random() * Math.PI * 2
+            seededRandom() * Math.PI * 0.5,
+            seededRandom() * Math.PI * 2
         );
         hair.lookAt(face.position);
         hairGroup.add(hair);
@@ -108,8 +108,8 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
         const hair = new THREE.Mesh(hairGeom, hairMaterial);
          hair.position.setFromSphericalCoords(
             headRadius,
-            Math.PI * 0.5 + (random() - 0.5) * 0.2,
-            random() * Math.PI * 2
+            Math.PI * 0.5 + (seededRandom() - 0.5) * 0.2,
+            seededRandom() * Math.PI * 2
         );
         hair.position.y -= 0.5;
         hairGroup.add(hair);

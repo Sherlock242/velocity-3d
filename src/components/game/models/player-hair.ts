@@ -30,24 +30,30 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     // Layers are defined to control hair placement, size, and flow
     const layers = [
         // Base layer for back and lower sides
-        { count: 1800, length: 0.2, width: 0.1, yRange: [-0.31, 0.5], zRange: [-1.0, 0.0], xRange: [-0.85, 0.85], rotX: 1.0 },
+        { count: 1800, length: 0.2, width: 0.1, yRange: [-0.31, 0.5], zRange: [-1.0, 0.0], xRange: [-0.85, 0.85], rotX: 1.0, seed: 1 },
         // Smaller side layer
-        { count: 500, length: 0.18, width: 0.09, yRange: [-0.2, 0.6], zRange: [-0.2, 0.2], xRange: [-0.9, 0.9], rotX: 1.1 },
+        { count: 500, length: 0.18, width: 0.09, yRange: [-0.2, 0.6], zRange: [-0.2, 0.2], xRange: [-0.9, 0.9], rotX: 1.1, seed: 2 },
         // Main volume on top and upper back
-        { count: 150, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2 },
+        { count: 150, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2, seed: 3 },
     ];
 
     layers.forEach(layer => {
+        let seed = layer.seed;
+        const random = () => {
+            const x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+
         for (let i = 0; i < layer.count; i++) {
-            const length = layer.length * (1 + (Math.random() - 0.5) * 0.3);
-            const width = layer.width * (1 + (Math.random() - 0.5) * 0.3);
+            const length = layer.length * (1 + (random() - 0.5) * 0.3);
+            const width = layer.width * (1 + (random() - 0.5) * 0.3);
             const clump = createHairClump(length, width, hairMaterial);
 
             // Position on a sphere
             const pos = new THREE.Vector3(
-                (Math.random() - 0.5) * 2,
-                (Math.random() - 0.5) * 2,
-                (Math.random() - 0.5) * 2
+                (random() - 0.5) * 2,
+                (random() - 0.5) * 2,
+                (random() - 0.5) * 2
             ).normalize().multiplyScalar(headRadius);
             
             // Constrain to Y, Z, and X ranges to shape the hair
@@ -64,7 +70,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
 
             // Add extra downward rotation for gravity and styling
             let rotX = layer.rotX * Math.PI; 
-            rotX += (Math.random() - 0.5) * 0.4; // Randomize flow
+            rotX += (random() - 0.5) * 0.4; // Randomize flow
             
             clump.rotateX(rotX);
             
@@ -77,6 +83,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
 
     return hairGroup;
 }
+
 
 
 
