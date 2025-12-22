@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { createRockGarden } from '../../models/rock-garden';
-import { createNpc } from '../../models/npc';
 import type { MutableRefObject } from 'react';
 
 type Sector1Props = {
@@ -23,32 +22,12 @@ export function createSector1({
   sectorGroup.add(rockGarden);
   staticCollidersRef.current.push(rockGarden);
 
-  // Add NPCs to the pathways in the Rock Garden
-  const npcPositions = [
-    { x: -50, z: 50 },
-    { x: 0, z: 0 },
-    { x: 50, z: -50 },
-    { x: 20, z: -20 },
-    { x: -30, z: 40 },
-    { x: -10, z: 80 },
-  ];
-
-  npcPositions.forEach(pos => {
-    const gender = Math.random() > 0.5 ? 'male' : 'female';
-    const npc = createNpc(false, gender);
-    npc.scale.set(1.5,1.5,1.5);
-    npc.position.set(cellCenterX + pos.x, 1, cellCenterZ + pos.z);
-    npc.rotation.y = Math.random() * Math.PI * 2;
-    
-    // Define simple bounds for walking
-    const bounds = new THREE.Box2(
-        new THREE.Vector2(cellCenterX - 140, cellCenterZ - 140),
-        new THREE.Vector2(cellCenterX + 140, cellCenterZ + 140)
-    );
-    npc.userData.bounds = bounds;
-
-    sectorGroup.add(npc);
-    walkingNpcsRef.current.push(npc);
+  // NPCs removed from this sector
+  walkingNpcsRef.current = walkingNpcsRef.current.filter(npc => {
+    // This is a simple way to remove them, assuming they are added here.
+    // A more robust way would be to not add them at all.
+    const distance = npc.position.distanceTo(new THREE.Vector3(cellCenterX, 0, cellCenterZ));
+    return distance > 200; // Keep NPCs outside this sector's approximate radius
   });
 
 

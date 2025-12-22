@@ -39,24 +39,9 @@ export function updateSceneElements(gameState: GameState, delta: number, now: nu
         );
     }
 
-    walkingNpcsRef.current.forEach(npc => {
-        const npcSpeed = 1;
-        const walkSpeed = 5;
-        const npcParts = npc.userData.parts;
-        const walkAmount = Math.sin(now * walkSpeed + npc.uuid.charCodeAt(0));
-        npcParts.leftLeg.rotation.x = walkAmount * 0.5;
-        npcParts.rightLeg.rotation.x = -walkAmount * 0.5;
-        npcParts.leftArm.rotation.x = -walkAmount * 0.4;
-        npcParts.rightArm.rotation.x = walkAmount * 0.4;
-        const forward = new THREE.Vector3();
-        npc.getWorldDirection(forward);
-        npc.position.add(forward.multiplyScalar(npcSpeed * delta));
-        if (Math.random() < 0.01) npc.rotation.y += (Math.random() - 0.5) * Math.PI / 2;
-        const bounds = npc.userData.bounds as THREE.Box2;
-        if (!bounds.containsPoint(new THREE.Vector2(npc.position.x, npc.position.z))) {
-            npc.rotation.y += Math.PI;
-        }
-    });
+    // Walking NPCs logic is removed
+    walkingNpcsRef.current = [];
+
 
     tireMarksRef.current = tireMarksRef.current.filter(mark => {
         const age = now - mark.createdAt;

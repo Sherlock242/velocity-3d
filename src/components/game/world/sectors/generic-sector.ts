@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { createBuilding } from '../../models/building';
-import { createNpc } from '../../models/npc';
 import { TRACK_THEMES, CELL_SIZE, ROAD_WIDTH } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
 import type { MutableRefObject } from 'react';
@@ -56,35 +55,13 @@ export function createGenericSector({
       sceneryObject.position.set(x, 0, z);
     }
 
-    sceneryObject.castShadow = true;
+    sceneryObject.castShadow = false;
+    sceneryObject.receiveShadow = false;
     sectorGroup.add(sceneryObject);
   }
 
-  // Add NPCs in city theme
-  if (theme === 'City') {
-    const numNpcs = 5;
-    for (let k = 0; k < numNpcs; k++) {
-      const gender = Math.random() > 0.5 ? 'male' : 'female';
-      const npc = createNpc(false, gender);
-      npc.scale.set(1.5, 1.5, 1.5);
-      const safeArea = (CELL_SIZE - ROAD_WIDTH) / 2 - 20; // Stay away from roads
-      const x = cellCenterX + (Math.random() - 0.5) * safeArea;
-      const z = cellCenterZ + (Math.random() - 0.5) * safeArea;
-      npc.position.set(x, 0, z);
-      npc.rotation.y = Math.random() * Math.PI * 2;
-
-      const halfCell = CELL_SIZE / 2;
-      const sidewalkPadding = ROAD_WIDTH / 2 + 5;
-      const bounds = new THREE.Box2(
-        new THREE.Vector2(cellCenterX - halfCell + sidewalkPadding, cellCenterZ - halfCell + sidewalkPadding),
-        new THREE.Vector2(cellCenterX + halfCell - sidewalkPadding, cellCenterZ + halfCell - sidewalkPadding)
-      );
-      npc.userData.bounds = bounds;
-
-      sectorGroup.add(npc);
-      walkingNpcsRef.current.push(npc);
-    }
-  }
+  // NPCs are removed from generic sectors
+  walkingNpcsRef.current = [];
 
   return sectorGroup;
 }

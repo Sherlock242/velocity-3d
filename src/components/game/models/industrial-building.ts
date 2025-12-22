@@ -16,12 +16,15 @@ export function createIndustrialBuilding() {
   const body = new THREE.Mesh(bodyGeom, concreteMaterial);
   body.position.y = bodyHeight / 2;
   body.castShadow = false;
+  body.receiveShadow = false;
   building.add(body);
 
   // Corrugated-style roof
   const roofGeom = new THREE.BoxGeometry(bodyWidth, 2, bodyDepth);
   const roof = new THREE.Mesh(roofGeom, metalRoofMaterial);
   roof.position.y = bodyHeight + 1;
+  roof.castShadow = false;
+  roof.receiveShadow = false;
   building.add(roof);
 
   // Loading bay door
@@ -38,6 +41,7 @@ export function createIndustrialBuilding() {
   const stack = new THREE.Mesh(stackGeom, brickMaterial);
   stack.position.set(-bodyWidth / 2 + 15, stackHeight / 2, -bodyDepth / 2 + 15);
   stack.castShadow = false;
+  stack.receiveShadow = false;
   building.add(stack);
   
   // Top ring on smokestack

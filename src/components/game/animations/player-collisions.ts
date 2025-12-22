@@ -10,31 +10,8 @@ export function handleCollisions(gameState: GameState, delta: number) {
     const playerBox = new THREE.Box3().setFromObject(playerRef.current);
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
 
-    obstacleCarsRef.current.forEach((obstacle) => {
-        const forward = new THREE.Vector3();
-        obstacle.getWorldDirection(forward);
-        obstacle.position.add(forward.multiplyScalar(50 * delta));
-        if (Math.abs(obstacle.position.x) > halfTotalWidth + CELL_SIZE || Math.abs(obstacle.position.z) > halfTotalWidth + CELL_SIZE) {
-            const onVerticalRoad = Math.random() > 0.5;
-            const roadIndex = Math.floor(Math.random() * (CELL_SIZE + 1));
-            const positionOnRoad = (Math.random() - 0.5) * TOTAL_GRID_WIDTH;
-            if (onVerticalRoad) {
-                obstacle.position.x = roadIndex * CELL_SIZE - halfTotalWidth;
-                obstacle.position.z = positionOnRoad;
-                obstacle.rotation.y = Math.random() > 0.5 ? 0 : Math.PI;
-            } else {
-                obstacle.position.x = positionOnRoad;
-                obstacle.position.z = roadIndex * CELL_SIZE - halfTotalWidth;
-                obstacle.rotation.y = Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2;
-            }
-        }
-        const obstacleBox = new THREE.Box3().setFromObject(obstacle);
-        if (playerBox.intersectsBox(obstacleBox)) {
-            velocityRef.current.multiplyScalar(0.1);
-            const knockback = playerRef.current!.position.clone().sub(obstacle.position).normalize().multiplyScalar(5);
-            playerRef.current!.position.add(knockback.multiplyScalar(delta * 60));
-        }
-    });
+    // Obstacle cars logic removed
+    obstacleCarsRef.current = [];
 
     staticCollidersRef.current.forEach((collider) => {
         const colliderBox = new THREE.Box3().setFromObject(collider);
