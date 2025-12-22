@@ -34,7 +34,7 @@ export function createPlayerCharacter(
 
   const headHeight = 0.5;
   const torsoHeight = 1.8;
-  const legHeight = 2.4;
+  const legHeight = 2.8;
   const shoeHeight = 0.3;
   const totalLegHeight = legHeight + shoeHeight;
   const neckHeight = 0.3;
@@ -241,9 +241,6 @@ export function createPlayerCharacter(
 
   // Arms (Slimmer)
   const armLength = 1.3;
-  const forearmRadius = 0.16;
-  const upperArmLength = armLength * 0.6;
-  const forearmLength = armLength * 0.4;
   const armYOffset = -0.15; // Lower the arms slightly
   
   const shoulderCapGeom = new THREE.SphereGeometry(0.2, 16, 8);
@@ -252,36 +249,26 @@ export function createPlayerCharacter(
   // Left Arm (rolled up sleeve)
   const leftArmGroup = new THREE.Group();
   
-  const leftUpperArm = new THREE.Mesh(
-    new THREE.CylinderGeometry(armRadius, armRadius, upperArmLength, 8),
+  const leftArm = new THREE.Mesh(
+    new THREE.CylinderGeometry(armRadius, armRadius * 0.9, armLength, 8),
     shirtMaterial
   );
-  leftUpperArm.position.y = -upperArmLength / 2;
-
-  const leftForearm = new THREE.Mesh(
-    new THREE.CylinderGeometry(forearmRadius, forearmRadius, forearmLength, 8),
-    skinMaterial
-  );
-  // Position forearm at the end of the upper arm
-  leftForearm.position.y = -upperArmLength / 2 - forearmLength / 2;
-  leftForearm.rotation.z = Math.PI / 12; // Slight bend
-  leftForearm.rotation.y = -Math.PI / 6; // Turn hand outwards
+  leftArm.position.y = -armLength / 2;
 
   const leftHand = new THREE.Mesh(
     new THREE.BoxGeometry(0.25, 0.3, 0.1),
     skinMaterial
   );
   // Position hand at the end of the forearm
-  leftHand.position.y = -forearmLength / 2 - 0.15;
+  leftHand.position.y = -armLength / 2 - 0.15;
   leftHand.rotation.z = Math.PI / 8;
 
   const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
   leftShoulderCap.position.y = 0.1;
   leftArmGroup.add(leftShoulderCap);
 
-  leftForearm.add(leftHand); // Attach hand to forearm
-  leftUpperArm.add(leftForearm); // Attach forearm to upper arm
-  leftArmGroup.add(leftUpperArm);
+  leftArm.add(leftHand); // Attach hand to forearm
+  leftArmGroup.add(leftArm);
 
 
   leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY + armYOffset, 0);
@@ -291,7 +278,7 @@ export function createPlayerCharacter(
   const rightArmGroup = new THREE.Group();
   
   const rightArm = new THREE.Mesh(
-    new THREE.CylinderGeometry(armRadius, armRadius, armLength, 8),
+    new THREE.CylinderGeometry(armRadius, armRadius * 0.9, armLength, 8),
     shirtMaterial
   );
   rightArm.position.y = -armLength / 2;
@@ -311,11 +298,6 @@ export function createPlayerCharacter(
 
   rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY + armYOffset, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
-
-  const bracerGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.6, 8);
-  const bracer = new THREE.Mesh(bracerGeo, metalMaterial);
-  bracer.position.y = -0.3;
-  rightArm.add(bracer);
 
   // Belt & Holster
   const beltGroup = new THREE.Group();
