@@ -91,7 +91,10 @@ export function createPlayerCharacter(
   torsoShape.lineTo(waistWidth, -torsoHeight / 2); // Bottom right
   torsoShape.lineTo(shoulderWidth, shoulderY); // Right shoulder point
   torsoShape.lineTo(neckWidth, neckY); // Right neck point
-  torsoShape.lineTo(-neckWidth, neckY); // Left neck point
+  
+  // Curved neckline
+  torsoShape.quadraticCurveTo(0, neckY - 0.1, -neckWidth, neckY); // Curve instead of straight line
+
   torsoShape.lineTo(-shoulderWidth, shoulderY); // Left shoulder point
   torsoShape.closePath();
 
@@ -104,23 +107,7 @@ export function createPlayerCharacter(
   const torsoGeo = new THREE.ExtrudeGeometry(torsoShape, torsoExtrudeSettings);
   torsoGeo.translate(0, 0, -torsoDepth / 2); // Center the depth
   
-  // Assign materials to different faces
-  const numFaces = torsoGeo.groups.reduce((acc, group) => acc + (group.count || 0), 0) / 3;
-  for (let i = 0; i < numFaces; i++) {
-    const face = torsoGeo.groups.find(group => i >= (group.start/3) && i < (group.start + group.count)/3);
-    const normal = new THREE.Vector3(
-      torsoGeo.attributes.normal.getX(i * 3),
-      torsoGeo.attributes.normal.getY(i * 3),
-      torsoGeo.attributes.normal.getZ(i * 3)
-    );
-    if (Math.abs(normal.y - 1) < 0.01) { // Top faces
-      torsoGeo.addGroup(i * 3, 3, 1);
-    } else {
-      torsoGeo.addGroup(i * 3, 3, 0);
-    }
-  }
-
-  const torsoMesh = new THREE.Mesh(torsoGeo, [shirtMaterial, skinMaterial]);
+  const torsoMesh = new THREE.Mesh(torsoGeo, shirtMaterial);
 
   torso.add(torsoMesh);
 
