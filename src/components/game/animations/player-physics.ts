@@ -36,12 +36,8 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     }
 
     if (!onGround) {
-        // Use the main ground plane height if no other surface is detected
+        // Use a default ground height if no other surface is detected
         groundY = 0;
-        const mainGroundIntersects = raycaster.intersectObject(ground);
-        if (mainGroundIntersects.length > 0) {
-            groundY = mainGroundIntersects[0].point.y;
-        }
     }
 
     // --- Physics Logic ---
