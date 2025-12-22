@@ -244,12 +244,17 @@ export function createPlayerCharacter(
   rightLeg.add(rightBoot);
 
   // Arms (Slimmer)
-  const armLength = 1.6;
+  const armLength = 1.5;
   const armRadius = 0.18;
   const forearmRadius = 0.16;
   const upperArmLength = armLength * 0.6;
   const forearmLength = armLength * 0.4;
   
+  // Shoulder Cap
+  const shoulderCapRadius = armRadius * 1.5;
+  const shoulderCapHeight = 0.3; // Make it a short cap
+  const shoulderCapGeom = new THREE.CylinderGeometry(shoulderCapRadius, shoulderCapRadius, shoulderCapHeight, 16, 1, false, 0, Math.PI);
+
   // Left Arm (rolled up sleeve)
   const leftArmGroup = new THREE.Group();
   
@@ -279,7 +284,14 @@ export function createPlayerCharacter(
   leftForearm.add(leftHand); // Attach hand to forearm
   leftUpperArm.add(leftForearm); // Attach forearm to upper arm
   leftArmGroup.add(leftUpperArm);
-  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY, 0);
+
+  const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
+  leftShoulderCap.rotation.x = Math.PI / 2;
+  leftShoulderCap.rotation.z = Math.PI / 2;
+  leftShoulderCap.position.y = 0.1;
+  leftArmGroup.add(leftShoulderCap);
+
+  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY - 0.2, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
   
   // Right Arm (with armor)
@@ -299,7 +311,14 @@ export function createPlayerCharacter(
   rightArm.add(rightHand);
   
   rightArmGroup.add(rightArm);
-  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY, 0);
+  
+  const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
+  rightShoulderCap.rotation.x = -Math.PI / 2;
+  rightShoulderCap.rotation.z = -Math.PI / 2;
+  rightShoulderCap.position.y = 0.1;
+  rightArmGroup.add(rightShoulderCap);
+  
+  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY - 0.2, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 
   // Pauldron (Shoulder armor)
