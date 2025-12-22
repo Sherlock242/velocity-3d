@@ -14,7 +14,6 @@ export function createPlayerCharacter(
   const pantsColor = 0x1a1a1a;
   const beltColor = 0x5d4037;
   const metalColor = 0x9e9e9e;
-  const pauldronColor = 0x6d4c41;
 
   const skinMaterial = new THREE.MeshStandardMaterial({ color: skinTone });
   const shirtMaterial = new THREE.MeshStandardMaterial({ color: shirtColor });
@@ -78,7 +77,7 @@ export function createPlayerCharacter(
   const torso = new THREE.Group();
   torso.position.y = totalLegHeight + torsoHeight / 2;
 
-  const shoulderWidth = 0.65; // Made wider for a more heroic build
+  const shoulderWidth = 0.7; // Made wider for a more heroic build
   const waistWidth = 0.4;
   const shoulderY = torsoHeight / 2 - 0.2; // Y position of the shoulder peak
   const neckY = torsoHeight / 2;

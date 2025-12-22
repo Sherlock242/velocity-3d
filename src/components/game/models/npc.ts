@@ -124,7 +124,7 @@ export function createNpc(isPlayer = false, gender: 'male' | 'female' = 'male') 
   const torso = new THREE.Group();
   torso.position.y = totalLegHeight + torsoHeight / 2;
 
-  const shoulderWidth = gender === 'male' ? 0.5 : 0.45;
+  const shoulderWidth = gender === 'male' ? 0.55 : 0.5;
   const waistWidth = gender === 'male' ? 0.35 : 0.3;
   const shoulderY = torsoHeight / 2 - 0.2;
   const neckY = torsoHeight / 2;
