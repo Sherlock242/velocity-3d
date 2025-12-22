@@ -11,6 +11,7 @@ function createHairClump(length: number, width: number, material: THREE.Material
 
 export function createHair(headRadius: number, hairMaterial: THREE.Material) {
     const hairGroup = new THREE.Group();
+    const allGeometries: THREE.BufferGeometry[] = [];
     
     // Layers are defined to control hair placement, size, and flow
     const layers = [
@@ -61,12 +62,81 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
             
             clump.rotateX(rotX);
             
-            hairGroup.add(clump);
+            clump.updateMatrix();
+            const clonedGeom = clump.geometry.clone();
+            clonedGeom.applyMatrix4(clump.matrix);
+            allGeometries.push(clonedGeom);
         }
     });
 
+    if (allGeometries.length > 0) {
+        const mergedGeometry = mergeGeometries(allGeometries);
+        const combinedHairMesh = new THREE.Mesh(mergedGeometry, hairMaterial);
+        hairGroup.add(combinedHairMesh);
+    }
 
     hairGroup.rotation.y = Math.PI; // Orient hair correctly on head
 
     return hairGroup;
+}
+
+
+// A simplified, manual implementation of BufferGeometryUtils.mergeGeometries
+function mergeGeometries(geometries: THREE.BufferGeometry[]): THREE.BufferGeometry {
+  const mergedGeometry = new THREE.BufferGeometry();
+
+  let totalVertices = 0;
+  let totalIndices = 0;
+  
+  geometries.forEach(geometry => {
+    totalVertices += geometry.attributes.position.count;
+    if (geometry.index) {
+      totalIndices += geometry.index.count;
+    }
+  });
+
+  const mergedPositions = new Float32Array(totalVertices * 3);
+  const mergedNormals = new Float32Array(totalVertices * 3);
+  const mergedUvs = new Float32Array(totalVertices * 2);
+  const mergedIndices = totalIndices > 0 ? new Uint32Array(totalIndices) : undefined;
+
+  let vertexOffset = 0;
+  let indexOffset = 0;
+
+  geometries.forEach(geometry => {
+    const positionAttr = geometry.attributes.position;
+    mergedPositions.set(positionAttr.array, vertexOffset * 3);
+
+    const normalAttr = geometry.attributes.normal;
+    if (normalAttr) {
+        mergedNormals.set(normalAttr.array, vertexOffset * 3);
+    }
+    
+    const uvAttr = geometry.attributes.uv;
+    if (uvAttr) {
+        mergedUvs.set(uvAttr.array, vertexOffset * 2);
+    }
+
+    if (geometry.index) {
+      const indexAttr = geometry.index;
+      for (let i = 0; i < indexAttr.count; i++) {
+        mergedIndices![indexOffset + i] = indexAttr.getX(i) + vertexOffset;
+      }
+      indexOffset += indexAttr.count;
+    } else {
+        // Handle non-indexed geometries if necessary
+    }
+
+    vertexOffset += positionAttr.count;
+  });
+
+  mergedGeometry.setAttribute('position', new THREE.BufferAttribute(mergedPositions, 3));
+  mergedGeometry.setAttribute('normal', new THREE.BufferAttribute(mergedNormals, 3));
+  mergedGeometry.setAttribute('uv', new THREE.BufferAttribute(mergedUvs, 2));
+  
+  if (mergedIndices) {
+    mergedGeometry.setIndex(new THREE.BufferAttribute(mergedIndices, 1));
+  }
+
+  return mergedGeometry;
 }
