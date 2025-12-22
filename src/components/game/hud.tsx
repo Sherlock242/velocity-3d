@@ -140,7 +140,7 @@ export default function Hud({
           <ArrowRight className="w-10 h-10" />
         </button>
       </div>
-      <div className="absolute bottom-4 right-4 flex items-end gap-2 pointer-events-auto">
+      <div className="absolute bottom-4 right-4 flex flex-col items-center gap-2 pointer-events-auto">
         {controlMode === 'person' && (
           <button
             onMouseDown={onJumpPress}
