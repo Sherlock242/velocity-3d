@@ -89,3 +89,4 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
 
 
 
+
