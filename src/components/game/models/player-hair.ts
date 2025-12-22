@@ -17,11 +17,11 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
         // Main volume on top and upper back (previously front)
         { count: 6000, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2, seed: 1 },
         // Smaller side layer
-        { count: 4000, length: 0.18, width: 0.09, yRange: [-0.2, 0.6], zRange: [-0.2, 0.2], xRange: [-0.9, 0.9], rotX: 1.1, seed: 2 },
+        { count: 11000, length: 0.18, width: 0.09, yRange: [-0.2, 0.6], zRange: [-0.2, 0.2], xRange: [-0.9, 0.9], rotX: 1.1, seed: 2 },
         // Base layer for back and lower sides (previously back)
         { count: 10000, length: 0.2, width: 0.1, yRange: [-0.8, 0.5], zRange: [-1.0, 0.0], xRange: [-0.85, 0.85], rotX: 1.6, seed: 3 },
         // New layer for swept bangs on the forehead
-        { count: 1, length: 0.25, width: 0.05, yRange: [-0.3, 0.2], zRange: [0.7, 0.9], xRange: [-0.7, 0.7], rotX: Math.PI, seed: 4 },
+        { count: 1, length: 0.2, width: 0.04, yRange: [-0.3, 0.2], zRange: [0.7, 0.9], xRange: [-0.7, 0.7], rotX: Math.PI, seed: 4 },
     ];
 
     layers.forEach(layer => {
