@@ -1,6 +1,5 @@
 
 import * as THREE from 'three';
-import { updateTransformerAnimation } from '../models/transformer';
 import { TOTAL_GRID_WIDTH, GRID_SIZE, CELL_SIZE } from '@/lib/game-constants';
 import type { GameState } from '../core/state';
 
@@ -28,15 +27,6 @@ export function updateSceneElements(gameState: GameState, delta: number, now: nu
             transformProgressRef.current = Math.max(0, transformProgressRef.current - delta * transformSpeed);
             if (transformProgressRef.current <= 0) isTransformingRef.current = false;
         }
-    }
-
-    if (playerRef.current) {
-        updateTransformerAnimation(
-            playerRef.current as THREE.Group & { userData: { parts: any } },
-            transformProgressRef.current,
-            velocityRef.current.length(),
-            now
-        );
     }
 
     // Walking NPCs logic is removed

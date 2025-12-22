@@ -27,7 +27,8 @@ export function updateTransformerAnimation(
   transformer: THREE.Group,
   progress: number,
   speed: number,
-  time: number
+  time: number,
+  onGround: boolean,
 ) {
   const carModel = transformer.userData.carModel as THREE.Group;
   const personModel = transformer.userData.personModel as THREE.Group;
@@ -90,21 +91,31 @@ export function updateTransformerAnimation(
       
       personModel.position.y = THREE.MathUtils.lerp(0, -totalLegHeight, p);
 
-
-      // Simple walk animation for person, only when fully transformed and moving
-      if (p >= 1 && speed > 0.1) {
-        const walkSpeed = 10;
-        const walkAmount = Math.sin(time * walkSpeed);
-        personParts.leftLeg.rotation.x = walkAmount * 0.5;
-        personParts.rightLeg.rotation.x = -walkAmount * 0.5;
-        personParts.leftArm.rotation.x = -walkAmount * 0.4;
-        personParts.rightArm.rotation.x = walkAmount * 0.4;
-      } else {
-        // Return to neutral position if not walking
-        personParts.leftLeg.rotation.x = 0;
-        personParts.rightLeg.rotation.x = 0;
-        personParts.leftArm.rotation.x = 0;
-        personParts.rightArm.rotation.x = 0;
+      if (p >= 1) { // Only animate if fully transformed
+        if (onGround) {
+          if (speed > 0.1) {
+            // Walking animation
+            const walkSpeed = 10;
+            const walkAmount = Math.sin(time * walkSpeed);
+            personParts.leftLeg.rotation.x = walkAmount * 0.5;
+            personParts.rightLeg.rotation.x = -walkAmount * 0.5;
+            personParts.leftArm.rotation.x = -walkAmount * 0.4;
+            personParts.rightArm.rotation.x = walkAmount * 0.4;
+          } else {
+            // Idle on ground
+            personParts.leftLeg.rotation.x = 0;
+            personParts.rightLeg.rotation.x = 0;
+            personParts.leftArm.rotation.x = 0;
+            personParts.rightArm.rotation.x = 0;
+          }
+        } else {
+          // Jumping animation
+          const jumpPose = 0.5; // legs bent back
+          personParts.leftLeg.rotation.x = jumpPose;
+          personParts.rightLeg.rotation.x = jumpPose;
+          personParts.leftArm.rotation.x = -jumpPose * 0.5;
+          personParts.rightArm.rotation.x = -jumpPose * 0.5;
+        }
       }
   }
 }

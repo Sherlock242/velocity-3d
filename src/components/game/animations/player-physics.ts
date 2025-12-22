@@ -5,7 +5,7 @@ import type { GameState } from '../core/state';
 
 export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     const { playerRef, velocityRef, controlModeRef, rampMeshRef, collegeRampMeshRef, universityRamp, tilePlaneRef, staticCollidersRef, walkableSurfacesRef, inputRef, jumpCooldownRef, isSector4LoadedRef, forestGroundRef } = gameState;
-    if (!playerRef.current) return;
+    if (!playerRef.current) return false;
 
     const playerHeight = controlModeRef.current === 'car' ? 2.5 : 3.5;
     let onGround = false;
@@ -76,4 +76,6 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
     const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
     playerRef.current.position.x = Math.max(-halfTotalWidth, Math.min(halfTotalWidth, playerRef.current.position.x));
     playerRef.current.position.z = Math.max(-halfTotalWidth, Math.min(halfTotalWidth, playerRef.current.position.z));
+
+    return onGround;
 }

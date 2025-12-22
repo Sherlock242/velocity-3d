@@ -23,6 +23,8 @@ export function createAnimationLoop(
 ) {
     const { animationFrameIdRef, playerRef, gameTimeRef, velocityRef, gearRef, electricSparksRef } = gameState;
 
+    let onGround = false;
+
     const animate = () => {
         animationFrameIdRef.current = requestAnimationFrame(animate);
         const delta = clock.getDelta();
@@ -30,13 +32,12 @@ export function createAnimationLoop(
         gameTimeRef.current += delta;
 
         updateEmoji(gameState, delta);
-        updateSceneElements(gameState, delta, now, scene);
         updateElectricSparks(electricSparksRef.current);
 
 
         if (playerRef.current) {
-            updatePlayerMovement(gameState, delta, scene, camera, now);
-            applyPhysicsAndBoundaries(gameState, delta);
+            onGround = applyPhysicsAndBoundaries(gameState, delta);
+            updatePlayerMovement(gameState, delta, scene, camera, now, onGround);
             handleCollisions(gameState, delta);
             updateCameraPosition(gameState, camera, topDownSector);
             checkTrackAndPenalties(gameState, toast);
@@ -51,6 +52,7 @@ export function createAnimationLoop(
             }));
         }
 
+        updateSceneElements(gameState, delta, now, scene);
         renderer.render(scene, camera);
     };
     return animate;
