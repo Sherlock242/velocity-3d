@@ -27,8 +27,9 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
         const validIntersects = intersects.filter(i => i.point.y < playerRef.current!.position.y + 1);
         if (validIntersects.length > 0) {
             const groundY = validIntersects.sort((a, b) => b.point.y - a.point.y)[0].point.y;
-            if (playerRef.current.position.y < groundY + playerHeight + 0.5) {
+            if (playerRef.current.position.y <= groundY + playerHeight + 0.5) {
                 playerRef.current.position.y = groundY + playerHeight;
+                velocityRef.current.y = Math.max(0, velocityRef.current.y); // Prevent accumulating downward velocity
                 onRamp = true;
                 onGround = true;
             }
@@ -58,7 +59,9 @@ export function applyPhysicsAndBoundaries(gameState: GameState, delta: number) {
             }
         }
     } else {
-        velocityRef.current.y = 0;
+         if (velocityRef.current.y < 0) {
+            velocityRef.current.y = 0;
+        }
         onGround = true; // If on a ramp, we are on the ground
     }
 
