@@ -165,7 +165,7 @@ export function createPlayerCharacter(
   const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
   neck.add(neckMesh);
   // Position neck on top of the torso's neck flat
-  neck.position.y = totalLegHeight + torsoHeight / 2 + (torsoHeight/2);
+  neck.position.y = totalLegHeight + torsoHeight;
   
   // Add lateral collar pieces
   const collarPieceGeo = new THREE.BoxGeometry(0.1, neckHeight, 0.25);

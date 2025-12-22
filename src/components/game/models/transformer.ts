@@ -63,7 +63,7 @@ export function updateTransformerAnimation(
       const neckHeight = 0.3;
       const headHeight = 0.5;
       const neckY = totalLegHeight + torsoHeight;
-      const headPersonPos = new THREE.Vector3(0, neckY + neckHeight / 2 + headHeight / 2 + 0.1, 0);
+      const headPersonPos = new THREE.Vector3(0, neckY + neckHeight / 2 + headHeight / 2 + 0.2, 0);
       personParts.head.position.lerpVectors(headCarPos, headPersonPos, p);
 
       // Arms
