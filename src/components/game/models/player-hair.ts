@@ -34,7 +34,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
         // Smaller side layer
         { count: 500, length: 0.18, width: 0.09, yRange: [-0.2, 0.6], zRange: [-0.2, 0.2], xRange: [-0.9, 0.9], rotX: 1.1, seed: 2 },
         // Main volume on top and upper back
-        { count: 150, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2, seed: 3 },
+        { count: 1600, length: 0.35, width: 0.15, yRange: [0.1, 0.8], zRange: [-0.8, 0.6], xRange: [-1.0, 1.0], rotX: 1.2, seed: 3 },
     ];
 
     layers.forEach(layer => {
@@ -83,6 +83,7 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
 
     return hairGroup;
 }
+
 
 
 
