@@ -1,6 +1,7 @@
 
 import * as React from 'react';
 import * as THREE from 'three';
+import type { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { ControlMode, Gear } from '@/lib/types';
 
 export type EmojiFace = {
@@ -60,6 +61,7 @@ export type GameState = {
     electricSparksRef: React.MutableRefObject<THREE.Line[]>;
     tilePlaneRef: React.MutableRefObject<THREE.Mesh | undefined>;
     jumpCooldownRef: React.MutableRefObject<number>;
+    gltfLoaderRef: React.MutableRefObject<GLTFLoader | undefined>;
 };
 
 export function useGameState(): GameState {
@@ -106,6 +108,7 @@ export function useGameState(): GameState {
     const electricSparksRef = React.useRef<THREE.Line[]>([]);
     const tilePlaneRef = React.useRef<THREE.Mesh>();
     const jumpCooldownRef = React.useRef(0);
+    const gltfLoaderRef = React.useRef<GLTFLoader>();
 
 
     return {
@@ -146,5 +149,6 @@ export function useGameState(): GameState {
         electricSparksRef,
         tilePlaneRef,
         jumpCooldownRef,
+        gltfLoaderRef,
     };
 }

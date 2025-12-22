@@ -4,6 +4,8 @@
 import * as React from 'react';
 import * as THREE from 'three';
 import { Bot, Map, Settings, Loader2 } from 'lucide-react';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import {
   SidebarProvider,
   Sidebar,
@@ -132,6 +134,12 @@ export default function GameWrapper() {
 
     const { scene, camera, renderer, audioListener } = setupScene(mountNode);
     gameState.audioListenerRef.current = audioListener;
+
+    const gltfLoader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    gltfLoader.setDRACOLoader(dracoLoader);
+    gameState.gltfLoaderRef.current = gltfLoader;
 
     const onKeyDown = (e: KeyboardEvent) => {
       initAudioOnInteraction(gameState);
