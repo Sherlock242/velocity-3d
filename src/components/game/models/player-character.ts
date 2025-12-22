@@ -70,7 +70,7 @@ export function createPlayerCharacter(
   // Hair
   const hairMaterial = new THREE.MeshPhongMaterial({ color: 0x080808, shininess: 5 });
   const hair = createHair(headRadius, hairMaterial);
-  hair.position.y = headHeight/2 - 0.1;
+  hair.position.y = headHeight/2 - 0.4;
   head.add(hair);
 
   // Torso and Shirt with integrated shoulders
