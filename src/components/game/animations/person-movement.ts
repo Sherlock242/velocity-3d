@@ -25,17 +25,25 @@ export function updatePersonMovement(gameState: GameState, delta: number, camera
     const cameraRight = new THREE.Vector3();
     cameraRight.crossVectors(camera.up, cameraDirection).negate();
     
-    if (inputRef.current.forward) {
+    // Check if there is any directional input from the joystick/keyboard
+    const hasDirectionalInput = inputRef.current.forward || inputRef.current.backward || inputRef.current.left || input.current.right;
+
+    if (hasDirectionalInput) {
+        if (inputRef.current.forward) {
+            moveDirection.add(cameraDirection);
+        }
+        if (inputRef.current.backward) {
+            moveDirection.sub(cameraDirection);
+        }
+        if (inputRef.current.left) {
+            moveDirection.sub(cameraRight);
+        }
+        if (inputRef.current.right) {
+            moveDirection.add(cameraRight);
+        }
+    } else if (inputRef.current.isRunning) {
+        // Autorun: If running and no directional input, move forward
         moveDirection.add(cameraDirection);
-    }
-    if (inputRef.current.backward) {
-        moveDirection.sub(cameraDirection);
-    }
-    if (inputRef.current.left) {
-        moveDirection.sub(cameraRight);
-    }
-    if (inputRef.current.right) {
-        moveDirection.add(cameraRight);
     }
 
 
