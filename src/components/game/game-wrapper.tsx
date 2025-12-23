@@ -125,7 +125,7 @@ export default function GameWrapper() {
   };
 
   React.useEffect(() => {
-    const carOffset = new THREE.Vector3(0, 2, -6);
+    const carOffset = new THREE.Vector3(0, 2, -10);
     const personOffset = new THREE.Vector3(0, 4, -8);
     
     if (gameData.controlMode === 'person') {
