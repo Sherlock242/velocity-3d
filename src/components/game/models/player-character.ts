@@ -295,10 +295,10 @@ export function createPlayerCharacter(
 
   const legXPosition = isLobby ? 0.25 : 0.22;
   const leftLeg = createLeg();
-  leftLeg.position.set(legXPosition, legHeight + shoeHeight, 0.1);
+  leftLeg.position.set(legXPosition, 0, 0);
   
   const rightLeg = createLeg();
-  rightLeg.position.set(-legXPosition, legHeight + shoeHeight, 0.1);
+  rightLeg.position.set(-legXPosition, 0, 0);
 
 
   // --- Arms ---
@@ -361,7 +361,7 @@ export function createPlayerCharacter(
 
   // Belt & Holster
   const beltGroup = new THREE.Group();
-  beltGroup.position.y = torsoHeight / 2 - (torsoHeight / 2); // Position relative to upperBody
+  beltGroup.position.y = 0; // Position relative to upperBody
   const beltGeo = new THREE.BoxGeometry(
     waistWidth * 2 + 0.05,
     0.25,
@@ -399,12 +399,10 @@ export function createPlayerCharacter(
   hilt.rotation.x = Math.PI / 4;
   holster.add(hilt);
 
-  upperBody.add(head, torso, neck, leftArmGroup, rightArmGroup, beltGroup);
+  upperBody.add(head, torso, neck, leftArmGroup, rightArmGroup, beltGroup, leftLeg, rightLeg);
   
   character.add(
-    upperBody,
-    leftLeg,
-    rightLeg
+    upperBody
   );
   // Re-position head to be on top of the neck
   head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.2;
