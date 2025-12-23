@@ -131,7 +131,7 @@ export default function GameWrapper() {
     if (gameData.controlMode === 'person') {
         gameState.cameraOrbitRef.current.radius = personOffset.length();
         gameState.cameraOrbitRef.current.phi = Math.acos(personOffset.y / personOffset.length());
-        gameState.cameraOrbitRef.current.theta = Math.atan2(personOffset.x, personOffset.z);
+        gameState.cameraOrbitRef.current.theta = Math.atan2(personOffset.x, personOffset.z) + (Math.PI * 1.5);
     } else {
         gameState.cameraOrbitRef.current.radius = carOffset.length();
         gameState.cameraOrbitRef.current.phi = Math.acos(carOffset.y / carOffset.length());
@@ -425,6 +425,11 @@ export default function GameWrapper() {
               gameState.inputRef.current.forward = true;
             }}
             onAcceleratorRelease={() => (gameState.inputRef.current.forward = false)}
+            onBrakePress={() => {
+              initAudioOnInteraction(gameState);
+              gameState.inputRef.current.backward = true;
+            }}
+            onBrakeRelease={() => (gameState.inputRef.current.backward = false)}
             onSteerLeftPress={() => {
               initAudioOnInteraction(gameState);
               gameState.inputRef.current.left = true;

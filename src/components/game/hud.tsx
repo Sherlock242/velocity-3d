@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import MiniMap from './mini-map';
 import { Button } from '../ui/button';
 import type { ControlMode, Gear } from '@/lib/types';
+import Joystick from './joystick';
 
 type HudProps = {
   speed: number;
@@ -19,6 +20,8 @@ type HudProps = {
   onToggleLargeMap: () => void;
   onAcceleratorPress: () => void;
   onAcceleratorRelease: () => void;
+  onBrakePress: () => void;
+  onBrakeRelease: () => void;
   onSteerLeftPress: () => void;
   onSteerLeftRelease: () => void;
   onSteerRightPress: () => void;
@@ -42,6 +45,8 @@ export default function Hud({
   onToggleLargeMap,
   onAcceleratorPress,
   onAcceleratorRelease,
+  onBrakePress,
+  onBrakeRelease,
   onSteerLeftPress,
   onSteerLeftRelease,
   onSteerRightPress,
@@ -51,6 +56,40 @@ export default function Hud({
   isTopDownView,
   onExitTopDownView,
 }: HudProps) {
+
+  const handleJoystickMove = (x: number, y: number) => {
+    // Forward/Backward
+    if (y > 0.1) {
+      onAcceleratorPress();
+    } else {
+      onAcceleratorRelease();
+    }
+    if (y < -0.1) {
+      onBrakePress();
+    } else {
+      onBrakeRelease();
+    }
+    
+    // Left/Right
+    if (x < -0.1) {
+      onSteerLeftPress();
+    } else {
+      onSteerLeftRelease();
+    }
+    if (x > 0.1) {
+      onSteerRightPress();
+    } else {
+      onSteerRightRelease();
+    }
+  };
+
+  const handleJoystickEnd = () => {
+    onAcceleratorRelease();
+    onBrakeRelease();
+    onSteerLeftRelease();
+    onSteerRightRelease();
+  };
+
   return (
     <div className="absolute inset-0 pointer-events-none text-accent">
       {/* Speedometer */}
@@ -120,48 +159,58 @@ export default function Hud({
       </div>
 
       {/* Touch Controls */}
-      <div className="absolute bottom-4 left-4 flex items-end gap-2 pointer-events-auto">
-        <button
-          onMouseDown={onSteerLeftPress}
-          onMouseUp={onSteerLeftRelease}
-          onTouchStart={onSteerLeftPress}
-          onTouchEnd={onSteerLeftRelease}
-          className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
-        >
-          <ArrowLeft className="w-10 h-10" />
-        </button>
-        <button
-          onMouseDown={onSteerRightPress}
-          onMouseUp={onSteerRightRelease}
-          onTouchStart={onSteerRightPress}
-          onTouchEnd={onSteerRightRelease}
-          className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
-        >
-          <ArrowRight className="w-10 h-10" />
-        </button>
-      </div>
-      <div className="absolute bottom-4 right-4 flex flex-col items-center gap-2 pointer-events-auto">
-        {controlMode === 'person' && (
-          <button
-            onMouseDown={onJumpPress}
-            onMouseUp={onJumpRelease}
-            onTouchStart={onJumpPress}
-            onTouchEnd={onJumpRelease}
-            className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
-          >
-            <ArrowUp className="w-10 h-10" />
-          </button>
-        )}
-        <button
-          onMouseDown={onAcceleratorPress}
-          onMouseUp={onAcceleratorRelease}
-          onTouchStart={onAcceleratorPress}
-          onTouchEnd={onAcceleratorRelease}
-          className="w-20 h-28 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex flex-col justify-center items-center text-accent active:bg-accent/20 transition-colors"
-        >
-          <ChevronUp className="w-10 h-10" />
-        </button>
-      </div>
+      {controlMode === 'car' ? (
+        <>
+          <div className="absolute bottom-4 left-4 flex items-end gap-2 pointer-events-auto">
+            <button
+              onMouseDown={onSteerLeftPress}
+              onMouseUp={onSteerLeftRelease}
+              onTouchStart={onSteerLeftPress}
+              onTouchEnd={onSteerLeftRelease}
+              className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+            >
+              <ArrowLeft className="w-10 h-10" />
+            </button>
+            <button
+              onMouseDown={onSteerRightPress}
+              onMouseUp={onSteerRightRelease}
+              onTouchStart={onSteerRightPress}
+              onTouchEnd={onSteerRightRelease}
+              className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+            >
+              <ArrowRight className="w-10 h-10" />
+            </button>
+          </div>
+          <div className="absolute bottom-4 right-4 flex flex-col items-center gap-2 pointer-events-auto">
+            <button
+              onMouseDown={onAcceleratorPress}
+              onMouseUp={onAcceleratorRelease}
+              onTouchStart={onAcceleratorPress}
+              onTouchEnd={onAcceleratorRelease}
+              className="w-20 h-28 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex flex-col justify-center items-center text-accent active:bg-accent/20 transition-colors"
+            >
+              <ChevronUp className="w-10 h-10" />
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="absolute bottom-4 left-4 pointer-events-auto">
+            <Joystick onMove={handleJoystickMove} onEnd={handleJoystickEnd} />
+          </div>
+          <div className="absolute bottom-4 right-4 flex flex-col items-center gap-2 pointer-events-auto">
+            <button
+              onMouseDown={onJumpPress}
+              onMouseUp={onJumpRelease}
+              onTouchStart={onJumpPress}
+              onTouchEnd={onJumpRelease}
+              className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-lg flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+            >
+              <ArrowUp className="w-10 h-10" />
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
