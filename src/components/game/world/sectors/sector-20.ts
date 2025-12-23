@@ -36,7 +36,7 @@ export function createSector20({
       const x = startX + row * rowSpacing;
       const z = startZ + col * houseSpacing;
       house.position.set(x, 0, z);
-      house.rotation.y = -Math.PI / 2;
+      house.rotation.y = 0;
       sectorGroup.add(house);
       staticCollidersRef.current.push(house);
     }
