@@ -21,8 +21,6 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
         { count: 11000, length: 0.18, width: 0.09, yRange: [-0.2, 0.6], zRange: [-0.2, 0.2], xRange: [-0.9, 0.9], rotX: 1.1, seed: 2 },
         // Base layer for back and lower sides (previously back)
         { count: 10000, length: 0.2, width: 0.1, yRange: [-0.8, 0.5], zRange: [-1.0, 0.0], xRange: [-0.85, 0.85], rotX: 1.2, seed: 3 },
-        // New layer for swept bangs on the forehead
-        { count: 1, length: 0.2, width: 0.04, yRange: [-0.3, 0.2], zRange: [0.7, 0.9], xRange: [-0.7, 0.7], rotX: Math.PI, seed: 4 },
     ];
 
     layers.forEach(layer => {
@@ -69,6 +67,16 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
         }
     });
 
+    // Create the curved bang separately
+    const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, headRadius * 0.9, headRadius * 0.4), // Start point high on the forehead
+        new THREE.Vector3(-0.3, headRadius * 0.2, headRadius * 0.9), // Mid point curving down and forward
+        new THREE.Vector3(-0.4, -headRadius * 0.3, headRadius * 0.7) // End point
+    ]);
+    const tubeGeometry = new THREE.TubeGeometry(curve, 10, 0.05, 8, false);
+    allGeometries.push(tubeGeometry);
+
+
     if (allGeometries.length > 0) {
         const mergedGeometry = mergeGeometries(allGeometries);
         const combinedHairMesh = new THREE.Mesh(mergedGeometry, hairMaterial);
@@ -89,9 +97,13 @@ function mergeGeometries(geometries: THREE.BufferGeometry[]): THREE.BufferGeomet
   let totalIndices = 0;
   
   geometries.forEach(geometry => {
-    totalVertices += geometry.attributes.position.count;
+    if (geometry.attributes.position) {
+        totalVertices += geometry.attributes.position.count;
+    }
     if (geometry.index) {
       totalIndices += geometry.index.count;
+    } else if (geometry.attributes.position) {
+      totalIndices += geometry.attributes.position.count;
     }
   });
 
@@ -104,6 +116,8 @@ function mergeGeometries(geometries: THREE.BufferGeometry[]): THREE.BufferGeomet
   let indexOffset = 0;
 
   geometries.forEach(geometry => {
+    if (!geometry.attributes.position) return;
+
     const positionAttr = geometry.attributes.position;
     mergedPositions.set(positionAttr.array, vertexOffset * 3);
 
@@ -124,7 +138,11 @@ function mergeGeometries(geometries: THREE.BufferGeometry[]): THREE.BufferGeomet
       }
       indexOffset += indexAttr.count;
     } else {
-        // Handle non-indexed geometries if necessary
+        // Handle non-indexed geometries by creating indices
+        for (let i = 0; i < positionAttr.count; i++) {
+            mergedIndices![indexOffset + i] = vertexOffset + i;
+        }
+        indexOffset += positionAttr.count;
     }
 
     vertexOffset += positionAttr.count;
@@ -137,6 +155,17 @@ function mergeGeometries(geometries: THREE.BufferGeometry[]): THREE.BufferGeomet
   if (mergedIndices) {
     mergedGeometry.setIndex(new THREE.BufferAttribute(mergedIndices, 1));
   }
+  
+  if(totalIndices > 0 && totalIndices < 65535 * 3 && !mergedGeometry.index) {
+      // If we don't have an index, we should compute one.
+      const indices = [];
+      for(let i = 0; i < totalVertices; i+=3) {
+          indices.push(i, i+1, i+2);
+      }
+      mergedGeometry.setIndex(indices);
+  }
+
+  mergedGeometry.computeVertexNormals();
 
   return mergedGeometry;
 }
