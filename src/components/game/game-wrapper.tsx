@@ -160,7 +160,8 @@ export default function GameWrapper() {
     
     // Camera drag controls
     let isDragging = false;
-    let previousTouch: Touch | null = null;
+    let dragTouchId: number | null = null;
+    let previousTouch: { x: number, y: number } | null = null;
     let previousMousePosition = { x: 0, y: 0 };
 
     const handleMouseDown = (event: MouseEvent) => {
@@ -192,35 +193,53 @@ export default function GameWrapper() {
     };
 
     const handleTouchStart = (event: TouchEvent) => {
-      if (event.touches.length === 1) {
-        isDragging = true;
-        previousTouch = event.touches[0];
-      }
+        // Only start a new drag if we aren't already dragging
+        if (dragTouchId === null && event.changedTouches.length > 0) {
+            const touch = event.changedTouches[0];
+            dragTouchId = touch.identifier;
+            isDragging = true;
+            previousTouch = { x: touch.clientX, y: touch.clientY };
+        }
     };
 
     const handleTouchMove = (event: TouchEvent) => {
-      if (!isDragging || event.touches.length !== 1 || !previousTouch) return;
-      
-      const touch = event.touches[0];
-      const deltaX = touch.clientX - previousTouch.clientX;
-      const deltaY = touch.clientY - previousTouch.clientY;
+        if (!isDragging || dragTouchId === null) return;
 
-      gameState.cameraOrbitRef.current.theta -= deltaX * 0.01;
-      gameState.cameraOrbitRef.current.phi -= deltaY * 0.01;
+        for (let i = 0; i < event.changedTouches.length; i++) {
+            const touch = event.changedTouches[i];
+            if (touch.identifier === dragTouchId) {
+                if (!previousTouch) {
+                    previousTouch = { x: touch.clientX, y: touch.clientY };
+                    return;
+                }
+                const deltaX = touch.clientX - previousTouch.x;
+                const deltaY = touch.clientY - previousTouch.y;
 
-      // Clamp phi to prevent camera flipping below ground or too high
-      gameState.cameraOrbitRef.current.phi = THREE.MathUtils.clamp(
-        gameState.cameraOrbitRef.current.phi,
-        0.5,
-        Math.PI / 2
-      );
+                gameState.cameraOrbitRef.current.theta -= deltaX * 0.01;
+                gameState.cameraOrbitRef.current.phi -= deltaY * 0.01;
 
-      previousTouch = touch;
+                gameState.cameraOrbitRef.current.phi = THREE.MathUtils.clamp(
+                    gameState.cameraOrbitRef.current.phi,
+                    0.5,
+                    Math.PI / 2
+                );
+
+                previousTouch = { x: touch.clientX, y: touch.clientY };
+                break;
+            }
+        }
     };
 
-    const handleTouchEnd = () => {
-      isDragging = false;
-      previousTouch = null;
+    const handleTouchEnd = (event: TouchEvent) => {
+        for (let i = 0; i < event.changedTouches.length; i++) {
+            const touch = event.changedTouches[i];
+            if (touch.identifier === dragTouchId) {
+                isDragging = false;
+                dragTouchId = null;
+                previousTouch = null;
+                break;
+            }
+        }
     };
 
 
@@ -257,7 +276,7 @@ export default function GameWrapper() {
     mountNode.addEventListener('mousedown', handleMouseDown);
     mountNode.addEventListener('mousemove', handleMouseMove);
     mountNode.addEventListener('mouseup', handleMouseUp);
-    mountNode.addEventListener('touchstart', handleTouchStart, { passive: false });
+    mountNode.addEventListener('touchstart', handleTouchStart, { passive: true });
     mountNode.addEventListener('touchmove', handleTouchMove, { passive: false });
     mountNode.addEventListener('touchend', handleTouchEnd);
     mountNode.addEventListener('touchcancel', handleTouchEnd);
@@ -455,3 +474,5 @@ export default function GameWrapper() {
     </SidebarProvider>
   );
 }
+
+    

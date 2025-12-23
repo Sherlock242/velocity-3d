@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -76,6 +77,7 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
 
   // Touch Events
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation(); // Prevent this touch from triggering camera controls
     const touch = e.changedTouches[0];
     if (touch && touchIdRef.current === null) {
       touchIdRef.current = touch.identifier;
@@ -120,21 +122,16 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
-      currentContainer?.addEventListener('touchmove', handleTouchMove, { passive: false });
+      // Use window for move/end to handle dragging outside the element
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
       window.addEventListener('touchend', handleTouchEnd);
       window.addEventListener('touchcancel', handleTouchEnd);
-    } else {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-      currentContainer?.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('touchcancel', handleTouchEnd);
     }
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      currentContainer?.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
       window.removeEventListener('touchcancel', handleTouchEnd);
     };
@@ -159,3 +156,5 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
 };
 
 export default Joystick;
+
+    
