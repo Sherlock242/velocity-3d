@@ -263,7 +263,8 @@ export function createPlayerCharacter(
     
     lowerLeg.position.y = -upperLegHeight;
 
-    legGroup.add(upperLeg, lowerLeg);
+    upperLeg.add(lowerLeg);
+    legGroup.add(upperLeg);
     legGroup.userData = { upperLeg, lowerLeg };
     return legGroup;
   }
