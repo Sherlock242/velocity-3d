@@ -31,11 +31,15 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
                 // Fallback if head is not available
                 lookAtTarget.y += 4;
             }
-        }
+            const offset = new THREE.Vector3().setFromSphericalCoords(radius, phi, theta);
+            camera.position.copy(lookAtTarget).add(offset);
+            camera.lookAt(lookAtTarget);
 
-        const combinedTheta = theta + playerRef.current.rotation.y;
-        const offset = new THREE.Vector3().setFromSphericalCoords(radius, phi, combinedTheta);
-        camera.position.copy(lookAtTarget).add(offset);
-        camera.lookAt(lookAtTarget);
+        } else { // Car mode
+            const combinedTheta = theta + playerRef.current.rotation.y;
+            const offset = new THREE.Vector3().setFromSphericalCoords(radius, phi, combinedTheta);
+            camera.position.copy(lookAtTarget).add(offset);
+            camera.lookAt(lookAtTarget);
+        }
     }
 }
