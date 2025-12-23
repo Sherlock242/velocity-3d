@@ -26,7 +26,7 @@ export function updatePersonMovement(gameState: GameState, delta: number, camera
     cameraRight.crossVectors(camera.up, cameraDirection).negate();
     
     // Check if there is any directional input from the joystick/keyboard
-    const hasDirectionalInput = inputRef.current.forward || inputRef.current.backward || inputRef.current.left || input.current.right;
+    const hasDirectionalInput = inputRef.current.forward || inputRef.current.backward || inputRef.current.left || inputRef.current.right;
 
     if (hasDirectionalInput) {
         if (inputRef.current.forward) {
