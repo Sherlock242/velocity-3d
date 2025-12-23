@@ -127,18 +127,19 @@ export function updateTransformerAnimation(
           }
         } else {
           // Jumping animation
-          const jumpPose = 0.5; // legs bent back
-          leftLegParts.upperLeg.rotation.x = jumpPose;
-          leftLegParts.upperLeg.rotation.z = -0.2; // upper leg outward
-          leftLegParts.lowerLeg.rotation.x = 0.5;
-          leftLegParts.lowerLeg.rotation.z = 0.1; // lower leg inward
-          rightLegParts.upperLeg.rotation.x = jumpPose;
-          rightLegParts.upperLeg.rotation.z = 0.2; // upper leg outward
-          rightLegParts.lowerLeg.rotation.x = 0.5;
-          rightLegParts.lowerLeg.rotation.z = -0.1; // lower leg inward
+          leftLegParts.upperLeg.rotation.x = 0; // No forward/backward bend
+          leftLegParts.lowerLeg.rotation.x = 0;
+          rightLegParts.upperLeg.rotation.x = 0;
+          rightLegParts.lowerLeg.rotation.x = 0;
+
+          // Apply rotation on Z-axis
+          leftLegParts.upperLeg.rotation.z = -0.4; // upper leg outward
+          leftLegParts.lowerLeg.rotation.z = 0.2;  // lower leg inward
+          rightLegParts.upperLeg.rotation.z = 0.4; // upper leg outward
+          rightLegParts.lowerLeg.rotation.z = -0.2; // lower leg inward
           
-          personParts.leftArm.rotation.x = -jumpPose * 0.5;
-          personParts.rightArm.rotation.x = -jumpPose * 0.5;
+          personParts.leftArm.rotation.x = -0.2;
+          personParts.rightArm.rotation.x = -0.2;
         }
       }
   }
