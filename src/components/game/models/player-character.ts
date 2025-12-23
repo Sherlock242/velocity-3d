@@ -294,6 +294,12 @@ export function createPlayerCharacter(
     const upperArm = new THREE.Group();
     const lowerArm = new THREE.Group();
 
+    // Add a sphere for the shoulder cap
+    const shoulderCapGeo = new THREE.SphereGeometry(armTopRadius, 8, 6);
+    const shoulderCap = new THREE.Mesh(shoulderCapGeo, shirtMaterial);
+    shoulderCap.position.y = 0; // Position at the top of the arm
+    upperArm.add(shoulderCap);
+
     const upperArmGeo = new THREE.CylinderGeometry(armTopRadius, elbowRadius, upperArmHeight, 8);
     const upperArmMesh = new THREE.Mesh(upperArmGeo, shirtMaterial);
     upperArmMesh.position.y = -upperArmHeight / 2;
