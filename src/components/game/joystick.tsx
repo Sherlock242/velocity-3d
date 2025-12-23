@@ -60,34 +60,20 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
   );
 
   const handleEnd = React.useCallback(() => {
-    if (!knobRef.current) return;
-    isDraggingRef.current = false;
+    if (isDraggingRef.current) {
+        isDraggingRef.current = false;
+        if (knobRef.current) {
+            knobRef.current.style.transform = 'translate(0, 0)';
+        }
+        onEnd();
+    }
     touchIdRef.current = null;
-    knobRef.current.style.transform = 'translate(0, 0)';
-    onEnd();
   }, [onEnd]);
 
   // Mouse Events
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     isDraggingRef.current = true;
     handleMove(e.clientX, e.clientY);
-
-    const onMouseMove = (moveEvent: MouseEvent) => {
-      if (isDraggingRef.current) {
-        handleMove(moveEvent.clientX, moveEvent.clientY);
-      }
-    };
-
-    const onMouseUp = () => {
-      if (isDraggingRef.current) {
-        handleEnd();
-      }
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
-    };
-
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
   };
 
   // Touch Events
@@ -98,40 +84,59 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
       touchIdRef.current = touch.identifier;
       isDraggingRef.current = true;
       handleMove(touch.clientX, touch.clientY);
-
-      const onTouchMove = (moveEvent: TouchEvent) => {
-        if (isDraggingRef.current) {
-          for (let i = 0; i < moveEvent.changedTouches.length; i++) {
-            const currentTouch = moveEvent.changedTouches[i];
-            if (currentTouch.identifier === touchIdRef.current) {
-              moveEvent.preventDefault();
-              handleMove(currentTouch.clientX, currentTouch.clientY);
-              break;
-            }
-          }
-        }
-      };
-
-      const onTouchEnd = (endEvent: TouchEvent) => {
-        if (isDraggingRef.current) {
-          for (let i = 0; i < endEvent.changedTouches.length; i++) {
-            const currentTouch = endEvent.changedTouches[i];
-            if (currentTouch.identifier === touchIdRef.current) {
-              handleEnd();
-              break;
-            }
-          }
-        }
-        window.removeEventListener('touchmove', onTouchMove);
-        window.removeEventListener('touchend', onTouchEnd);
-        window.removeEventListener('touchcancel', onTouchEnd);
-      };
-
-      window.addEventListener('touchmove', onTouchMove, { passive: false });
-      window.addEventListener('touchend', onTouchEnd);
-      window.addEventListener('touchcancel', onTouchEnd);
     }
   };
+  
+  React.useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+        if(isDraggingRef.current) {
+            handleMove(e.clientX, e.clientY);
+        }
+    };
+    
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+        if(isDraggingRef.current && touchIdRef.current !== null) {
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches[i];
+                if (touch.identifier === touchIdRef.current) {
+                    handleMove(touch.clientX, touch.clientY);
+                    break;
+                }
+            }
+        }
+    };
+
+    const handleGlobalMouseUp = () => {
+        handleEnd();
+    };
+
+    const handleGlobalTouchEnd = (e: TouchEvent) => {
+        if(isDraggingRef.current && touchIdRef.current !== null) {
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches[i];
+                if (touch.identifier === touchIdRef.current) {
+                    handleEnd();
+                    break;
+                }
+            }
+        }
+    };
+
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    window.addEventListener('touchmove', handleGlobalTouchMove);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    window.addEventListener('touchend', handleGlobalTouchEnd);
+    window.addEventListener('touchcancel', handleGlobalTouchEnd);
+
+    return () => {
+        window.removeEventListener('mousemove', handleGlobalMouseMove);
+        window.removeEventListener('touchmove', handleGlobalTouchMove);
+        window.removeEventListener('mouseup', handleGlobalMouseUp);
+        window.removeEventListener('touchend', handleGlobalTouchEnd);
+        window.removeEventListener('touchcancel', handleGlobalTouchEnd);
+    }
+  }, [handleMove, handleEnd]);
+
 
   return (
     <div
