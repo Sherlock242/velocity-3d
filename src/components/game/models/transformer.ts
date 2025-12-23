@@ -8,7 +8,7 @@ export function createTransformer() {
   transformer.position.y = 0.5;
 
   const carModel = createLamborghini();
-  const personModel = createPlayerCharacter(true, 'male', false); // isPlayer = true, isLobby = false
+  const personModel = createPlayerCharacter(true, 'male', true); // isPlayer = true, isLobby = true
   personModel.visible = false; // Start as car
 
   transformer.add(carModel);
@@ -50,8 +50,10 @@ export function updateTransformerAnimation(
       const carChassis = carModel.userData.parts.chassis;
       const personParts = personModel.userData.parts;
       
-      const torsoHeight = 1.8;
-      const legHeight = 2.8;
+      const torsoHeight = 1.9;
+      const upperLegHeight = 1.4;
+      const lowerLegHeight = 1.4;
+      const legHeight = upperLegHeight + lowerLegHeight;
       const shoeHeight = 0.3;
       const totalLegHeight = legHeight + shoeHeight;
 
@@ -72,8 +74,8 @@ export function updateTransformerAnimation(
       // Arms
       const lArmCarPos = new THREE.Vector3(0.5, 1, 0.5);
       const shoulderHeight = torsoHeight * 0.45;
-      const shoulderWidth = 0.55; // Use the in-game shoulder width
-      const armYOffset = -0.15;
+      const shoulderWidth = 0.7; // Use the in-game shoulder width
+      const armYOffset = -0.30;
       const lArmPersonPos = new THREE.Vector3(shoulderWidth, torsoHeight + armYOffset, 0);
       personParts.leftArm.position.lerpVectors(lArmCarPos, lArmPersonPos, p);
 
@@ -84,12 +86,12 @@ export function updateTransformerAnimation(
       // Legs from back wheels
       const carWheels = carModel.userData.parts.wheels;
       const lLegCarPos = carWheels[2].position.clone();
-      const waistWidth = 0.22;
-      const lLegPersonPos = new THREE.Vector3(waistWidth, legHeight + shoeHeight, 0);
+      const waistWidth = 0.25;
+      const lLegPersonPos = new THREE.Vector3(waistWidth, 0, 0);
       personParts.leftLeg.position.lerpVectors(lLegCarPos, lLegPersonPos, p);
 
       const rLegCarPos = carWheels[3].position.clone();
-      const rLegPersonPos = new THREE.Vector3(-waistWidth, legHeight + shoeHeight, 0);
+      const rLegPersonPos = new THREE.Vector3(-waistWidth, 0, 0);
       personParts.rightLeg.position.lerpVectors(rLegCarPos, rLegPersonPos, p);
       
       personModel.position.y = THREE.MathUtils.lerp(0, -totalLegHeight, p);
