@@ -1,4 +1,3 @@
-
 'use client';
 
 import { ArrowLeft, ArrowRight, ChevronUp, Zap, ToyBrick, Car, X, Cog, ArrowUp } from 'lucide-react';
@@ -116,25 +115,27 @@ export default function Hud({
 
       {/* Control Mode & Gear */}
       <div className="absolute bottom-28 left-4 flex gap-2 pointer-events-auto">
-        <Button onClick={onToggleControlMode} variant="outline" size="icon" className='bg-card/50 backdrop-blur-sm border-accent/20 w-14 h-14'>
-          {controlMode === 'car' ? <Car /> : <ToyBrick />}
-        </Button>
         {controlMode === 'car' && (
-          <Button
-            onMouseDown={onGearChange}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              onGearChange();
-            }}
-            variant="outline"
-            size="icon"
-            className="bg-card/50 backdrop-blur-sm border-accent/20 w-14 h-14 select-none"
-          >
-            <div className="flex flex-col items-center">
-              <Cog />
-              <span className="font-bold text-lg">{gear}</span>
-            </div>
-          </Button>
+          <>
+            <Button onClick={onToggleControlMode} variant="outline" size="icon" className='bg-card/50 backdrop-blur-sm border-accent/20 w-14 h-14'>
+              <Car />
+            </Button>
+            <Button
+              onMouseDown={onGearChange}
+              onTouchStart={(e) => {
+                e.preventDefault();
+                onGearChange();
+              }}
+              variant="outline"
+              size="icon"
+              className="bg-card/50 backdrop-blur-sm border-accent/20 w-14 h-14 select-none"
+            >
+              <div className="flex flex-col items-center">
+                <Cog />
+                <span className="font-bold text-lg">{gear}</span>
+              </div>
+            </Button>
+          </>
         )}
       </div>
 
@@ -200,7 +201,10 @@ export default function Hud({
         </>
       ) : (
         <>
-          <div className="absolute bottom-4 left-4 pointer-events-auto">
+          <div className="absolute bottom-4 left-4 pointer-events-auto flex flex-col items-center gap-2">
+            <Button onClick={onToggleControlMode} variant="outline" size="icon" className='bg-card/50 backdrop-blur-sm border-accent/20 w-14 h-14 mb-2'>
+              <ToyBrick />
+            </Button>
             <Joystick onMove={handleJoystickMove} onEnd={handleJoystickEnd} />
           </div>
           <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-auto">
