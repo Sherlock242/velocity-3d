@@ -290,7 +290,7 @@ export function createPlayerCharacter(
   const elbowRadius = 0.15;
   const armTopRadius = 0.18;
   const armBottomRadius = 0.14;
-  const armYOffset = -0.25;
+  const armYOffset = -0.50;
 
   const createArm = (isLeft: boolean) => {
     const armGroup = new THREE.Group();
@@ -343,7 +343,7 @@ export function createPlayerCharacter(
 
   // Belt & Holster
   const beltGroup = new THREE.Group();
-  beltGroup.position.y = 0; // Position relative to upperBody
+  beltGroup.position.y = lobbyYOffset; // Position relative to upperBody
   const beltGeo = new THREE.BoxGeometry(
     waistWidth * 2 + 0.05,
     0.25,
@@ -409,5 +409,3 @@ export function createPlayerCharacter(
 
   return character;
 }
-
-    
