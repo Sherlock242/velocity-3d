@@ -168,9 +168,9 @@ export function updateTransformerAnimation(
           leftLegParts.upperLeg.rotation.z = 0.2; 
           leftLegParts.lowerLeg.rotation.z = -0.2; 
           
-          // Right Leg (Low Jump) - more extended
-          rightLegParts.upperLeg.rotation.x = 0.2;
-          rightLegParts.lowerLeg.rotation.x = 0;
+          // Right Leg (Low Jump) - more extended but still bent
+          rightLegParts.upperLeg.rotation.x = -0.4;
+          rightLegParts.lowerLeg.rotation.x = 0.8;
           rightLegParts.upperLeg.rotation.z = -0.1;
           rightLegParts.lowerLeg.rotation.z = 0.1;
           
