@@ -190,39 +190,6 @@ export function createPlayerCharacter(
   const legBottomRadius = 0.18;
   const kneeRadius = 0.2;
 
-  const createLeg = () => {
-    const legGroup = new THREE.Group();
-    const upperLeg = new THREE.Group();
-    const lowerLeg = new THREE.Group();
-
-    const upperLegGeo = new THREE.CylinderGeometry(legTopRadius, kneeRadius, upperLegHeight, 8);
-    const upperLegMesh = new THREE.Mesh(upperLegGeo, pantsMaterial);
-    upperLegMesh.position.y = -upperLegHeight / 2;
-    upperLeg.add(upperLegMesh);
-
-    const kneeGeo = new THREE.SphereGeometry(kneeRadius, 8, 6);
-    const kneeMesh = new THREE.Mesh(kneeGeo, pantsMaterial);
-    lowerLeg.add(kneeMesh);
-
-    const lowerLegGeo = new THREE.CylinderGeometry(kneeRadius, legBottomRadius, lowerLegHeight, 8);
-    const lowerLegMesh = new THREE.Mesh(lowerLegGeo, pantsMaterial);
-    lowerLegMesh.position.y = -lowerLegHeight / 2;
-    lowerLeg.add(lowerLegMesh);
-    
-    lowerLeg.position.y = -upperLegHeight;
-
-    legGroup.add(upperLeg, lowerLeg);
-    legGroup.userData = { upperLeg, lowerLeg };
-    return legGroup;
-  }
-
-  const leftLeg = createLeg();
-  leftLeg.position.set(0.22, legHeight + shoeHeight, 0);
-  
-  const rightLeg = createLeg();
-  rightLeg.position.set(-0.22, legHeight + shoeHeight, 0);
-
-
   // Helper function to create a boot
   const createBoot = () => {
     const bootGroup = new THREE.Group();
@@ -269,13 +236,44 @@ export function createPlayerCharacter(
     return bootGroup;
   };
 
-  const leftBoot = createBoot();
-  leftBoot.position.y = -legHeight;
-  leftLeg.add(leftBoot);
 
-  const rightBoot = createBoot();
-  rightBoot.position.y = -legHeight;
-  rightLeg.add(rightBoot);
+  const createLeg = () => {
+    const legGroup = new THREE.Group();
+    const upperLeg = new THREE.Group();
+    const lowerLeg = new THREE.Group();
+
+    const upperLegGeo = new THREE.CylinderGeometry(legTopRadius, kneeRadius, upperLegHeight, 8);
+    const upperLegMesh = new THREE.Mesh(upperLegGeo, pantsMaterial);
+    upperLegMesh.position.y = -upperLegHeight / 2;
+    upperLeg.add(upperLegMesh);
+
+    const kneeGeo = new THREE.SphereGeometry(kneeRadius, 8, 6);
+    const kneeMesh = new THREE.Mesh(kneeGeo, pantsMaterial);
+    lowerLeg.add(kneeMesh);
+
+    const lowerLegGeo = new THREE.CylinderGeometry(kneeRadius, legBottomRadius, lowerLegHeight, 8);
+    const lowerLegMesh = new THREE.Mesh(lowerLegGeo, pantsMaterial);
+    lowerLegMesh.position.y = -lowerLegHeight / 2;
+    lowerLeg.add(lowerLegMesh);
+    
+    // Attach boot to lower leg
+    const boot = createBoot();
+    boot.position.y = -lowerLegHeight;
+    lowerLeg.add(boot);
+    
+    lowerLeg.position.y = -upperLegHeight;
+
+    legGroup.add(upperLeg, lowerLeg);
+    legGroup.userData = { upperLeg, lowerLeg };
+    return legGroup;
+  }
+
+  const leftLeg = createLeg();
+  leftLeg.position.set(0.22, legHeight + shoeHeight, 0);
+  
+  const rightLeg = createLeg();
+  rightLeg.position.set(-0.22, legHeight + shoeHeight, 0);
+
 
   // Arms (Slimmer)
   const armLength = 1.3;
