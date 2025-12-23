@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 import { createPlayerCharacter } from './player-character';
 import { createLamborghini } from './player-car';
@@ -101,18 +102,26 @@ export function updateTransformerAnimation(
             const walkSpeed = 10;
             const walkAmount = Math.sin(time * walkSpeed);
             leftLegParts.upperLeg.rotation.x = walkAmount * 0.5;
+            leftLegParts.upperLeg.rotation.z = 0; // Reset jump rotation
             leftLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * 0.7); // Bend knee forward
+            leftLegParts.lowerLeg.rotation.z = 0; // Reset jump rotation
             rightLegParts.upperLeg.rotation.x = -walkAmount * 0.5;
+            rightLegParts.upperLeg.rotation.z = 0; // Reset jump rotation
             rightLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * 0.7);
+            rightLegParts.lowerLeg.rotation.z = 0; // Reset jump rotation
 
             personParts.leftArm.rotation.x = -walkAmount * 0.4;
             personParts.rightArm.rotation.x = walkAmount * 0.4;
           } else {
             // Idle on ground
             leftLegParts.upperLeg.rotation.x = 0;
+            leftLegParts.upperLeg.rotation.z = 0;
             leftLegParts.lowerLeg.rotation.x = 0;
+            leftLegParts.lowerLeg.rotation.z = 0;
             rightLegParts.upperLeg.rotation.x = 0;
+            rightLegParts.upperLeg.rotation.z = 0;
             rightLegParts.lowerLeg.rotation.x = 0;
+            rightLegParts.lowerLeg.rotation.z = 0;
             personParts.leftArm.rotation.x = 0;
             personParts.rightArm.rotation.x = 0;
           }
@@ -120,9 +129,13 @@ export function updateTransformerAnimation(
           // Jumping animation
           const jumpPose = 0.5; // legs bent back
           leftLegParts.upperLeg.rotation.x = jumpPose;
+          leftLegParts.upperLeg.rotation.z = -0.2; // upper leg outward
           leftLegParts.lowerLeg.rotation.x = 0.5;
+          leftLegParts.lowerLeg.rotation.z = 0.1; // lower leg inward
           rightLegParts.upperLeg.rotation.x = jumpPose;
+          rightLegParts.upperLeg.rotation.z = 0.2; // upper leg outward
           rightLegParts.lowerLeg.rotation.x = 0.5;
+          rightLegParts.lowerLeg.rotation.z = -0.1; // lower leg inward
           
           personParts.leftArm.rotation.x = -jumpPose * 0.5;
           personParts.rightArm.rotation.x = -jumpPose * 0.5;
