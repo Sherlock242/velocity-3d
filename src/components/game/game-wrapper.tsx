@@ -126,7 +126,7 @@ export default function GameWrapper() {
 
   React.useEffect(() => {
     const carOffset = new THREE.Vector3(0, 2, -10);
-    const personOffset = new THREE.Vector3(0, 4, -8);
+    const personOffset = new THREE.Vector3(0, 3, -10);
     
     if (gameData.controlMode === 'person') {
         gameState.cameraOrbitRef.current.radius = personOffset.length();
