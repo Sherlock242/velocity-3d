@@ -162,15 +162,15 @@ export function updateTransformerAnimation(
           personParts.leftLeg.rotation.x = 0;
           personParts.rightLeg.rotation.x = 0;
           
-          // Left Leg (Full Jump) - tucked high
-          leftLegParts.upperLeg.rotation.x = -1.2; 
-          leftLegParts.lowerLeg.rotation.x = 1.8;
+          // Left Leg (Full Jump) - tucked high, but not excessively
+          leftLegParts.upperLeg.rotation.x = -1.0; 
+          leftLegParts.lowerLeg.rotation.x = 2.0; // Keep the sharp bend
           leftLegParts.upperLeg.rotation.z = 0.2; 
           leftLegParts.lowerLeg.rotation.z = -0.2; 
           
-          // Right Leg (Low Jump) - more extended but still bent
-          rightLegParts.upperLeg.rotation.x = -0.4;
-          rightLegParts.lowerLeg.rotation.x = 0.8;
+          // Right Leg (Low Jump) - more bent
+          rightLegParts.upperLeg.rotation.x = -0.6; // Increased upper leg angle
+          rightLegParts.lowerLeg.rotation.x = 1.2; // Increased lower leg bend
           rightLegParts.upperLeg.rotation.z = -0.1;
           rightLegParts.lowerLeg.rotation.z = 0.1;
           
