@@ -43,6 +43,10 @@ export function createPlayerCharacter(
   const neckHeight = 0.3;
   const headRadius = 0.45;
 
+  const upperBody = new THREE.Group();
+  upperBody.position.y = totalLegHeight;
+
+
   // Head
   const head = new THREE.Group();
 
@@ -78,7 +82,7 @@ export function createPlayerCharacter(
 
   // Torso and Shirt with integrated shoulders
   const torso = new THREE.Group();
-  torso.position.y = totalLegHeight + torsoHeight / 2;
+  torso.position.y = torsoHeight / 2;
 
   const shoulderWidth = isLobby ? 0.7 : 0.55; // Wider in lobby, closer in game
   const waistWidth = 0.4;
@@ -167,7 +171,7 @@ export function createPlayerCharacter(
   const neckMesh = new THREE.Mesh(neckGeo, skinMaterial);
   neck.add(neckMesh);
   // Position neck on top of the torso's neck flat
-  neck.position.y = totalLegHeight + torsoHeight;
+  neck.position.y = torsoHeight;
   
   // Add lateral collar pieces
   const collarPieceGeo = new THREE.BoxGeometry(0.1, neckHeight, 0.25);
@@ -270,10 +274,10 @@ export function createPlayerCharacter(
   }
 
   const leftLeg = createLeg();
-  leftLeg.position.set(0.22, legHeight + shoeHeight, 0);
+  leftLeg.position.set(0.22, legHeight + shoeHeight, -0.2);
   
   const rightLeg = createLeg();
-  rightLeg.position.set(-0.22, legHeight + shoeHeight, 0);
+  rightLeg.position.set(-0.22, legHeight + shoeHeight, -0.2);
 
 
   // --- Arms ---
@@ -327,11 +331,11 @@ export function createPlayerCharacter(
   }
   
   const leftArmGroup = createArm(true);
-  leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY + armYOffset, 0);
+  leftArmGroup.position.set(shoulderWidth, torsoHeight + armYOffset, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
   
   const rightArmGroup = createArm(false);
-  rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY + armYOffset, 0);
+  rightArmGroup.position.set(-shoulderWidth, torsoHeight + armYOffset, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 
   // Belt & Holster
@@ -374,14 +378,12 @@ export function createPlayerCharacter(
   hilt.rotation.x = Math.PI / 4;
   holster.add(hilt);
 
+  upperBody.add(head, torso, neck, leftArmGroup, rightArmGroup);
+  
   character.add(
-    head,
-    torso,
-    neck,
+    upperBody,
     leftLeg,
     rightLeg,
-    leftArmGroup,
-    rightArmGroup,
     beltGroup
   );
   // Re-position head to be on top of the neck
@@ -392,6 +394,7 @@ export function createPlayerCharacter(
   character.userData.parts = {
     head: head,
     torso: torso,
+    upperBody: upperBody,
     leftArm: leftArmGroup,
     rightArm: rightArmGroup,
     leftLeg: leftLeg,
