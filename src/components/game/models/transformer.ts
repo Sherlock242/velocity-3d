@@ -172,10 +172,11 @@ export function updateTransformerAnimation(
           rightLegParts.upperLeg.rotation.z = -0.2; // upper leg outward
           rightLegParts.lowerLeg.rotation.z = 0.2; // lower leg inward
           
-          leftArmParts.upperArm.rotation.x = 0.5;
-          leftArmParts.lowerArm.rotation.x = -0.5;
-          rightArmParts.upperArm.rotation.x = 0.5;
-          rightArmParts.lowerArm.rotation.x = -0.5;
+          // Set jumping arm animation
+          leftArmParts.upperArm.rotation.x = 0.5; // Upper arm forward
+          leftArmParts.lowerArm.rotation.x = -1.5; // Lower arm back
+          rightArmParts.upperArm.rotation.x = 0.5; // Upper arm forward
+          rightArmParts.lowerArm.rotation.x = -1.5; // Lower arm back
         }
       }
   }
