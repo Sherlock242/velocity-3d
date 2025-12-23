@@ -12,9 +12,9 @@ export function createSimpleHouse() {
     const roofColor = new THREE.Color(Math.random() * 0xffffff);
     const roofMaterial = new THREE.MeshStandardMaterial({ color: roofColor });
 
-    const houseWidth = 20 + Math.random() * 10;
-    const houseHeight = 15 + Math.random() * 5;
-    const houseDepth = 20 + Math.random() * 10;
+    const houseWidth = 20;
+    const houseHeight = 15;
+    const houseDepth = 20;
 
     // Body
     const bodyGeom = new THREE.BoxGeometry(houseWidth, houseHeight, houseDepth);
