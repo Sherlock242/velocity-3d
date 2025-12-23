@@ -95,17 +95,35 @@ export function createPlayerCharacter(
   const torsoDepth = armRadius * 2;
 
   const torsoShape = new THREE.Shape();
-  // Start from bottom center
-  torsoShape.moveTo(-waistWidth, -torsoHeight / 2); // Bottom left
-  torsoShape.lineTo(waistWidth, -torsoHeight / 2); // Bottom right
-  torsoShape.lineTo(shoulderWidth, shoulderY); // Right shoulder point
-  torsoShape.lineTo(neckWidth, neckY); // Right neck point
+  const curveHandleOffset = 0.2;
+  
+  // Start from bottom-left
+  torsoShape.moveTo(-waistWidth, -torsoHeight / 2);
+  
+  // Bottom edge
+  torsoShape.lineTo(waistWidth, -torsoHeight / 2);
+  
+  // Right side curve (waist to shoulder)
+  torsoShape.quadraticCurveTo(
+    waistWidth + curveHandleOffset, -torsoHeight / 4,
+    shoulderWidth, shoulderY
+  );
+  
+  // Right shoulder to neck
+  torsoShape.lineTo(neckWidth, neckY);
   
   // Curved neckline
-  torsoShape.quadraticCurveTo(0, neckY - 0.1, -neckWidth, neckY); // Curve instead of straight line
-
-  torsoShape.lineTo(-shoulderWidth, shoulderY); // Left shoulder point
-  torsoShape.closePath();
+  torsoShape.quadraticCurveTo(0, neckY - 0.1, -neckWidth, neckY);
+  
+  // Left shoulder to neck
+  torsoShape.lineTo(-shoulderWidth, shoulderY);
+  
+  // Left side curve (shoulder to waist)
+  torsoShape.quadraticCurveTo(
+    -waistWidth - curveHandleOffset, -torsoHeight / 4,
+    -waistWidth, -torsoHeight / 2
+  );
+  
 
   const torsoExtrudeSettings = {
     steps: 1,
