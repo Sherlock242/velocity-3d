@@ -101,7 +101,7 @@ export function updateTransformerAnimation(
         const rightArmParts = personParts.rightArm.userData;
 
         if (onGround) {
-          if (speed > 0.1) {
+          if (speed > 19.4) {
             // Walking/Running animation
             const isRunning = speed > 20; // Greater than walking speed (70kmh is ~19.4 m/s)
             const animSpeed = isRunning ? 15 : 10;
@@ -113,11 +113,7 @@ export function updateTransformerAnimation(
             const torsoLean = isRunning ? 0.2 : 0;
 
             personParts.upperBody.rotation.x = torsoLean;
-            personParts.upperBody.position.y = totalLegHeight - torsoLean * 2.5;
 
-            if (personParts.belt) {
-              personParts.belt.rotation.x = torsoLean;
-            }
             personParts.leftLeg.rotation.x = torsoLean;
             personParts.rightLeg.rotation.x = torsoLean;
 
@@ -142,10 +138,6 @@ export function updateTransformerAnimation(
           } else {
             // Idle on ground
             personParts.upperBody.rotation.x = 0;
-            personParts.upperBody.position.y = totalLegHeight;
-            if (personParts.belt) {
-              personParts.belt.rotation.x = 0;
-            }
             personParts.leftLeg.rotation.x = 0;
             personParts.rightLeg.rotation.x = 0;
             leftLegParts.upperLeg.rotation.x = 0;
@@ -165,10 +157,6 @@ export function updateTransformerAnimation(
         } else {
           // Jumping animation
           personParts.upperBody.rotation.x = 0;
-          personParts.upperBody.position.y = totalLegHeight;
-          if (personParts.belt) {
-            personParts.belt.rotation.x = 0;
-          }
           personParts.leftLeg.rotation.x = 0;
           personParts.rightLeg.rotation.x = 0;
           leftLegParts.upperLeg.rotation.x = -0.4; // Knees bent up

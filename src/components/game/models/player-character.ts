@@ -340,7 +340,7 @@ export function createPlayerCharacter(
 
   // Belt & Holster
   const beltGroup = new THREE.Group();
-  beltGroup.position.y = totalLegHeight;
+  beltGroup.position.y = 0; // Position relative to upperBody
   const beltGeo = new THREE.BoxGeometry(
     waistWidth * 2 + 0.05,
     0.25,
@@ -378,13 +378,12 @@ export function createPlayerCharacter(
   hilt.rotation.x = Math.PI / 4;
   holster.add(hilt);
 
-  upperBody.add(head, torso, neck, leftArmGroup, rightArmGroup);
+  upperBody.add(head, torso, neck, leftArmGroup, rightArmGroup, beltGroup);
   
   character.add(
     upperBody,
     leftLeg,
-    rightLeg,
-    beltGroup
+    rightLeg
   );
   // Re-position head to be on top of the neck
   head.position.y = neck.position.y + neckHeight / 2 + headHeight / 2 + 0.2;
@@ -399,7 +398,6 @@ export function createPlayerCharacter(
     rightArm: rightArmGroup,
     leftLeg: leftLeg,
     rightLeg: rightLeg,
-    belt: beltGroup,
     upperLeftArm: leftArmGroup.userData.upperArm,
     lowerLeftArm: leftArmGroup.userData.lowerArm,
     upperRightArm: rightArmGroup.userData.upperArm,
