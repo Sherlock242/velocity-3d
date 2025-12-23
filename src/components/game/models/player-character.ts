@@ -35,7 +35,9 @@ export function createPlayerCharacter(
 
   const headHeight = 0.5;
   const torsoHeight = 1.8;
-  const legHeight = 2.8;
+  const upperLegHeight = 1.4;
+  const lowerLegHeight = 1.4;
+  const legHeight = upperLegHeight + lowerLegHeight;
   const shoeHeight = 0.3;
   const totalLegHeight = legHeight + shoeHeight;
   const neckHeight = 0.3;
@@ -183,26 +185,43 @@ export function createPlayerCharacter(
   backCollarPiece.position.z = -0.15;
   neck.add(backCollarPiece);
 
-
-  // Legs and Pants (Tapered)
+  // --- Legs ---
   const legTopRadius = 0.25;
   const legBottomRadius = 0.18;
-  const legGeo = new THREE.CylinderGeometry(
-    legTopRadius,
-    legBottomRadius,
-    legHeight,
-    8
-  );
+  const kneeRadius = 0.2;
 
-  const leftLeg = new THREE.Group();
-  const leftLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
-  leftLeg.add(leftLegMesh);
-  leftLeg.position.set(0.22, legHeight / 2 + shoeHeight, 0);
+  const createLeg = () => {
+    const legGroup = new THREE.Group();
+    const upperLeg = new THREE.Group();
+    const lowerLeg = new THREE.Group();
 
-  const rightLeg = new THREE.Group();
-  const rightLegMesh = new THREE.Mesh(legGeo, pantsMaterial);
-  rightLeg.add(rightLegMesh);
-  rightLeg.position.set(-0.22, legHeight / 2 + shoeHeight, 0);
+    const upperLegGeo = new THREE.CylinderGeometry(legTopRadius, kneeRadius, upperLegHeight, 8);
+    const upperLegMesh = new THREE.Mesh(upperLegGeo, pantsMaterial);
+    upperLegMesh.position.y = -upperLegHeight / 2;
+    upperLeg.add(upperLegMesh);
+
+    const kneeGeo = new THREE.SphereGeometry(kneeRadius, 8, 6);
+    const kneeMesh = new THREE.Mesh(kneeGeo, pantsMaterial);
+    lowerLeg.add(kneeMesh);
+
+    const lowerLegGeo = new THREE.CylinderGeometry(kneeRadius, legBottomRadius, lowerLegHeight, 8);
+    const lowerLegMesh = new THREE.Mesh(lowerLegGeo, pantsMaterial);
+    lowerLegMesh.position.y = -lowerLegHeight / 2;
+    lowerLeg.add(lowerLegMesh);
+    
+    lowerLeg.position.y = -upperLegHeight;
+
+    legGroup.add(upperLeg, lowerLeg);
+    legGroup.userData = { upperLeg, lowerLeg };
+    return legGroup;
+  }
+
+  const leftLeg = createLeg();
+  leftLeg.position.set(0.22, legHeight + shoeHeight, 0);
+  
+  const rightLeg = createLeg();
+  rightLeg.position.set(-0.22, legHeight + shoeHeight, 0);
+
 
   // Helper function to create a boot
   const createBoot = () => {
@@ -251,11 +270,11 @@ export function createPlayerCharacter(
   };
 
   const leftBoot = createBoot();
-  leftBoot.position.y = -legHeight / 2;
+  leftBoot.position.y = -legHeight;
   leftLeg.add(leftBoot);
 
   const rightBoot = createBoot();
-  rightBoot.position.y = -legHeight / 2;
+  rightBoot.position.y = -legHeight;
   rightLeg.add(rightBoot);
 
   // Arms (Slimmer)

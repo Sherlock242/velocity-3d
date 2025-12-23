@@ -82,37 +82,48 @@ export function updateTransformerAnimation(
       const carWheels = carModel.userData.parts.wheels;
       const lLegCarPos = carWheels[2].position.clone();
       const waistWidth = 0.22;
-      const lLegPersonPos = new THREE.Vector3(waistWidth, legHeight / 2 + shoeHeight, 0);
+      const lLegPersonPos = new THREE.Vector3(waistWidth, legHeight + shoeHeight, 0);
       personParts.leftLeg.position.lerpVectors(lLegCarPos, lLegPersonPos, p);
 
       const rLegCarPos = carWheels[3].position.clone();
-      const rLegPersonPos = new THREE.Vector3(-waistWidth, legHeight / 2 + shoeHeight, 0);
+      const rLegPersonPos = new THREE.Vector3(-waistWidth, legHeight + shoeHeight, 0);
       personParts.rightLeg.position.lerpVectors(rLegCarPos, rLegPersonPos, p);
       
       personModel.position.y = THREE.MathUtils.lerp(0, -totalLegHeight, p);
 
       if (p >= 1) { // Only animate if fully transformed
+        const leftLegParts = personParts.leftLeg.userData;
+        const rightLegParts = personParts.rightLeg.userData;
+
         if (onGround) {
           if (speed > 0.1) {
             // Walking animation
             const walkSpeed = 10;
             const walkAmount = Math.sin(time * walkSpeed);
-            personParts.leftLeg.rotation.x = walkAmount * 0.5;
-            personParts.rightLeg.rotation.x = -walkAmount * 0.5;
+            leftLegParts.upperLeg.rotation.x = walkAmount * 0.5;
+            leftLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * 0.7); // Bend knee forward
+            rightLegParts.upperLeg.rotation.x = -walkAmount * 0.5;
+            rightLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * 0.7);
+
             personParts.leftArm.rotation.x = -walkAmount * 0.4;
             personParts.rightArm.rotation.x = walkAmount * 0.4;
           } else {
             // Idle on ground
-            personParts.leftLeg.rotation.x = 0;
-            personParts.rightLeg.rotation.x = 0;
+            leftLegParts.upperLeg.rotation.x = 0;
+            leftLegParts.lowerLeg.rotation.x = 0;
+            rightLegParts.upperLeg.rotation.x = 0;
+            rightLegParts.lowerLeg.rotation.x = 0;
             personParts.leftArm.rotation.x = 0;
             personParts.rightArm.rotation.x = 0;
           }
         } else {
           // Jumping animation
           const jumpPose = 0.5; // legs bent back
-          personParts.leftLeg.rotation.x = jumpPose;
-          personParts.rightLeg.rotation.x = jumpPose;
+          leftLegParts.upperLeg.rotation.x = jumpPose;
+          leftLegParts.lowerLeg.rotation.x = 0.5;
+          rightLegParts.upperLeg.rotation.x = jumpPose;
+          rightLegParts.lowerLeg.rotation.x = 0.5;
+          
           personParts.leftArm.rotation.x = -jumpPose * 0.5;
           personParts.rightArm.rotation.x = -jumpPose * 0.5;
         }
