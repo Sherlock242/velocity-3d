@@ -290,7 +290,7 @@ export function createPlayerCharacter(
   const elbowRadius = 0.15;
   const armTopRadius = 0.18;
   const armBottomRadius = 0.14;
-  const armYOffset = -0.2;
+  const armYOffset = -0.25;
 
   const createArm = (isLeft: boolean) => {
     const armGroup = new THREE.Group();
