@@ -95,6 +95,8 @@ export function updateTransformerAnimation(
       if (p >= 1) { // Only animate if fully transformed
         const leftLegParts = personParts.leftLeg.userData;
         const rightLegParts = personParts.rightLeg.userData;
+        const leftArmParts = personParts.leftArm.userData;
+        const rightArmParts = personParts.rightArm.userData;
 
         if (onGround) {
           if (speed > 0.1) {
@@ -110,8 +112,12 @@ export function updateTransformerAnimation(
             rightLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * 0.7);
             rightLegParts.lowerLeg.rotation.z = 0; // Reset jump rotation
 
-            personParts.leftArm.rotation.x = -walkAmount * 0.4;
-            personParts.rightArm.rotation.x = walkAmount * 0.4;
+            // Arm animation
+            leftArmParts.upperArm.rotation.x = -walkAmount * 0.4;
+            leftArmParts.lowerArm.rotation.x = -walkAmount * 0.2;
+            rightArmParts.upperArm.rotation.x = walkAmount * 0.4;
+            rightArmParts.lowerArm.rotation.x = walkAmount * 0.2;
+
           } else {
             // Idle on ground
             leftLegParts.upperLeg.rotation.x = 0;
@@ -122,8 +128,11 @@ export function updateTransformerAnimation(
             rightLegParts.upperLeg.rotation.z = 0;
             rightLegParts.lowerLeg.rotation.x = 0;
             rightLegParts.lowerLeg.rotation.z = 0;
-            personParts.leftArm.rotation.x = 0;
-            personParts.rightArm.rotation.x = 0;
+            
+            leftArmParts.upperArm.rotation.x = 0;
+            leftArmParts.lowerArm.rotation.x = 0;
+            rightArmParts.upperArm.rotation.x = 0;
+            rightArmParts.lowerArm.rotation.x = 0;
           }
         } else {
           // Jumping animation
@@ -133,13 +142,15 @@ export function updateTransformerAnimation(
           rightLegParts.lowerLeg.rotation.x = 0.8;
 
           // Apply rotation on Z-axis for outward/inward movement
-          leftLegParts.upperLeg.rotation.z = -0.2; // upper leg outward
-          leftLegParts.lowerLeg.rotation.z = 0.4;  // lower leg inward
-          rightLegParts.upperLeg.rotation.z = 0.2; // upper leg outward
-          rightLegParts.lowerLeg.rotation.z = -0.4; // lower leg inward
+          leftLegParts.upperLeg.rotation.z = 0.2; // upper leg outward
+          leftLegParts.lowerLeg.rotation.z = -0.4;  // lower leg inward
+          rightLegParts.upperLeg.rotation.z = -0.2; // upper leg outward
+          rightLegParts.lowerLeg.rotation.z = 0.4; // lower leg inward
           
-          personParts.leftArm.rotation.x = -0.2;
-          personParts.rightArm.rotation.x = -0.2;
+          leftArmParts.upperArm.rotation.x = 0.5;
+          leftArmParts.lowerArm.rotation.x = -0.5;
+          rightArmParts.upperArm.rotation.x = 0.5;
+          rightArmParts.lowerArm.rotation.x = -0.5;
         }
       }
   }

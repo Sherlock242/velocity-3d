@@ -276,63 +276,61 @@ export function createPlayerCharacter(
   rightLeg.position.set(-0.22, legHeight + shoeHeight, 0);
 
 
-  // Arms (Slimmer)
-  const armLength = 1.3;
-  const armYOffset = -0.15; // Lower the arms slightly
+  // --- Arms ---
+  const upperArmHeight = 0.8;
+  const lowerArmHeight = 0.8;
+  const armLength = upperArmHeight + lowerArmHeight;
+  const elbowRadius = 0.15;
+  const armTopRadius = 0.18;
+  const armBottomRadius = 0.14;
+  const armYOffset = -0.15;
+
+  const createArm = (isLeft: boolean) => {
+    const armGroup = new THREE.Group();
+    const upperArm = new THREE.Group();
+    const lowerArm = new THREE.Group();
+
+    const shoulderCapGeom = new THREE.SphereGeometry(0.2, 16, 8);
+    shoulderCapGeom.scale(1, 0.6, 1);
+    const shoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
+    shoulderCap.position.y = 0.1;
+    upperArm.add(shoulderCap);
+
+    const upperArmGeo = new THREE.CylinderGeometry(armTopRadius, elbowRadius, upperArmHeight, 8);
+    const upperArmMesh = new THREE.Mesh(upperArmGeo, shirtMaterial);
+    upperArmMesh.position.y = -upperArmHeight / 2;
+    upperArm.add(upperArmMesh);
+
+    const elbowGeo = new THREE.SphereGeometry(elbowRadius, 8, 6);
+    const elbowMesh = new THREE.Mesh(elbowGeo, skinMaterial);
+    lowerArm.add(elbowMesh);
+
+    const lowerArmGeo = new THREE.CylinderGeometry(elbowRadius, armBottomRadius, lowerArmHeight, 8);
+    const lowerArmMesh = new THREE.Mesh(lowerArmGeo, skinMaterial);
+    lowerArmMesh.position.y = -lowerArmHeight / 2;
+    lowerArm.add(lowerArmMesh);
+
+    const hand = new THREE.Mesh(
+      new THREE.BoxGeometry(0.25, 0.3, 0.1),
+      skinMaterial
+    );
+    hand.position.y = -lowerArmHeight - 0.15;
+    hand.rotation.z = isLeft ? Math.PI / 8 : -Math.PI / 8;
+    lowerArm.add(hand);
+
+    lowerArm.position.y = -upperArmHeight;
+
+    upperArm.add(lowerArm);
+    armGroup.add(upperArm);
+    armGroup.userData = { upperArm, lowerArm };
+    return armGroup;
+  }
   
-  const shoulderCapGeom = new THREE.SphereGeometry(0.2, 16, 8);
-  shoulderCapGeom.scale(1, 0.6, 1); // Flatten the sphere to make a cap
-  
-  // Left Arm (rolled up sleeve)
-  const leftArmGroup = new THREE.Group();
-  
-  const leftArm = new THREE.Mesh(
-    new THREE.CylinderGeometry(armRadius, armRadius * 0.9, armLength, 8),
-    shirtMaterial
-  );
-  leftArm.position.y = -armLength / 2;
-
-  const leftHand = new THREE.Mesh(
-    new THREE.BoxGeometry(0.25, 0.3, 0.1),
-    skinMaterial
-  );
-  // Position hand at the end of the forearm
-  leftHand.position.y = -armLength / 2 - 0.15;
-  leftHand.rotation.z = Math.PI / 8;
-
-  const leftShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
-  leftShoulderCap.position.y = 0.1;
-  leftArmGroup.add(leftShoulderCap);
-
-  leftArm.add(leftHand); // Attach hand to forearm
-  leftArmGroup.add(leftArm);
-
-
+  const leftArmGroup = createArm(true);
   leftArmGroup.position.set(shoulderWidth, torso.position.y + shoulderY + armYOffset, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
   
-  // Right Arm (with armor)
-  const rightArmGroup = new THREE.Group();
-  
-  const rightArm = new THREE.Mesh(
-    new THREE.CylinderGeometry(armRadius, armRadius * 0.9, armLength, 8),
-    shirtMaterial
-  );
-  rightArm.position.y = -armLength / 2;
-
-  const rightHand = new THREE.Mesh(
-    new THREE.BoxGeometry(0.25, 0.3, 0.1),
-    skinMaterial
-  );
-  rightHand.position.y = -armLength / 2 - 0.15;
-  rightArm.add(rightHand);
-  
-  rightArmGroup.add(rightArm);
-  
-  const rightShoulderCap = new THREE.Mesh(shoulderCapGeom, shirtMaterial);
-  rightShoulderCap.position.y = 0.1;
-  rightArmGroup.add(rightShoulderCap);
-
+  const rightArmGroup = createArm(false);
   rightArmGroup.position.set(-shoulderWidth, torso.position.y + shoulderY + armYOffset, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 
@@ -398,6 +396,10 @@ export function createPlayerCharacter(
     rightArm: rightArmGroup,
     leftLeg: leftLeg,
     rightLeg: rightLeg,
+    upperLeftArm: leftArmGroup.userData.upperArm,
+    lowerLeftArm: leftArmGroup.userData.lowerArm,
+    upperRightArm: rightArmGroup.userData.upperArm,
+    lowerRightArm: rightArmGroup.userData.lowerArm,
   };
 
   return character;
