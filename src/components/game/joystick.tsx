@@ -13,7 +13,7 @@ type JoystickProps = {
 const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const knobRef = React.useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = React.useState(false);
+  const isDraggingRef = React.useRef(false);
   const touchIdRef = React.useRef<number | null>(null);
 
   const handleMove = React.useCallback(
@@ -61,7 +61,7 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
 
   const handleEnd = React.useCallback(() => {
     if (!knobRef.current) return;
-    setIsDragging(false);
+    isDraggingRef.current = false;
     touchIdRef.current = null;
     knobRef.current.style.transform = 'translate(0, 0)';
     onEnd();
@@ -69,24 +69,26 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
 
   // Mouse Events
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsDragging(true);
+    isDraggingRef.current = true;
     handleMove(e.clientX, e.clientY);
-  };
 
-  const handleMouseMove = React.useCallback(
-    (e: MouseEvent) => {
-      if (isDragging) {
-        handleMove(e.clientX, e.clientY);
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      if (isDraggingRef.current) {
+        handleMove(moveEvent.clientX, moveEvent.clientY);
       }
-    },
-    [isDragging, handleMove]
-  );
+    };
 
-  const handleMouseUp = React.useCallback(() => {
-    if (isDragging) {
-      handleEnd();
-    }
-  }, [isDragging, handleEnd]);
+    const onMouseUp = () => {
+      if (isDraggingRef.current) {
+        handleEnd();
+      }
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
 
   // Touch Events
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -94,61 +96,42 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
     const touch = e.changedTouches[0];
     if (touch && touchIdRef.current === null) {
       touchIdRef.current = touch.identifier;
-      setIsDragging(true);
+      isDraggingRef.current = true;
       handleMove(touch.clientX, touch.clientY);
+
+      const onTouchMove = (moveEvent: TouchEvent) => {
+        if (isDraggingRef.current) {
+          for (let i = 0; i < moveEvent.changedTouches.length; i++) {
+            const currentTouch = moveEvent.changedTouches[i];
+            if (currentTouch.identifier === touchIdRef.current) {
+              moveEvent.preventDefault();
+              handleMove(currentTouch.clientX, currentTouch.clientY);
+              break;
+            }
+          }
+        }
+      };
+
+      const onTouchEnd = (endEvent: TouchEvent) => {
+        if (isDraggingRef.current) {
+          for (let i = 0; i < endEvent.changedTouches.length; i++) {
+            const currentTouch = endEvent.changedTouches[i];
+            if (currentTouch.identifier === touchIdRef.current) {
+              handleEnd();
+              break;
+            }
+          }
+        }
+        window.removeEventListener('touchmove', onTouchMove);
+        window.removeEventListener('touchend', onTouchEnd);
+        window.removeEventListener('touchcancel', onTouchEnd);
+      };
+
+      window.addEventListener('touchmove', onTouchMove, { passive: false });
+      window.addEventListener('touchend', onTouchEnd);
+      window.addEventListener('touchcancel', onTouchEnd);
     }
   };
-
-  const handleTouchMove = React.useCallback(
-    (e: TouchEvent) => {
-      if (isDragging) {
-        for (let i = 0; i < e.changedTouches.length; i++) {
-          const touch = e.changedTouches[i];
-          if (touch.identifier === touchIdRef.current) {
-            e.preventDefault();
-            handleMove(touch.clientX, touch.clientY);
-            break;
-          }
-        }
-      }
-    },
-    [isDragging, handleMove]
-  );
-
-  const handleTouchEnd = React.useCallback(
-    (e: TouchEvent) => {
-      if (isDragging) {
-        for (let i = 0; i < e.changedTouches.length; i++) {
-          const touch = e.changedTouches[i];
-          if (touch.identifier === touchIdRef.current) {
-            handleEnd();
-            break;
-          }
-        }
-      }
-    },
-    [isDragging, handleEnd]
-  );
-
-  React.useEffect(() => {
-    const currentContainer = containerRef.current;
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      // Use window for move/end to handle dragging outside the element
-      window.addEventListener('touchmove', handleTouchMove, { passive: false });
-      window.addEventListener('touchend', handleTouchEnd);
-      window.addEventListener('touchcancel', handleTouchEnd);
-    }
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('touchcancel', handleTouchEnd);
-    };
-  }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
   return (
     <div
