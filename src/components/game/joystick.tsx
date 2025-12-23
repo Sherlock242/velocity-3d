@@ -156,5 +156,3 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
 };
 
 export default Joystick;
-
-    
