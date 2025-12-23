@@ -143,9 +143,9 @@ export function updateTransformerAnimation(
 
           // Apply rotation on Z-axis for outward/inward movement
           leftLegParts.upperLeg.rotation.z = 0.2; // upper leg outward
-          leftLegParts.lowerLeg.rotation.z = -0.4;  // lower leg inward
+          leftLegParts.lowerLeg.rotation.z = -0.2;  // lower leg inward
           rightLegParts.upperLeg.rotation.z = -0.2; // upper leg outward
-          rightLegParts.lowerLeg.rotation.z = 0.4; // lower leg inward
+          rightLegParts.lowerLeg.rotation.z = 0.2; // lower leg inward
           
           leftArmParts.upperArm.rotation.x = 0.5;
           leftArmParts.lowerArm.rotation.x = -0.5;
