@@ -84,7 +84,7 @@ export function createPlayerCharacter(
   const torso = new THREE.Group();
   torso.position.y = torsoHeight / 2;
 
-  const shoulderWidth = 0.55;
+  const shoulderWidth = 0.6;
   const waistWidth = 0.4;
   const shoulderY = torsoHeight / 2 - 0.2; // Y position of the shoulder peak
   const neckY = torsoHeight / 2;
@@ -287,7 +287,7 @@ export function createPlayerCharacter(
   const elbowRadius = 0.15;
   const armTopRadius = 0.18;
   const armBottomRadius = 0.14;
-  const armYOffset = -0.15;
+  const armYOffset = -0.2;
 
   const createArm = (isLeft: boolean) => {
     const armGroup = new THREE.Group();
