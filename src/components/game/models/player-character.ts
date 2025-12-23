@@ -274,10 +274,10 @@ export function createPlayerCharacter(
   }
 
   const leftLeg = createLeg();
-  leftLeg.position.set(0.22, legHeight + shoeHeight, 0);
+  leftLeg.position.set(0.22, legHeight + shoeHeight, 0.1);
   
   const rightLeg = createLeg();
-  rightLeg.position.set(-0.22, legHeight + shoeHeight, 0);
+  rightLeg.position.set(-0.22, legHeight + shoeHeight, 0.1);
 
 
   // --- Arms ---
@@ -399,6 +399,7 @@ export function createPlayerCharacter(
     rightArm: rightArmGroup,
     leftLeg: leftLeg,
     rightLeg: rightLeg,
+    belt: beltGroup,
     upperLeftArm: leftArmGroup.userData.upperArm,
     lowerLeftArm: leftArmGroup.userData.lowerArm,
     upperRightArm: rightArmGroup.userData.upperArm,

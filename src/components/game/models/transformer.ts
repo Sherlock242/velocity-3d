@@ -115,6 +115,12 @@ export function updateTransformerAnimation(
             personParts.upperBody.rotation.x = torsoLean;
             personParts.upperBody.position.y = totalLegHeight - torsoLean * 2.5;
 
+            if (personParts.belt) {
+              personParts.belt.rotation.x = torsoLean;
+            }
+            personParts.leftLeg.rotation.x = torsoLean;
+            personParts.rightLeg.rotation.x = torsoLean;
+
 
             // Leg animation
             leftLegParts.upperLeg.rotation.x = animAmount * legSwing;
@@ -137,6 +143,11 @@ export function updateTransformerAnimation(
             // Idle on ground
             personParts.upperBody.rotation.x = 0;
             personParts.upperBody.position.y = totalLegHeight;
+            if (personParts.belt) {
+              personParts.belt.rotation.x = 0;
+            }
+            personParts.leftLeg.rotation.x = 0;
+            personParts.rightLeg.rotation.x = 0;
             leftLegParts.upperLeg.rotation.x = 0;
             leftLegParts.upperLeg.rotation.z = 0;
             leftLegParts.lowerLeg.rotation.x = 0;
@@ -155,6 +166,11 @@ export function updateTransformerAnimation(
           // Jumping animation
           personParts.upperBody.rotation.x = 0;
           personParts.upperBody.position.y = totalLegHeight;
+          if (personParts.belt) {
+            personParts.belt.rotation.x = 0;
+          }
+          personParts.leftLeg.rotation.x = 0;
+          personParts.rightLeg.rotation.x = 0;
           leftLegParts.upperLeg.rotation.x = -0.4; // Knees bent up
           leftLegParts.lowerLeg.rotation.x = 0.8; // Lower leg bent back
           rightLegParts.upperLeg.rotation.x = -0.4;
