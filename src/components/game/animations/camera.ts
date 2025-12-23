@@ -24,7 +24,7 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
         if (controlModeRef.current === 'car') {
             combinedTheta = theta + playerRef.current.rotation.y;
         } else {
-            combinedTheta = theta + Math.PI * 1.5;
+            combinedTheta = theta + Math.PI / 2;
         }
 
         const offset = new THREE.Vector3().setFromSphericalCoords(radius, phi, combinedTheta);
