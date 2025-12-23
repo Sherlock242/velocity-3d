@@ -30,10 +30,10 @@ export function updatePersonMovement(gameState: GameState, delta: number, camera
         moveDirection.sub(cameraDirection);
     }
     if (inputRef.current.left) {
-        moveDirection.add(cameraRight);
+        moveDirection.sub(cameraRight);
     }
     if (inputRef.current.right) {
-        moveDirection.sub(cameraRight);
+        moveDirection.add(cameraRight);
     }
 
     if (moveDirection.lengthSq() > 0) {
