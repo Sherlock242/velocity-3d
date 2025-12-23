@@ -84,7 +84,7 @@ export function createPlayerCharacter(
   const torso = new THREE.Group();
   torso.position.y = torsoHeight / 2;
 
-  const shoulderWidth = 0.6;
+  const shoulderWidth = isLobby ? 0.7 : 0.65;
   const waistWidth = 0.4;
   const shoulderY = torsoHeight / 2 - 0.2; // Y position of the shoulder peak
   const neckY = torsoHeight / 2;
@@ -273,11 +273,12 @@ export function createPlayerCharacter(
     return legGroup;
   }
 
+  const legXPosition = isLobby ? 0.25 : 0.22;
   const leftLeg = createLeg();
-  leftLeg.position.set(0.22, legHeight + shoeHeight, 0.1);
+  leftLeg.position.set(legXPosition, legHeight + shoeHeight, 0.1);
   
   const rightLeg = createLeg();
-  rightLeg.position.set(-0.22, legHeight + shoeHeight, 0.1);
+  rightLeg.position.set(-legXPosition, legHeight + shoeHeight, 0.1);
 
 
   // --- Arms ---
@@ -287,7 +288,7 @@ export function createPlayerCharacter(
   const elbowRadius = 0.15;
   const armTopRadius = 0.18;
   const armBottomRadius = 0.14;
-  const armYOffset = -0.2;
+  const armYOffset = -0.25;
 
   const createArm = (isLeft: boolean) => {
     const armGroup = new THREE.Group();
@@ -406,3 +407,5 @@ export function createPlayerCharacter(
 
   return character;
 }
+
+    
