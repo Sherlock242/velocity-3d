@@ -11,7 +11,9 @@ export function updatePersonMovement(gameState: GameState, delta: number, camera
     if (!playerRef.current) return;
 
     const personTurnSpeed = 8;
-    const maxPersonSpeed = 19.44; // 70 km/h in m/s
+    const maxWalkSpeed = 19.44; // 70 km/h in m/s
+    const maxRunSpeed = 27.78; // 100 km/h in m/s
+    const maxPersonSpeed = inputRef.current.isRunning ? maxRunSpeed : maxWalkSpeed;
 
     // Get camera direction
     const cameraDirection = new THREE.Vector3();

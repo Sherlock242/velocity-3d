@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ArrowLeft, ArrowRight, ChevronUp, Zap, ToyBrick, Car, X, Cog, ArrowUp } from 'lucide-react';
@@ -28,6 +29,8 @@ type HudProps = {
   onSteerRightRelease: () => void;
   onJumpPress: () => void;
   onJumpRelease: () => void;
+  onRunPress: () => void;
+  onRunRelease: () => void;
   isTopDownView: boolean;
   onExitTopDownView: () => void;
 };
@@ -53,6 +56,8 @@ export default function Hud({
   onSteerRightRelease,
   onJumpPress,
   onJumpRelease,
+  onRunPress,
+  onRunRelease,
   isTopDownView,
   onExitTopDownView,
 }: HudProps) {
@@ -197,6 +202,17 @@ export default function Hud({
         <>
           <div className="absolute bottom-4 left-4 pointer-events-auto">
             <Joystick onMove={handleJoystickMove} onEnd={handleJoystickEnd} />
+          </div>
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-auto">
+            <button
+                onMouseDown={onRunPress}
+                onMouseUp={onRunRelease}
+                onTouchStart={onRunPress}
+                onTouchEnd={onRunRelease}
+                className="w-20 h-20 bg-card/50 backdrop-blur-sm border-accent/20 rounded-full flex justify-center items-center text-accent active:bg-accent/20 transition-colors"
+            >
+                <Zap className="w-10 h-10" />
+            </button>
           </div>
           <div className="absolute bottom-4 right-4 flex flex-col items-center gap-4 pointer-events-auto">
             <button

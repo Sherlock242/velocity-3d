@@ -466,6 +466,13 @@ export default function GameWrapper() {
             onJumpRelease={() => {
               gameState.inputRef.current.jump = false;
             }}
+            onRunPress={() => {
+              initAudioOnInteraction(gameState);
+              gameState.inputRef.current.isRunning = true;
+            }}
+            onRunRelease={() => {
+              gameState.inputRef.current.isRunning = false;
+            }}
             isTopDownView={topDownSector !== null}
             onExitTopDownView={() => setTopDownSector(null)}
           />

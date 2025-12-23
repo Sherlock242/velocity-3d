@@ -100,22 +100,29 @@ export function updateTransformerAnimation(
 
         if (onGround) {
           if (speed > 0.1) {
-            // Walking animation
-            const walkSpeed = 10;
-            const walkAmount = Math.sin(time * walkSpeed);
-            leftLegParts.upperLeg.rotation.x = walkAmount * 0.5;
+            // Walking/Running animation
+            const isRunning = speed > 20; // Greater than walking speed (70kmh is ~19.4 m/s)
+            const animSpeed = isRunning ? 15 : 10;
+            const walkAmount = Math.sin(time * animSpeed);
+            const runAmount = Math.sin(time * animSpeed);
+            
+            const legSwing = isRunning ? 0.8 : 0.5;
+            const armSwing = isRunning ? 0.7 : 0.4;
+            const kneeBend = isRunning ? 1.2 : 0.7;
+
+            leftLegParts.upperLeg.rotation.x = walkAmount * legSwing;
             leftLegParts.upperLeg.rotation.z = 0; // Reset jump rotation
-            leftLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * 0.7); // Bend knee forward
+            leftLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * kneeBend); // Bend knee forward
             leftLegParts.lowerLeg.rotation.z = 0; // Reset jump rotation
-            rightLegParts.upperLeg.rotation.x = -walkAmount * 0.5;
+            rightLegParts.upperLeg.rotation.x = -walkAmount * legSwing;
             rightLegParts.upperLeg.rotation.z = 0; // Reset jump rotation
-            rightLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * 0.7);
+            rightLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * kneeBend);
             rightLegParts.lowerLeg.rotation.z = 0; // Reset jump rotation
 
             // Arm animation
-            leftArmParts.upperArm.rotation.x = -walkAmount * 0.4;
+            leftArmParts.upperArm.rotation.x = -walkAmount * armSwing;
             leftArmParts.lowerArm.rotation.x = -walkAmount * 0.2;
-            rightArmParts.upperArm.rotation.x = walkAmount * 0.4;
+            rightArmParts.upperArm.rotation.x = walkAmount * armSwing;
             rightArmParts.lowerArm.rotation.x = walkAmount * 0.2;
 
           } else {

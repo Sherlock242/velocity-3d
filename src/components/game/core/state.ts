@@ -28,6 +28,7 @@ export type GameState = {
         left: boolean;
         right: boolean;
         jump: boolean;
+        isRunning: boolean;
     }>;
     wasOffTrackRef: React.MutableRefObject<boolean>;
     penaltyCheckCooldownRef: React.MutableRefObject<boolean>;
@@ -83,6 +84,7 @@ export function useGameState(): GameState {
         left: false,
         right: false,
         jump: false,
+        isRunning: false,
     });
     const wasOffTrackRef = React.useRef(false);
     const penaltyCheckCooldownRef = React.useRef(false);
