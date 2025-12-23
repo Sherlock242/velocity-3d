@@ -177,11 +177,11 @@ export default function GameWrapper() {
         gameState.cameraOrbitRef.current.theta -= deltaX * 0.005;
         gameState.cameraOrbitRef.current.phi -= deltaY * 0.005;
 
-        // Clamp phi to prevent camera flipping
+        // Clamp phi to prevent camera flipping below ground or too high
         gameState.cameraOrbitRef.current.phi = THREE.MathUtils.clamp(
             gameState.cameraOrbitRef.current.phi,
-            0.1,
-            Math.PI - 0.1
+            0.5,
+            Math.PI / 2
         );
 
         previousMousePosition = { x: event.clientX, y: event.clientY };
@@ -208,11 +208,11 @@ export default function GameWrapper() {
       gameState.cameraOrbitRef.current.theta -= deltaX * 0.01;
       gameState.cameraOrbitRef.current.phi -= deltaY * 0.01;
 
-      // Clamp phi to prevent camera flipping
+      // Clamp phi to prevent camera flipping below ground or too high
       gameState.cameraOrbitRef.current.phi = THREE.MathUtils.clamp(
         gameState.cameraOrbitRef.current.phi,
-        0.1,
-        Math.PI - 0.1
+        0.5,
+        Math.PI / 2
       );
 
       previousTouch = touch;
