@@ -59,24 +59,24 @@ export default function Hud({
 
   const handleJoystickMove = (x: number, y: number) => {
     // Forward/Backward
-    if (y > 0.1) {
+    if (y > 0.01) {
       onAcceleratorPress();
     } else {
       onAcceleratorRelease();
     }
-    if (y < -0.1) {
+    if (y < -0.01) {
       onBrakePress();
     } else {
       onBrakeRelease();
     }
     
     // Left/Right
-    if (x < -0.1) {
+    if (x < -0.01) {
       onSteerLeftPress();
     } else {
       onSteerLeftRelease();
     }
-    if (x > 0.1) {
+    if (x > 0.01) {
       onSteerRightPress();
     } else {
       onSteerRightRelease();
