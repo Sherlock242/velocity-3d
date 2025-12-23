@@ -21,22 +21,30 @@ export function updatePersonMovement(gameState: GameState, delta: number, camera
     cameraDirection.y = 0;
     cameraDirection.normalize();
 
-    const cameraRight = new THREE.Vector3();
-    cameraRight.crossVectors(camera.up, cameraDirection).negate();
-    
     let moveDirection = new THREE.Vector3();
-    if (inputRef.current.forward) {
-        moveDirection.add(cameraDirection);
+
+    if (inputRef.current.isRunning) {
+        // If running, always move forward in the camera's direction
+        moveDirection.copy(cameraDirection);
+    } else {
+        // Otherwise, use joystick input
+        const cameraRight = new THREE.Vector3();
+        cameraRight.crossVectors(camera.up, cameraDirection).negate();
+        
+        if (inputRef.current.forward) {
+            moveDirection.add(cameraDirection);
+        }
+        if (inputRef.current.backward) {
+            moveDirection.sub(cameraDirection);
+        }
+        if (inputRef.current.left) {
+            moveDirection.sub(cameraRight);
+        }
+        if (inputRef.current.right) {
+            moveDirection.add(cameraRight);
+        }
     }
-    if (inputRef.current.backward) {
-        moveDirection.sub(cameraDirection);
-    }
-    if (inputRef.current.left) {
-        moveDirection.sub(cameraRight);
-    }
-    if (inputRef.current.right) {
-        moveDirection.add(cameraRight);
-    }
+
 
     if (moveDirection.lengthSq() > 0) {
         moveDirection.normalize();

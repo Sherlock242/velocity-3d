@@ -103,30 +103,36 @@ export function updateTransformerAnimation(
             // Walking/Running animation
             const isRunning = speed > 20; // Greater than walking speed (70kmh is ~19.4 m/s)
             const animSpeed = isRunning ? 15 : 10;
-            const walkAmount = Math.sin(time * animSpeed);
-            const runAmount = Math.sin(time * animSpeed);
+            const animAmount = Math.sin(time * animSpeed);
             
-            const legSwing = isRunning ? 0.8 : 0.5;
-            const armSwing = isRunning ? 0.7 : 0.4;
-            const kneeBend = isRunning ? 1.2 : 0.7;
+            const legSwing = isRunning ? 1.0 : 0.5;
+            const armSwing = isRunning ? 1.2 : 0.4;
+            const kneeBend = isRunning ? 1.4 : 0.7;
+            const torsoLean = isRunning ? 0.4 : 0;
 
-            leftLegParts.upperLeg.rotation.x = walkAmount * legSwing;
+            personParts.torso.rotation.x = torsoLean;
+
+
+            // Leg animation
+            leftLegParts.upperLeg.rotation.x = animAmount * legSwing;
             leftLegParts.upperLeg.rotation.z = 0; // Reset jump rotation
-            leftLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * kneeBend); // Bend knee forward
+            leftLegParts.lowerLeg.rotation.x = Math.max(0, Math.sin(time * animSpeed + Math.PI/2) * kneeBend);
             leftLegParts.lowerLeg.rotation.z = 0; // Reset jump rotation
-            rightLegParts.upperLeg.rotation.x = -walkAmount * legSwing;
+            
+            rightLegParts.upperLeg.rotation.x = -animAmount * legSwing;
             rightLegParts.upperLeg.rotation.z = 0; // Reset jump rotation
-            rightLegParts.lowerLeg.rotation.x = Math.abs(walkAmount * kneeBend);
+            rightLegParts.lowerLeg.rotation.x = Math.max(0, Math.sin(time * animSpeed - Math.PI/2) * kneeBend);
             rightLegParts.lowerLeg.rotation.z = 0; // Reset jump rotation
 
-            // Arm animation
-            leftArmParts.upperArm.rotation.x = -walkAmount * armSwing;
-            leftArmParts.lowerArm.rotation.x = -walkAmount * 0.2;
-            rightArmParts.upperArm.rotation.x = walkAmount * armSwing;
-            rightArmParts.lowerArm.rotation.x = walkAmount * 0.2;
+            // Arm animation with more bend, based on reference
+            leftArmParts.upperArm.rotation.x = -animAmount * armSwing;
+            leftArmParts.lowerArm.rotation.x = -kneeBend * 0.8; // Bend elbow
+            rightArmParts.upperArm.rotation.x = animAmount * armSwing;
+            rightArmParts.lowerArm.rotation.x = -kneeBend * 0.8; // Bend elbow
 
           } else {
             // Idle on ground
+            personParts.torso.rotation.x = 0;
             leftLegParts.upperLeg.rotation.x = 0;
             leftLegParts.upperLeg.rotation.z = 0;
             leftLegParts.lowerLeg.rotation.x = 0;
@@ -143,6 +149,7 @@ export function updateTransformerAnimation(
           }
         } else {
           // Jumping animation
+          personParts.torso.rotation.x = 0;
           leftLegParts.upperLeg.rotation.x = -0.4; // Knees bent up
           leftLegParts.lowerLeg.rotation.x = 0.8; // Lower leg bent back
           rightLegParts.upperLeg.rotation.x = -0.4;
