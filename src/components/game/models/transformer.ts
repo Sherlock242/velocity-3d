@@ -85,11 +85,11 @@ export function updateTransformerAnimation(
       const carWheels = carModel.userData.parts.wheels;
       const lLegCarPos = carWheels[2].position.clone();
       const waistWidth = 0.22;
-      const lLegPersonPos = new THREE.Vector3(waistWidth, legHeight + shoeHeight, -0.2);
+      const lLegPersonPos = new THREE.Vector3(waistWidth, legHeight + shoeHeight, 0);
       personParts.leftLeg.position.lerpVectors(lLegCarPos, lLegPersonPos, p);
 
       const rLegCarPos = carWheels[3].position.clone();
-      const rLegPersonPos = new THREE.Vector3(-waistWidth, legHeight + shoeHeight, -0.2);
+      const rLegPersonPos = new THREE.Vector3(-waistWidth, legHeight + shoeHeight, 0);
       personParts.rightLeg.position.lerpVectors(rLegCarPos, rLegPersonPos, p);
       
       personModel.position.y = THREE.MathUtils.lerp(0, -totalLegHeight, p);
@@ -113,18 +113,19 @@ export function updateTransformerAnimation(
             const torsoLean = isRunning ? 0.2 : 0;
 
             personParts.upperBody.rotation.x = torsoLean;
+            personParts.upperBody.position.y = totalLegHeight - torsoLean * 2.5;
 
 
             // Leg animation
             leftLegParts.upperLeg.rotation.x = animAmount * legSwing;
-            leftLegParts.upperLeg.rotation.z = 0; // Reset jump rotation
+            leftLegParts.upperLeg.rotation.z = 0;
             leftLegParts.lowerLeg.rotation.x = Math.max(0, Math.sin(time * animSpeed + Math.PI/2) * kneeBend);
-            leftLegParts.lowerLeg.rotation.z = 0; // Reset jump rotation
+            leftLegParts.lowerLeg.rotation.z = 0;
             
             rightLegParts.upperLeg.rotation.x = -animAmount * legSwing;
-            rightLegParts.upperLeg.rotation.z = 0; // Reset jump rotation
+            rightLegParts.upperLeg.rotation.z = 0;
             rightLegParts.lowerLeg.rotation.x = Math.max(0, Math.sin(time * animSpeed - Math.PI/2) * kneeBend);
-            rightLegParts.lowerLeg.rotation.z = 0; // Reset jump rotation
+            rightLegParts.lowerLeg.rotation.z = 0;
 
             // Arm animation with more bend, based on reference
             leftArmParts.upperArm.rotation.x = -animAmount * armSwing;
@@ -135,6 +136,7 @@ export function updateTransformerAnimation(
           } else {
             // Idle on ground
             personParts.upperBody.rotation.x = 0;
+            personParts.upperBody.position.y = totalLegHeight;
             leftLegParts.upperLeg.rotation.x = 0;
             leftLegParts.upperLeg.rotation.z = 0;
             leftLegParts.lowerLeg.rotation.x = 0;
@@ -152,6 +154,7 @@ export function updateTransformerAnimation(
         } else {
           // Jumping animation
           personParts.upperBody.rotation.x = 0;
+          personParts.upperBody.position.y = totalLegHeight;
           leftLegParts.upperLeg.rotation.x = -0.4; // Knees bent up
           leftLegParts.lowerLeg.rotation.x = 0.8; // Lower leg bent back
           rightLegParts.upperLeg.rotation.x = -0.4;
