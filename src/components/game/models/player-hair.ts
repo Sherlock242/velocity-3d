@@ -67,16 +67,6 @@ export function createHair(headRadius: number, hairMaterial: THREE.Material) {
         }
     });
 
-    // Create the curved bang separately
-    const curve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0, headRadius * 0.9, headRadius * 0.4), // Start point high on the forehead
-        new THREE.Vector3(-0.3, headRadius * 0.2, headRadius * 0.9), // Mid point curving down and forward
-        new THREE.Vector3(-0.4, -headRadius * 0.3, headRadius * 0.7) // End point
-    ]);
-    const tubeGeometry = new THREE.TubeGeometry(curve, 10, 0.05, 8, false);
-    allGeometries.push(tubeGeometry);
-
-
     if (allGeometries.length > 0) {
         const mergedGeometry = mergeGeometries(allGeometries);
         const combinedHairMesh = new THREE.Mesh(mergedGeometry, hairMaterial);
