@@ -166,6 +166,7 @@ export function createGridAndScenery(
   ground.receiveShadow = true;
   gridGroup.add(ground);
   groundPlaneRef.current = ground;
+  walkableSurfacesRef.current.push(ground);
 
   // Roads
   const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
