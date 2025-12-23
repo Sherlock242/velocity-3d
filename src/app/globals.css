@@ -78,8 +78,9 @@
   * {
     @apply border-border;
   }
+  html,
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-hidden;
   }
 }
 
@@ -90,5 +91,8 @@
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none; /* Chrome, Safari, and Opera */
+  }
+  ::-webkit-scrollbar {
+    display: none;
   }
 }
