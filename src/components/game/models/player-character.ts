@@ -361,7 +361,7 @@ export function createPlayerCharacter(
 
   // Belt & Holster
   const beltGroup = new THREE.Group();
-  beltGroup.position.y = lobbyYOffset; // Position relative to upperBody
+  beltGroup.position.y = torsoHeight / 2 - (torsoHeight / 2); // Position relative to upperBody
   const beltGeo = new THREE.BoxGeometry(
     waistWidth * 2 + 0.05,
     0.25,
