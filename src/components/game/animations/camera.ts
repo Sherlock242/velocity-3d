@@ -20,12 +20,17 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
         
         let lookAtTarget = playerRef.current.position.clone();
         
-        const combinedTheta = theta + playerRef.current.rotation.y;
+        let combinedTheta = theta;
+        if (controlModeRef.current === 'car') {
+            combinedTheta = theta + playerRef.current.rotation.y;
+        } else {
+            combinedTheta = theta + Math.PI * 1.5;
+        }
+
         const offset = new THREE.Vector3().setFromSphericalCoords(radius, phi, combinedTheta);
         
         if (controlModeRef.current === 'person') {
             const personModel = playerRef.current.userData.personModel as THREE.Group;
-            const personOffset = new THREE.Vector3().setFromSphericalCoords(radius, phi, theta + Math.PI / 2);
             if (personModel && personModel.userData.parts.head) {
                 const head = personModel.userData.parts.head as THREE.Group;
                 const headPosition = new THREE.Vector3();
@@ -35,10 +40,8 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
                 // Fallback if head is not available
                 lookAtTarget.y += 4;
             }
-            camera.position.copy(lookAtTarget).add(personOffset);
-        } else {
-             camera.position.copy(lookAtTarget).add(offset);
         }
+        camera.position.copy(lookAtTarget).add(offset);
         
         camera.lookAt(lookAtTarget);
     }
