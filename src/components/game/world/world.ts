@@ -23,6 +23,7 @@ export function createWorld(scene: THREE.Scene, theme: TrackTheme, gameState: Ga
     const roadZ = (j * CELL_SIZE) - halfTotalWidth - (ROAD_WIDTH / 2);
 
     transformer.position.x = cellCenterX;
+    transformer.position.y = 0.5;
     transformer.position.z = roadZ;
     transformer.rotation.y = Math.PI; // Face towards the dome
     
