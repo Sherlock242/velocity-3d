@@ -23,24 +23,37 @@ const Joystick: React.FC<JoystickProps> = ({ onMove, onEnd, className }) => {
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-
-      const deltaX = clientX - centerX;
-      const deltaY = clientY - centerY;
-
       const maxDistance = rect.width / 2;
-      const distance = Math.min(
-        maxDistance,
-        Math.sqrt(deltaX ** 2 + deltaY ** 2)
-      );
-      const angle = Math.atan2(deltaY, deltaX);
+      
+      const deadZone = 0.1 * maxDistance;
 
-      const knobX = distance * Math.cos(angle);
-      const knobY = distance * Math.sin(angle);
+      let deltaX = clientX - centerX;
+      let deltaY = clientY - centerY;
 
-      knobRef.current.style.transform = `translate(${knobX}px, ${knobY}px)`;
+      let distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
 
-      const moveX = knobX / maxDistance;
-      const moveY = knobY / maxDistance;
+      if (distance < deadZone) {
+        // Inside dead zone, treat as no movement
+        deltaX = 0;
+        deltaY = 0;
+        distance = 0;
+        knobRef.current.style.transform = `translate(0px, 0px)`;
+        onMove(0, 0);
+        return;
+      }
+      
+      // Normalize the vector if it exceeds maxDistance
+      if (distance > maxDistance) {
+        const scale = maxDistance / distance;
+        deltaX *= scale;
+        deltaY *= scale;
+        distance = maxDistance;
+      }
+
+      knobRef.current.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+      const moveX = deltaX / maxDistance;
+      const moveY = deltaY / maxDistance;
       onMove(moveX, -moveY); // Invert Y-axis for typical joystick behavior
     },
     [onMove]
