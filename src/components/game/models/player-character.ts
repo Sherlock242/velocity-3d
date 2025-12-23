@@ -290,7 +290,7 @@ export function createPlayerCharacter(
   const elbowRadius = 0.15;
   const armTopRadius = 0.18;
   const armBottomRadius = 0.14;
-  const armYOffset = -0.3;
+  const armYOffset = -0.2;
 
   const createArm = (isLeft: boolean) => {
     const armGroup = new THREE.Group();
@@ -334,11 +334,11 @@ export function createPlayerCharacter(
   }
   
   const leftArmGroup = createArm(true);
-  leftArmGroup.position.set(shoulderWidth, torsoHeight + armYOffset - lobbyYOffset, 0);
+  leftArmGroup.position.set(shoulderWidth, torsoHeight + armYOffset, 0);
   leftArmGroup.rotation.z = Math.PI / 16;
   
   const rightArmGroup = createArm(false);
-  rightArmGroup.position.set(-shoulderWidth, torsoHeight + armYOffset - lobbyYOffset, 0);
+  rightArmGroup.position.set(-shoulderWidth, torsoHeight + armYOffset, 0);
   rightArmGroup.rotation.z = -Math.PI / 16;
 
   // Belt & Holster
