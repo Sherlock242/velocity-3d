@@ -195,10 +195,7 @@ export default function Hud({
         </>
       ) : (
         <>
-          <div className="absolute bottom-4 left-4 pointer-events-auto">
-            <Joystick onMove={handleJoystickMove} onEnd={handleJoystickEnd} />
-          </div>
-          <div className="absolute bottom-4 right-4 flex flex-col items-center gap-2 pointer-events-auto">
+          <div className="absolute bottom-4 right-4 flex flex-col items-center gap-4 pointer-events-auto">
             <button
               onMouseDown={onJumpPress}
               onMouseUp={onJumpRelease}
@@ -208,6 +205,7 @@ export default function Hud({
             >
               <ArrowUp className="w-10 h-10" />
             </button>
+            <Joystick onMove={handleJoystickMove} onEnd={handleJoystickEnd} />
           </div>
         </>
       )}
