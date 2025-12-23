@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { createTransformer } from '../models/transformer';
 import { createGridAndScenery } from '../world/track';
-import { TOTAL_GRID_WIDTH, NUM_OBSTACLES, GRID_SIZE, CELL_SIZE, ROAD_WIDTH } from '@/lib/game-constants';
+import { TOTAL_GRID_WIDTH, GRID_SIZE, CELL_SIZE, ROAD_WIDTH } from '@/lib/game-constants';
 import type { TrackTheme } from '@/lib/types';
 import type { GameState } from '../core/state';
 
