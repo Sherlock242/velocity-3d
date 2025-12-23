@@ -18,7 +18,7 @@ export function setupScene(mountNode: HTMLDivElement) {
     camera.add(audioListener);
 
     // Skybox
-    const skyGeometry = new THREE.BoxGeometry(5500, 5500, 5500);
+    const skyGeometry = new THREE.SphereGeometry(3000, 32, 16);
     const vertexShader = `
       varying vec3 vWorldPosition;
       void main() {
