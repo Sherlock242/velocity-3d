@@ -69,6 +69,7 @@ export type GameState = {
     gltfLoaderRef: React.MutableRefObject<GLTFLoader | undefined>;
     isSector4LoadedRef: React.MutableRefObject<boolean>;
     forestGroundRef: React.MutableRefObject<THREE.Mesh | undefined>;
+    groundPlaneRef: React.MutableRefObject<THREE.Mesh | undefined>;
 };
 
 export function useGameState(): GameState {
@@ -124,6 +125,7 @@ export function useGameState(): GameState {
     const gltfLoaderRef = React.useRef<GLTFLoader>();
     const isSector4LoadedRef = React.useRef(false);
     const forestGroundRef = React.useRef<THREE.Mesh>();
+    const groundPlaneRef = React.useRef<THREE.Mesh>();
 
 
     return {
@@ -168,5 +170,6 @@ export function useGameState(): GameState {
         gltfLoaderRef,
         isSector4LoadedRef,
         forestGroundRef,
+        groundPlaneRef,
     };
 }

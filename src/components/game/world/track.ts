@@ -147,7 +147,7 @@ export function createGridAndScenery(
   theme: TrackTheme,
   gameState: GameState
 ) {
-  const { walkingNpcsRef, staticCollidersRef, walkableSurfacesRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef, domeRef, universityRamp, electricSparksRef, tilePlaneRef, gltfLoaderRef, isSector4LoadedRef, forestGroundRef } = gameState;
+  const { walkingNpcsRef, staticCollidersRef, walkableSurfacesRef, rampMeshRef, rampWallsRef, collegeRampMeshRef, emojiFaceRef, domeRef, universityRamp, electricSparksRef, tilePlaneRef, gltfLoaderRef, isSector4LoadedRef, forestGroundRef, groundPlaneRef } = gameState;
   
   const gridGroup = new THREE.Group();
   const halfTotalWidth = TOTAL_GRID_WIDTH / 2;
@@ -161,9 +161,11 @@ export function createGridAndScenery(
     color: TRACK_THEMES[theme].ground,
   });
   const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+  ground.name = 'main-ground-plane';
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   gridGroup.add(ground);
+  groundPlaneRef.current = ground;
 
   // Roads
   const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
