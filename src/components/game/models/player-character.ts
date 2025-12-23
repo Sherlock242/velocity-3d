@@ -84,7 +84,7 @@ export function createPlayerCharacter(
   const torso = new THREE.Group();
   torso.position.y = torsoHeight / 2;
 
-  const shoulderWidth = isLobby ? 0.7 : 0.55; // Wider in lobby, closer in game
+  const shoulderWidth = 0.55;
   const waistWidth = 0.4;
   const shoulderY = torsoHeight / 2 - 0.2; // Y position of the shoulder peak
   const neckY = torsoHeight / 2;
@@ -281,7 +281,7 @@ export function createPlayerCharacter(
 
 
   // --- Arms ---
-  const upperArmHeight = 0.8;
+  const upperArmHeight = 1.0;
   const lowerArmHeight = 0.8;
   const armLength = upperArmHeight + lowerArmHeight;
   const elbowRadius = 0.15;
@@ -293,11 +293,6 @@ export function createPlayerCharacter(
     const armGroup = new THREE.Group();
     const upperArm = new THREE.Group();
     const lowerArm = new THREE.Group();
-
-    // Shoulder joint, replaces shoulder cap
-    const shoulderJointGeom = new THREE.SphereGeometry(armTopRadius, 16, 8);
-    const shoulderJoint = new THREE.Mesh(shoulderJointGeom, shirtMaterial);
-    upperArm.add(shoulderJoint);
 
     const upperArmGeo = new THREE.CylinderGeometry(armTopRadius, elbowRadius, upperArmHeight, 8);
     const upperArmMesh = new THREE.Mesh(upperArmGeo, shirtMaterial);
