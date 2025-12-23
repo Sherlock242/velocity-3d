@@ -16,10 +16,5 @@ export function createSector16({
 }: Sector16Props): THREE.Group {
   const sectorGroup = new THREE.Group();
 
-  const house = createSimpleHouse();
-  house.position.set(cellCenterX, 0, cellCenterZ);
-  sectorGroup.add(house);
-  staticCollidersRef.current.push(house);
-
   return sectorGroup;
 }
