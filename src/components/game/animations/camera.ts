@@ -25,7 +25,7 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
         
         if (controlModeRef.current === 'person') {
             const personModel = playerRef.current.userData.personModel as THREE.Group;
-            const personOffset = new THREE.Vector3().setFromSphericalCoords(radius, phi, theta);
+            const personOffset = new THREE.Vector3().setFromSphericalCoords(radius, phi, theta + Math.PI / 2);
             if (personModel && personModel.userData.parts.head) {
                 const head = personModel.userData.parts.head as THREE.Group;
                 const headPosition = new THREE.Vector3();
