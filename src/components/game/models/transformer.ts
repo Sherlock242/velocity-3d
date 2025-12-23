@@ -161,16 +161,18 @@ export function updateTransformerAnimation(
           personParts.upperBody.rotation.x = 0;
           personParts.leftLeg.rotation.x = 0;
           personParts.rightLeg.rotation.x = 0;
-          leftLegParts.upperLeg.rotation.x = -0.4; // Knees bent up
-          leftLegParts.lowerLeg.rotation.x = 0.8; // Lower leg bent back
-          rightLegParts.upperLeg.rotation.x = -0.4;
-          rightLegParts.lowerLeg.rotation.x = 0.8;
-
-          // Apply rotation on Z-axis for outward/inward movement
-          leftLegParts.upperLeg.rotation.z = 0.2; // upper leg outward
-          leftLegParts.lowerLeg.rotation.z = -0.2;  // lower leg inward
-          rightLegParts.upperLeg.rotation.z = -0.2; // upper leg outward
-          rightLegParts.lowerLeg.rotation.z = 0.2; // lower leg inward
+          
+          // Left Leg (Full Jump) - tucked high
+          leftLegParts.upperLeg.rotation.x = -1.2; 
+          leftLegParts.lowerLeg.rotation.x = 1.8;
+          leftLegParts.upperLeg.rotation.z = 0.2; 
+          leftLegParts.lowerLeg.rotation.z = -0.2; 
+          
+          // Right Leg (Low Jump) - more extended
+          rightLegParts.upperLeg.rotation.x = 0.2;
+          rightLegParts.lowerLeg.rotation.x = 0;
+          rightLegParts.upperLeg.rotation.z = -0.1;
+          rightLegParts.lowerLeg.rotation.z = 0.1;
           
           // Set jumping arm animation
           leftArmParts.upperArm.rotation.x = 0.5; // Upper arm forward
