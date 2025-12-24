@@ -365,7 +365,7 @@ export function createPlayerCharacter(
   const beltGeo = new THREE.BoxGeometry(
     waistWidth * 2 + 0.05,
     0.25,
-    torsoDepth + 0.05
+    torsoDepth + 0.25
   );
   const belt = new THREE.Mesh(beltGeo, beltMaterial);
   beltGroup.add(belt);
@@ -425,5 +425,7 @@ export function createPlayerCharacter(
 
   return character;
 }
+
+    
 
     
