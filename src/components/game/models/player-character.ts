@@ -365,7 +365,7 @@ export function createPlayerCharacter(
   const beltGeo = new THREE.BoxGeometry(
     waistWidth * 2 + 0.3,
     0.25,
-    torsoDepth + 0.18
+    torsoDepth + 0.02
   );
   const belt = new THREE.Mesh(beltGeo, beltMaterial);
   beltGroup.add(belt);
@@ -374,6 +374,12 @@ export function createPlayerCharacter(
   const buckle = new THREE.Mesh(buckleGeo, metalMaterial);
   buckle.position.z = torsoDepth/2 + 0.1;
   belt.add(buckle);
+
+  const crotchConnectorGeo = new THREE.CylinderGeometry(0.05, 0.05, legXPosition * 2, 8);
+  const crotchConnector = new THREE.Mesh(crotchConnectorGeo, pantsMaterial);
+  crotchConnector.rotation.z = Math.PI / 2;
+  crotchConnector.position.y = -0.15;
+  upperBody.add(crotchConnector);
 
   upperBody.add(head, torso, neck, leftArmGroup, rightArmGroup, beltGroup, leftLeg, rightLeg);
   
