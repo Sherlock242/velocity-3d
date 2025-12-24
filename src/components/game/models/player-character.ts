@@ -362,12 +362,14 @@ export function createPlayerCharacter(
   // Belt & Holster
   const beltGroup = new THREE.Group();
   beltGroup.position.y = 0; // Position relative to upperBody
+  const beltExtension = 0.2;
   const beltGeo = new THREE.BoxGeometry(
-    waistWidth * 2 + 0.05,
+    waistWidth * 2 + 0.05 + beltExtension,
     0.25,
-    torsoDepth + 0.25
+    torsoDepth + 0.45
   );
   const belt = new THREE.Mesh(beltGeo, beltMaterial);
+  belt.position.x = beltExtension / 2;
   beltGroup.add(belt);
 
   const buckleGeo = new THREE.BoxGeometry(0.2, 0.3, 0.1);
