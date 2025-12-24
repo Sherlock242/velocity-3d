@@ -364,24 +364,17 @@ export function createPlayerCharacter(
   beltGroup.position.y = 0; // Position relative to upperBody
   const beltExtension = 0.2;
   const beltGeo = new THREE.BoxGeometry(
-    waistWidth * 2 + 0.05 + beltExtension,
+    waistWidth * 2 + 0.05,
     0.25,
-    torsoDepth + 0.12
+    torsoDepth + 0.14
   );
   const belt = new THREE.Mesh(beltGeo, beltMaterial);
-  belt.position.x = beltExtension / 2;
   beltGroup.add(belt);
 
   const buckleGeo = new THREE.BoxGeometry(0.2, 0.3, 0.1);
   const buckle = new THREE.Mesh(buckleGeo, metalMaterial);
   buckle.position.z = torsoDepth/2 + 0.05;
   belt.add(buckle);
-
-  const holsterGeo = new THREE.BoxGeometry(0.15, 0.4, 0.3);
-  const holster = new THREE.Mesh(holsterGeo, beltMaterial);
-  holster.position.set(-(waistWidth + 0.05), -0.1, 0);
-  holster.rotation.z = Math.PI / 8;
-  beltGroup.add(holster);
 
   const hangingStrap = new THREE.Mesh(
     new THREE.BoxGeometry(0.08, 0.5, 0.08),
@@ -390,16 +383,6 @@ export function createPlayerCharacter(
   hangingStrap.position.set(waistWidth - 0.1, -0.3, torsoDepth/2);
   hangingStrap.rotation.z = -Math.PI / 16;
   belt.add(hangingStrap);
-
-  // Sword hilt
-  const hiltGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.6, 6);
-  const hilt = new THREE.Mesh(
-    hiltGeo,
-    new THREE.MeshStandardMaterial({ color: 0x333333 })
-  );
-  hilt.position.y = 0.2;
-  hilt.rotation.x = Math.PI / 4;
-  holster.add(hilt);
 
   upperBody.add(head, torso, neck, leftArmGroup, rightArmGroup, beltGroup, leftLeg, rightLeg);
   
