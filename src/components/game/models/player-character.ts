@@ -362,11 +362,7 @@ export function createPlayerCharacter(
   // Belt
   const beltGroup = new THREE.Group();
   beltGroup.position.y = 0; // Position relative to upperBody
-  const beltGeo = new THREE.BoxGeometry(
-    1.0,
-    0.25,
-    0.48
-  );
+  const beltGeo = new THREE.BoxGeometry(1.0, 0.25, 0.50);
   const belt = new THREE.Mesh(beltGeo, beltMaterial);
   beltGroup.add(belt);
 
