@@ -159,18 +159,17 @@ export default function GameWrapper() {
     gameState.gltfLoaderRef.current = gltfLoader;
     
     // Camera drag controls
-    let isDragging = false;
     let dragTouchId: number | null = null;
     let previousTouch: { x: number, y: number } | null = null;
     let previousMousePosition = { x: 0, y: 0 };
 
     const handleMouseDown = (event: MouseEvent) => {
-      isDragging = true;
+      gameState.isCameraManuallyControlledRef.current = true;
       previousMousePosition = { x: event.clientX, y: event.clientY };
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-        if (!isDragging) return;
+        if (!gameState.isCameraManuallyControlledRef.current) return;
 
         const deltaX = event.clientX - previousMousePosition.x;
         const deltaY = event.clientY - previousMousePosition.y;
@@ -189,21 +188,20 @@ export default function GameWrapper() {
     };
 
     const handleMouseUp = () => {
-        isDragging = false;
+        gameState.isCameraManuallyControlledRef.current = false;
     };
 
     const handleTouchStart = (event: TouchEvent) => {
-        // Only start a new drag if we aren't already dragging
         if (dragTouchId === null && event.changedTouches.length > 0) {
             const touch = event.changedTouches[0];
             dragTouchId = touch.identifier;
-            isDragging = true;
+            gameState.isCameraManuallyControlledRef.current = true;
             previousTouch = { x: touch.clientX, y: touch.clientY };
         }
     };
 
     const handleTouchMove = (event: TouchEvent) => {
-        if (!isDragging || dragTouchId === null) return;
+        if (!gameState.isCameraManuallyControlledRef.current || dragTouchId === null) return;
 
         for (let i = 0; i < event.changedTouches.length; i++) {
             const touch = event.changedTouches[i];
@@ -234,7 +232,7 @@ export default function GameWrapper() {
         for (let i = 0; i < event.changedTouches.length; i++) {
             const touch = event.changedTouches[i];
             if (touch.identifier === dragTouchId) {
-                isDragging = false;
+                gameState.isCameraManuallyControlledRef.current = false;
                 dragTouchId = null;
                 previousTouch = null;
                 break;

@@ -46,6 +46,7 @@ export type GameState = {
     controlModeRef: React.MutableRefObject<ControlMode>;
     isTransformingRef: React.MutableRefObject<boolean>;
     transformProgressRef: React.MutableRefObject<number>;
+    isCameraManuallyControlledRef: React.MutableRefObject<boolean>;
     cameraOffsetRef: React.MutableRefObject<THREE.Vector3>;
     cameraOrbitRef: React.MutableRefObject<{
         radius: number;
@@ -102,6 +103,7 @@ export function useGameState(): GameState {
     const controlModeRef = React.useRef<ControlMode>('car');
     const isTransformingRef = React.useRef(false);
     const transformProgressRef = React.useRef(0);
+    const isCameraManuallyControlledRef = React.useRef(false);
     const cameraOffsetRef = React.useRef(new THREE.Vector3(0, 2, -6));
     const initialCameraOffset = new THREE.Vector3(0, 2, -6);
     const cameraOrbitRef = React.useRef({
@@ -152,6 +154,7 @@ export function useGameState(): GameState {
         controlModeRef,
         isTransformingRef,
         transformProgressRef,
+        isCameraManuallyControlledRef,
         cameraOffsetRef,
         cameraOrbitRef,
         audioListenerRef,
