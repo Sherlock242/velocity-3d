@@ -7,7 +7,7 @@ export function setupScene(mountNode: HTMLDivElement) {
         75,
         window.innerWidth / window.innerHeight,
         0.1,
-        6000
+        12000
     );
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -18,7 +18,7 @@ export function setupScene(mountNode: HTMLDivElement) {
     camera.add(audioListener);
 
     // Skybox
-    const skyGeometry = new THREE.SphereGeometry(3000, 32, 16);
+    const skyGeometry = new THREE.SphereGeometry(6000, 32, 16);
     const vertexShader = `
       varying vec3 vWorldPosition;
       void main() {
