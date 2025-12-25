@@ -29,8 +29,13 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
                 const defaultTheta = Math.atan2(gameState.cameraOffsetRef.current.x, gameState.cameraOffsetRef.current.z);
                 const defaultPhi = Math.acos(gameState.cameraOffsetRef.current.y / gameState.cameraOffsetRef.current.length());
                 
+                // Find the shortest path for theta
+                let deltaTheta = defaultTheta - theta;
+                if (deltaTheta > Math.PI) deltaTheta -= Math.PI * 2;
+                if (deltaTheta < -Math.PI) deltaTheta += Math.PI * 2;
+                
                 // Smoothly interpolate back to default angles
-                cameraOrbitRef.current.theta = THREE.MathUtils.lerp(theta, defaultTheta, 0.1);
+                cameraOrbitRef.current.theta += deltaTheta * 0.1;
                 cameraOrbitRef.current.phi = THREE.MathUtils.lerp(phi, defaultPhi, 0.1);
             }
             combinedTheta = cameraOrbitRef.current.theta + playerRef.current.rotation.y;
