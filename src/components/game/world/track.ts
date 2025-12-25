@@ -562,6 +562,7 @@ export function createGridAndScenery(
   const roadUnderTunnelMesh = new THREE.Mesh(roadUnderTunnelGeom, roadUnderTunnelMat);
   roadUnderTunnelMesh.receiveShadow = true;
   gridGroup.add(roadUnderTunnelMesh);
+  walkableSurfacesRef.current.push(roadUnderTunnelMesh);
 
 
   return gridGroup;
