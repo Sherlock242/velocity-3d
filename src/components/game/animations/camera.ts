@@ -23,10 +23,9 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
         
         let combinedTheta = theta;
         if (controlModeRef.current === 'car') {
-            const isMoving = inputRef.current.forward || inputRef.current.backward;
-            const carSpeed = velocityRef.current.length();
+            const isAccelerating = inputRef.current.forward || inputRef.current.backward;
             
-            if (!isCameraManuallyControlledRef.current && (isMoving || carSpeed > 0.1)) {
+            if (!isCameraManuallyControlledRef.current && isAccelerating) {
                 const defaultTheta = Math.atan2(gameState.cameraOffsetRef.current.x, gameState.cameraOffsetRef.current.z);
                 const defaultPhi = Math.acos(gameState.cameraOffsetRef.current.y / gameState.cameraOffsetRef.current.length());
                 
