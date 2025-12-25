@@ -183,6 +183,9 @@ export default function GameWrapper() {
             0.5,
             Math.PI / 2
         );
+        
+        // Wrap theta to prevent it from growing indefinitely
+        gameState.cameraOrbitRef.current.theta = gameState.cameraOrbitRef.current.theta % (Math.PI * 2);
 
         previousMousePosition = { x: event.clientX, y: event.clientY };
     };
@@ -221,6 +224,9 @@ export default function GameWrapper() {
                     0.5,
                     Math.PI / 2
                 );
+                
+                // Wrap theta to prevent it from growing indefinitely
+                gameState.cameraOrbitRef.current.theta = gameState.cameraOrbitRef.current.theta % (Math.PI * 2);
 
                 previousTouch = { x: touch.clientX, y: touch.clientY };
                 break;
