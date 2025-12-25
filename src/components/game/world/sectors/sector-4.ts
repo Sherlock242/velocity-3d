@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import type { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { MutableRefObject } from 'react';
+import { createSimpleHouse } from '../../models/simple-house';
 
 type Sector4Props = {
   cellCenterX: number;
@@ -44,6 +45,11 @@ export function createSector4({
       console.error('An error happened while loading the forest model:', error);
     }
   );
+
+  const house = createSimpleHouse();
+  house.position.set(cellCenterX, 0, cellCenterZ);
+  sectorGroup.add(house);
+  staticCollidersRef.current.push(house);
 
   return sectorGroup;
 }
