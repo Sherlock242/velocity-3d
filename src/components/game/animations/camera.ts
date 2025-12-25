@@ -30,8 +30,8 @@ export function updateCameraPosition(gameState: GameState, camera: THREE.Perspec
                 const defaultPhi = Math.acos(gameState.cameraOffsetRef.current.y / gameState.cameraOffsetRef.current.length());
                 
                 // Smoothly interpolate back to default angles
-                cameraOrbitRef.current.theta = THREE.MathUtils.lerp(theta, defaultTheta, 0.05);
-                cameraOrbitRef.current.phi = THREE.MathUtils.lerp(phi, defaultPhi, 0.05);
+                cameraOrbitRef.current.theta = THREE.MathUtils.lerp(theta, defaultTheta, 0.1);
+                cameraOrbitRef.current.phi = THREE.MathUtils.lerp(phi, defaultPhi, 0.1);
             }
             combinedTheta = cameraOrbitRef.current.theta + playerRef.current.rotation.y;
 
