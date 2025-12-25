@@ -50,7 +50,7 @@ export default function GameLobby({ onStartGame }: GameLobbyProps) {
     // Character model
     const character = createPlayerCharacter(true, 'male', true);
     character.scale.set(1.5, 1.5, 1.5);
-    character.position.y = 6; // Adjust position to center it
+    character.position.y = 3; // Adjust position to center it
     scene.add(character);
     characterRef.current = character;
     initialRotationY.current = character.rotation.y;
