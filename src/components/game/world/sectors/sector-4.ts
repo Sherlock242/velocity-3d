@@ -38,6 +38,20 @@ export function createSector4({
           isSector4LoadedRef.current = true;
       }
       
+      // Make the forest collidable
+      model.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+
+          // Add the whole group to colliders, but identify it as a forest
+          const forestCollider = new THREE.Group();
+          forestCollider.add(child.clone());
+          forestCollider.userData.isForest = true;
+          staticCollidersRef.current.push(forestCollider);
+        }
+      });
+      
       sectorGroup.add(model);
     },
     undefined,
@@ -45,11 +59,6 @@ export function createSector4({
       console.error('An error happened while loading the forest model:', error);
     }
   );
-
-  const house = createSimpleHouse();
-  house.position.set(cellCenterX, 0, cellCenterZ);
-  sectorGroup.add(house);
-  staticCollidersRef.current.push(house);
 
   return sectorGroup;
 }
