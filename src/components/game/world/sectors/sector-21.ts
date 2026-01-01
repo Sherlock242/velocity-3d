@@ -65,6 +65,7 @@ export function createSector21({
   entranceGate.position.set(cellCenterX + CELL_SIZE / 2 - 100, 0, cellCenterZ);
   entranceGate.rotation.y = -Math.PI / 2;
   sectorGroup.add(entranceGate);
+  staticCollidersRef.current.push(entranceGate);
 
   return sectorGroup;
 }

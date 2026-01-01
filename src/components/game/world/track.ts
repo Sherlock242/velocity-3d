@@ -509,6 +509,7 @@ export function createGridAndScenery(
       gate.position.set(gateX, yOffset, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
+      staticCollidersRef.current.push(gate);
   }
 
   // --- Road under Tunnel ---
