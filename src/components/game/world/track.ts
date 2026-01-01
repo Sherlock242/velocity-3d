@@ -345,10 +345,12 @@ export function createGridAndScenery(
   rightRailing2.rotation.y = Math.PI / 2;
   rightRailing2.position.set(tilePlaneX + flatTopWidth / 2 - railingOffset, railingY, tilePlaneZ + (gateWidth / 2 + rightRailingLength / 2));
   gridGroup.add(rightRailing2);
-  const rightGate = createToriiGate();
+  const { gate: rightGate, leftPillar: rightGateLeft, rightPillar: rightGateRight } = createToriiGate();
   rightGate.rotation.y = Math.PI / 2;
   rightGate.position.set(tilePlaneX + flatTopWidth / 2 - railingOffset, tilePlaneY, tilePlaneZ);
   gridGroup.add(rightGate);
+  staticCollidersRef.current.push(rightGateLeft as THREE.Group, rightGateRight as THREE.Group);
+
 
 
   // Add scenery
@@ -505,11 +507,11 @@ export function createGridAndScenery(
         }
       }
 
-      const gate = createToriiGate();
+      const { gate, leftPillar, rightPillar } = createToriiGate();
       gate.position.set(gateX, yOffset, gateZ);
       gate.rotation.y = Math.PI / 2;
       gridGroup.add(gate);
-      staticCollidersRef.current.push(gate);
+      staticCollidersRef.current.push(leftPillar as THREE.Group, rightPillar as THREE.Group);
   }
 
   // --- Road under Tunnel ---

@@ -60,12 +60,15 @@ export function createSector21({
   sectorGroup.add(rightLantern);
   
   // Add the entrance gate to the right side
-  const entranceGate = createToriiGate();
+  const { gate: entranceGate, leftPillar: gateLeftPillar, rightPillar: gateRightPillar } = createToriiGate();
   entranceGate.scale.set(1.2, 1.2, 1.2);
   entranceGate.position.set(cellCenterX + CELL_SIZE / 2 - 100, 0, cellCenterZ);
   entranceGate.rotation.y = -Math.PI / 2;
   sectorGroup.add(entranceGate);
-  staticCollidersRef.current.push(entranceGate);
+  
+  // Add only the pillars to the colliders
+  staticCollidersRef.current.push(gateLeftPillar as THREE.Group, gateRightPillar as THREE.Group);
+
 
   return sectorGroup;
 }

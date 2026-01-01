@@ -136,5 +136,5 @@ export function createToriiGate() {
   torii.castShadow = false;
   torii.receiveShadow = false;
 
-  return torii;
+  return { gate: torii, leftPillar, rightPillar };
 }
