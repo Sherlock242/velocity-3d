@@ -7,7 +7,7 @@ import { createSimpleHouse } from '../../models/simple-house';
 type Sector4Props = {
   cellCenterX: number;
   cellCenterZ: number;
-  staticCollidersRef: MutableRefObject<THREE.Group[]>;
+  staticCollidersRef: MutableRefObject<THREE.Group[] | THREE.Mesh[]>;
   walkableSurfacesRef: MutableRefObject<(THREE.Group | THREE.Mesh)[]>;
   gltfLoader: GLTFLoader;
   isSector4LoadedRef: React.MutableRefObject<boolean>;
@@ -38,17 +38,16 @@ export function createSector4({
           isSector4LoadedRef.current = true;
       }
       
-      // Make the forest collidable
+      // Make the forest collidable with mesh colliders
       model.traverse((child) => {
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
 
-          // Add the whole group to colliders, but identify it as a forest
-          const forestCollider = new THREE.Group();
-          forestCollider.add(child.clone());
-          forestCollider.userData.isForest = true;
-          staticCollidersRef.current.push(forestCollider);
+          // Don't add the ground plane to the static colliders
+          if (child.name !== 'forest_ground') {
+            staticCollidersRef.current.push(child);
+          }
         }
       });
       

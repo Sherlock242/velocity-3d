@@ -14,6 +14,11 @@ export function handleCollisions(gameState: GameState, delta: number) {
     obstacleCarsRef.current = [];
 
     staticCollidersRef.current.forEach((collider) => {
+        // Ensure the collider has geometry before creating a bounding box
+        if (!((collider as THREE.Mesh).isMesh && (collider as THREE.Mesh).geometry)) {
+            return;
+        }
+
         const colliderBox = new THREE.Box3().setFromObject(collider);
         if (playerBox.intersectsBox(colliderBox)) {
             if (collider.name === 'collegeRamp') {
@@ -23,12 +28,6 @@ export function handleCollisions(gameState: GameState, delta: number) {
 
             const isSpecialBuilding = collider.name.toLowerCase().includes('college') || collider.name === 'LibraryBuilding';
             
-            // If the collider is part of the forest, only slow down, don't push.
-            if (collider.userData.isForest) {
-                velocityRef.current.multiplyScalar(0.9);
-                return;
-            }
-
             if (collider.parent?.name === 'compoundWall') {
                 velocityRef.current.multiplyScalar(0);
                 const intersection = new THREE.Box3();
