@@ -44,7 +44,7 @@
     "firebase": "*",
     "genkit": "*",
     "lucide-react": "*",
-    "next": "16.0.8",
+    "next": "16.0.10",
     "patch-package": "*",
     "react": "19.2.1",
     "react-day-picker": "*",
