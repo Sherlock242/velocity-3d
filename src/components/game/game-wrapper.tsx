@@ -1,9 +1,8 @@
-
 'use client';
 
 import * as React from 'react';
 import * as THREE from 'three';
-import { Bot, Map, Settings, Loader2 } from 'lucide-react';
+import { Map, Settings, Loader2 } from 'lucide-react';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import {
@@ -23,13 +22,12 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import type { TrackTheme, Gear } from '@/lib/types';
 import Hud from './hud';
-import AiOpponentGenerator from './ai-opponent-generator';
 import LargeMap from './large-map';
 import { TRACK_THEMES, GRID_SIZE, TOTAL_GRID_WIDTH, CELL_SIZE } from '@/lib/game-constants';
 import { DOME_WIDTH, DOME_DEPTH, DOME_HEIGHT } from '@/lib/dome-constants';
-import { useGameState, type GameState } from './core/state';
+import { useGameState } from './core/state';
 import { setupScene } from './core/scene';
-import { initAudio, initAudioOnInteraction } from './core/audio';
+import { initAudioOnInteraction } from './core/audio';
 import { createWorld } from './core/world';
 import { createAnimationLoop } from './core/animation';
 
@@ -78,19 +76,16 @@ export default function GameWrapper() {
     const sectorCenterX = col * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
     const sectorCenterZ = row * CELL_SIZE - halfTotalWidth + CELL_SIZE / 2;
 
-    let yPos = 5; // Default ground-level height
+    let yPos = 5;
 
-    // Check if the teleport destination is on the dome (Sectors 21-25)
     const isDomeSector = sector >= 21 && sector <= 25;
     if (isDomeSector) {
       const roadYPosition = 0.4;
       const tilePlaneY = roadYPosition + DOME_HEIGHT + 0.2;
       
-      // Sectors 21 and 22 are on the flat tiled surface
       if (sector === 21 || sector === 22) {
         yPos = tilePlaneY;
       } else {
-        // Sectors 23, 24, 25 are on the curved part of the dome
         const domeCenterX = 0;
         const domeCenterZ = (4 * CELL_SIZE - halfTotalWidth) + DOME_DEPTH / 2;
         const halfDomeWidth = DOME_WIDTH / 2;
@@ -108,7 +103,7 @@ export default function GameWrapper() {
         const heightZComponent = Math.cos(nz * Math.PI / 2);
         const yOffset = DOME_HEIGHT * heightXComponent * heightZComponent;
         
-        yPos = roadYPosition + yOffset + 2; // Add a small buffer to avoid clipping
+        yPos = roadYPosition + yOffset + 2;
       }
     }
 
@@ -158,7 +153,6 @@ export default function GameWrapper() {
     gltfLoader.setDRACOLoader(dracoLoader);
     gameState.gltfLoaderRef.current = gltfLoader;
     
-    // Camera drag controls
     let dragTouchId: number | null = null;
     let previousTouch: { x: number, y: number } | null = null;
     let previousMousePosition = { x: 0, y: 0 };
@@ -177,14 +171,12 @@ export default function GameWrapper() {
         gameState.cameraOrbitRef.current.theta -= deltaX * 0.005;
         gameState.cameraOrbitRef.current.phi -= deltaY * 0.005;
 
-        // Clamp phi to prevent camera flipping below ground or too high
         gameState.cameraOrbitRef.current.phi = THREE.MathUtils.clamp(
             gameState.cameraOrbitRef.current.phi,
             0.5,
             Math.PI / 2
         );
         
-        // Wrap theta to prevent it from growing indefinitely
         gameState.cameraOrbitRef.current.theta = gameState.cameraOrbitRef.current.theta % (Math.PI * 2);
 
         previousMousePosition = { x: event.clientX, y: event.clientY };
@@ -225,7 +217,6 @@ export default function GameWrapper() {
                     Math.PI / 2
                 );
                 
-                // Wrap theta to prevent it from growing indefinitely
                 gameState.cameraOrbitRef.current.theta = gameState.cameraOrbitRef.current.theta % (Math.PI * 2);
 
                 previousTouch = { x: touch.clientX, y: touch.clientY };
@@ -297,8 +288,6 @@ export default function GameWrapper() {
 
     const animate = createAnimationLoop(scene, camera, renderer, gameState, toast, setGameData, topDownSector);
 
-    // A one-time check after a delay to ensure everything is loaded and ready
-    // This is a workaround for ensuring the GLTF model is loaded before we consider the game "ready"
     const readyTimeout = setTimeout(() => {
       setIsReady(true);
     }, 2000);
@@ -306,7 +295,6 @@ export default function GameWrapper() {
 
     animate();
 
-    // --- CLEANUP ---
     return () => {
       clearTimeout(readyTimeout);
       if (gameState.animationFrameIdRef.current) {
@@ -398,15 +386,6 @@ export default function GameWrapper() {
             </div>
           </SidebarGroup>
           <Separator />
-          <SidebarGroup>
-            <SidebarGroupLabel className="flex items-center gap-2">
-              <Bot />
-              AI Opponents
-            </SidebarGroupLabel>
-            <div className="p-2">
-              <AiOpponentGenerator />
-            </div>
-          </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
           <p className="text-xs text-muted-foreground">

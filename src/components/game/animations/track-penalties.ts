@@ -1,10 +1,8 @@
-
-import { handleAssessPenalty } from '@/app/actions';
 import { ROAD_WIDTH, CELL_SIZE } from '@/lib/game-constants';
 import type { GameState } from '../core/state';
 
 export function checkTrackAndPenalties(gameState: GameState, toast: (options: { title: string; description: string; variant: 'destructive' }) => void) {
-    const { playerRef, velocityRef, wasOffTrackRef, penaltyCheckCooldownRef, gameTimeRef } = gameState;
+    const { playerRef, velocityRef, wasOffTrackRef, penaltyCheckCooldownRef } = gameState;
     if (!playerRef.current) return;
     
     const halfTotalWidth = (CELL_SIZE * 5) / 2;
@@ -18,25 +16,15 @@ export function checkTrackAndPenalties(gameState: GameState, toast: (options: { 
 
     if (isOffTrack) {
         wasOffTrackRef.current = true;
+        // Slow down the vehicle when off-road
         velocityRef.current.multiplyScalar(0.95);
     }
+    
     if (!isOffTrack && wasOffTrackRef.current && !penaltyCheckCooldownRef.current) {
         wasOffTrackRef.current = false;
         penaltyCheckCooldownRef.current = true;
         setTimeout(() => (penaltyCheckCooldownRef.current = false), 5000);
-
-        handleAssessPenalty({
-            lapTime: gameTimeRef.current,
-            trackPosition: 'Player went off-road and returned.',
-            speed: velocityRef.current.length() * 3.6,
-        }).then((result) => {
-            if (result.penalty) {
-                toast({
-                    title: 'Penalty Assessed!',
-                    description: `${result.penalty} - ${result.reason}`,
-                    variant: 'destructive',
-                });
-            }
-        });
+        
+        // AI Penalty assessment removed.
     }
 }
